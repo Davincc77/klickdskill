@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/klickd/klickd-proof-protocol/schema/klickd-v1.json",
+  "title": ".klickd Session Profile — v1.0",
+  "description": "Client-side AI tutor session profile. Payload field is AES-GCM encrypted. See SPEC.md.",
+  "type": "object",
+  "required": ["meta", "payload"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "Plaintext metadata. Must NOT contain personal data.",
+      "required": ["protocol", "version", "created_at"],
+      "properties": {
+        "protocol":      { "type": "string", "const": "klickd-proof-protocol" },
+        "version":       { "type": "string", "pattern": "^\\d+\\.\\d+$" },
+        "created_at":    { "type": "string", "format": "date-time" },
+        "updated_at":    { "type": "string", "format": "date-time" },
+        "session_count": { "type": "integer", "minimum": 1 },
+        "hint":          { "type": "string", "maxLength": 100 }
+      },
+      "additionalProperties": false
+    },
+    "payload": {
+      "type": "string",
+      "description": "base64url-encoded AES-GCM encrypted blob. Structure: [salt 16B][iv 12B][ciphertext+tag].",
+      "pattern": "^[A-Za-z0-9_-]+$"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "decrypted_profile": {
+      "description": "Structure of the decrypted payload (for reference — never stored plaintext).",
+      "type": "object",
+      "required": ["profile"],
+      "properties": {
+        "profile": {
+          "type": "object",
+          "properties": {
+            "subjects":        { "type": "array", "items": { "type": "string" } },
+            "mastered":        { "type": "array", "items": { "type": "string" } },
+            "weak_points":     { "type": "array", "items": { "type": "string" } },
+            "preferred_style": { "type": "string", "enum": ["socratic", "direct", "example-first", "visual", "auto"] },
+            "language":        { "type": "string", "pattern": "^[a-z]{2}$" },
+            "last_topics":     { "type": "array", "items": { "type": "string" } },
+            "notes":           { "type": "string", "maxLength": 1000 },
+            "custom":          { "type": "object" }
+          }
+        },
+        "proof_results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["topic", "score", "date"],
+            "properties": {
+              "topic":  { "type": "string" },
+              "score":  { "type": "number", "minimum": 0, "maximum": 1 },
+              "date":   { "type": "string", "format": "date-time" },
+              "method": { "type": "string", "enum": ["open_question", "exercise", "explanation"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}
