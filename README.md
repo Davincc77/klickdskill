@@ -1,158 +1,114 @@
-# Klickd Portable Memory Protocol
+# .klickd — Portable Encrypted AI Context
 
-> **The AI memory that belongs to you. Not to us.**
-> 
-> An open standard for portable, encrypted, client-side AI memory — aligned with official competency frameworks from 7 countries and 4 European reference frameworks.
->
-> **Made in Luxembourg. CC0 — free for everyone.**
-
----
-
-## The idea
-
-Every AI assistant forgets you when the session ends.
-
-Some apps remember you — but they keep your data on their servers. You have no control.
-
-Klickd flips this: the AI learns who you are, tracks your progress against official curricula, then **forgets everything**. You keep a portable encrypted file (`.klickd`) on your own device. You own it. You move it. You delete it.
-
-This is **privacy-first AI memory** — and it works for any domain with a competency framework.
+**v2.0 — Production — 2026-05-18**  
+**License:** CC0 1.0 Universal (Public Domain)  
+**Author:** Vince C. — Klickd / Luxlearn.app — Luxembourg  
+**Contact:** Luxlearn@pm.me
 
 ---
 
-## What's in this repo
+## One file. Zero cloud storage. Any AI.
 
+`.klickd` is an open, encrypted file format that stores a user's AI context on their own device — permanently. No server. No account. No vendor lock-in.
+
+When a user switches AI models (GPT → Claude → Gemini → Llama), or when a robot gets a firmware update, **context no longer dies at the boundary**. The `.klickd` file travels with the user, not the model.
+
+---
+
+## The problem it solves
+
+Every AI provider today stores user context in their cloud:
+- **Storage cost** that scales linearly with users — PBs/year at scale
+- **GDPR liability** — the provider holds the data, owns the risk
+- **Context loss** on model switch, firmware update, or device change
+
+`.klickd` moves all three costs to zero.
+
+---
+
+## Properties
+
+| Property | Value |
+|---|---|
+| Encryption | AES-256-GCM, key from user passphrase (PBKDF2, 600k iterations) |
+| Generation | Client-side only — zero server call |
+| Portability | Any model or agent that implements the spec |
+| Ownership | File lives on user's hardware only |
+| License | CC0 — free to implement for any provider or manufacturer |
+| GDPR | Art. 20 compliant by architecture |
+| MIME type | `application/vnd.klickd+json` |
+
+---
+
+## Domains
+
+| Domain | Use case |
+|---|---|
+| `education` | Learner profile, competency tracking, session continuity |
+| `work` | Project context, decisions, preferences across work tools |
+| `legal` | Case context, constraints, prior decisions |
+| `creative` | Creative project state, style, constraints |
+| `personal` | Personal assistant memory, routines, preferences |
+| `health` | Health context (user-controlled, zero server) |
+| `finance` | Financial context, goals, constraints |
+| `research` | Research context, sources, methodology |
+| `robotics` | Robot user profile — survives firmware updates and unit replacements |
+
+---
+
+## Files
+
+| File | Description |
+|---|---|
+| [SPEC.md](./SPEC.md) | Full technical specification — schema, encryption, field reference |
+| [AGENT-SKILL.md](./AGENT-SKILL.md) | Installation guide for any AI agent — Python + JS + robotics |
+| [schema/](./schema/) | JSON schema files |
+| [curriculum/](./curriculum/) | Education domain curricula (LU, FR, BE, DE, NL, CH, PT) |
+| [disclosure/](./disclosure/) | Invention disclosure (2026-05-16) |
+
+---
+
+## Quick start — any AI agent
+
+```python
+import json, base64
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+def load_klickd(file_path: str, passphrase: str) -> dict:
+    with open(file_path) as f:
+        envelope = json.load(f)
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32,
+                     salt=base64.b64decode(envelope["salt"]),
+                     iterations=600000)
+    key = kdf.derive(passphrase.encode())
+    raw = base64.b64decode(envelope["payload"])
+    iv  = base64.b64decode(envelope["iv"])
+    plaintext = AESGCM(key).decrypt(iv, raw, None)
+    return json.loads(plaintext)
 ```
-klickdskill/
-├── README.md              ← you are here
-├── SPEC.md                ← cryptographic specification (AES-256-GCM, Web Crypto API)
-├── AGENT-SKILL.md         ← installable skill for any AI agent
-├── LICENSE                ← CC0 1.0 Universal
-├── schema/
-│   ├── klickd-v1.json     ← original schema
-│   └── klickd-v2.json     ← universal schema — EQF, ESCO, DigComp 3.0, CEFR
-└── curriculum/
-    ├── README.md          ← curriculum feed protocol
-    ├── LU/                ← Luxembourg (MENJE)
-    ├── FR/                ← France (Eduscol)
-    ├── BE/                ← Belgium (FWB)
-    ├── DE/                ← Germany (KMK)
-    ├── MA/                ← Morocco (MEN)
-    ├── SN/                ← Senegal (MENA)
-    └── CA/                ← Canada/Quebec (MEQ)
-```
+
+Then inject `payload["agent_instructions"]` at the top of your system prompt.
 
 ---
 
-## How it works — in 4 steps
+## Commercial model
 
-```
-1. SESSION STARTS
-   AI reads .klickd → knows your level, country, curriculum, learning style
-
-2. AI TEACHES
-   Kai uses your country's official curriculum
-   Tracks which competencies you work on
-
-3. SESSION ENDS
-   AI updates mastery levels → saves to .klickd
-   Kai forgets the conversation
-   You keep everything
-
-4. NEXT SESSION
-   Kai picks up exactly where you left off
-   No server. No account. No tracking.
-```
-
----
-
-## European frameworks alignment
-
-| Framework | What it covers | In .klickd |
-|-----------|---------------|------------|
-| **EQF** — European Qualifications Framework | 8 proficiency levels, all domains | `competencies[].eqf_level` |
-| **ESCO v1.2** — European Skills, Competences, Occupations | 13,890 occupations + skills taxonomy | `professional.competencies[].esco_skill_uri` |
-| **DigComp 3.0** — Digital Competence Framework | 5 areas, 21 competences, 4 proficiency levels | `competencies[].digcomp_area` |
-| **CEFR / CECRL** — Common European Framework for Languages | A1 → C2, 5 skill areas | `language_learning.cefr_level` + skills breakdown |
-
----
-
-## Supported domains
-
-| Domain | Framework | Typical use |
-|--------|-----------|-------------|
-| **Education** | MENJE, Eduscol, FWB, KMK, MEN, MENA, MEQ | K-12 students, exam prep |
-| **Professional** | ESCO v1.2 + EQF | Upskilling, career transitions |
-| **Languages** | CEFR / CECRL | Language learning A1→C2 |
-| **Digital skills** | DigComp 3.0 | Digital literacy |
-| **Wellness** | WHO frameworks | Health coaching |
-| **Creative** | Custom | Music, art, writing |
-| **Any domain** | Custom block | Any competency referential |
-
----
-
-## Curriculum feeds — 7 countries, annual sync
-
-Each country has official competency feeds in `/curriculum/`. Once per year the `.klickd` file syncs locally — no server, verified by Ed25519 signature.
-
-| Country | Authority | Subjects |
-|---------|-----------|---------|
-| 🇱🇺 Luxembourg | MENJE | Maths, FR, DE, EN, Sciences |
-| 🇫🇷 France | Eduscol | Maths, Français, Sciences, Histoire |
-| 🇧🇪 Belgium | FWB — Tronc commun | Maths, Français, Sciences |
-| 🇩🇪 Germany | KMK — Bildungsstandards | Mathematik, Deutsch, Sciences |
-| 🇲🇦 Morocco | MEN Maroc | Maths, Français, Sciences |
-| 🇸🇳 Senegal | MENA | Maths, Français |
-| 🇨🇦 Canada (QC) | MEQ | Maths, Français |
-
----
-
-## Security
-
-- **AES-256-GCM** encryption — Web Crypto API, runs in the browser
-- **Key never leaves the device** — not stored anywhere
-- Each session in history is encrypted independently
-- Curriculum sync verified with **Ed25519 signatures**
-- Zero telemetry. Zero server calls. Zero retention.
-
-Full spec: [`SPEC.md`](./SPEC.md)
-
----
-
-## Use this in your app
-
-1. Read `AGENT-SKILL.md` — full instructions for any AI agent
-2. Validate against `schema/klickd-v2.json`
-3. Load curriculum from `curriculum/{COUNTRY}/`
-4. Encrypt/decrypt with Web Crypto API per `SPEC.md`
+The format is CC0 — free to implement. Klickd proposes revenue-sharing partnerships with AI providers and robot manufacturers based on documented infrastructure savings. Contact: Luxlearn@pm.me
 
 ---
 
 ## Invention disclosure
 
-A formal invention disclosure was filed on 2026-05-16.
-
-SHA-256: `d7045ce2b998a50fa0d42ee481c7ffc59900e7a9aeb4ccea8c039f2312d86db3`
-
-File: [`disclosure/invention-disclosure-2026-05-16.pdf`](./disclosure/invention-disclosure-2026-05-16.pdf)
+Filed: 2026-05-16  
+Inventor: Vince C. — Klickd / Luxlearn.app — Luxembourg  
+See [disclosure/](./disclosure/)
 
 ---
 
-## Contributing
+## Links
 
-Open a PR to:
-- Add curriculum feeds for new countries/levels
-- Extend the schema for new domains
-- Add professional frameworks (medical, legal, engineering...)
-- Improve the cryptographic spec
-
----
-
-## License
-
-**CC0 1.0 Universal** — No rights reserved. Take it. Use it. Build on it. Make it better.
-
----
-
-*Built in Luxembourg. For students everywhere.*  
-*[klickd.app](https://klickd.app)*
+- App: [klickd.app](https://klickd.app)
+- Web: [luxlearn.app](https://luxlearn.app)
+- Contact: Luxlearn@pm.me
