@@ -1,0 +1,319 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/Davincc77/klickdskill/schema/klickd-v2.json",
+  "title": "Klickd Portable Memory — Universal Schema v2",
+  "description": "A portable, encrypted, client-side AI memory file. Covers education, professional development, and any competency-based domain. Aligned with EQF, ESCO, DigComp 3.0, and national curriculum frameworks. Never stored on any server.",
+  "version": "2.0.0",
+  "type": "object",
+  "required": ["meta", "identity", "domain"],
+  "properties": {
+
+    "meta": {
+      "type": "object",
+      "description": "File integrity, versioning, and provenance",
+      "required": ["schema_version", "created_at", "updated_at", "file_hash"],
+      "properties": {
+        "schema_version": { "type": "string", "example": "2.0.0" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "file_hash": { "type": "string", "description": "SHA-256 of file contents for integrity check" },
+        "encryption": { "type": "string", "enum": ["AES-256-GCM", "none"], "default": "AES-256-GCM" },
+        "agent_id": { "type": "string", "description": "Optional: ID of AI agent that last wrote this file" },
+        "app_version": { "type": "string", "description": "App version that generated this file" }
+      }
+    },
+
+    "identity": {
+      "type": "object",
+      "description": "Who this memory belongs to — no PII required",
+      "required": ["domain_type", "language"],
+      "properties": {
+        "domain_type": {
+          "type": "string",
+          "enum": ["education", "professional", "language_learning", "wellness", "creative", "custom"],
+          "description": "Primary use context"
+        },
+        "language": { "type": "string", "description": "ISO 639-1 UI language (fr, en, de, lb, nl, ar, wo)" },
+        "country": { "type": "string", "description": "ISO 3166-1 alpha-2 (LU, FR, BE, DE, MA, SN, CA)" },
+        "persona_label": { "type": "string", "description": "Optional label chosen by user (e.g. Élève, Professional, Learner)" }
+      }
+    },
+
+    "domain": {
+      "type": "object",
+      "description": "Domain-specific context — structure varies by domain_type",
+      "properties": {
+
+        "education": {
+          "type": "object",
+          "description": "K-12 / secondary education context",
+          "properties": {
+            "country": { "type": "string" },
+            "level": { "type": "string", "description": "e.g. 5e, Terminale, Year 11, Klasse 10" },
+            "cycle": { "type": "string", "description": "e.g. cycle 4, tronc commun, secondaire général" },
+            "curriculum_ref": {
+              "type": "object",
+              "description": "Reference to official curriculum source",
+              "properties": {
+                "authority": { "type": "string", "description": "e.g. MENJE, Eduscol, FWB, KMK, MEN-MA" },
+                "year": { "type": "integer", "description": "Academic year of curriculum version" },
+                "url": { "type": "string", "description": "Official curriculum source URL" },
+                "last_synced": { "type": "string", "format": "date" }
+              }
+            },
+            "subjects": {
+              "type": "array",
+              "description": "Subjects with competency tracking per official curriculum",
+              "items": {
+                "type": "object",
+                "required": ["subject_id", "label"],
+                "properties": {
+                  "subject_id": { "type": "string", "description": "e.g. MATH, FR, DE, EN, SVT, HIST, PHY" },
+                  "label": { "type": "string" },
+                  "language_of_instruction": { "type": "string" },
+                  "competencies": {
+                    "type": "array",
+                    "description": "Competencies from official curriculum for this subject/level",
+                    "items": {
+                      "type": "object",
+                      "required": ["id", "label", "mastery"],
+                      "properties": {
+                        "id": { "type": "string", "description": "Official competency ID from curriculum" },
+                        "label": { "type": "string", "description": "Official competency description" },
+                        "domain": { "type": "string", "description": "e.g. Nombres, Algèbre, Géométrie" },
+                        "mastery": {
+                          "type": "string",
+                          "enum": ["not_started", "emerging", "developing", "secure", "mastered"],
+                          "description": "Student mastery level — updated by AI after each session"
+                        },
+                        "eqf_level": { "type": "integer", "minimum": 1, "maximum": 8, "description": "EQF alignment (1-8)" },
+                        "last_assessed": { "type": "string", "format": "date" },
+                        "ai_notes": { "type": "string", "description": "AI-generated notes on gaps and strengths — max 200 chars" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "exam_targets": {
+              "type": "array",
+              "description": "Upcoming exams / certifications the student is preparing for",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": { "type": "string", "description": "e.g. Bac, Brevet, DELF, Abitur" },
+                  "date": { "type": "string", "format": "date" },
+                  "subjects": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+
+        "professional": {
+          "type": "object",
+          "description": "Workplace / vocational competency tracking — aligned with ESCO v1.2 and EQF",
+          "properties": {
+            "occupation": {
+              "type": "object",
+              "properties": {
+                "esco_uri": { "type": "string", "description": "ESCO occupation URI e.g. http://data.europa.eu/esco/occupation/..." },
+                "label": { "type": "string" },
+                "eqf_target_level": { "type": "integer", "minimum": 1, "maximum": 8 }
+              }
+            },
+            "sector": { "type": "string", "description": "e.g. Finance, Healthcare, Technology, Education" },
+            "competencies": {
+              "type": "array",
+              "description": "ESCO skills/competencies with mastery tracking",
+              "items": {
+                "type": "object",
+                "required": ["esco_skill_uri", "label", "mastery"],
+                "properties": {
+                  "esco_skill_uri": { "type": "string" },
+                  "label": { "type": "string" },
+                  "skill_type": { "type": "string", "enum": ["skill", "knowledge", "attitude"] },
+                  "mastery": {
+                    "type": "string",
+                    "enum": ["not_started", "emerging", "developing", "secure", "mastered"]
+                  },
+                  "digcomp_area": {
+                    "type": "string",
+                    "enum": ["information_literacy", "communication", "content_creation", "safety", "problem_solving", "none"],
+                    "description": "DigComp 3.0 area mapping if applicable"
+                  },
+                  "last_assessed": { "type": "string", "format": "date" },
+                  "ai_notes": { "type": "string", "maxLength": 200 }
+                }
+              }
+            },
+            "certifications": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": { "type": "string" },
+                  "issuer": { "type": "string" },
+                  "eqf_level": { "type": "integer" },
+                  "status": { "type": "string", "enum": ["target", "in_progress", "achieved"] },
+                  "target_date": { "type": "string", "format": "date" }
+                }
+              }
+            }
+          }
+        },
+
+        "language_learning": {
+          "type": "object",
+          "description": "Language acquisition tracking — aligned with CEFR (CECRL)",
+          "properties": {
+            "target_language": { "type": "string", "description": "ISO 639-1" },
+            "native_language": { "type": "string" },
+            "cefr_level": {
+              "type": "string",
+              "enum": ["A1", "A2", "B1", "B2", "C1", "C2"],
+              "description": "Current overall CEFR level"
+            },
+            "skills": {
+              "type": "object",
+              "description": "CEFR competency by skill area",
+              "properties": {
+                "reading":    { "type": "string", "enum": ["A1","A2","B1","B2","C1","C2"] },
+                "writing":    { "type": "string", "enum": ["A1","A2","B1","B2","C1","C2"] },
+                "listening":  { "type": "string", "enum": ["A1","A2","B1","B2","C1","C2"] },
+                "speaking":   { "type": "string", "enum": ["A1","A2","B1","B2","C1","C2"] },
+                "interaction":{ "type": "string", "enum": ["A1","A2","B1","B2","C1","C2"] }
+              }
+            },
+            "vocabulary_size": { "type": "integer", "description": "Estimated active vocabulary" },
+            "target_certification": { "type": "string", "description": "e.g. DELF B2, IELTS 7.0, TestDaF C1" }
+          }
+        },
+
+        "wellness": {
+          "type": "object",
+          "description": "Personal wellness, mental health coaching, or fitness — aligned with WHO competency frameworks",
+          "properties": {
+            "focus_areas": { "type": "array", "items": { "type": "string" }, "description": "e.g. sleep, stress, nutrition, fitness" },
+            "goals": { "type": "array", "items": { "type": "object", "properties": { "label": { "type": "string" }, "status": { "type": "string" } } } }
+          }
+        },
+
+        "creative": {
+          "type": "object",
+          "description": "Creative disciplines — music, art, writing, design",
+          "properties": {
+            "discipline": { "type": "string" },
+            "skills": { "type": "array", "items": { "type": "object", "properties": { "label": { "type": "string" }, "mastery": { "type": "string" } } } }
+          }
+        },
+
+        "custom": {
+          "type": "object",
+          "description": "Fully extensible — any domain not covered above",
+          "properties": {
+            "domain_label": { "type": "string" },
+            "referential_source": { "type": "string", "description": "Name or URL of competency framework used" },
+            "competencies": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string" },
+                  "label": { "type": "string" },
+                  "mastery": { "type": "string", "enum": ["not_started","emerging","developing","secure","mastered"] },
+                  "notes": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "ai_profile": {
+      "type": "object",
+      "description": "AI assistant's learned profile of the user — built progressively, stored locally",
+      "properties": {
+        "learning_style": {
+          "type": "string",
+          "enum": ["visual", "auditory", "reading_writing", "kinesthetic", "mixed"],
+          "description": "Detected dominant learning style"
+        },
+        "preferred_explanation_style": {
+          "type": "string",
+          "enum": ["examples_first", "theory_first", "socratic", "step_by_step", "summary"],
+          "description": "How the user prefers to receive explanations"
+        },
+        "pace": { "type": "string", "enum": ["slow", "normal", "fast"] },
+        "language_preference": { "type": "string", "description": "ISO 639-1 — may differ from UI language" },
+        "strengths": { "type": "array", "items": { "type": "string" }, "description": "Topics/skills where user excels" },
+        "areas_to_improve": { "type": "array", "items": { "type": "string" } },
+        "session_count": { "type": "integer" },
+        "last_session": { "type": "string", "format": "date-time" },
+        "ai_notes": { "type": "string", "maxLength": 500, "description": "Free-form AI observations — max 500 chars" }
+      }
+    },
+
+    "history": {
+      "type": "object",
+      "description": "Optional session history — Premium feature. Encrypted locally. Never synced to server.",
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "sessions": {
+          "type": "array",
+          "description": "Array of exported sessions. Each session is AES-GCM encrypted independently.",
+          "items": {
+            "type": "object",
+            "required": ["session_id", "started_at", "domain_type"],
+            "properties": {
+              "session_id": { "type": "string", "format": "uuid" },
+              "started_at": { "type": "string", "format": "date-time" },
+              "ended_at": { "type": "string", "format": "date-time" },
+              "domain_type": { "type": "string" },
+              "subject_id": { "type": "string", "description": "Subject or skill area covered" },
+              "summary": { "type": "string", "maxLength": 300, "description": "AI-generated session summary" },
+              "competencies_touched": { "type": "array", "items": { "type": "string" }, "description": "Competency IDs worked on" },
+              "mastery_deltas": {
+                "type": "array",
+                "description": "Competency mastery changes during this session",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "competency_id": { "type": "string" },
+                    "before": { "type": "string" },
+                    "after": { "type": "string" }
+                  }
+                }
+              },
+              "messages": {
+                "type": "array",
+                "description": "Full conversation — optional, encrypted, Premium only",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": { "type": "string", "enum": ["user", "assistant"] },
+                    "content": { "type": "string" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "curriculum_sync": {
+      "type": "object",
+      "description": "Curriculum update tracking — annual sync from public curriculum JSON feeds",
+      "properties": {
+        "last_sync": { "type": "string", "format": "date" },
+        "next_sync_due": { "type": "string", "format": "date" },
+        "sync_source": { "type": "string", "description": "URL of public curriculum JSON feed" },
+        "sync_signature": { "type": "string", "description": "Ed25519 signature from curriculum authority" },
+        "pending_update": { "type": "boolean", "default": false }
+      }
+    }
+  }
+}

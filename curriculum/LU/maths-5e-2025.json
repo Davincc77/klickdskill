@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "country": "LU",
+    "authority": "MENJE",
+    "subject": "Mathématiques",
+    "subject_id": "MATH",
+    "level": "5e",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://portal.education.lu/education",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "MENJE-MATH-5E-01",
+      "domain": "Nombres et calculs",
+      "label": "Calculer avec les nombres entiers, décimaux et fractions",
+      "eqf_level": 2,
+      "keywords": ["addition", "soustraction", "multiplication", "division", "fractions", "décimaux"]
+    },
+    {
+      "id": "MENJE-MATH-5E-02",
+      "domain": "Algèbre",
+      "label": "Résoudre des équations du premier degré à une inconnue",
+      "eqf_level": 2,
+      "keywords": ["équation", "inconnue", "résolution", "degré 1"]
+    },
+    {
+      "id": "MENJE-MATH-5E-03",
+      "domain": "Algèbre",
+      "label": "Comprendre et utiliser les fonctions linéaires et affines",
+      "eqf_level": 2,
+      "keywords": ["fonction", "linéaire", "affine", "coefficient directeur", "ordonnée à l'origine"]
+    },
+    {
+      "id": "MENJE-MATH-5E-04",
+      "domain": "Géométrie",
+      "label": "Calculer périmètres, aires et volumes de figures géométriques",
+      "eqf_level": 2,
+      "keywords": ["périmètre", "aire", "volume", "carré", "rectangle", "triangle", "cercle"]
+    },
+    {
+      "id": "MENJE-MATH-5E-05",
+      "domain": "Géométrie",
+      "label": "Utiliser le théorème de Pythagore",
+      "eqf_level": 2,
+      "keywords": ["Pythagore", "hypoténuse", "triangle rectangle"]
+    },
+    {
+      "id": "MENJE-MATH-5E-06",
+      "domain": "Statistiques et probabilités",
+      "label": "Lire et construire des représentations statistiques (tableaux, diagrammes)",
+      "eqf_level": 2,
+      "keywords": ["statistiques", "moyenne", "médiane", "diagramme", "tableau de données"]
+    },
+    {
+      "id": "MENJE-MATH-5E-07",
+      "domain": "Proportionnalité",
+      "label": "Résoudre des problèmes de proportionnalité et de pourcentages",
+      "eqf_level": 2,
+      "keywords": ["proportionnalité", "pourcentage", "règle de trois", "ratio"]
+    }
+  ]
+}
