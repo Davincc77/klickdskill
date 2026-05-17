@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "country": "PT",
+    "authority": "DGE",
+    "subject": "Matemática",
+    "subject_id": "MATH",
+    "level": "10ano",
+    "year": 2025,
+    "language": "pt",
+    "source": "https://www.dge.mec.pt/aprendizagens-essenciais",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "PT-MATH-10A-001",
+      "domain": "Álgebra — Números reais",
+      "label": "Operar com números reais, aplicar valor absoluto e intervalos, representar em reta real e utilizar notação científica em contextos de cálculo.",
+      "eqf_level": 3,
+      "keywords": ["números reais", "valor absoluto", "intervalos", "reta real", "notação científica", "radicais"]
+    },
+    {
+      "id": "PT-MATH-10A-002",
+      "domain": "Álgebra — Polinómios e equações",
+      "label": "Fatorizar polinómios, aplicar o Teorema do Resto, resolver equações e inequações do 2.º grau e sistemas de equações com métodos algébricos e gráficos.",
+      "eqf_level": 3,
+      "keywords": ["polinómios", "fatorização", "Teorema do Resto", "equação do 2.º grau", "discriminante", "inequação"]
+    },
+    {
+      "id": "PT-MATH-10A-003",
+      "domain": "Funções — Conceito e representação",
+      "label": "Definir função, domínio, contradomínio e conjunto imagem; determinar funções compostas e inversas; identificar paridade (funções par/ímpar).",
+      "eqf_level": 3,
+      "keywords": ["função", "domínio", "contradomínio", "imagem", "função composta", "função inversa", "paridade"]
+    },
+    {
+      "id": "PT-MATH-10A-004",
+      "domain": "Funções — Funções polinomiais",
+      "label": "Estudar funções quadráticas: vértice, eixo de simetria, zeros e variação; representar graficamente e resolver problemas de otimização.",
+      "eqf_level": 3,
+      "keywords": ["função quadrática", "parábola", "vértice", "eixo de simetria", "zeros", "otimização", "variação"]
+    },
+    {
+      "id": "PT-MATH-10A-005",
+      "domain": "Funções — Funções exponenciais e logarítmicas",
+      "label": "Estudar as propriedades das funções exponencial e logarítmica, representar graficamente, aplicar leis dos logaritmos e resolver equações exponenciais.",
+      "eqf_level": 3,
+      "keywords": ["função exponencial", "função logarítmica", "logaritmo", "leis dos logaritmos", "base", "equação exponencial"]
+    },
+    {
+      "id": "PT-MATH-10A-006",
+      "domain": "Funções — Funções trigonométricas",
+      "label": "Definir seno, cosseno e tangente na circunferência unitária; estudar periodicidade e representar graficamente as funções seno e cosseno.",
+      "eqf_level": 3,
+      "keywords": ["seno", "cosseno", "tangente", "circunferência trigonométrica", "periodicidade", "ângulo", "arco"]
+    },
+    {
+      "id": "PT-MATH-10A-007",
+      "domain": "Geometria Analítica — Ponto e reta",
+      "label": "Calcular distância entre pontos, ponto médio e inclinação de um segmento; determinar equações de retas (ponto-declive, reduzida) e resolver problemas de interseção.",
+      "eqf_level": 3,
+      "keywords": ["distância", "ponto médio", "declive", "equação da reta", "interseção", "paralelismo", "perpendicularidade"]
+    },
+    {
+      "id": "PT-MATH-10A-008",
+      "domain": "Geometria Analítica — Circunferência",
+      "label": "Deduzir e aplicar a equação reduzida da circunferência; determinar posição relativa de reta e circunferência e calcular equações de retas tangentes.",
+      "eqf_level": 3,
+      "keywords": ["circunferência", "equação da circunferência", "centro", "raio", "tangente", "posição relativa"]
+    },
+    {
+      "id": "PT-MATH-10A-009",
+      "domain": "Geometria Analítica — Vetores",
+      "label": "Representar vetores no plano, calcular módulo, adição, subtração e produto escalar; utilizar vetores para resolver problemas geométricos.",
+      "eqf_level": 3,
+      "keywords": ["vetor", "módulo", "produto escalar", "adição de vetores", "ângulo entre vetores", "decomposição"]
+    },
+    {
+      "id": "PT-MATH-10A-010",
+      "domain": "Probabilidades — Probabilidade condicional",
+      "label": "Calcular probabilidades condicionais, verificar independência de acontecimentos e aplicar a fórmula de Bayes em situações concretas.",
+      "eqf_level": 3,
+      "keywords": ["probabilidade condicional", "independência", "Teorema de Bayes", "acontecimentos", "partição do espaço amostral"]
+    },
+    {
+      "id": "PT-MATH-10A-011",
+      "domain": "Probabilidades e Estatística — Distribuições",
+      "label": "Introduzir variáveis aleatórias discretas, calcular valor esperado e variância; reconhecer e aplicar a distribuição binomial em experiências de Bernoulli.",
+      "eqf_level": 3,
+      "keywords": ["variável aleatória", "distribuição binomial", "valor esperado", "variância", "Bernoulli", "desvio-padrão"]
+    },
+    {
+      "id": "PT-MATH-10A-012",
+      "domain": "Estatística — Análise de dados",
+      "label": "Interpretar medidas de dispersão (variância, desvio-padrão, amplitude interquartil); analisar e comparar distribuições com diagramas de caixa (boxplot).",
+      "eqf_level": 3,
+      "keywords": ["desvio-padrão", "variância", "amplitude interquartil", "boxplot", "distribuição", "comparação de dados"]
+    }
+  ]
+}

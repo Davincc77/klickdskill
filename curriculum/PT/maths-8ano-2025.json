@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "country": "PT",
+    "authority": "DGE",
+    "subject": "Matemática",
+    "subject_id": "MATH",
+    "level": "8ano",
+    "year": 2025,
+    "language": "pt",
+    "source": "https://www.dge.mec.pt/aprendizagens-essenciais",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "PT-MATH-8A-001",
+      "domain": "Números e Operações — Números racionais",
+      "label": "Realizar operações com números racionais (frações, decimais, percentagens) e aplicar propriedades das operações em contextos práticos e abstratos.",
+      "eqf_level": 2,
+      "keywords": ["números racionais", "frações", "percentagens", "operações", "propriedades", "decimais"]
+    },
+    {
+      "id": "PT-MATH-8A-002",
+      "domain": "Números e Operações — Potências e raízes",
+      "label": "Calcular potências de base inteira e racional com expoentes inteiros; aplicar as regras operatórias das potências e introduzir a notação científica.",
+      "eqf_level": 2,
+      "keywords": ["potências", "raiz quadrada", "expoente", "notação científica", "regras das potências"]
+    },
+    {
+      "id": "PT-MATH-8A-003",
+      "domain": "Álgebra — Expressões algébricas",
+      "label": "Simplificar expressões algébricas, efetuar operações com monómios e polinómios (adição, subtração, multiplicação) e aplicar produtos notáveis.",
+      "eqf_level": 2,
+      "keywords": ["expressão algébrica", "monómio", "polinómio", "produtos notáveis", "simplificação", "fatorização"]
+    },
+    {
+      "id": "PT-MATH-8A-004",
+      "domain": "Álgebra — Equações e inequações",
+      "label": "Resolver equações do 1.º grau a uma incógnita e sistemas de duas equações de 1.º grau a duas incógnitas pelos métodos de substituição e adição.",
+      "eqf_level": 2,
+      "keywords": ["equação do 1.º grau", "sistema de equações", "substituição", "adição-eliminação", "incógnita", "resolução"]
+    },
+    {
+      "id": "PT-MATH-8A-005",
+      "domain": "Álgebra — Funções",
+      "label": "Reconhecer o conceito de função, identificar funções de proporcionalidade direta e afins, representar tabelas e gráficos e interpretar a taxa de variação.",
+      "eqf_level": 2,
+      "keywords": ["função", "proporcionalidade direta", "função afim", "taxa de variação", "gráfico", "domínio"]
+    },
+    {
+      "id": "PT-MATH-8A-006",
+      "domain": "Geometria — Teorema de Pitágoras",
+      "label": "Enunciar e demonstrar o Teorema de Pitágoras e a sua recíproca; aplicar em triângulos retângulos e no cálculo de distâncias em contextos reais.",
+      "eqf_level": 2,
+      "keywords": ["Teorema de Pitágoras", "triângulo retângulo", "hipotenusa", "cateto", "recíproca", "distância"]
+    },
+    {
+      "id": "PT-MATH-8A-007",
+      "domain": "Geometria — Semelhança de triângulos",
+      "label": "Identificar triângulos semelhantes com base nos critérios de semelhança (AA, LAL, LLL) e resolver problemas envolvendo razão de semelhança e comprimentos.",
+      "eqf_level": 2,
+      "keywords": ["semelhança", "critérios de semelhança", "razão de semelhança", "Teorema de Tales", "triângulos", "escala"]
+    },
+    {
+      "id": "PT-MATH-8A-008",
+      "domain": "Geometria — Áreas e volumes",
+      "label": "Calcular áreas de figuras planas (paralelogramo, trapézio, círculo) e volumes de sólidos (prismas, cilindros) em contextos de resolução de problemas.",
+      "eqf_level": 2,
+      "keywords": ["área", "volume", "prisma", "cilindro", "círculo", "trapézio", "fórmulas"]
+    },
+    {
+      "id": "PT-MATH-8A-009",
+      "domain": "Geometria — Isometrias",
+      "label": "Reconhecer e aplicar isometrias do plano (translação, reflexão, rotação e reflexão deslizante) e identificar simetrias em figuras e padrões.",
+      "eqf_level": 2,
+      "keywords": ["isometria", "translação", "reflexão", "rotação", "simetria", "transformação geométrica"]
+    },
+    {
+      "id": "PT-MATH-8A-010",
+      "domain": "Organização e Tratamento de Dados — Estatística",
+      "label": "Recolher, organizar e representar dados em tabelas de frequências absolutas e relativas, histogramas e diagramas de caule-e-folhas; calcular e interpretar medidas de tendência central.",
+      "eqf_level": 2,
+      "keywords": ["frequência", "histograma", "caule-e-folhas", "média", "mediana", "moda", "amplitude"]
+    },
+    {
+      "id": "PT-MATH-8A-011",
+      "domain": "Organização e Tratamento de Dados — Probabilidades",
+      "label": "Calcular probabilidades de acontecimentos em espaços amostrais finitos e equiprováveis; utilizar a regra de Laplace e diagramas em árvore em experiências compostas.",
+      "eqf_level": 2,
+      "keywords": ["probabilidade", "espaço amostral", "regra de Laplace", "diagrama em árvore", "acontecimento", "probabilidade empírica"]
+    }
+  ]
+}

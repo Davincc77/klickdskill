@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "country": "CH",
+    "authority": "D-EDK",
+    "subject": "Mathematik",
+    "subject_id": "MATH",
+    "level": "sek1",
+    "year": 2025,
+    "language": "de",
+    "source": "https://www.lehrplan21.ch/",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "CH-MATH-SEK1-001",
+      "domain": "Zahl und Variable — Natürliche und ganze Zahlen",
+      "label": "Mit natürlichen, ganzen und rationalen Zahlen operieren, Primfaktorzerlegung anwenden und Rechenregeln (Prioritäten, Klammern) korrekt einsetzen.",
+      "eqf_level": 2,
+      "keywords": ["natürliche Zahlen", "ganze Zahlen", "rationale Zahlen", "Primfaktoren", "Rechenregeln", "Klammern"]
+    },
+    {
+      "id": "CH-MATH-SEK1-002",
+      "domain": "Zahl und Variable — Brüche und Dezimalzahlen",
+      "label": "Brüche kürzen, erweitern und in Dezimaldarstellung umwandeln; die vier Grundoperationen mit Brüchen und gemischten Zahlen ausführen.",
+      "eqf_level": 2,
+      "keywords": ["Brüche", "Dezimalzahlen", "kürzen", "erweitern", "Grundoperationen", "gemischte Zahlen"]
+    },
+    {
+      "id": "CH-MATH-SEK1-003",
+      "domain": "Zahl und Variable — Algebra",
+      "label": "Algebraische Terme aufstellen, vereinfachen und umformen; lineare Gleichungen und einfache Ungleichungen mit einer Variablen lösen.",
+      "eqf_level": 2,
+      "keywords": ["Term", "Variable", "Gleichung", "Ungleichung", "vereinfachen", "lösen", "linear"]
+    },
+    {
+      "id": "CH-MATH-SEK1-004",
+      "domain": "Zahl und Variable — Proportionalität und Prozente",
+      "label": "Direkte und inverse Proportionalität erkennen und anwenden; Prozentrechnung in praxisnahen Situationen (Rabatt, Zinsen, Zunahme) einsetzen.",
+      "eqf_level": 2,
+      "keywords": ["Proportionalität", "Prozentrechnung", "Dreisatz", "Zinsen", "Rabatt", "inverse Proportionalität"]
+    },
+    {
+      "id": "CH-MATH-SEK1-005",
+      "domain": "Form und Raum — Ebene Figuren",
+      "label": "Eigenschaften von Dreiecken, Vierecken und Kreisen beschreiben; Umfang und Flächeninhalt berechnen und auf Probleme anwenden.",
+      "eqf_level": 2,
+      "keywords": ["Dreieck", "Viereck", "Kreis", "Umfang", "Flächeninhalt", "Konstruktion"]
+    },
+    {
+      "id": "CH-MATH-SEK1-006",
+      "domain": "Form und Raum — Satz des Pythagoras",
+      "label": "Den Satz des Pythagoras und seine Umkehrung anwenden, um Seiten in rechtwinkligen Dreiecken und Abstände im Koordinatensystem zu berechnen.",
+      "eqf_level": 2,
+      "keywords": ["Pythagoras", "rechtwinkliges Dreieck", "Hypotenuse", "Kathete", "Umkehrung", "Abstand"]
+    },
+    {
+      "id": "CH-MATH-SEK1-007",
+      "domain": "Form und Raum — Raumbild und Körper",
+      "label": "Oberfläche und Volumen von Prismen, Zylindern, Pyramiden und Kegeln berechnen und in Alltagssituationen anwenden.",
+      "eqf_level": 2,
+      "keywords": ["Prisma", "Zylinder", "Pyramide", "Kegel", "Oberfläche", "Volumen", "Körper"]
+    },
+    {
+      "id": "CH-MATH-SEK1-008",
+      "domain": "Form und Raum — Ähnlichkeit und Kongruenz",
+      "label": "Ähnliche und kongruente Figuren erkennen und beschreiben; Strahlensatz anwenden, um unbekannte Längen zu bestimmen.",
+      "eqf_level": 2,
+      "keywords": ["Ähnlichkeit", "Kongruenz", "Strahlensatz", "Abbildung", "Skalierungsfaktor"]
+    },
+    {
+      "id": "CH-MATH-SEK1-009",
+      "domain": "Grössen und Messen — Einheiten und Umrechnungen",
+      "label": "Mass-, Gewichts- und Zeiteinheiten sicher umrechnen; Masseinheiten von Fläche und Volumen anwenden und Schätzungen überprüfen.",
+      "eqf_level": 2,
+      "keywords": ["Masseinheiten", "Umrechnung", "Fläche", "Volumen", "Schätzung", "Genauigkeit"]
+    },
+    {
+      "id": "CH-MATH-SEK1-010",
+      "domain": "Daten und Zufall — Statistik",
+      "label": "Daten erheben, in Tabellen und Diagrammen (Säulen-, Kreisdiagramm, Histogramm) darstellen sowie Mittelwert, Median und Modalwert berechnen und interpretieren.",
+      "eqf_level": 2,
+      "keywords": ["Statistik", "Mittelwert", "Median", "Modalwert", "Häufigkeit", "Diagramm", "Histogramm"]
+    },
+    {
+      "id": "CH-MATH-SEK1-011",
+      "domain": "Daten und Zufall — Wahrscheinlichkeit",
+      "label": "Zufallsexperimente beschreiben, Wahrscheinlichkeiten von Ereignissen bestimmen und Baumdiagramme für mehrstufige Zufallsexperimente einsetzen.",
+      "eqf_level": 2,
+      "keywords": ["Wahrscheinlichkeit", "Zufallsexperiment", "Baumdiagramm", "Ereignis", "Laplace-Modell", "Gegenwahrscheinlichkeit"]
+    },
+    {
+      "id": "CH-MATH-SEK1-012",
+      "domain": "Zahl und Variable — Funktionen",
+      "label": "Lineare Funktionen tabellarisch, grafisch und algebraisch darstellen; die Bedeutung von Steigung und y-Achsenabschnitt in Sachkontexten interpretieren.",
+      "eqf_level": 2,
+      "keywords": ["Funktion", "lineare Funktion", "Steigung", "y-Achsenabschnitt", "Koordinatensystem", "Wertetabelle"]
+    }
+  ]
+}

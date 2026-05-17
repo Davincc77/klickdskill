@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "country": "NL",
+    "authority": "SLO",
+    "subject": "Wiskunde",
+    "subject_id": "MATH",
+    "level": "havo",
+    "year": 2025,
+    "language": "nl",
+    "source": "https://www.slo.nl/vakken/w/wiskunde/",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "NL-MATH-HAVO-001",
+      "domain": "Algebra — Vergelijkingen en ongelijkheden",
+      "label": "Lineaire en kwadratische vergelijkingen en ongelijkheden oplossen algebraïsch en grafisch, inclusief stelsels van twee vergelijkingen.",
+      "eqf_level": 3,
+      "keywords": ["vergelijking", "ongelijkheid", "kwadratisch", "stelsel", "discriminant"]
+    },
+    {
+      "id": "NL-MATH-HAVO-002",
+      "domain": "Algebra — Bewerkingen met variabelen",
+      "label": "Algebraïsche uitdrukkingen ontbinden in factoren, merkwaardige producten toepassen en uitdrukkingen vereenvoudigen.",
+      "eqf_level": 3,
+      "keywords": ["factoriseren", "merkwaardige producten", "ontbinden", "algebra", "vereenvoudigen"]
+    },
+    {
+      "id": "NL-MATH-HAVO-003",
+      "domain": "Functies — Lineaire en kwadratische functies",
+      "label": "Lineaire en kwadratische functies analyseren: domein, bereik, nulpunten, extrema en asymptoten bepalen en grafisch weergeven.",
+      "eqf_level": 3,
+      "keywords": ["lineaire functie", "kwadratische functie", "nulpunten", "extremum", "parabool", "domein", "bereik"]
+    },
+    {
+      "id": "NL-MATH-HAVO-004",
+      "domain": "Functies — Exponentiële en logaritmische functies",
+      "label": "Exponentiële groei en afname modelleren, basisprincipes van logaritmen toepassen en grafieken van exponentiële functies interpreteren.",
+      "eqf_level": 3,
+      "keywords": ["exponentiële functie", "groeivoet", "logaritme", "e-macht", "groeifactor"]
+    },
+    {
+      "id": "NL-MATH-HAVO-005",
+      "domain": "Functies — Verandering en afgeleide",
+      "label": "Het begrip differentiaalquotiënt begrijpen, de afgeleide van polynoomfuncties berekenen en toepassen op extrema en stijgen/dalen.",
+      "eqf_level": 3,
+      "keywords": ["afgeleide", "differentiaalquotiënt", "helling", "extremum", "stijgen", "dalen"]
+    },
+    {
+      "id": "NL-MATH-HAVO-006",
+      "domain": "Analytische meetkunde — Coördinaten",
+      "label": "Afstand, midden en richtingscoëfficiënt van een lijnstuk berekenen, vergelijkingen van lijnen opstellen en snijpunten bepalen.",
+      "eqf_level": 3,
+      "keywords": ["coördinaten", "richtingscoëfficiënt", "afstand", "middelpunt", "snijpunt", "lijnvergelijking"]
+    },
+    {
+      "id": "NL-MATH-HAVO-007",
+      "domain": "Analytische meetkunde — Cirkels",
+      "label": "Vergelijkingen van cirkels opstellen en herkennen, de ligging van een punt ten opzichte van een cirkel bepalen.",
+      "eqf_level": 3,
+      "keywords": ["cirkel", "middelpunt", "straal", "vergelijking", "snijpunt", "raaklijn"]
+    },
+    {
+      "id": "NL-MATH-HAVO-008",
+      "domain": "Meetkunde — Goniometrie",
+      "label": "Sinus, cosinus en tangens in rechthoekige driehoeken en op de eenheidscirkel toepassen, inclusief de sinusregel en cosinusregel.",
+      "eqf_level": 3,
+      "keywords": ["sinus", "cosinus", "tangens", "goniometrie", "eenheidscirkel", "sinusregel", "cosinusregel"]
+    },
+    {
+      "id": "NL-MATH-HAVO-009",
+      "domain": "Statistiek — Beschrijvende statistiek",
+      "label": "Gegevenssets samenvatten met maten van centrale tendens en spreiding (standaardafwijking, interkwartielafstand) en boxplots interpreteren.",
+      "eqf_level": 3,
+      "keywords": ["standaardafwijking", "interkwartielafstand", "boxplot", "spreiding", "gemiddelde", "mediaan"]
+    },
+    {
+      "id": "NL-MATH-HAVO-010",
+      "domain": "Kansen — Kansrekening",
+      "label": "Kansen berekenen voor enkelvoudige, samengestelde en geconditioneerde gebeurtenissen, de telprincipes en binomiale kansverdeling toepassen.",
+      "eqf_level": 3,
+      "keywords": ["kansrekening", "geconditioneerde kans", "binomiaal", "telboom", "complementregel", "product- en somregel"]
+    },
+    {
+      "id": "NL-MATH-HAVO-011",
+      "domain": "Kansen — Statistische gevolgtrekking",
+      "label": "Steekproeven beoordelen, normale verdeling herkennen en eenvoudige betrouwbaarheidsintervallen interpreteren.",
+      "eqf_level": 3,
+      "keywords": ["steekproef", "normale verdeling", "betrouwbaarheidsinterval", "toets", "aselecte steekproef"]
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "country": "CH",
+    "authority": "D-EDK",
+    "subject": "Mathematik",
+    "subject_id": "MATH",
+    "level": "gym1",
+    "year": 2025,
+    "language": "de",
+    "source": "https://www.lehrplan21.ch/",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "CH-MATH-GYM1-001",
+      "domain": "Algebra — Terme und Gleichungen",
+      "label": "Algebraische Ausdrücke entwickeln, faktorisieren und vereinfachen; lineare und quadratische Gleichungen sowie Gleichungssysteme mit zwei Variablen lösen.",
+      "eqf_level": 3,
+      "keywords": ["faktorisieren", "binomische Formeln", "quadratische Gleichung", "Gleichungssystem", "Lösungsmenge"]
+    },
+    {
+      "id": "CH-MATH-GYM1-002",
+      "domain": "Algebra — Ungleichungen",
+      "label": "Lineare und quadratische Ungleichungen lösen, die Lösungsmenge auf dem Zahlenstrahl darstellen und in Anwendungskontexten interpretieren.",
+      "eqf_level": 3,
+      "keywords": ["Ungleichung", "Lösungsmenge", "Zahlenstrahl", "Intervall", "quadratisch", "linear"]
+    },
+    {
+      "id": "CH-MATH-GYM1-003",
+      "domain": "Funktionen — Lineare und quadratische Funktionen",
+      "label": "Lineare und quadratische Funktionen vollständig analysieren: Nullstellen, Scheitelpunkt, Symmetrie, Monotonie und Wertemenge bestimmen und grafisch darstellen.",
+      "eqf_level": 3,
+      "keywords": ["quadratische Funktion", "Scheitelpunkt", "Nullstelle", "Parabel", "Symmetrie", "Monotonie"]
+    },
+    {
+      "id": "CH-MATH-GYM1-004",
+      "domain": "Funktionen — Exponentialfunktionen",
+      "label": "Exponentielles Wachstum und Abnahme modellieren; Eigenschaften der Exponentialfunktion und deren Graphen beschreiben und auf Sachprobleme anwenden.",
+      "eqf_level": 3,
+      "keywords": ["Exponentialfunktion", "Wachstum", "Abnahme", "Basis", "Exponent", "Modellierung"]
+    },
+    {
+      "id": "CH-MATH-GYM1-005",
+      "domain": "Funktionen — Logarithmus",
+      "label": "Den Logarithmus als Umkehrfunktion der Exponentialfunktion verstehen; Logarithmengesetze anwenden und einfache Exponentialgleichungen lösen.",
+      "eqf_level": 3,
+      "keywords": ["Logarithmus", "Logarithmengesetze", "Umkehrfunktion", "Basis 10", "natürlicher Logarithmus", "Exponentialgleichung"]
+    },
+    {
+      "id": "CH-MATH-GYM1-006",
+      "domain": "Analytische Geometrie — Vektoren in der Ebene",
+      "label": "Vektoren addieren, subtrahieren und mit Skalaren multiplizieren; Betrag eines Vektors und Skalarprodukt berechnen und geometrisch interpretieren.",
+      "eqf_level": 3,
+      "keywords": ["Vektor", "Skalarprodukt", "Betrag", "Vektoraddition", "Parallelität", "Orthogonalität"]
+    },
+    {
+      "id": "CH-MATH-GYM1-007",
+      "domain": "Analytische Geometrie — Geraden und Kreise",
+      "label": "Gleichungen von Geraden in verschiedenen Formen aufstellen, Schnittpunkte berechnen und Kreisgleichungen in der Koordinatenebene anwenden.",
+      "eqf_level": 3,
+      "keywords": ["Geradengleichung", "Kreisgleichung", "Schnittpunkt", "Abstand", "Tangente", "Koordinatenebene"]
+    },
+    {
+      "id": "CH-MATH-GYM1-008",
+      "domain": "Geometrie — Trigonometrie",
+      "label": "Trigonometrische Funktionen (sin, cos, tan) am Einheitskreis definieren, Graphen analysieren und Sinus- sowie Kosinussatz auf allgemeine Dreiecke anwenden.",
+      "eqf_level": 3,
+      "keywords": ["Sinus", "Kosinus", "Tangens", "Einheitskreis", "Sinussatz", "Kosinussatz", "Trigonometrie"]
+    },
+    {
+      "id": "CH-MATH-GYM1-009",
+      "domain": "Analysis — Differentialrechnung",
+      "label": "Den Ableitungsbegriff als Grenzwert des Differenzenquotienten verstehen; Ableitungsregeln (Potenz-, Summen-, Produktregel) auf Polynomfunktionen anwenden.",
+      "eqf_level": 3,
+      "keywords": ["Ableitung", "Differenzenquotient", "Grenzwert", "Tangentensteigung", "Potenzregel", "Produktregel"]
+    },
+    {
+      "id": "CH-MATH-GYM1-010",
+      "domain": "Analysis — Kurvendiskussion",
+      "label": "Monotonieverhalten, lokale Extrema und Wendepunkte einer Funktion mithilfe erster und zweiter Ableitung bestimmen und grafisch darstellen.",
+      "eqf_level": 3,
+      "keywords": ["Extremwert", "Wendepunkt", "zweite Ableitung", "Monotonie", "Kurvendiskussion", "Vorzeichen"]
+    },
+    {
+      "id": "CH-MATH-GYM1-011",
+      "domain": "Stochastik — Kombinatorik",
+      "label": "Grundprinzipien der Kombinatorik (Permutationen, Kombinationen, Variationen) anwenden, um Anzahl von Möglichkeiten zu bestimmen.",
+      "eqf_level": 3,
+      "keywords": ["Kombinatorik", "Permutation", "Kombination", "Variation", "Fakultät", "Binomialkoeffizient"]
+    },
+    {
+      "id": "CH-MATH-GYM1-012",
+      "domain": "Stochastik — Wahrscheinlichkeitsrechnung",
+      "label": "Wahrscheinlichkeiten für bedingte Ereignisse berechnen, das Theorem von Bayes auf einfache Fälle anwenden und Zufallsvariablen beschreiben.",
+      "eqf_level": 3,
+      "keywords": ["bedingte Wahrscheinlichkeit", "Bayes", "Zufallsvariable", "Erwartungswert", "Binomialverteilung", "Unabhängigkeit"]
+    }
+  ]
+}

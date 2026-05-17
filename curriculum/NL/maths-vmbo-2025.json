@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "country": "NL",
+    "authority": "SLO",
+    "subject": "Wiskunde",
+    "subject_id": "MATH",
+    "level": "vmbo",
+    "year": 2025,
+    "language": "nl",
+    "source": "https://www.slo.nl/vakken/w/wiskunde/",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "NL-MATH-VMBO-001",
+      "domain": "Getallen en bewerkingen",
+      "label": "Optellen, aftrekken, vermenigvuldigen en delen met gehele getallen, decimale getallen en breuken, inclusief het toepassen van rekenvolgorde.",
+      "eqf_level": 2,
+      "keywords": ["getallen", "breuken", "decimalen", "rekenvolgorde", "bewerkingen"]
+    },
+    {
+      "id": "NL-MATH-VMBO-002",
+      "domain": "Getallen en bewerkingen — Verhoudingen",
+      "label": "Werken met verhoudingen, procenten en schaal in praktische contexten zoals kortingen, belasting en kaartlezen.",
+      "eqf_level": 2,
+      "keywords": ["verhoudingen", "procenten", "schaal", "korting", "belasting"]
+    },
+    {
+      "id": "NL-MATH-VMBO-003",
+      "domain": "Getallen en bewerkingen — Machtsverheffing",
+      "label": "Berekeningen uitvoeren met machten en wortels, inclusief de notatie met wetenschappelijke schrijfwijze.",
+      "eqf_level": 2,
+      "keywords": ["machten", "wortels", "wetenschappelijke notatie", "kwadraat", "vierkantswortel"]
+    },
+    {
+      "id": "NL-MATH-VMBO-004",
+      "domain": "Algebra — Formules en vergelijkingen",
+      "label": "Eenvoudige algebraïsche uitdrukkingen vereenvoudigen en lineaire vergelijkingen met één onbekende oplossen.",
+      "eqf_level": 2,
+      "keywords": ["vergelijking", "onbekende", "lineair", "oplossen", "vereenvoudigen"]
+    },
+    {
+      "id": "NL-MATH-VMBO-005",
+      "domain": "Algebra — Formules",
+      "label": "Formules lezen, invullen en omschrijven in toepassingscontexten zoals afstand, snelheid en tijd.",
+      "eqf_level": 2,
+      "keywords": ["formule", "substitutie", "omschrijven", "snelheid", "afstand", "tijd"]
+    },
+    {
+      "id": "NL-MATH-VMBO-006",
+      "domain": "Meetkunde — Figuren en meten",
+      "label": "Omtrek en oppervlakte berekenen van vlakke figuren (rechthoek, driehoek, cirkel) en volume van eenvoudige ruimtelijke figuren.",
+      "eqf_level": 2,
+      "keywords": ["omtrek", "oppervlakte", "volume", "rechthoek", "driehoek", "cirkel", "prisma"]
+    },
+    {
+      "id": "NL-MATH-VMBO-007",
+      "domain": "Meetkunde — Stelling van Pythagoras",
+      "label": "De stelling van Pythagoras toepassen om ontbrekende zijden in een rechthoekige driehoek te berekenen.",
+      "eqf_level": 2,
+      "keywords": ["Pythagoras", "rechthoekige driehoek", "hypotenusa", "zijden", "stelling"]
+    },
+    {
+      "id": "NL-MATH-VMBO-008",
+      "domain": "Meetkunde — Gelijkvormigheid",
+      "label": "Gelijkvormige figuren herkennen en verhoudingen van overeenkomstige zijden gebruiken om onbekende lengtes te berekenen.",
+      "eqf_level": 2,
+      "keywords": ["gelijkvormigheid", "schaalvactor", "overeenkomstige zijden", "verhoudingen", "figuren"]
+    },
+    {
+      "id": "NL-MATH-VMBO-009",
+      "domain": "Statistiek — Gegevensverwerking",
+      "label": "Statistische gegevens ordenen, weergeven in diagrammen (staafdiagram, cirkeldiagram, histogram) en lezen.",
+      "eqf_level": 2,
+      "keywords": ["staafdiagram", "cirkeldiagram", "histogram", "gegevens", "tabel", "frequentie"]
+    },
+    {
+      "id": "NL-MATH-VMBO-010",
+      "domain": "Statistiek — Gemiddelde en midden",
+      "label": "Gemiddelde, mediaan, modus en bereik berekenen en interpreteren bij enkelvoudige en gegroepeerde data.",
+      "eqf_level": 2,
+      "keywords": ["gemiddelde", "mediaan", "modus", "bereik", "statistiek", "centrale tendens"]
+    },
+    {
+      "id": "NL-MATH-VMBO-011",
+      "domain": "Kansen",
+      "label": "Kansen van enkelvoudige en samengestelde gebeurtenissen berekenen met behulp van kansmodellen en boomdiagrammen.",
+      "eqf_level": 2,
+      "keywords": ["kans", "boomdiagram", "gebeurtenis", "kansmodel", "combinaties"]
+    },
+    {
+      "id": "NL-MATH-VMBO-012",
+      "domain": "Verbanden — Grafieken",
+      "label": "Lineaire verbanden herkennen, tabellen en grafieken maken en interpreteren in realistische situaties.",
+      "eqf_level": 2,
+      "keywords": ["lineair verband", "grafiek", "tabel", "richtingscoëfficiënt", "snijpunt"]
+    }
+  ]
+}
