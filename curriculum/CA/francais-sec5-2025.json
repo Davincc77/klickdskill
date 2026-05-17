@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "country": "CA",
+    "authority": "MEQ - Ministère de l'Éducation du Québec",
+    "subject": "Français, langue d'enseignement",
+    "subject_id": "FR",
+    "level": "Secondaire 5",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.education.gouv.qc.ca",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "CA-FR-S5-01",
+      "domain": "Lecture — Textes littéraires",
+      "label": "Lire et apprécier des textes littéraires québécois et francophones (roman, poésie, théâtre, récit) en construisant une interprétation appuyée sur des éléments textuels",
+      "eqf_level": 3,
+      "keywords": ["lecture littéraire", "littérature québécoise", "interprétation", "appréciation", "texte narratif"]
+    },
+    {
+      "id": "CA-FR-S5-02",
+      "domain": "Lecture — Textes courants",
+      "label": "Lire des textes courants (journalistiques, informatifs, argumentatifs) en dégageant l'information essentielle, le point de vue et les stratégies discursives",
+      "eqf_level": 3,
+      "keywords": ["texte courant", "article journalistique", "information", "point de vue", "stratégie discursive"]
+    },
+    {
+      "id": "CA-FR-S5-03",
+      "domain": "Écriture — Textes littéraires",
+      "label": "Écrire des textes littéraires (récit, poème, texte dramatique) en exploitant les ressources stylistiques de la langue et en tenant compte d'un destinataire",
+      "eqf_level": 3,
+      "keywords": ["écriture créative", "récit littéraire", "stylistique", "voix narrative", "destinataire"]
+    },
+    {
+      "id": "CA-FR-S5-04",
+      "domain": "Écriture — Textes courants",
+      "label": "Rédiger des textes courants (analyse, argumentation, synthèse) en structurant le propos, en organisant les idées et en soignant la présentation",
+      "eqf_level": 3,
+      "keywords": ["texte argumentatif", "analyse littéraire", "synthèse", "organisation des idées", "rédaction"]
+    },
+    {
+      "id": "CA-FR-S5-05",
+      "domain": "Écriture — Analyse littéraire",
+      "label": "Rédiger une analyse littéraire cohérente (thèse, arguments, preuve, conclusion) sur une œuvre au programme en citant et en commentant des extraits",
+      "eqf_level": 3,
+      "keywords": ["analyse littéraire", "thèse", "preuve textuelle", "citation", "paragraphe argumentatif"]
+    },
+    {
+      "id": "CA-FR-S5-06",
+      "domain": "Communication orale",
+      "label": "S'exprimer oralement dans des situations formelles (exposé, débat, entretien) en adaptant son discours, sa voix et son langage non verbal au contexte",
+      "eqf_level": 3,
+      "keywords": ["communication orale", "exposé formel", "débat", "langage non verbal", "adaptation du discours"]
+    },
+    {
+      "id": "CA-FR-S5-07",
+      "domain": "Communication orale",
+      "label": "Écouter et comprendre des discours oraux complexes (conférences, émissions, œuvres théâtrales) en prenant des notes et en reformulant les idées principales",
+      "eqf_level": 3,
+      "keywords": ["écoute active", "prise de notes", "reformulation", "compréhension orale", "discours complexe"]
+    },
+    {
+      "id": "CA-FR-S5-08",
+      "domain": "Grammaire et langue",
+      "label": "Maîtriser les règles grammaticales avancées : accords complexes, syntaxe de la phrase, ponctuation, orthographe lexicale et grammaticale",
+      "eqf_level": 3,
+      "keywords": ["grammaire", "accord", "syntaxe", "ponctuation", "orthographe"]
+    },
+    {
+      "id": "CA-FR-S5-09",
+      "domain": "Culture littéraire",
+      "label": "Établir des liens entre les œuvres littéraires, leur époque, les courants littéraires et les réalités socioculturelles du Québec et du monde francophone",
+      "eqf_level": 3,
+      "keywords": ["courant littéraire", "contexte sociohistorique", "culture québécoise", "francophonie", "patrimoine littéraire"]
+    }
+  ]
+}

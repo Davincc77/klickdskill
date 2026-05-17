@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "country": "SN",
+    "authority": "MENA Sénégal",
+    "subject": "Français",
+    "subject_id": "FR",
+    "level": "Terminale",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.education.gouv.sn",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "SN-FR-TE-01",
+      "domain": "Textes littéraires africains",
+      "label": "Lire, analyser et interpréter des œuvres littéraires africaines francophones (roman, poésie, théâtre) en les inscrivant dans leur contexte socio-historique",
+      "eqf_level": 3,
+      "keywords": ["littérature africaine", "roman africain", "poésie africaine", "contexte socio-historique", "francophonie"]
+    },
+    {
+      "id": "SN-FR-TE-02",
+      "domain": "Textes littéraires francophones",
+      "label": "Étudier des textes issus de la littérature française et francophone mondiale (Maghreb, Antilles, Océan Indien) en dégageant les thèmes et les procédés stylistiques",
+      "eqf_level": 3,
+      "keywords": ["littérature francophone", "Négritude", "style", "thème", "intertextualité"]
+    },
+    {
+      "id": "SN-FR-TE-03",
+      "domain": "Commentaire de texte",
+      "label": "Rédiger un commentaire composé de texte littéraire en dégageant une problématique, en analysant les procédés d'écriture et en construisant un plan cohérent",
+      "eqf_level": 3,
+      "keywords": ["commentaire composé", "problématique", "plan", "analyse littéraire", "procédés d'écriture"]
+    },
+    {
+      "id": "SN-FR-TE-04",
+      "domain": "Dissertation littéraire",
+      "label": "Rédiger une dissertation littéraire (plan dialectique ou thématique) en mobilisant des références précises aux œuvres au programme",
+      "eqf_level": 3,
+      "keywords": ["dissertation", "plan dialectique", "plan thématique", "argument", "référence littéraire"]
+    },
+    {
+      "id": "SN-FR-TE-05",
+      "domain": "Expression écrite",
+      "label": "Produire des textes variés en respectant les contraintes de genre (lettre formelle, résumé, synthèse, compte rendu) et les normes orthographiques",
+      "eqf_level": 3,
+      "keywords": ["production écrite", "résumé", "synthèse", "lettre formelle", "orthographe"]
+    },
+    {
+      "id": "SN-FR-TE-06",
+      "domain": "Expression orale",
+      "label": "Prendre la parole en public de façon argumentée et structurée (exposé, présentation d'une œuvre, débat) en adaptant son registre à la situation",
+      "eqf_level": 3,
+      "keywords": ["expression orale", "exposé", "débat", "registre de langue", "prise de parole"]
+    },
+    {
+      "id": "SN-FR-TE-07",
+      "domain": "Grammaire et langue",
+      "label": "Analyser les structures syntaxiques complexes et maîtriser les accords (sujet-verbe, nominal, participial) dans des textes de niveau lycée",
+      "eqf_level": 3,
+      "keywords": ["syntaxe", "accord", "participe", "analyse grammaticale", "phrase complexe"]
+    },
+    {
+      "id": "SN-FR-TE-08",
+      "domain": "Argumentation",
+      "label": "Identifier et analyser les stratégies argumentatives dans les textes (types d'arguments, réfutation, ironie, implicite) et les mobiliser dans sa propre production",
+      "eqf_level": 3,
+      "keywords": ["argumentation", "réfutation", "ironie", "implicite", "stratégie discursive"]
+    },
+    {
+      "id": "SN-FR-TE-09",
+      "domain": "Lecture analytique",
+      "label": "Conduire une lecture analytique d'un texte en identifiant le registre littéraire, le genre, le mouvement littéraire et les figures de style dominantes",
+      "eqf_level": 3,
+      "keywords": ["registre littéraire", "genre", "mouvement littéraire", "figure de style", "lecture analytique"]
+    }
+  ]
+}

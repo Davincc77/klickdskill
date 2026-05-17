@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "country": "FR",
+    "authority": "Eduscol",
+    "subject": "Mathématiques",
+    "subject_id": "MATH",
+    "level": "3e",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://eduscol.education.fr",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "FR-MATH-3E-01",
+      "domain": "Nombres — Puissances",
+      "label": "Calculer et simplifier des expressions faisant intervenir des puissances entières positives ou négatives, en appliquant les règles de calcul (produit, quotient, puissance de puissance).",
+      "eqf_level": 2,
+      "keywords": ["puissances", "exposants", "règles de calcul", "puissances négatives", "simplification"]
+    },
+    {
+      "id": "FR-MATH-3E-02",
+      "domain": "Nombres — Racines carrées",
+      "label": "Calculer et simplifier des expressions avec des racines carrées, reconnaître les identités remarquables impliquant des radicaux, et utiliser la calculatrice à bon escient.",
+      "eqf_level": 2,
+      "keywords": ["racine carrée", "simplification de racines", "identités remarquables", "irrationnel"]
+    },
+    {
+      "id": "FR-MATH-3E-03",
+      "domain": "Nombres — Notation scientifique",
+      "label": "Écrire et comparer des nombres très grands ou très petits en notation scientifique, effectuer des opérations dans cette notation et l'interpréter dans des contextes scientifiques.",
+      "eqf_level": 2,
+      "keywords": ["notation scientifique", "ordre de grandeur", "puissance de 10", "comparaison", "mesure"]
+    },
+    {
+      "id": "FR-MATH-3E-04",
+      "domain": "Algèbre — Développement et factorisation",
+      "label": "Développer et factoriser des expressions algébriques en utilisant les identités remarquables (carré d'une somme, différence de carrés) et la mise en facteur commun.",
+      "eqf_level": 2,
+      "keywords": ["factorisation", "développement", "identités remarquables", "mise en facteur commun", "expressions algébriques"]
+    },
+    {
+      "id": "FR-MATH-3E-05",
+      "domain": "Algèbre — Systèmes d'équations",
+      "label": "Résoudre un système de deux équations linéaires à deux inconnues par substitution ou combinaison, et interpréter la solution dans un problème.",
+      "eqf_level": 2,
+      "keywords": ["système d'équations", "substitution", "combinaison linéaire", "deux inconnues", "résolution"]
+    },
+    {
+      "id": "FR-MATH-3E-06",
+      "domain": "Algèbre — Inéquations",
+      "label": "Résoudre des inéquations du premier degré à une inconnue, représenter l'ensemble des solutions sur une droite numérique et interpréter en contexte.",
+      "eqf_level": 2,
+      "keywords": ["inéquation", "premier degré", "ensemble solution", "droite numérique", "inégalité"]
+    },
+    {
+      "id": "FR-MATH-3E-07",
+      "domain": "Géométrie — Théorème de Thalès",
+      "label": "Appliquer le théorème de Thalès et sa réciproque pour calculer des longueurs et démontrer des parallélismes dans des configurations de droites et de triangles.",
+      "eqf_level": 2,
+      "keywords": ["Thalès", "proportionnalité", "triangles semblables", "réciproque", "parallélisme"]
+    },
+    {
+      "id": "FR-MATH-3E-08",
+      "domain": "Géométrie — Pythagore et trigonométrie",
+      "label": "Utiliser le théorème de Pythagore et les rapports trigonométriques (sinus, cosinus, tangente) pour calculer des longueurs et des angles dans le triangle rectangle.",
+      "eqf_level": 2,
+      "keywords": ["Pythagore", "trigonométrie", "sinus", "cosinus", "tangente", "triangle rectangle"]
+    },
+    {
+      "id": "FR-MATH-3E-09",
+      "domain": "Géométrie — Transformations",
+      "label": "Reconnaître et construire des transformations géométriques (symétrie centrale, symétrie axiale, rotation, translation) et identifier leurs propriétés de conservation.",
+      "eqf_level": 2,
+      "keywords": ["symétrie", "rotation", "translation", "homothétie", "isométrie", "transformations"]
+    },
+    {
+      "id": "FR-MATH-3E-10",
+      "domain": "Statistiques — Quartiles et diagrammes",
+      "label": "Calculer et interpréter les quartiles, la médiane et l'étendue d'une série statistique, construire et lire des diagrammes boîte, histogrammes et diagrammes circulaires.",
+      "eqf_level": 2,
+      "keywords": ["quartiles", "médiane", "boîte à moustaches", "histogramme", "statistiques descriptives"]
+    },
+    {
+      "id": "FR-MATH-3E-11",
+      "domain": "Statistiques — Probabilités simples",
+      "label": "Calculer des probabilités d'événements simples et composés dans le cadre d'une expérience aléatoire finie, en utilisant les tableaux ou arbres de probabilités.",
+      "eqf_level": 2,
+      "keywords": ["probabilité", "événement", "arbre de probabilités", "équiprobabilité", "fréquence"]
+    }
+  ]
+}

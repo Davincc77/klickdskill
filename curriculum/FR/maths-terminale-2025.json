@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "country": "FR",
+    "authority": "Eduscol",
+    "subject": "Mathématiques",
+    "subject_id": "MATH",
+    "level": "Terminale",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://eduscol.education.fr",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "FR-MATH-TERM-01",
+      "domain": "Analyse — Limites",
+      "label": "Calculer et interpréter les limites d'une fonction en un point ou en l'infini, en utilisant les formes indéterminées et les théorèmes de comparaison.",
+      "eqf_level": 3,
+      "keywords": ["limites", "asymptote", "formes indéterminées", "théorème des gendarmes", "continuité"]
+    },
+    {
+      "id": "FR-MATH-TERM-02",
+      "domain": "Analyse — Dérivation",
+      "label": "Maîtriser les techniques de dérivation (somme, produit, quotient, composée) et utiliser la dérivée pour étudier les variations et les extrema d'une fonction.",
+      "eqf_level": 3,
+      "keywords": ["dérivée", "tableau de variations", "extremum", "tangente", "dérivée composée"]
+    },
+    {
+      "id": "FR-MATH-TERM-03",
+      "domain": "Analyse — Intégration",
+      "label": "Calculer une primitive et une intégrale définie, et utiliser l'intégrale pour calculer une aire ou résoudre des problèmes de cumul.",
+      "eqf_level": 3,
+      "keywords": ["intégrale", "primitive", "théorème fondamental", "aire sous la courbe", "valeur moyenne"]
+    },
+    {
+      "id": "FR-MATH-TERM-04",
+      "domain": "Analyse — Équations différentielles",
+      "label": "Résoudre les équations différentielles du premier ordre à variables séparables et de la forme y' = ay + b, et modéliser des phénomènes de croissance ou de décroissance.",
+      "eqf_level": 3,
+      "keywords": ["équation différentielle", "solution particulière", "condition initiale", "croissance exponentielle", "modélisation"]
+    },
+    {
+      "id": "FR-MATH-TERM-05",
+      "domain": "Analyse — Fonctions logarithme et exponentielle",
+      "label": "Étudier les propriétés de la fonction exponentielle et du logarithme népérien, maîtriser leurs formules algébriques et leurs applications à la résolution d'équations.",
+      "eqf_level": 3,
+      "keywords": ["logarithme népérien", "exponentielle", "ln", "exp", "propriétés algébriques"]
+    },
+    {
+      "id": "FR-MATH-TERM-06",
+      "domain": "Algèbre — Suites",
+      "label": "Étudier les suites arithmétiques et géométriques, calculer leur terme général et leur somme, et modéliser des situations récursives.",
+      "eqf_level": 3,
+      "keywords": ["suite arithmétique", "suite géométrique", "terme général", "somme de termes", "récurrence"]
+    },
+    {
+      "id": "FR-MATH-TERM-07",
+      "domain": "Algèbre — Raisonnement par récurrence",
+      "label": "Construire et rédiger une démonstration par récurrence pour établir une propriété portant sur les entiers naturels.",
+      "eqf_level": 3,
+      "keywords": ["récurrence", "initialisation", "hérédité", "démonstration", "entiers naturels"]
+    },
+    {
+      "id": "FR-MATH-TERM-08",
+      "domain": "Algèbre — Nombres complexes",
+      "label": "Opérer sur les nombres complexes (forme algébrique et trigonométrique), calculer un module et un argument, et résoudre des équations dans ℂ.",
+      "eqf_level": 3,
+      "keywords": ["nombres complexes", "module", "argument", "forme trigonométrique", "conjugué", "racine carrée"]
+    },
+    {
+      "id": "FR-MATH-TERM-09",
+      "domain": "Probabilités — Loi normale",
+      "label": "Utiliser la loi normale pour calculer des probabilités, identifier et centrer une distribution, et interpréter les résultats dans un contexte statistique.",
+      "eqf_level": 3,
+      "keywords": ["loi normale", "espérance", "écart-type", "courbe de Gauss", "table de la loi normale"]
+    },
+    {
+      "id": "FR-MATH-TERM-10",
+      "domain": "Probabilités — Intervalles de fluctuation et tests",
+      "label": "Construire et interpréter un intervalle de fluctuation, mettre en œuvre un test d'hypothèse à un niveau de confiance donné, et conclure en langage courant.",
+      "eqf_level": 3,
+      "keywords": ["intervalle de fluctuation", "test d'hypothèse", "p-valeur", "niveau de confiance", "prise de décision statistique"]
+    },
+    {
+      "id": "FR-MATH-TERM-11",
+      "domain": "Géométrie — Produit scalaire en 3D",
+      "label": "Calculer un produit scalaire dans l'espace à partir de coordonnées ou d'angles, l'utiliser pour déterminer l'orthogonalité et les angles entre vecteurs.",
+      "eqf_level": 3,
+      "keywords": ["produit scalaire", "orthogonalité", "norme", "angle entre vecteurs", "espace 3D"]
+    },
+    {
+      "id": "FR-MATH-TERM-12",
+      "domain": "Géométrie — Droites et plans dans l'espace",
+      "label": "Déterminer les équations cartésiennes de plans, les représentations paramétriques de droites, et étudier leurs positions relatives dans l'espace.",
+      "eqf_level": 3,
+      "keywords": ["équation de plan", "vecteur normal", "droite paramétrique", "parallélisme", "intersection"]
+    }
+  ]
+}

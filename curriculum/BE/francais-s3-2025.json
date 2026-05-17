@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "country": "BE",
+    "authority": "FWB",
+    "subject": "Français",
+    "subject_id": "FR",
+    "level": "3e secondaire",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.enseignement.be/referentiels",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "BE-FR-S3-01",
+      "domain": "Lire — Compréhension de textes",
+      "label": "Lire et comprendre des textes de nature variée (narratifs, informatifs, argumentatifs, prescriptifs) en identifiant leur organisation, leur intention et leur point de vue.",
+      "eqf_level": 2,
+      "keywords": ["lecture compréhension", "textes variés", "intention d'auteur", "structure du texte", "inférence"]
+    },
+    {
+      "id": "BE-FR-S3-02",
+      "domain": "Lire — Analyse littéraire",
+      "label": "Analyser des extraits littéraires en identifiant les caractéristiques de genre, les procédés stylistiques (figures de style, registres) et en formulant une interprétation justifiée.",
+      "eqf_level": 2,
+      "keywords": ["analyse littéraire", "figures de style", "registres", "genre littéraire", "interprétation"]
+    },
+    {
+      "id": "BE-FR-S3-03",
+      "domain": "Écrire — Production de textes courants",
+      "label": "Rédiger des textes fonctionnels adaptés à différentes situations de communication (lettre formelle, courriel, compte-rendu, rapport) en respectant les normes de présentation et de langue.",
+      "eqf_level": 2,
+      "keywords": ["rédaction", "lettre formelle", "courriel", "textes fonctionnels", "communication écrite"]
+    },
+    {
+      "id": "BE-FR-S3-04",
+      "domain": "Écrire — Textes narratifs et argumentatifs",
+      "label": "Écrire un récit cohérent ou un texte d'opinion structuré en développant un point de vue, en organisant les idées et en utilisant des connecteurs logiques.",
+      "eqf_level": 2,
+      "keywords": ["récit", "argumentation", "connecteurs logiques", "point de vue", "cohérence textuelle"]
+    },
+    {
+      "id": "BE-FR-S3-05",
+      "domain": "Écouter — Compréhension à l'audition",
+      "label": "Comprendre des messages oraux (exposés, émissions, discussions) en en dégageant les informations essentielles, la structure et l'intention du locuteur.",
+      "eqf_level": 2,
+      "keywords": ["écoute active", "compréhension orale", "prise de notes", "informations essentielles", "messages oraux"]
+    },
+    {
+      "id": "BE-FR-S3-06",
+      "domain": "Parler — Expression orale",
+      "label": "Prendre la parole de manière structurée dans différentes situations (exposé, débat, discussion) en adaptant son registre de langue à l'interlocuteur et à la situation.",
+      "eqf_level": 2,
+      "keywords": ["expression orale", "exposé", "débat", "registre de langue", "prise de parole"]
+    },
+    {
+      "id": "BE-FR-S3-07",
+      "domain": "Langue — Grammaire et orthographe",
+      "label": "Appliquer les règles grammaticales et orthographiques (accords nominal et verbal, conjugaison des temps, ponctuation) dans les productions écrites et les réviser lors de la relecture.",
+      "eqf_level": 2,
+      "keywords": ["grammaire", "orthographe", "accord", "conjugaison", "ponctuation", "relecture"]
+    },
+    {
+      "id": "BE-FR-S3-08",
+      "domain": "Langue — Lexique et vocabulaire",
+      "label": "Enrichir son vocabulaire par la découverte de champs lexicaux, de familles de mots, d'étymologie et de sens figuré, et mobiliser ce vocabulaire à l'écrit comme à l'oral.",
+      "eqf_level": 2,
+      "keywords": ["lexique", "champs lexicaux", "familles de mots", "étymologie", "sens figuré", "vocabulaire"]
+    },
+    {
+      "id": "BE-FR-S3-09",
+      "domain": "Littérature — Œuvres et culture littéraire",
+      "label": "Découvrir des œuvres littéraires belges et francophones en établissant des liens entre les textes, les contextes culturels et les grandes périodes de la littérature francophone.",
+      "eqf_level": 2,
+      "keywords": ["littérature belge", "francophonie", "culture littéraire", "contexte culturel", "périodes littéraires"]
+    }
+  ]
+}

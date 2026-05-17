@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "country": "SN",
+    "authority": "MENA Sénégal",
+    "subject": "Mathématiques",
+    "subject_id": "MATH",
+    "level": "Terminale S",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.education.gouv.sn",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "SN-MATH-TES-01",
+      "domain": "Analyse — Limites et continuité",
+      "label": "Calculer les limites de fonctions en un point et en l'infini, lever les indéterminations et interpréter géométriquement (asymptotes)",
+      "eqf_level": 3,
+      "keywords": ["limite", "asymptote", "indétermination", "continuité", "prolongement par continuité"]
+    },
+    {
+      "id": "SN-MATH-TES-02",
+      "domain": "Analyse — Dérivation",
+      "label": "Calculer les dérivées d'ordre 1 et 2 de fonctions composées et utiliser ces dérivées pour étudier les variations, les extrema et la convexité",
+      "eqf_level": 3,
+      "keywords": ["dérivée", "dérivée seconde", "extremum", "convexité", "point d'inflexion"]
+    },
+    {
+      "id": "SN-MATH-TES-03",
+      "domain": "Analyse — Fonctions logarithme et exponentielle",
+      "label": "Étudier les propriétés et les variations des fonctions logarithme (ln) et exponentielle (exp), résoudre des équations et inéquations",
+      "eqf_level": 3,
+      "keywords": ["logarithme naturel", "exponentielle", "équation logarithmique", "croissance exponentielle"]
+    },
+    {
+      "id": "SN-MATH-TES-04",
+      "domain": "Analyse — Intégration",
+      "label": "Calculer des intégrales définies et indéfinies (primitives), appliquer les techniques d'intégration par parties et par substitution",
+      "eqf_level": 3,
+      "keywords": ["intégrale", "primitive", "intégration par parties", "calcul d'aire", "théorème fondamental"]
+    },
+    {
+      "id": "SN-MATH-TES-05",
+      "domain": "Algèbre — Suites numériques",
+      "label": "Étudier les suites arithmétiques et géométriques, les suites définies par récurrence ; déterminer leur limite et leur sens de variation",
+      "eqf_level": 3,
+      "keywords": ["suite arithmétique", "suite géométrique", "récurrence", "limite de suite", "convergence"]
+    },
+    {
+      "id": "SN-MATH-TES-06",
+      "domain": "Algèbre — Nombres complexes",
+      "label": "Utiliser les nombres complexes (forme algébrique et trigonométrique), effectuer des opérations et résoudre des équations dans C",
+      "eqf_level": 3,
+      "keywords": ["nombre complexe", "module", "argument", "forme trigonométrique", "conjugué", "équation"]
+    },
+    {
+      "id": "SN-MATH-TES-07",
+      "domain": "Algèbre — Espaces vectoriels",
+      "label": "Définir et manipuler des espaces vectoriels, des sous-espaces, des familles libres et génératrices, bases et dimension",
+      "eqf_level": 3,
+      "keywords": ["espace vectoriel", "sous-espace", "base", "dimension", "famille libre", "combinaison linéaire"]
+    },
+    {
+      "id": "SN-MATH-TES-08",
+      "domain": "Probabilités — Dénombrement",
+      "label": "Maîtriser les techniques de dénombrement : arrangements, permutations, combinaisons ; appliquer aux probabilités classiques",
+      "eqf_level": 3,
+      "keywords": ["dénombrement", "arrangement", "permutation", "combinaison", "factorielle"]
+    },
+    {
+      "id": "SN-MATH-TES-09",
+      "domain": "Probabilités — Variables aléatoires",
+      "label": "Étudier les variables aléatoires discrètes et continues : espérance, variance, écart-type ; reconnaître les lois usuelles (binomiale, Poisson, normale)",
+      "eqf_level": 3,
+      "keywords": ["variable aléatoire", "espérance", "variance", "loi binomiale", "loi normale", "loi de Poisson"]
+    },
+    {
+      "id": "SN-MATH-TES-10",
+      "domain": "Géométrie — Analytique",
+      "label": "Résoudre des problèmes de géométrie analytique dans le plan : équations de droites, de cercles, distance, barycentre",
+      "eqf_level": 3,
+      "keywords": ["géométrie analytique", "cercle", "barycentre", "distance", "équation cartésienne"]
+    },
+    {
+      "id": "SN-MATH-TES-11",
+      "domain": "Géométrie — Vectorielle",
+      "label": "Utiliser les vecteurs dans le plan et dans l'espace : produit scalaire, produit vectoriel, coplanarité, angle entre vecteurs",
+      "eqf_level": 3,
+      "keywords": ["vecteur", "produit scalaire", "produit vectoriel", "coplanarité", "angle"]
+    },
+    {
+      "id": "SN-MATH-TES-12",
+      "domain": "Géométrie — Transformations",
+      "label": "Étudier les transformations planes (homothétie, rotation, symétrie) et les représenter analytiquement",
+      "eqf_level": 3,
+      "keywords": ["homothétie", "rotation", "symétrie", "transformation", "isométrie"]
+    }
+  ]
+}

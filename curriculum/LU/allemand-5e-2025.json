@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "country": "LU",
+    "authority": "MENJE",
+    "subject": "Deutsch",
+    "subject_id": "DE",
+    "level": "5e",
+    "year": 2025,
+    "language": "de",
+    "source": "https://www.men.lu",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "LU-DE-5E-01",
+      "domain": "Leseverstehen",
+      "label": "Literarische Texte (Kurzgeschichten, Gedichte, Jugendbücher) lesen und verstehen, Hauptfiguren, Handlung und zentrale Themen erkennen",
+      "eqf_level": 2,
+      "keywords": ["Leseverstehen", "Kurzgeschichte", "Hauptfigur", "Handlung", "Literatur"]
+    },
+    {
+      "id": "LU-DE-5E-02",
+      "domain": "Leseverstehen",
+      "label": "Sach- und Informationstexte (Zeitungsartikel, Berichte) lesen und die wesentlichen Informationen, Struktur und Intention des Textes erkennen",
+      "eqf_level": 2,
+      "keywords": ["Sachtext", "Zeitungsartikel", "Information", "Textstruktur", "Lesestrategie"]
+    },
+    {
+      "id": "LU-DE-5E-03",
+      "domain": "Schreiben",
+      "label": "Einen zusammenhängenden und strukturierten Aufsatz (Erzählung, Beschreibung, Erörterung) nach einem Plan verfassen",
+      "eqf_level": 2,
+      "keywords": ["Aufsatz", "Erzählung", "Beschreibung", "Erörterung", "Textplanung"]
+    },
+    {
+      "id": "LU-DE-5E-04",
+      "domain": "Schreiben",
+      "label": "Formelle und informelle Texte verfassen (Brief, E-Mail, Stellungnahme) unter Beachtung der adressatengerechten Sprache und des Textformats",
+      "eqf_level": 2,
+      "keywords": ["Brief", "E-Mail", "Stellungnahme", "formeller Text", "Adressat"]
+    },
+    {
+      "id": "LU-DE-5E-05",
+      "domain": "Sprechen",
+      "label": "Einen mündlichen Vortrag zu einem kulturellen oder literarischen Thema strukturiert präsentieren und dabei auf Fragen eingehen",
+      "eqf_level": 2,
+      "keywords": ["mündlicher Vortrag", "Präsentation", "freies Sprechen", "Struktur", "Redezeit"]
+    },
+    {
+      "id": "LU-DE-5E-06",
+      "domain": "Sprechen",
+      "label": "An Gesprächen und Diskussionen teilnehmen, eigene Meinungen äußern, begründen und auf die Argumente anderer eingehen",
+      "eqf_level": 2,
+      "keywords": ["Diskussion", "Meinungsäußerung", "Argumentation", "Gesprächsführung", "Höflichkeit"]
+    },
+    {
+      "id": "LU-DE-5E-07",
+      "domain": "Hören",
+      "label": "Gesprochene Texte (Hörtexte, Dialoge, Berichte) verstehen und die wesentlichen Informationen entnehmen",
+      "eqf_level": 2,
+      "keywords": ["Hörverstehen", "Hörtext", "Dialog", "Hauptinformation", "Notizen"]
+    },
+    {
+      "id": "LU-DE-5E-08",
+      "domain": "Grammatik — Zeitformen",
+      "label": "Die wichtigsten Zeitformen korrekt anwenden: Präsens, Präteritum, Perfekt, Futur I sowie Plusquamperfekt in Erzählkontexten",
+      "eqf_level": 2,
+      "keywords": ["Präteritum", "Perfekt", "Plusquamperfekt", "Futur", "Zeitform"]
+    },
+    {
+      "id": "LU-DE-5E-09",
+      "domain": "Grammatik — Satzstrukturen",
+      "label": "Komplexe Satzstrukturen bilden und analysieren: Nebensätze (Relativ-, Kausal-, Temporal-, Konditionalsätze), Satzglieder und Wortstellung",
+      "eqf_level": 2,
+      "keywords": ["Nebensatz", "Relativsatz", "Satzglieder", "Wortstellung", "Konjunktion"]
+    },
+    {
+      "id": "LU-DE-5E-10",
+      "domain": "Literatur — Textsorten und Analyse",
+      "label": "Literarische Textsorten (Novelle, Ballade, Drama) unterscheiden und grundlegende Analysemethoden anwenden: Erzählperspektive, Figurencharakterisierung, Bildsprache",
+      "eqf_level": 2,
+      "keywords": ["Textsorte", "Ballade", "Erzählperspektive", "Figurencharakterisierung", "Analyse"]
+    }
+  ]
+}

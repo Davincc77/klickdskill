@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "country": "CA",
+    "authority": "MEQ - Ministère de l'Éducation du Québec",
+    "subject": "Mathématiques",
+    "subject_id": "MATH",
+    "level": "Secondaire 5",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.education.gouv.qc.ca",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "CA-MATH-S5-01",
+      "domain": "Arithmétique et algèbre — Manipulation algébrique",
+      "label": "Effectuer des opérations sur les expressions algébriques : factorisation, développement, simplification de fractions rationnelles et de radicaux",
+      "eqf_level": 3,
+      "keywords": ["factorisation", "développement", "fraction rationnelle", "radical", "expression algébrique"]
+    },
+    {
+      "id": "CA-MATH-S5-02",
+      "domain": "Arithmétique et algèbre — Fonctions polynomiales",
+      "label": "Étudier les fonctions polynomiales de degré 1 et 2 : propriétés, représentation graphique, équations et inéquations associées",
+      "eqf_level": 3,
+      "keywords": ["fonction polynomiale", "parabole", "racine", "discriminant", "équation du second degré"]
+    },
+    {
+      "id": "CA-MATH-S5-03",
+      "domain": "Arithmétique et algèbre — Fonctions avancées",
+      "label": "Analyser des fonctions exponentielles, logarithmiques et trigonométriques : domaine, image, asymptotes, transformations",
+      "eqf_level": 3,
+      "keywords": ["fonction exponentielle", "fonction logarithmique", "trigonométrie", "transformation", "asymptote"]
+    },
+    {
+      "id": "CA-MATH-S5-04",
+      "domain": "Arithmétique et algèbre — Systèmes d'équations",
+      "label": "Résoudre des systèmes d'équations à deux inconnues (méthode de substitution, d'élimination, graphique) et interpréter les solutions",
+      "eqf_level": 3,
+      "keywords": ["système d'équations", "substitution", "élimination", "solution", "droites parallèles"]
+    },
+    {
+      "id": "CA-MATH-S5-05",
+      "domain": "Géométrie — Analytique",
+      "label": "Résoudre des problèmes de géométrie analytique : droites, distances, points de partage, équations de coniques (cercle, parabole)",
+      "eqf_level": 3,
+      "keywords": ["géométrie analytique", "conique", "cercle", "parabole", "distance", "point de partage"]
+    },
+    {
+      "id": "CA-MATH-S5-06",
+      "domain": "Géométrie — Vecteurs",
+      "label": "Utiliser les vecteurs dans le plan : opérations, composantes, norme, angle et produit scalaire pour résoudre des problèmes géométriques",
+      "eqf_level": 3,
+      "keywords": ["vecteur", "composante", "norme", "produit scalaire", "angle entre vecteurs"]
+    },
+    {
+      "id": "CA-MATH-S5-07",
+      "domain": "Probabilités et statistiques — Distributions",
+      "label": "Reconnaître et utiliser les lois de probabilité usuelles (binomiale, normale) pour calculer des probabilités et prendre des décisions",
+      "eqf_level": 3,
+      "keywords": ["loi binomiale", "loi normale", "distribution", "probabilité", "table statistique"]
+    },
+    {
+      "id": "CA-MATH-S5-08",
+      "domain": "Probabilités et statistiques — Inférence",
+      "label": "Construire et interpréter des intervalles de confiance pour une proportion ou une moyenne à partir d'un échantillon",
+      "eqf_level": 3,
+      "keywords": ["intervalle de confiance", "échantillon", "proportion", "moyenne", "marge d'erreur"]
+    },
+    {
+      "id": "CA-MATH-S5-09",
+      "domain": "Probabilités et statistiques — Corrélation",
+      "label": "Analyser la relation entre deux variables statistiques : nuage de points, droite de régression, coefficient de corrélation",
+      "eqf_level": 3,
+      "keywords": ["corrélation", "régression linéaire", "nuage de points", "coefficient de corrélation", "prévision"]
+    },
+    {
+      "id": "CA-MATH-S5-10",
+      "domain": "Mathématiques financières — Intérêts composés",
+      "label": "Calculer des intérêts composés et capitaliser/actualiser des montants en utilisant la formule de capitalisation M = C(1+t)^n",
+      "eqf_level": 3,
+      "keywords": ["intérêt composé", "capitalisation", "actualisation", "taux", "période"]
+    },
+    {
+      "id": "CA-MATH-S5-11",
+      "domain": "Mathématiques financières — Annuités",
+      "label": "Calculer la valeur actuelle et la valeur future d'une suite d'annuités constantes (prêt hypothécaire, épargne périodique)",
+      "eqf_level": 3,
+      "keywords": ["annuité", "valeur actuelle", "valeur future", "amortissement", "prêt"]
+    },
+    {
+      "id": "CA-MATH-S5-12",
+      "domain": "Résolution de problèmes",
+      "label": "Mobiliser les connaissances mathématiques pour résoudre des situations-problèmes contextualisées en faisant preuve de raisonnement et de communication mathématique",
+      "eqf_level": 3,
+      "keywords": ["résolution de problèmes", "modélisation", "raisonnement", "communication mathématique", "démarche"]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "country": "FR",
+    "authority": "Eduscol",
+    "subject": "Français",
+    "subject_id": "FR",
+    "level": "Terminale",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://eduscol.education.fr",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "FR-FR-TERM-01",
+      "domain": "Littérature — Œuvres au programme",
+      "label": "Lire intégralement les œuvres au programme (roman, poésie, théâtre, essai) et en dégager les enjeux littéraires, historiques et esthétiques en situant l'auteur dans son contexte.",
+      "eqf_level": 3,
+      "keywords": ["œuvres au programme", "contexte littéraire", "mouvement littéraire", "enjeux esthétiques", "lecture intégrale"]
+    },
+    {
+      "id": "FR-FR-TERM-02",
+      "domain": "Littérature — Analyse et commentaire composé",
+      "label": "Rédiger un commentaire littéraire structuré d'un extrait de texte en identifiant les procédés stylistiques, les registres et en dégageant une interprétation argumentée.",
+      "eqf_level": 3,
+      "keywords": ["commentaire composé", "analyse littéraire", "procédés stylistiques", "registres", "interprétation"]
+    },
+    {
+      "id": "FR-FR-TERM-03",
+      "domain": "Expression écrite — Dissertation",
+      "label": "Rédiger une dissertation littéraire sur une question relative à une œuvre ou un groupement de textes, en développant un plan dialectique ou thématique avec des arguments illustrés.",
+      "eqf_level": 3,
+      "keywords": ["dissertation", "plan dialectique", "argumentation", "thèse", "antithèse", "synthèse"]
+    },
+    {
+      "id": "FR-FR-TERM-04",
+      "domain": "Expression écrite — Argumentation",
+      "label": "Identifier, analyser et produire des textes argumentatifs en mobilisant différentes stratégies (convaincre, persuader, délibérer) et en distinguant fait, opinion et jugement de valeur.",
+      "eqf_level": 3,
+      "keywords": ["argumentation", "convaincre", "persuader", "rhétorique", "fait vs opinion"]
+    },
+    {
+      "id": "FR-FR-TERM-05",
+      "domain": "Expression orale — Grand oral",
+      "label": "Préparer et présenter une question en lien avec les spécialités choisies, en structurant un exposé oral de 5 minutes et en conduisant un entretien avec le jury en démontrant sa maîtrise du sujet.",
+      "eqf_level": 3,
+      "keywords": ["grand oral", "exposé oral", "entretien", "posture", "prise de parole", "argumentation orale"]
+    },
+    {
+      "id": "FR-FR-TERM-06",
+      "domain": "Langue — Maîtrise du lexique et de la syntaxe",
+      "label": "Enrichir et mobiliser un vocabulaire précis et varié adapté aux registres de langue, maîtriser les constructions syntaxiques complexes (propositions subordonnées, participes) en production écrite.",
+      "eqf_level": 3,
+      "keywords": ["lexique", "syntaxe", "registres de langue", "vocabulaire précis", "propositions subordonnées"]
+    },
+    {
+      "id": "FR-FR-TERM-07",
+      "domain": "Lecture — Textes non littéraires et images",
+      "label": "Analyser des documents composites (presse, publicité, iconographie) en croisant différents codes sémiotiques et en adoptant une posture critique face aux médias.",
+      "eqf_level": 3,
+      "keywords": ["documents composites", "médias", "analyse d'image", "sémiologie", "lecture critique"]
+    },
+    {
+      "id": "FR-FR-TERM-08",
+      "domain": "Culture littéraire — Intertextualité et histoire des idées",
+      "label": "Mettre en relation des œuvres entre elles (intertextualité, influence, filiation), inscrire les textes dans une histoire des idées et des sensibilités littéraires du XVIe au XXIe siècle.",
+      "eqf_level": 3,
+      "keywords": ["intertextualité", "histoire littéraire", "filiation", "mouvements littéraires", "humanisme", "classicisme", "surréalisme"]
+    },
+    {
+      "id": "FR-FR-TERM-09",
+      "domain": "Expression écrite — Contraction de texte",
+      "label": "Réduire un texte argumentatif ou documentaire à un quart de son volume initial en restituant fidèlement les idées essentielles, la progression logique et le point de vue de l'auteur.",
+      "eqf_level": 3,
+      "keywords": ["contraction de texte", "résumé", "reformulation", "fidélité au texte", "synthèse"]
+    }
+  ]
+}

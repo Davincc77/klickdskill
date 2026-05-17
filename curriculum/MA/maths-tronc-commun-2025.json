@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "country": "MA",
+    "authority": "MEN Maroc",
+    "subject": "Mathématiques",
+    "subject_id": "MATH",
+    "level": "Tronc commun (1ère année lycée)",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.men.gov.ma",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "MA-MATH-TC-01",
+      "domain": "Logique et raisonnement",
+      "label": "Identifier et manipuler des propositions logiques (vraies ou fausses), utiliser les connecteurs logiques (et, ou, non, implication, équivalence)",
+      "eqf_level": 3,
+      "keywords": ["proposition", "connecteur logique", "valeur de vérité", "implication", "équivalence"]
+    },
+    {
+      "id": "MA-MATH-TC-02",
+      "domain": "Logique et raisonnement",
+      "label": "Utiliser les quantificateurs universel (∀) et existentiel (∃) pour formuler des énoncés mathématiques et leurs négations",
+      "eqf_level": 3,
+      "keywords": ["quantificateur universel", "quantificateur existentiel", "négation", "énoncé"]
+    },
+    {
+      "id": "MA-MATH-TC-03",
+      "domain": "Logique et raisonnement",
+      "label": "Conduire des raisonnements mathématiques : démonstration directe, par contraposée, par l'absurde et par récurrence",
+      "eqf_level": 3,
+      "keywords": ["démonstration", "raisonnement direct", "contraposée", "absurde", "récurrence"]
+    },
+    {
+      "id": "MA-MATH-TC-04",
+      "domain": "Ensembles de nombres",
+      "label": "Connaître et utiliser les ensembles N, Z, Q et R, leurs propriétés algébriques et les inclusions entre eux",
+      "eqf_level": 3,
+      "keywords": ["entiers naturels", "entiers relatifs", "rationnels", "réels", "inclusion"]
+    },
+    {
+      "id": "MA-MATH-TC-05",
+      "domain": "Ensembles de nombres",
+      "label": "Maîtriser les opérations dans R : valeur absolue, partie entière, intervalles, encadrements et inégalités",
+      "eqf_level": 3,
+      "keywords": ["valeur absolue", "partie entière", "intervalles", "inégalités", "encadrement"]
+    },
+    {
+      "id": "MA-MATH-TC-06",
+      "domain": "Fonctions numériques",
+      "label": "Étudier les généralités sur les fonctions numériques : domaine de définition, parité, monotonie, représentation graphique",
+      "eqf_level": 3,
+      "keywords": ["domaine", "parité", "monotonie", "représentation graphique", "fonction"]
+    },
+    {
+      "id": "MA-MATH-TC-07",
+      "domain": "Fonctions numériques",
+      "label": "Calculer des limites de fonctions (limites finies et infinies, en un point et en l'infini) et appliquer les théorèmes sur les limites",
+      "eqf_level": 3,
+      "keywords": ["limite", "limite infinie", "théorèmes de limite", "asymptote", "indétermination"]
+    },
+    {
+      "id": "MA-MATH-TC-08",
+      "domain": "Fonctions numériques",
+      "label": "Calculer la dérivée d'une fonction (règles de dérivation, dérivée composée) et l'utiliser pour étudier les variations",
+      "eqf_level": 3,
+      "keywords": ["dérivée", "règle de dérivation", "tableau de variation", "extremum", "tangente"]
+    },
+    {
+      "id": "MA-MATH-TC-09",
+      "domain": "Trigonométrie",
+      "label": "Manipuler les angles orientés et les mesures en radians ; connaître les valeurs remarquables des fonctions sin, cos, tan",
+      "eqf_level": 3,
+      "keywords": ["angle orienté", "radian", "cosinus", "sinus", "tangente", "cercle trigonométrique"]
+    },
+    {
+      "id": "MA-MATH-TC-10",
+      "domain": "Trigonométrie",
+      "label": "Appliquer et démontrer les formules trigonométriques : addition, duplication, linéarisation",
+      "eqf_level": 3,
+      "keywords": ["formule d'addition", "formule de duplication", "linéarisation", "identités trigonométriques"]
+    },
+    {
+      "id": "MA-MATH-TC-11",
+      "domain": "Géométrie dans le plan",
+      "label": "Utiliser les vecteurs du plan : opérations vectorielles, colinéarité, base et repère cartésien",
+      "eqf_level": 3,
+      "keywords": ["vecteur", "colinéarité", "repère", "coordonnées", "translation"]
+    },
+    {
+      "id": "MA-MATH-TC-12",
+      "domain": "Géométrie dans le plan",
+      "label": "Étudier les droites dans le plan : équations cartésiennes et paramétriques, positions relatives, distance d'un point à une droite",
+      "eqf_level": 3,
+      "keywords": ["équation de droite", "parallélisme", "perpendicularité", "distance", "intersection"]
+    }
+  ]
+}

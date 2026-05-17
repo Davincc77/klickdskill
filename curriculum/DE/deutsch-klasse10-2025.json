@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "country": "DE",
+    "authority": "KMK",
+    "subject": "Deutsch",
+    "subject_id": "DE",
+    "level": "Klasse 10",
+    "year": 2025,
+    "language": "de",
+    "source": "https://www.kmk.org/themen/schule/bildungsstandards.html",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "DE-DE-K10-01",
+      "domain": "Sprechen und Zuhören — Mündliche Kommunikation",
+      "label": "Adressatengerecht und situationsangemessen sprechen: Sachverhalte strukturiert vortragen, an Diskussionen konstruktiv teilnehmen und eigene Standpunkte argumentativ vertreten.",
+      "eqf_level": 2,
+      "keywords": ["mündliche Kommunikation", "Vortrag", "Diskussion", "Argumentation", "Adressatenbezug"]
+    },
+    {
+      "id": "DE-DE-K10-02",
+      "domain": "Sprechen und Zuhören — Zuhören und Verstehen",
+      "label": "Längeren Redebeiträgen aufmerksam folgen, wesentliche Informationen und Argumentationsstrukturen erfassen, hinterfragen und für eigene Beiträge nutzen.",
+      "eqf_level": 2,
+      "keywords": ["aktives Zuhören", "Informationsentnahme", "Argumentation", "kritisches Hören", "Gesprächsführung"]
+    },
+    {
+      "id": "DE-DE-K10-03",
+      "domain": "Lesen — Sach- und Informationstexte",
+      "label": "Sach-, Informations- und Medientexte sinnentnehmend lesen, die Textstruktur analysieren, die Intention des Verfassers herausarbeiten und kritisch Stellung nehmen.",
+      "eqf_level": 2,
+      "keywords": ["Lesecompetenz", "Sachtexte", "Textanalyse", "Intention", "kritische Lektüre"]
+    },
+    {
+      "id": "DE-DE-K10-04",
+      "domain": "Lesen — Literarische Texte",
+      "label": "Erzähltexte, Gedichte und dramatische Texte analysieren und interpretieren: Erzählperspektive, sprachliche Bilder, Strukturmerkmale und historisch-kulturellen Kontext berücksichtigen.",
+      "eqf_level": 2,
+      "keywords": ["Literaturanalyse", "Erzählperspektive", "sprachliche Bilder", "Interpretation", "Gattungen"]
+    },
+    {
+      "id": "DE-DE-K10-05",
+      "domain": "Schreiben — Texte verfassen",
+      "label": "Verschiedene Textsorten (Erörterung, Analyse, Bewerbungsschreiben, Protokoll) situations- und adressatengerecht verfassen, einen Schreibplan erstellen und den Text überarbeiten.",
+      "eqf_level": 2,
+      "keywords": ["Erörterung", "Textanalyse", "Schreiben", "Textsorte", "Überarbeitung", "Schreibplan"]
+    },
+    {
+      "id": "DE-DE-K10-06",
+      "domain": "Schreiben — Argumentieren und Erörtern",
+      "label": "Einen argumentativen Text (Erörterung) zu einem gesellschaftlichen oder literarischen Thema strukturiert verfassen: These, Argumente mit Belegen, Gegenargumente und Schluss.",
+      "eqf_level": 2,
+      "keywords": ["Erörterung", "These", "Argument", "Beleg", "Gegenargument", "Schlussfolgerung"]
+    },
+    {
+      "id": "DE-DE-K10-07",
+      "domain": "Sprachbewusstsein — Grammatik",
+      "label": "Grammatische Strukturen (Satzgefüge, Satzmodi, Tempus- und Modussystem) sicher anwenden, erkennen und für die Analyse von Texten nutzen.",
+      "eqf_level": 2,
+      "keywords": ["Grammatik", "Satzgefüge", "Tempus", "Modus", "Satzmodi", "Syntax"]
+    },
+    {
+      "id": "DE-DE-K10-08",
+      "domain": "Sprachbewusstsein — Rechtschreibung und Zeichensetzung",
+      "label": "Rechtschreib- und Zeichensetzungsregeln sicher beherrschen und beim Schreiben sowie bei der Überarbeitung eigener und fremder Texte gezielt einsetzen.",
+      "eqf_level": 2,
+      "keywords": ["Rechtschreibung", "Zeichensetzung", "Kommaregeln", "Groß-Kleinschreibung", "Getrenntschreibung"]
+    },
+    {
+      "id": "DE-DE-K10-09",
+      "domain": "Literatur — Textgattungen und Literaturgeschichte",
+      "label": "Merkmale zentraler literarischer Gattungen (Epik, Lyrik, Dramatik) kennen und anwenden; ausgewählte Werke der deutschsprachigen Literatur in ihren literaturhistorischen Kontext einordnen.",
+      "eqf_level": 2,
+      "keywords": ["Epik", "Lyrik", "Dramatik", "Literaturgeschichte", "deutschsprachige Literatur", "Gattungsmerkmale"]
+    },
+    {
+      "id": "DE-DE-K10-10",
+      "domain": "Medien — Medien- und Informationskompetenz",
+      "label": "Informationen aus analogen und digitalen Quellen gezielt recherchieren, kritisch bewerten, Quellen korrekt angeben und Medienprodukte (Präsentation, Blog, Podcast) selbst erstellen.",
+      "eqf_level": 2,
+      "keywords": ["Medienkompetenz", "Informationsrecherche", "Quellenangabe", "digitale Medien", "Medienkritik"]
+    }
+  ]
+}

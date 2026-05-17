@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "country": "BE",
+    "authority": "FWB",
+    "subject": "Mathématiques",
+    "subject_id": "MATH",
+    "level": "3e secondaire",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.enseignement.be/referentiels",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "BE-MATH-S3-01",
+      "domain": "Nombres et opérations — Fractions et décimaux",
+      "label": "Effectuer des opérations (addition, soustraction, multiplication, division) sur les fractions et les nombres décimaux, simplifier et comparer des fractions, passer d'une écriture à l'autre.",
+      "eqf_level": 2,
+      "keywords": ["fractions", "décimaux", "simplification", "opérations", "numération"]
+    },
+    {
+      "id": "BE-MATH-S3-02",
+      "domain": "Nombres et opérations — Proportionnalité",
+      "label": "Identifier et utiliser des situations de proportionnalité directe et inverse, appliquer la règle de trois, les pourcentages et les taux dans des contextes réels variés.",
+      "eqf_level": 2,
+      "keywords": ["proportionnalité", "règle de trois", "pourcentages", "taux", "inversement proportionnel"]
+    },
+    {
+      "id": "BE-MATH-S3-03",
+      "domain": "Nombres et opérations — Nombres relatifs",
+      "label": "Maîtriser les opérations sur les entiers relatifs et les nombres rationnels, respecter les priorités opératoires et travailler avec des expressions numériques mixtes.",
+      "eqf_level": 2,
+      "keywords": ["entiers relatifs", "nombres rationnels", "priorité opératoire", "valeur absolue", "calcul numérique"]
+    },
+    {
+      "id": "BE-MATH-S3-04",
+      "domain": "Algèbre — Équations du 1er degré",
+      "label": "Résoudre des équations du premier degré à une inconnue en appliquant les règles de transposition, et vérifier la solution dans l'équation de départ.",
+      "eqf_level": 2,
+      "keywords": ["équation", "premier degré", "transposition", "inconnue", "vérification"]
+    },
+    {
+      "id": "BE-MATH-S3-05",
+      "domain": "Algèbre — Équations du 2e degré",
+      "label": "Résoudre des équations du second degré par factorisation ou par la formule du discriminant, identifier le nombre de solutions réelles et les interpréter graphiquement.",
+      "eqf_level": 2,
+      "keywords": ["équation du 2e degré", "discriminant", "factorisation", "racines", "parabole"]
+    },
+    {
+      "id": "BE-MATH-S3-06",
+      "domain": "Algèbre — Fonctions",
+      "label": "Reconnaître, représenter et interpréter des fonctions linéaires, affines et quadratiques, lire leurs propriétés (pente, ordonnée à l'origine, extremum) sur un graphique et dans un tableau.",
+      "eqf_level": 2,
+      "keywords": ["fonction affine", "fonction linéaire", "parabole", "pente", "graphique", "tableau de valeurs"]
+    },
+    {
+      "id": "BE-MATH-S3-07",
+      "domain": "Géométrie — Théorème de Pythagore",
+      "label": "Appliquer le théorème de Pythagore et sa réciproque pour calculer des longueurs et reconnaître des triangles rectangles dans des figures planes et des solides.",
+      "eqf_level": 2,
+      "keywords": ["Pythagore", "hypoténuse", "triangle rectangle", "réciproque", "distance"]
+    },
+    {
+      "id": "BE-MATH-S3-08",
+      "domain": "Géométrie — Théorème de Thalès",
+      "label": "Utiliser le théorème de Thalès pour calculer des longueurs inconnues dans des configurations de droites parallèles coupées par des sécantes.",
+      "eqf_level": 2,
+      "keywords": ["Thalès", "droites parallèles", "rapports de longueurs", "sécantes", "proportionnalité"]
+    },
+    {
+      "id": "BE-MATH-S3-09",
+      "domain": "Géométrie — Aires et volumes",
+      "label": "Calculer les aires et les périmètres de figures planes (triangles, quadrilatères, cercles) ainsi que les volumes et les surfaces de solides (prisme, cylindre, pyramide, sphère).",
+      "eqf_level": 2,
+      "keywords": ["aire", "volume", "périmètre", "prisme", "cylindre", "pyramide", "sphère"]
+    },
+    {
+      "id": "BE-MATH-S3-10",
+      "domain": "Statistiques et probabilités — Statistiques descriptives",
+      "label": "Organiser, représenter et interpréter des données statistiques (moyenne, médiane, mode, étendue), lire et construire des tableaux de fréquences, des diagrammes en bâtons et des histogrammes.",
+      "eqf_level": 2,
+      "keywords": ["moyenne", "médiane", "mode", "fréquence", "diagramme", "histogramme", "statistiques"]
+    },
+    {
+      "id": "BE-MATH-S3-11",
+      "domain": "Statistiques et probabilités — Probabilités",
+      "label": "Calculer la probabilité d'événements simples et d'événements composés (intersection, réunion, complémentaire) en utilisant un espace-échantillon fini ou un arbre de probabilités.",
+      "eqf_level": 2,
+      "keywords": ["probabilité", "événement complémentaire", "espace-échantillon", "arbre", "combinatoire"]
+    }
+  ]
+}

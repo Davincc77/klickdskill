@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "country": "MA",
+    "authority": "MEN Maroc",
+    "subject": "Français",
+    "subject_id": "FR",
+    "level": "Tronc commun (1ère année lycée)",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.men.gov.ma",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "MA-FR-TC-01",
+      "domain": "Compréhension de texte",
+      "label": "Lire et comprendre des textes variés (narratif, descriptif, explicatif, argumentatif) en identifiant la thèse, les arguments et les exemples",
+      "eqf_level": 3,
+      "keywords": ["lecture", "compréhension", "types de texte", "thèse", "argument"]
+    },
+    {
+      "id": "MA-FR-TC-02",
+      "domain": "Compréhension de texte",
+      "label": "Analyser les procédés stylistiques et rhétoriques d'un texte (figures de style, tonalité, point de vue narratif)",
+      "eqf_level": 3,
+      "keywords": ["figure de style", "tonalité", "point de vue", "stylistique", "rhétorique"]
+    },
+    {
+      "id": "MA-FR-TC-03",
+      "domain": "Production écrite",
+      "label": "Rédiger un texte argumentatif structuré (introduction, développement, conclusion) en défendant et réfutant des thèses",
+      "eqf_level": 3,
+      "keywords": ["argumentation", "rédaction", "plan dialectique", "introduction", "conclusion"]
+    },
+    {
+      "id": "MA-FR-TC-04",
+      "domain": "Production écrite",
+      "label": "Produire des textes narratifs et descriptifs en respectant les règles de cohérence, de cohésion et de ponctuation",
+      "eqf_level": 3,
+      "keywords": ["narration", "description", "cohérence textuelle", "connecteurs", "ponctuation"]
+    },
+    {
+      "id": "MA-FR-TC-05",
+      "domain": "Grammaire française",
+      "label": "Maîtriser les temps verbaux (indicatif, subjonctif, conditionnel) et leurs emplois dans le récit et le discours",
+      "eqf_level": 3,
+      "keywords": ["conjugaison", "temps verbaux", "indicatif", "subjonctif", "conditionnel"]
+    },
+    {
+      "id": "MA-FR-TC-06",
+      "domain": "Grammaire française",
+      "label": "Analyser et construire des phrases complexes : subordination relative, complétive, circonstancielle et coordination",
+      "eqf_level": 3,
+      "keywords": ["phrase complexe", "subordination", "proposition relative", "syntaxe", "coordination"]
+    },
+    {
+      "id": "MA-FR-TC-07",
+      "domain": "Littérature francophone",
+      "label": "Étudier des œuvres littéraires francophones (roman, poésie, théâtre) en situant l'auteur et l'œuvre dans leur contexte historique et culturel",
+      "eqf_level": 3,
+      "keywords": ["littérature francophone", "roman", "poésie", "théâtre", "contexte historique"]
+    },
+    {
+      "id": "MA-FR-TC-08",
+      "domain": "Littérature francophone",
+      "label": "Rédiger un commentaire de texte littéraire en dégageant le sens, les thèmes et les procédés d'écriture",
+      "eqf_level": 3,
+      "keywords": ["commentaire de texte", "thème", "procédé d'écriture", "interprétation", "analyse littéraire"]
+    },
+    {
+      "id": "MA-FR-TC-09",
+      "domain": "Argumentation",
+      "label": "Identifier et utiliser les différents types d'arguments (logique, d'autorité, analogie, exemple) et les réfutations dans un débat ou un texte",
+      "eqf_level": 3,
+      "keywords": ["type d'argument", "argument d'autorité", "analogie", "réfutation", "débat"]
+    },
+    {
+      "id": "MA-FR-TC-10",
+      "domain": "Expression orale",
+      "label": "S'exprimer oralement de façon claire et structurée : exposé, prise de parole, lecture expressive",
+      "eqf_level": 3,
+      "keywords": ["expression orale", "exposé", "prise de parole", "lecture expressive", "communication"]
+    }
+  ]
+}

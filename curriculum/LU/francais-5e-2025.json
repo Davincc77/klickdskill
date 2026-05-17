@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "country": "LU",
+    "authority": "MENJE",
+    "subject": "Français",
+    "subject_id": "FR",
+    "level": "5e",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.men.lu",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "LU-FR-5E-01",
+      "domain": "Compréhension de textes littéraires",
+      "label": "Lire et comprendre des textes littéraires (conte, nouvelle, roman, poème) en identifiant personnages, cadre, narration et thèmes principaux",
+      "eqf_level": 2,
+      "keywords": ["texte littéraire", "personnage", "narrateur", "thème", "roman jeunesse"]
+    },
+    {
+      "id": "LU-FR-5E-02",
+      "domain": "Compréhension de textes non-littéraires",
+      "label": "Lire et comprendre des textes non-littéraires (articles, documentaires, textes informatifs) en dégageant les informations essentielles et la structure du texte",
+      "eqf_level": 2,
+      "keywords": ["texte informatif", "article", "documentaire", "idée principale", "structure textuelle"]
+    },
+    {
+      "id": "LU-FR-5E-03",
+      "domain": "Production écrite — Narration",
+      "label": "Rédiger un texte narratif structuré (introduction, nœud, dénouement) en respectant la chronologie, en utilisant les temps du récit et en développant les personnages",
+      "eqf_level": 2,
+      "keywords": ["narration", "récit", "temps du passé", "imparfait", "passé composé", "personnage"]
+    },
+    {
+      "id": "LU-FR-5E-04",
+      "domain": "Production écrite — Description",
+      "label": "Rédiger des passages descriptifs en utilisant un vocabulaire riche (adjectifs, comparaisons, métaphores simples) pour créer une image précise",
+      "eqf_level": 2,
+      "keywords": ["description", "adjectif", "comparaison", "champ lexical", "vocabulaire sensoriel"]
+    },
+    {
+      "id": "LU-FR-5E-05",
+      "domain": "Production écrite — Argumentation",
+      "label": "Rédiger un texte argumentatif simple en formulant une opinion, en apportant des arguments et des exemples, et en concluant",
+      "eqf_level": 2,
+      "keywords": ["argumentation", "opinion", "argument", "exemple", "connecteurs logiques"]
+    },
+    {
+      "id": "LU-FR-5E-06",
+      "domain": "Grammaire — Conjugaison",
+      "label": "Conjuguer correctement les verbes aux temps principaux de l'indicatif (présent, imparfait, passé composé, futur) et au subjonctif présent",
+      "eqf_level": 2,
+      "keywords": ["conjugaison", "indicatif", "subjonctif présent", "auxiliaire", "verbes irréguliers"]
+    },
+    {
+      "id": "LU-FR-5E-07",
+      "domain": "Grammaire — Syntaxe",
+      "label": "Construire et analyser des phrases complexes (coordination, juxtaposition, subordination) en identifiant les fonctions grammaticales principales",
+      "eqf_level": 2,
+      "keywords": ["phrase complexe", "coordination", "subordination", "sujet", "complément", "proposition"]
+    },
+    {
+      "id": "LU-FR-5E-08",
+      "domain": "Grammaire — Orthographe",
+      "label": "Appliquer les règles d'orthographe grammaticale (accords sujet-verbe, accords du groupe nominal, accord du participe passé avec être)",
+      "eqf_level": 2,
+      "keywords": ["orthographe", "accord sujet-verbe", "groupe nominal", "participe passé", "genre et nombre"]
+    },
+    {
+      "id": "LU-FR-5E-09",
+      "domain": "Expression orale — Exposé",
+      "label": "Préparer et présenter un exposé oral structuré (introduction, développement, conclusion) sur un sujet culturel ou littéraire, en utilisant des supports visuels",
+      "eqf_level": 2,
+      "keywords": ["exposé oral", "prise de parole", "support visuel", "structure", "gestion du temps"]
+    },
+    {
+      "id": "LU-FR-5E-10",
+      "domain": "Expression orale — Débat",
+      "label": "Participer à un débat en classe en écoutant les autres, en reformulant les arguments adverses et en défendant son point de vue avec des arguments étayés",
+      "eqf_level": 2,
+      "keywords": ["débat", "écoute active", "reformulation", "argumentation orale", "prise de position"]
+    }
+  ]
+}

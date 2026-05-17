@@ -1,167 +1,158 @@
-# klickd-proof-protocol
+# Klickd Portable Memory Protocol
 
-**Privacy-first AI tutor personalization — zero server persistence.**
-
-> *"The AI forgets everything. You don't."*
-
-Published by [Klickd](https://klickd.app) — Luxembourg — May 16, 2026.  
-Released to the public domain under **CC0 1.0 Universal**.
-
----
-
-## What is this?
-
-This repository describes an open protocol for personalizing AI tutors (or any conversational AI assistant) **without storing any user data on a server**.
-
-Instead of saving session history in a database, the AI generates a small encrypted file — a `.klickd` file — directly on the user's device at the end of each session. Next time, the user loads that file and the AI picks up exactly where they left off: what the user has mastered, where they struggle, their preferred learning style.
-
-**The server never sees the profile. It lives in the user's pocket.**
+> **The AI memory that belongs to you. Not to us.**
+> 
+> An open standard for portable, encrypted, client-side AI memory — aligned with official competency frameworks from 7 countries and 4 European reference frameworks.
+>
+> **Made in Luxembourg. CC0 — free for everyone.**
 
 ---
 
-## The problem with current AI personalization
+## The idea
 
-Every major AI assistant today (ChatGPT memory, Khanmigo, Duolingo Max, Google Gemini) stores your conversation history and learning profile on their servers to deliver personalization. This creates:
+Every AI assistant forgets you when the session ends.
 
-- **Privacy risks** — your learning data, mistakes, and struggles live in a corporate database
-- **Regulatory complexity** — especially for minors (GDPR Article 8, COPPA)
-- **Vendor lock-in** — your profile is trapped in one platform
-- **Infrastructure cost** — scales linearly with user count
+Some apps remember you — but they keep your data on their servers. You have no control.
+
+Klickd flips this: the AI learns who you are, tracks your progress against official curricula, then **forgets everything**. You keep a portable encrypted file (`.klickd`) on your own device. You own it. You move it. You delete it.
+
+This is **privacy-first AI memory** — and it works for any domain with a competency framework.
 
 ---
 
-## The solution: client-side session continuity
+## What's in this repo
 
 ```
-SESSION 1
-  User ↔ AI Tutor (learning)
-  → Proof Mode: AI retests without showing answers
-  → .klickd file generated locally (encrypted, never sent)
-  → User downloads file to their device
-  [Server: zero data retained]
-
-SESSION 2
-  User uploads their .klickd file
-  → Decrypted locally
-  → Injected into AI system prompt
-  → AI resumes with full personalized context
-  [Server: receives only the current message + injected context]
-```
-
----
-
-## Core concepts
-
-### 1. The `.klickd` file
-
-A small JSON file, AES-GCM 256-bit encrypted with a key derived from the user's password (PBKDF2 — never transmitted). Contains the user's learning profile:
-
-```json
-{
-  "version": "1.0",
-  "protocol": "klickd-proof-protocol",
-  "created_at": "2026-05-16T17:00:00Z",
-  "profile": {
-    "subjects": ["mathematics", "physics"],
-    "mastered": ["quadratic equations", "Ohm's law"],
-    "weak_points": ["logarithms", "RC circuits"],
-    "preferred_style": "socratic",
-    "language": "fr",
-    "session_count": 7,
-    "last_topics": ["derivatives", "integrals"],
-    "notes": "User prefers short explanations. Struggles with abstract notation."
-  },
-  "proof_results": [
-    {
-      "topic": "quadratic equations",
-      "score": 0.92,
-      "date": "2026-05-16T16:45:00Z",
-      "method": "open_question"
-    }
-  ]
-}
-```
-
-See [`SPEC.md`](./SPEC.md) for the full technical specification.
-
-### 2. Proof Mode
-
-A verification mechanism where the AI:
-1. **Suspends access** to previous explanations
-2. **Retests the user** with open questions (no MCQ — no guessing)
-3. **Updates the profile** based on what the user actually demonstrates
-4. **Generates the `.klickd` file** reflecting real knowledge, not memorization
-
-This ensures the profile accurately represents understanding, not exposure.
-
-### 3. Portable by choice
-
-The user decides:
-- **Whether to save** the file at all
-- **Where to store it** (device, USB, their own cloud)
-- **Whether to share it** with another compatible AI or platform
-- **Whether to delete it** at any time
-
-No sync. No cloud. No account required to use Proof Mode.
-
----
-
-## Why open source?
-
-AI personalization should not require surrendering your data to a corporation.
-
-This protocol is released to the public domain so that:
-- Any AI developer can implement it
-- Any user can benefit from it on any platform
-- No single company can patent and restrict it
-- The AI-human relationship becomes more private and more personal simultaneously
-
----
-
-## Implementations
-
-| Platform | Status | Link |
-|---|---|---|
-| **Klickd** (reference implementation) | ✅ Live | [klickd.app](https://klickd.app) |
-| Your platform | Open | Submit a PR |
-
----
-
-## For AI agent developers
-
-See [`AGENT-SKILL.md`](./AGENT-SKILL.md) — a ready-to-install skill file for AI agents (Perplexity Computer, Claude Projects, GPT custom instructions, etc.) that teaches any AI assistant to implement this protocol.
-
----
-
-## Files
-
-```
-klickd-proof-protocol/
-├── README.md          — This file
-├── SPEC.md            — Full technical specification
-├── AGENT-SKILL.md     — Installable skill for AI agents
+klickdskill/
+├── README.md              ← you are here
+├── SPEC.md                ← cryptographic specification (AES-256-GCM, Web Crypto API)
+├── AGENT-SKILL.md         ← installable skill for any AI agent
+├── LICENSE                ← CC0 1.0 Universal
 ├── schema/
-│   └── klickd-v1.json — JSON Schema for .klickd files
-└── disclosure/
-    └── invention-disclosure-2026-05-16.pdf  — Original dated disclosure
+│   ├── klickd-v1.json     ← original schema
+│   └── klickd-v2.json     ← universal schema — EQF, ESCO, DigComp 3.0, CEFR
+└── curriculum/
+    ├── README.md          ← curriculum feed protocol
+    ├── LU/                ← Luxembourg (MENJE)
+    ├── FR/                ← France (Eduscol)
+    ├── BE/                ← Belgium (FWB)
+    ├── DE/                ← Germany (KMK)
+    ├── MA/                ← Morocco (MEN)
+    ├── SN/                ← Senegal (MENA)
+    └── CA/                ← Canada/Quebec (MEQ)
 ```
+
+---
+
+## How it works — in 4 steps
+
+```
+1. SESSION STARTS
+   AI reads .klickd → knows your level, country, curriculum, learning style
+
+2. AI TEACHES
+   Kai uses your country's official curriculum
+   Tracks which competencies you work on
+
+3. SESSION ENDS
+   AI updates mastery levels → saves to .klickd
+   Kai forgets the conversation
+   You keep everything
+
+4. NEXT SESSION
+   Kai picks up exactly where you left off
+   No server. No account. No tracking.
+```
+
+---
+
+## European frameworks alignment
+
+| Framework | What it covers | In .klickd |
+|-----------|---------------|------------|
+| **EQF** — European Qualifications Framework | 8 proficiency levels, all domains | `competencies[].eqf_level` |
+| **ESCO v1.2** — European Skills, Competences, Occupations | 13,890 occupations + skills taxonomy | `professional.competencies[].esco_skill_uri` |
+| **DigComp 3.0** — Digital Competence Framework | 5 areas, 21 competences, 4 proficiency levels | `competencies[].digcomp_area` |
+| **CEFR / CECRL** — Common European Framework for Languages | A1 → C2, 5 skill areas | `language_learning.cefr_level` + skills breakdown |
+
+---
+
+## Supported domains
+
+| Domain | Framework | Typical use |
+|--------|-----------|-------------|
+| **Education** | MENJE, Eduscol, FWB, KMK, MEN, MENA, MEQ | K-12 students, exam prep |
+| **Professional** | ESCO v1.2 + EQF | Upskilling, career transitions |
+| **Languages** | CEFR / CECRL | Language learning A1→C2 |
+| **Digital skills** | DigComp 3.0 | Digital literacy |
+| **Wellness** | WHO frameworks | Health coaching |
+| **Creative** | Custom | Music, art, writing |
+| **Any domain** | Custom block | Any competency referential |
+
+---
+
+## Curriculum feeds — 7 countries, annual sync
+
+Each country has official competency feeds in `/curriculum/`. Once per year the `.klickd` file syncs locally — no server, verified by Ed25519 signature.
+
+| Country | Authority | Subjects |
+|---------|-----------|---------|
+| 🇱🇺 Luxembourg | MENJE | Maths, FR, DE, EN, Sciences |
+| 🇫🇷 France | Eduscol | Maths, Français, Sciences, Histoire |
+| 🇧🇪 Belgium | FWB — Tronc commun | Maths, Français, Sciences |
+| 🇩🇪 Germany | KMK — Bildungsstandards | Mathematik, Deutsch, Sciences |
+| 🇲🇦 Morocco | MEN Maroc | Maths, Français, Sciences |
+| 🇸🇳 Senegal | MENA | Maths, Français |
+| 🇨🇦 Canada (QC) | MEQ | Maths, Français |
+
+---
+
+## Security
+
+- **AES-256-GCM** encryption — Web Crypto API, runs in the browser
+- **Key never leaves the device** — not stored anywhere
+- Each session in history is encrypted independently
+- Curriculum sync verified with **Ed25519 signatures**
+- Zero telemetry. Zero server calls. Zero retention.
+
+Full spec: [`SPEC.md`](./SPEC.md)
+
+---
+
+## Use this in your app
+
+1. Read `AGENT-SKILL.md` — full instructions for any AI agent
+2. Validate against `schema/klickd-v2.json`
+3. Load curriculum from `curriculum/{COUNTRY}/`
+4. Encrypt/decrypt with Web Crypto API per `SPEC.md`
+
+---
+
+## Invention disclosure
+
+A formal invention disclosure was filed on 2026-05-16.
+
+SHA-256: `d7045ce2b998a50fa0d42ee481c7ffc59900e7a9aeb4ccea8c039f2312d86db3`
+
+File: [`disclosure/invention-disclosure-2026-05-16.pdf`](./disclosure/invention-disclosure-2026-05-16.pdf)
+
+---
+
+## Contributing
+
+Open a PR to:
+- Add curriculum feeds for new countries/levels
+- Extend the schema for new domains
+- Add professional frameworks (medical, legal, engineering...)
+- Improve the cryptographic spec
 
 ---
 
 ## License
 
-**CC0 1.0 Universal — Public Domain Dedication**
-
-This work has been dedicated to the public domain. You can copy, modify, distribute and use it, even for commercial purposes, without asking permission.
-
-[Full license text](./LICENSE)
+**CC0 1.0 Universal** — No rights reserved. Take it. Use it. Build on it. Make it better.
 
 ---
 
-## Origin
-
-Conceived and first implemented by **Enzo (Vince)**, founder of [Klickd](https://klickd.app), Luxembourg, on May 16, 2026.
-
-The reference implementation is live at [klickd.app](https://klickd.app).
-
-*"fir iech, mat iech"* — for you, with you.
+*Built in Luxembourg. For students everywhere.*  
+*[klickd.app](https://klickd.app)*

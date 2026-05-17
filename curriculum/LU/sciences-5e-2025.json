@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "country": "LU",
+    "authority": "MENJE",
+    "subject": "Sciences",
+    "subject_id": "SCI",
+    "level": "5e",
+    "year": 2025,
+    "language": "fr",
+    "source": "https://www.men.lu",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "LU-SCI-5E-01",
+      "domain": "Biologie — La cellule",
+      "label": "Décrire la structure et les fonctions des cellules animales et végétales, différencier les cellules procaryotes et eucaryotes, comprendre le rôle des organites",
+      "eqf_level": 2,
+      "keywords": ["cellule", "organite", "noyau", "mitochondrie", "chloroplaste", "membrane cellulaire"]
+    },
+    {
+      "id": "LU-SCI-5E-02",
+      "domain": "Biologie — Génétique",
+      "label": "Comprendre les bases de la génétique : ADN, chromosomes, gènes, hérédité (dominance/récessivité), méiose et transmission des caractères héréditaires",
+      "eqf_level": 2,
+      "keywords": ["ADN", "chromosome", "gène", "hérédité", "méiose", "dominant", "récessif"]
+    },
+    {
+      "id": "LU-SCI-5E-03",
+      "domain": "Biologie — Écosystèmes",
+      "label": "Analyser les relations entre les êtres vivants et leur milieu : chaînes alimentaires, cycles de la matière, équilibres écologiques et impact de l'activité humaine",
+      "eqf_level": 2,
+      "keywords": ["écosystème", "chaîne alimentaire", "biodiversité", "cycle du carbone", "équilibre écologique"]
+    },
+    {
+      "id": "LU-SCI-5E-04",
+      "domain": "Biologie — Corps humain",
+      "label": "Décrire les grands systèmes du corps humain (digestif, circulatoire, respiratoire, nerveux) et expliquer leurs interactions",
+      "eqf_level": 2,
+      "keywords": ["système digestif", "système circulatoire", "respiration", "système nerveux", "homéostasie"]
+    },
+    {
+      "id": "LU-SCI-5E-05",
+      "domain": "Chimie — Structure de la matière",
+      "label": "Connaître la structure de l'atome (protons, neutrons, électrons), le tableau périodique, les symboles des éléments et les notions d'isotope et d'ion",
+      "eqf_level": 2,
+      "keywords": ["atome", "proton", "neutron", "électron", "tableau périodique", "isotope", "ion"]
+    },
+    {
+      "id": "LU-SCI-5E-06",
+      "domain": "Chimie — Molécules et liaisons",
+      "label": "Comprendre la formation des molécules par liaisons covalentes et ioniques, représenter des molécules simples (H₂O, CO₂, CH₄) avec la notation de Lewis",
+      "eqf_level": 2,
+      "keywords": ["molécule", "liaison covalente", "liaison ionique", "formule chimique", "notation de Lewis"]
+    },
+    {
+      "id": "LU-SCI-5E-07",
+      "domain": "Chimie — Réactions chimiques",
+      "label": "Écrire et équilibrer des équations chimiques, distinguer réactions de synthèse, décomposition et déplacement, comprendre la conservation de la matière",
+      "eqf_level": 2,
+      "keywords": ["réaction chimique", "équation chimique", "équilibrage", "conservation de la masse", "réactif", "produit"]
+    },
+    {
+      "id": "LU-SCI-5E-08",
+      "domain": "Physique — Forces et mouvement",
+      "label": "Analyser les forces (pesanteur, frottement, poussée d'Archimède) et leur effet sur le mouvement des corps ; appliquer les lois de Newton",
+      "eqf_level": 2,
+      "keywords": ["force", "pesanteur", "frottement", "lois de Newton", "accélération", "équilibre"]
+    },
+    {
+      "id": "LU-SCI-5E-09",
+      "domain": "Physique — Énergie",
+      "label": "Identifier les différentes formes d'énergie (cinétique, potentielle, thermique, électrique), comprendre les conversions et appliquer le principe de conservation de l'énergie",
+      "eqf_level": 2,
+      "keywords": ["énergie cinétique", "énergie potentielle", "conservation de l'énergie", "conversion énergétique", "joule"]
+    },
+    {
+      "id": "LU-SCI-5E-10",
+      "domain": "Physique — Ondes",
+      "label": "Décrire les propriétés des ondes mécaniques et électromagnétiques (fréquence, longueur d'onde, amplitude, vitesse), connaître le spectre électromagnétique",
+      "eqf_level": 2,
+      "keywords": ["onde", "fréquence", "longueur d'onde", "spectre électromagnétique", "lumière", "son"]
+    },
+    {
+      "id": "LU-SCI-5E-11",
+      "domain": "Démarche scientifique",
+      "label": "Concevoir et réaliser une démarche expérimentale : formulation d'une hypothèse, protocole, collecte de données, analyse des résultats et conclusion",
+      "eqf_level": 2,
+      "keywords": ["démarche expérimentale", "hypothèse", "protocole", "observation", "analyse", "conclusion"]
+    }
+  ]
+}

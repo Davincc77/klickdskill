@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "country": "DE",
+    "authority": "KMK",
+    "subject": "Mathematik",
+    "subject_id": "MATH",
+    "level": "Klasse 10",
+    "year": 2025,
+    "language": "de",
+    "source": "https://www.kmk.org/themen/schule/bildungsstandards.html",
+    "klickd_schema": "2.0.0"
+  },
+  "competencies": [
+    {
+      "id": "DE-MATH-K10-01",
+      "domain": "Zahlen und Operationen — Rationale Zahlen",
+      "label": "Mit rationalen Zahlen sicher rechnen: Brüche, Dezimalzahlen und gemischte Zahlen addieren, subtrahieren, multiplizieren und dividieren; Ergebnisse überschlagen und überprüfen.",
+      "eqf_level": 2,
+      "keywords": ["rationale Zahlen", "Brüche", "Dezimalzahlen", "Grundrechenarten", "Überschlag"]
+    },
+    {
+      "id": "DE-MATH-K10-02",
+      "domain": "Zahlen und Operationen — Potenzen und Wurzeln",
+      "label": "Potenzen mit ganzzahligen Exponenten und Wurzeln berechnen, die Rechenregeln für Potenzen (Produkt, Quotient, Potenz einer Potenz) anwenden und Ausdrücke vereinfachen.",
+      "eqf_level": 2,
+      "keywords": ["Potenzen", "Wurzeln", "Potenzgesetze", "ganzzahlige Exponenten", "Vereinfachung"]
+    },
+    {
+      "id": "DE-MATH-K10-03",
+      "domain": "Zahlen und Operationen — Reelle Zahlen",
+      "label": "Den Unterschied zwischen rationalen und irrationalen Zahlen erkennen, irrationale Zahlen auf der Zahlengeraden einordnen und Näherungswerte von Quadratwurzeln bestimmen.",
+      "eqf_level": 2,
+      "keywords": ["reelle Zahlen", "irrationale Zahlen", "Zahlengerade", "Näherungswert", "Quadratwurzel"]
+    },
+    {
+      "id": "DE-MATH-K10-04",
+      "domain": "Algebra — Gleichungen",
+      "label": "Lineare und quadratische Gleichungen lösen, das Lösungsverfahren begründen (Äquivalenzumformungen, Mitternachtsformel) und Lösungsmengen im Kontext interpretieren.",
+      "eqf_level": 2,
+      "keywords": ["lineare Gleichung", "quadratische Gleichung", "Mitternachtsformel", "Lösungsmenge", "Äquivalenzumformung"]
+    },
+    {
+      "id": "DE-MATH-K10-05",
+      "domain": "Algebra — Lineare Funktionen",
+      "label": "Lineare Funktionen (y = mx + b) analysieren, den Anstieg und den y-Achsenabschnitt bestimmen, Schaubilder zeichnen und Situationen aus dem Alltag modellieren.",
+      "eqf_level": 2,
+      "keywords": ["lineare Funktion", "Anstieg", "y-Achsenabschnitt", "Schaubild", "Modellierung"]
+    },
+    {
+      "id": "DE-MATH-K10-06",
+      "domain": "Algebra — Quadratische Funktionen",
+      "label": "Quadratische Funktionen (y = ax² + bx + c) analysieren: Scheitelpunkt, Symmetrieachse und Nullstellen bestimmen; Parabel zeichnen und mit linearen Funktionen verknüpfen.",
+      "eqf_level": 2,
+      "keywords": ["quadratische Funktion", "Parabel", "Scheitelpunkt", "Nullstellen", "Symmetrieachse"]
+    },
+    {
+      "id": "DE-MATH-K10-07",
+      "domain": "Geometrie — Satz des Pythagoras",
+      "label": "Den Satz des Pythagoras und seinen Umkehrsatz anwenden, um Längen im rechtwinkligen Dreieck sowie in zusammengesetzten ebenen Figuren und räumlichen Körpern zu berechnen.",
+      "eqf_level": 2,
+      "keywords": ["Pythagoras", "rechtwinkliges Dreieck", "Hypotenuse", "Kathete", "Umkehrsatz"]
+    },
+    {
+      "id": "DE-MATH-K10-08",
+      "domain": "Geometrie — Trigonometrie",
+      "label": "Sinus, Kosinus und Tangens im rechtwinkligen Dreieck definieren und einsetzen, um Winkel und Seitenlängen zu berechnen; Ergebnisse auf Plausibilität überprüfen.",
+      "eqf_level": 2,
+      "keywords": ["Trigonometrie", "Sinus", "Kosinus", "Tangens", "Winkelberechnung", "Seitenlängen"]
+    },
+    {
+      "id": "DE-MATH-K10-09",
+      "domain": "Geometrie — Flächeninhalt und Volumen",
+      "label": "Flächeninhalte von Dreiecken, Vierecken und Kreisen sowie Volumina und Oberflächen von Prismen, Pyramiden, Zylindern und Kegeln berechnen und in Sachaufgaben anwenden.",
+      "eqf_level": 2,
+      "keywords": ["Flächeninhalt", "Volumen", "Oberfläche", "Prisma", "Pyramide", "Zylinder", "Kegel"]
+    },
+    {
+      "id": "DE-MATH-K10-10",
+      "domain": "Stochastik — Wahrscheinlichkeitsrechnung",
+      "label": "Wahrscheinlichkeiten einfacher und mehrstufiger Zufallsexperimente berechnen, Baumdiagramme und Vierfeldertafeln einsetzen und das Additionsgesetz sowie die bedingte Wahrscheinlichkeit anwenden.",
+      "eqf_level": 2,
+      "keywords": ["Wahrscheinlichkeit", "Baumdiagramm", "bedingte Wahrscheinlichkeit", "Zufallsexperiment", "Vierfeldertafel"]
+    },
+    {
+      "id": "DE-MATH-K10-11",
+      "domain": "Stochastik — Statistik",
+      "label": "Statistische Kenngrößen (Mittelwert, Median, Modus, Streuung) berechnen und interpretieren, Daten in Häufigkeitstabellen und Diagrammen darstellen und Aussagen kritisch bewerten.",
+      "eqf_level": 2,
+      "keywords": ["Mittelwert", "Median", "Modus", "Streuung", "Häufigkeitstabelle", "Statistik"]
+    }
+  ]
+}
