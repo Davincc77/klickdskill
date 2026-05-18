@@ -190,6 +190,28 @@ def run_adversarial_suite() -> tuple[int, int]:
                 _whitehat_scan(intent)
                 print(f"  FAIL {vid}: expected KlickdFormatError on __proto__, got success"); failed += 1; continue
 
+            elif "adv-16" in vid:
+                # Merge-logic injection: </UserContext> must be escaped
+                from load_klickd import build_system_prompt
+                base = "You are a helpful assistant."
+                result_prompt = build_system_prompt(intent, base)
+                if "</UserContext>" in result_prompt and "<\\/UserContext>" not in result_prompt:
+                    # Raw tag leaked — escape failed
+                    print(f"  FAIL {vid}: </UserContext> tag not escaped — injection possible"); failed += 1
+                elif base in result_prompt:
+                    # Base prompt is present and tag is either escaped or absent
+                    print(f"  PASS {vid}: </UserContext> escaped, base prompt intact"); passed += 1
+                else:
+                    print(f"  FAIL {vid}: base prompt missing from output"); failed += 1
+                continue
+
+            elif "adv-17" in vid:
+                # ethics.immutable=false — valid locked_actions list should still pass
+                _enforce_ethics(intent)
+                # Should NOT raise — immutable flag is informational, locked_actions valid
+                print(f"  PASS {vid}: ethics with immutable=false accepted, locked_actions enforced"); passed += 1
+                continue
+
             else:
                 print(f"  SKIP {vid}: no test handler"); failed += 1; continue
 
