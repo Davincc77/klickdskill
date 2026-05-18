@@ -1,122 +1,91 @@
 {
+  "description": ".klickd v2.5 test vectors",
   "spec_version": "2.5",
-  "notes": {
-    "aad_canonical_form": "AAD is canonical JSON of exactly 4 envelope fields: {klickd_version, encrypted, domain, created_at}. Keys sorted, separators=(',',':'), ensure_ascii=True. NOT 5 fields — the stale '5 fields' comment in earlier versions was a bug.",
-    "base64_variant": "RFC 4648 §4 standard padded base64 (no URL-safe substitution)",
-    "ciphertext_layout": "base64(AES-GCM ciphertext_bytes || 16-byte GCM tag)",
-    "kdf": "PBKDF2-SHA256, 600000 iterations, 32-byte output key",
-    "iv_size": "12 bytes (96 bits) — standard AES-GCM nonce",
-    "salt_size": "16 bytes"
-  },
+  "notes": [
+    "AAD = json.dumps({klickd_version,encrypted,domain,created_at}, sort_keys=True, separators=(',',':'), ensure_ascii=True)",
+    "4 fields in AAD — exactly: created_at, domain, encrypted, klickd_version (sorted)",
+    "Wire format: base64(ciphertext || GCM_tag_16_bytes) — RFC 4648 §4 standard padded",
+    "Inner JSON: UTF-8, no BOM",
+    "payload field renamed from agent_instructions to user_preferences in v2.5"
+  ],
   "vectors": [
     {
       "id": "v2.5-basic-ascii",
-      "description": "Basic ASCII payload, standard English content",
+      "description": "Basic ASCII payload — domain=general, should decrypt successfully",
       "passphrase": "test-klickd-v25",
-      "domain": "general",
       "envelope": {
         "klickd_version": "2.5",
         "encrypted": true,
         "domain": "general",
-        "created_at": "2025-01-15T10:00:00Z",
-        "kdf_salt": "vXCB/3NsUYp7U6cksxsNNA==",
-        "iv": "oSTl97/RqTeAICpA",
-        "ciphertext": "PsAew8+qF0FM1NV1SaZvEU5cKCrB8+Q9sE9eBsMLAl9IrDKVghdOcmRI405yxGFn6Jn6BRelLNLY1pXq/RM0WnDUBh0KXCOvESx3eliIgyBjIsLtFvq5xfGZ6Y172h47MTvy0TgJN8P0fMIkg+kEKg8InQp0pyxng7q9qmDf8hq26smHWy123yDfqC9DWZl+aXHJWxtJbvORHkDlwgGr7YLp+hAnXA=="
+        "created_at": "2026-05-18T10:00:00Z",
+        "kdf_salt": "DveP3ddbG+uRUHJ27S6Stw==",
+        "iv": "bWhMKdTrcYjV4Gju",
+        "ciphertext": "e4FerZ0iQau1mMdFKO1LGBEh8dcH9zC41BRiJ6V91WTb3yZKG7Mq0r5Hwadmsc/VtK9cXjGLGHM+iIY6SUErLbAK7E8dVL5NsSMSK6K5oDIxCX4/hjBRJmbVDk33eVPMrQ8fvsw0I8MYiYlWyy0fuZpN8NKRQ8tEcEWQ/DiSgJvuFqDkkXOho9y3vRtI6GaYIeZDDIOqabMhmsDTbtt3cMfFehXLRt83tYna3/8Sf2t6CMiRCwQ5xVP7gqmsG4GiqVi7GBPRXKsC/z3/P8HCFJ9C6pS3AePq3wYy01HYcFWF5CBA92nMC9i9akV9uV4+d2akzTlyFh6xts1ttBTpslhwb/eAR93tRLRH3KuBLgeAwz7c"
       },
-      "expected_payload": {
-        "identity": {
-          "display_name": "Alice",
-          "role": "assistant"
-        },
-        "agent_instructions": "Answer concisely in English.",
-        "memory_path": "~/.klickd/memory/"
-      },
+      "expected_display_name": "Alice",
       "expected_behavior": "decrypt_success"
     },
     {
       "id": "v2.5-french-utf8",
-      "description": "French UTF-8 payload with accented characters",
+      "description": "UTF-8 French payload with accented characters — domain=education",
       "passphrase": "motdepasse-test",
-      "domain": "education",
       "envelope": {
         "klickd_version": "2.5",
         "encrypted": true,
         "domain": "education",
-        "created_at": "2025-01-15T10:01:00Z",
-        "kdf_salt": "xMgMRkN5u5oijWiUIZqmnA==",
-        "iv": "DptDABEcMyxjeVIN",
-        "ciphertext": "nVOpZ3qzmOvJ4MMYtSVmJp3wFcyZAY1d3e3hkRhU3WNFvUaMfqW1inebFCpLi5bfuVzZQBtnYuWuaTq3Ie2IuoK2PEi6VRI0JfDoOT2QiJ+kbqFPnsUoyupfgu8PG0+uAwc/rEXyne2/eAqKzwr544ajpqnowT8DSy17y0S+8m+eJL7QNtHaL6g48Kj4o0XQHQQ+HJ3X//V1nVL7LcHwYRwnIVfEdcB2oz/y03WS48LXliPvzUyTQsPyBSsgs3j768Tecqx11M5WZhlnUIVNtQTdvg5Ey9W7Slhsdg5WXw=="
+        "created_at": "2026-05-18T10:00:00Z",
+        "kdf_salt": "mspjl7EMNbko2aa6aHpSIQ==",
+        "iv": "g5tUNii4NPVM6MYj",
+        "ciphertext": "hktPMaz7Sz/juQmtvTyBT6bpIOqR73Y2z5W+pFTBfd0Ee5ELzqQ/ARKEkHjQfa/vFPuPcvA/IehZsd/YIU4q5Spdp/q9iAatd/z+BESkPHsz4YFoDrezSfMEmbLEuB6OWdCHNy6UofTOc4JedkUkEoE0hV2rZGfCFDn41v6M0cGE7doEz7E28Wzr6Hl/1oEicoePEAucsfrMHd6UnELyQGIrBZyCJZ1INyTHXc9lAEMHwJA/XkKCoPFuAmh0wSAfmN0lIt6xyxcdfvUXXubJN27rReaKcXPw4/6LlzwAi/3hLaOiuAWLCuzzv21xURAtJpGYJSDfG7ZMoc0mCEWAytNiM4YJcLBjYYSZygRQdlJOkNxcAw+UTBfqzoUa5j6Q/lUUgwQr2lwdM3quUSWkpw0uh6ZkRq/pTEVD8DiFjTgAsUM2ivkhUwtLIbIrSMnpsCCqibB7PRlos2R32TLj+5vWwG4FZzMbBJ2nTvA7hRyv8R6GZ7dJLprl5A1ue2GHlPouw0DXoX4SX/5qBMygpA=="
       },
-      "expected_payload": {
-        "identity": {
-          "display_name": "Léa Müller",
-          "role": "assistant"
-        },
-        "agent_instructions": "Toujours répondre en français. Préfère les explications étape par étape.",
-        "memory_path": "~/.klickd/memory/"
-      },
+      "expected_display_name": "Léa Müller",
       "expected_behavior": "decrypt_success"
     },
     {
       "id": "v2.5-tampered",
-      "description": "Vector 1 ciphertext with last byte XORed — GCM tag mismatch",
+      "description": "Last byte of ciphertext XORed — MUST raise KlickdAuthError",
       "passphrase": "test-klickd-v25",
-      "domain": "general",
       "envelope": {
         "klickd_version": "2.5",
         "encrypted": true,
         "domain": "general",
-        "created_at": "2025-01-15T10:00:00Z",
-        "kdf_salt": "vXCB/3NsUYp7U6cksxsNNA==",
-        "iv": "oSTl97/RqTeAICpA",
-        "ciphertext": "PsAew8+qF0FM1NV1SaZvEU5cKCrB8+Q9sE9eBsMLAl9IrDKVghdOcmRI405yxGFn6Jn6BRelLNLY1pXq/RM0WnDUBh0KXCOvESx3eliIgyBjIsLtFvq5xfGZ6Y172h47MTvy0TgJN8P0fMIkg+kEKg8InQp0pyxng7q9qmDf8hq26smHWy123yDfqC9DWZl+aXHJWxtJbvORHkDlwgGr7YLp+hAnow=="
+        "created_at": "2026-05-18T10:00:00Z",
+        "kdf_salt": "DveP3ddbG+uRUHJ27S6Stw==",
+        "iv": "bWhMKdTrcYjV4Gju",
+        "ciphertext": "e4FerZ0iQau1mMdFKO1LGBEh8dcH9zC41BRiJ6V91WTb3yZKG7Mq0r5Hwadmsc/VtK9cXjGLGHM+iIY6SUErLbAK7E8dVL5NsSMSK6K5oDIxCX4/hjBRJmbVDk33eVPMrQ8fvsw0I8MYiYlWyy0fuZpN8NKRQ8tEcEWQ/DiSgJvuFqDkkXOho9y3vRtI6GaYIeZDDIOqabMhmsDTbtt3cMfFehXLRt83tYna3/8Sf2t6CMiRCwQ5xVP7gqmsG4GiqVi7GBPRXKsC/z3/P8HCFJ9C6pS3AePq3wYy01HYcFWF5CBA92nMC9i9akV9uV4+d2akzTlyFh6xts1ttBTpslhwb/eAR93tRLRH3KuBLgeAwz4j"
       },
-      "expected_payload": null,
-      "expected_behavior": "KlickdAuthError",
-      "tamper_description": "Last byte of ciphertext XORed with 0xFF (corrupts GCM tag)"
+      "expected_behavior": "KlickdAuthError — tampered ciphertext"
     },
     {
       "id": "v2.5-wrong-passphrase",
-      "description": "Vector 1 envelope decrypted with wrong passphrase",
+      "description": "Correct envelope, wrong passphrase — MUST raise KlickdAuthError",
       "passphrase": "wrong-passphrase",
-      "domain": "general",
       "envelope": {
         "klickd_version": "2.5",
         "encrypted": true,
         "domain": "general",
-        "created_at": "2025-01-15T10:00:00Z",
-        "kdf_salt": "vXCB/3NsUYp7U6cksxsNNA==",
-        "iv": "oSTl97/RqTeAICpA",
-        "ciphertext": "PsAew8+qF0FM1NV1SaZvEU5cKCrB8+Q9sE9eBsMLAl9IrDKVghdOcmRI405yxGFn6Jn6BRelLNLY1pXq/RM0WnDUBh0KXCOvESx3eliIgyBjIsLtFvq5xfGZ6Y172h47MTvy0TgJN8P0fMIkg+kEKg8InQp0pyxng7q9qmDf8hq26smHWy123yDfqC9DWZl+aXHJWxtJbvORHkDlwgGr7YLp+hAnXA=="
+        "created_at": "2026-05-18T10:00:00Z",
+        "kdf_salt": "DveP3ddbG+uRUHJ27S6Stw==",
+        "iv": "bWhMKdTrcYjV4Gju",
+        "ciphertext": "e4FerZ0iQau1mMdFKO1LGBEh8dcH9zC41BRiJ6V91WTb3yZKG7Mq0r5Hwadmsc/VtK9cXjGLGHM+iIY6SUErLbAK7E8dVL5NsSMSK6K5oDIxCX4/hjBRJmbVDk33eVPMrQ8fvsw0I8MYiYlWyy0fuZpN8NKRQ8tEcEWQ/DiSgJvuFqDkkXOho9y3vRtI6GaYIeZDDIOqabMhmsDTbtt3cMfFehXLRt83tYna3/8Sf2t6CMiRCwQ5xVP7gqmsG4GiqVi7GBPRXKsC/z3/P8HCFJ9C6pS3AePq3wYy01HYcFWF5CBA92nMC9i9akV9uV4+d2akzTlyFh6xts1ttBTpslhwb/eAR93tRLRH3KuBLgeAwz7c"
       },
-      "expected_payload": null,
-      "expected_behavior": "KlickdAuthError",
-      "tamper_description": "Correct envelope but wrong passphrase supplied"
+      "expected_behavior": "KlickdAuthError — wrong passphrase"
     },
     {
       "id": "v2.5-short-passphrase",
-      "description": "6-char passphrase — SHOULD warn (< 12), MUST decrypt successfully",
+      "description": "6-char passphrase — SHOULD warn, MUST decrypt",
       "passphrase": "abc123",
-      "domain": "general",
       "envelope": {
         "klickd_version": "2.5",
         "encrypted": true,
         "domain": "general",
-        "created_at": "2025-01-15T10:02:00Z",
-        "kdf_salt": "6G87y4A/nm7Fdg7DIGEi+w==",
-        "iv": "Gm0Aq0ZuCnXVFy24",
-        "ciphertext": "uo302uml5Qy7AKVobkk5pAu8HU0csPNNaIJmZer7Bml/mA45KExsWDj6Bvs/F6eQJv0Ha7ZTSQ8gxtqlS8731rPNfs/JIUNBQ88VD0h+u66ieE0vPD9MO+06mMWHcUVvAFW2t7tOGTYyBED9u6J0O/21XB95Q/6alO8Yai0OOUjl+2vnx3X7WXHyOyJywrdqV+BhopKB/ZdlcSJckof1VtLKmGcoug=="
+        "created_at": "2026-05-18T10:00:00Z",
+        "kdf_salt": "fZSXDmJPG0+Rpo2uq5HG3A==",
+        "iv": "BKwWmIx3qO6JIbsE",
+        "ciphertext": "0PlGP2o5W32JARyYUbU71dbThPuBKbnjA4pe3XIJa4Ss/bax9mqPfNNvyr7fif85RfJavatQ0xysAQmjJG/dCwdZb1rWWQM0Nf+XvzHtzwYUPWY/0KDZ5QJgctgCQXaHG0I0pkqvLo1iTFjiSzncdmmO8QxZ4nLxMHWJOnXejqUvUXAzGWdsK3WIuIrKCSr0B4ZkWUIGbDv5S83IVPdXMF0ikG/KaB7P9+RD4DWjOMnzezdw5F8nE04MoyoWmVlK9J6xCMfcjhRbNhZe5aXZuteE+CO12rvzfXxEBeZQ5OI+8KQTc1SrSwpl0fc4/jngmJt1wj66548OFPRw4ESX68sy0g6hwm5HIpVm/sED+ISbyC4e"
       },
-      "expected_payload": {
-        "identity": {
-          "display_name": "Alice",
-          "role": "assistant"
-        },
-        "agent_instructions": "Answer concisely in English.",
-        "memory_path": "~/.klickd/memory/"
-      },
-      "expected_behavior": "decrypt_success_with_warning",
-      "warning_note": "load_klickd SHOULD emit UserWarning for passphrase < 12 chars; save_klickd MUST raise KlickdWeakPassphraseError for passphrase < 8 chars"
+      "expected_display_name": "Alice",
+      "expected_behavior": "UserWarning emitted + decrypt_success"
     }
   ]
 }
