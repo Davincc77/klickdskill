@@ -111,7 +111,7 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdAuthError — KLICKD_E_AUTH (cipher name in AAD changed, GCM tag mismatch; or KLICKD_E_FORMAT if cipher name validated first)"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm' (validated before decryption)"
     },
     {
       "id": "v3.0-neg-unsupported-kdf",

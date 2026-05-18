@@ -212,3 +212,39 @@ See [`ROADMAP.md`](./ROADMAP.md) for full details.
 ---
 
 *`.klickd` — one soul. any model. any body.*
+
+---
+
+## Grok Audit 2 — 2026-05-18
+
+**Auditor:** Grok (xAI), external review of commit `bfd7e31`
+**Scope:** save_klickd.py, load_klickd.py, verify_vectors.mjs, security hooks
+**Result:** 9 findings (P0×2, P1×4, P2×3) — all fixed in this session
+
+### Findings & Resolution
+
+| ID | Sev | Location | Finding | Fix commit |
+|---|---|---|---|---|
+| GA2-P0-1 | P0 | `save_klickd.py` | Still v2.5 (PBKDF2, 4-field AAD) — does not produce v3.0 envelopes | Rewritten in v3.0: Argon2id default, 6-field JCS AAD, kdf/cipher blocks, payload size check before encryption, ethics/growth validation |
+| GA2-P0-2 | P0 | `load_klickd.py:136` | `build_system_prompt`: klickd context injected AFTER base prompt — conflicts with §12 (highest authority) | Injection order reversed: `<UserContext>` now prepended BEFORE base prompt |
+| GA2-P1-1 | P1 | `load_klickd.py:25` | `_jcs_canonicalize` missing RFC 8785 §3.2.2.2 NFC Unicode normalisation | Added `unicodedata.normalize("NFC", ...)` traversal for all string values |
+| GA2-P1-2 | P1 | `load_klickd.py` | `§18ter` ethics not enforced: `locked_actions` not validated as list of strings | Added `_enforce_ethics()` at load time; same validation in `save_klickd.py` |
+| GA2-P1-3 | P1 | `load_klickd.py` | `§18` whitehat scan absent: no detection of suspicious/reserved payload keys | Added `_whitehat_scan()`: hard error on `__proto__`/`constructor`/`prototype`; warning for other suspicious keys |
+| GA2-P1-4 | P1 | `load_klickd.py` | `§18` growth validation absent: `level>5` or `level=5` without `memory_refs>=3` accepted | Added `_validate_growth()` at load time and in encoder |
+| GA2-P2-1 | P2 | `verify_vectors.mjs:52` | `ARGON2_MIN_M = 1024` — misaligned with Python decoder floor of 65536 | Changed to 65536 (64 MiB); `ARGON2_MIN_T` corrected 1→3 |
+| GA2-P2-2 | P2 | `load_klickd.py:213` | `cipher.name` not validated in v3.0 path — any string accepted | Added explicit `cipher.name == "aes-256-gcm"` assert before decryption |
+| GA2-P2-3 | P2 | `load_klickd.py:249` | `agent_instructions or user_preferences` — fallback means oversized `agent_instructions` not caught if `user_preferences` absent | Changed to independent per-field loop; both fields always checked |
+
+### Tests Post-Fix
+
+- `verify_vectors.py` → **32/32 passed** (including updated `v3.0-neg-unsupported-cipher` expected behavior → `KlickdFormatError`)
+- `tests/roundtrip_v30.json` → **8/8 roundtrip vectors** generated and verified (save→load full pipeline)
+
+### Open Items After Grok Audit 2
+
+- [ ] IANA MIME registration (still out of scope)
+- [ ] JCS JS in `verify_vectors.mjs` NFC normalisation (mirrors Python fix — low risk for test vectors which use ASCII-only AAD fields)
+
+---
+
+*`.klickd` — one soul. any model. any body.*

@@ -48,9 +48,9 @@ const MAX_AGENT_INSTR_BYTES   = 32 * 1024;          // 32 KiB  (§22 size cap)
 const VERSION_RE              = /^\d+\.\d+$/;
 const STANDARD_B64_RE         = /^[A-Za-z0-9+/]*={0,2}$/;
 
-// Argon2id parameter floors (§14.1)
-const ARGON2_MIN_M = 1024;
-const ARGON2_MIN_T = 1;
+// Argon2id parameter floors (§14.1) — Grok Audit 2 P2: aligned with Python decoder
+const ARGON2_MIN_M = 65536;  // 64 MiB — was 1024
+const ARGON2_MIN_T = 3;      // — was 1
 const ARGON2_MIN_P = 1;
 
 // PBKDF2 floor (§15.1)

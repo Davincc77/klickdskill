@@ -1,0 +1,90 @@
+{
+  "description": ".klickd v3.0 roundtrip test vectors — save_klickd.py → load_klickd.py",
+  "spec_version": "3.0",
+  "generated_by": "Grok Audit 2 fix session — 2026-05-18",
+  "notes": [
+    "These vectors exercise the full save→load pipeline with Argon2id + JCS AAD.",
+    "All 8 vectors must pass for a compliant v3.0 implementation.",
+    "Vectors 5-6 are negative: KlickdFormatError expected at save() time.",
+    "Vector 8 tests build_system_prompt() injection order (klickd context AT TOP — §12)."
+  ],
+  "vectors": [
+    {
+      "id": "v3.0-roundtrip-basic",
+      "description": "Basic roundtrip: ASCII payload, standard passphrase",
+      "type": "positive",
+      "payload_fields": {"display_name": "Alice", "user_preferences": "Explain in French"},
+      "passphrase": "roundtrip-passphrase-ok",
+      "domain": "test",
+      "expected_behavior": "success — payload decrypts identically"
+    },
+    {
+      "id": "v3.0-roundtrip-utf8",
+      "description": "UTF-8 payload with accented chars and emoji",
+      "type": "positive",
+      "payload_fields": {"display_name": "Léa Müller", "lang": "fr", "note": "Ça marche très bien — Klickd 🎓"},
+      "passphrase": "correct-horse-battery",
+      "domain": "student",
+      "expected_behavior": "success — UTF-8 payload decrypts identically"
+    },
+    {
+      "id": "v3.0-roundtrip-ethics",
+      "description": "Ethics block with locked_actions (§18ter) — must be preserved",
+      "type": "positive",
+      "payload_fields": {"display_name": "Bob", "ethics": {"locked_actions": ["share_pii", "disable_gdpr"]}},
+      "passphrase": "ethics-test-passphrase",
+      "domain": "general",
+      "expected_behavior": "success — ethics.locked_actions preserved and validated"
+    },
+    {
+      "id": "v3.0-roundtrip-growth-level5",
+      "description": "growth.level=5 with 3 memory_refs (§18 minimum) — must succeed",
+      "type": "positive",
+      "payload_fields": {"display_name": "Charlie", "growth": {"level": 5, "memory_refs": ["mem1", "mem2", "mem3"]}},
+      "passphrase": "growth-level5-passphrase",
+      "domain": "general",
+      "expected_behavior": "success — growth.level=5 with memory_refs>=3 accepted"
+    },
+    {
+      "id": "v3.0-roundtrip-growth-bad",
+      "description": "growth.level=5 with only 1 memory_ref — MUST raise KlickdFormatError at save",
+      "type": "negative",
+      "payload_fields": {"growth": {"level": 5, "memory_refs": ["only_one"]}},
+      "passphrase": "growth-bad-passphrase1",
+      "domain": "general",
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: growth.level=5 requires memory_refs >= 3"
+    },
+    {
+      "id": "v3.0-roundtrip-ethics-bad",
+      "description": "ethics.locked_actions is a string (not list) — MUST raise KlickdFormatError at save",
+      "type": "negative",
+      "payload_fields": {"ethics": {"locked_actions": "share_pii"}},
+      "passphrase": "ethics-bad-passphrase1",
+      "domain": "general",
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: ethics.locked_actions must be a list of strings"
+    },
+    {
+      "id": "v3.0-roundtrip-agent-instructions",
+      "description": "Both agent_instructions and user_preferences present — both checked independently (P2 fix)",
+      "type": "positive",
+      "payload_fields": {
+        "display_name": "Dana",
+        "agent_instructions": "Always respond concisely.",
+        "user_preferences": "I prefer bullet points."
+      },
+      "passphrase": "agent-roundtrip-pp",
+      "domain": "general",
+      "expected_behavior": "success — both fields preserved and checked independently"
+    },
+    {
+      "id": "v3.0-roundtrip-build_system_prompt",
+      "description": "build_system_prompt injects klickd context BEFORE base prompt (§12 P0 fix)",
+      "type": "unit",
+      "input": {
+        "payload": {"user_preferences": "I am Alice. Respond in Luxembourgish."},
+        "base_system_prompt": "You are Kai, a helpful tutor."
+      },
+      "expected_behavior": "Result starts with '<UserContext>' — klickd context is injected at the TOP"
+    }
+  ]
+}

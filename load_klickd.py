@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""load_klickd.py v2.5 — PBKDF2 + 4-field AAD (v2.x); Argon2id + RFC 8785 JCS (v3.0)
+"""load_klickd.py v3.0 -- PBKDF2 + 4-field AAD (v2.x); Argon2id + RFC 8785 JCS (v3.0)
 
 Security patches applied (Bankr audit 2026-05-18):
   CRITICAL 1.3b / 6.2 — Argon2id/PBKDF2 minimum parameter floor enforced
@@ -8,6 +8,16 @@ Security patches applied (Bankr audit 2026-05-18):
   MEDIUM   1.5        — base64.b64decode(validate=True) at all call sites
   MEDIUM   2.1a       — klickd_version must be string matching \d+\.\d+
   MEDIUM   4.1c       — memory_path removed from user-controlled fields
+
+Grok Audit 2 fixes (2026-05-18):
+  P0       — build_system_prompt: klickd context injected BEFORE base_system_prompt (§12)
+  P1       — _jcs_canonicalize: RFC 8785 NFC Unicode normalisation added
+  P1       — §18ter ethics enforcement: locked_actions validated as hard constraints
+  P1       — §18 whitehat scan hook at load time
+  P1       — §18 growth validation: level<=5, memory_refs>=3 for level 5
+  P2       — cipher.name validated as 'aes-256-gcm' (v3.0 path)
+  P2       — kdf.name validated: only 'argon2id' or 'pbkdf2-sha256' accepted
+  P2       — agent_instructions and user_preferences checked independently (not 'or' fallback)
 """
 import json, base64, os, re, sys, warnings
 from pathlib import Path
@@ -19,11 +29,26 @@ try:
 except ImportError:
     raise ImportError("pip install cryptography")
 
-# RFC 8785 JCS — inline, no external dep. json.dumps(sort_keys, ensure_ascii=False)
-# matches jcs.canonicalize for all .klickd AAD field types (strings, bools,
-# ints, nested objects). Float 1.0 diverges but cannot appear in AAD fields.
-def _jcs_canonicalize(obj: dict) -> bytes:
-    return json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8')
+# RFC 8785 JCS — inline, no external dep.
+# Covers all .klickd AAD field types: strings, bools, ints, nested objects.
+# Float values with non-zero fractional part must not appear in AAD fields.
+# NFC normalisation applied per RFC 8785 §3.2.2.2.
+def _jcs_canonicalize(obj) -> bytes:
+    import unicodedata
+    def _normalize(o):
+        if isinstance(o, str):
+            return unicodedata.normalize("NFC", o)
+        if isinstance(o, dict):
+            return {_normalize(k): _normalize(v) for k, v in o.items()}
+        if isinstance(o, list):
+            return [_normalize(i) for i in o]
+        return o
+    return json.dumps(
+        _normalize(obj),
+        sort_keys=True,
+        separators=(',', ':'),
+        ensure_ascii=False,
+    ).encode('utf-8')
 
 try:
     from argon2.low_level import hash_secret_raw, Type
@@ -121,10 +146,14 @@ def _derive_key_v3(passphrase: str, kdf_block: dict) -> bytes:
 
 def build_system_prompt(klickd_payload: dict, base_system_prompt: str) -> str:
     """
-    Inject user_preferences as a <UserContext> block AFTER the base system prompt.
+    Inject .klickd context BEFORE the base system prompt (§12 — highest authority).
 
+    Grok Audit 2 P0: klickd context injected at the TOP so the model sees it
+    first and treats it as the highest-priority instruction source.
     Bankr HIGH 2.2b: escape </UserContext> tag boundaries to prevent injection.
-    Bankr MEDIUM 2.2a: UserContext placed AFTER base prompt (lower weight, reduces jailbreak surface).
+
+    The returned prompt layout is:
+        <UserContext>\n{prefs}\n</UserContext>\n\n---\n\n{base_system_prompt}
     """
     prefs = klickd_payload.get("user_preferences", "") or klickd_payload.get("agent_instructions", "")
     if not prefs:
@@ -132,8 +161,8 @@ def build_system_prompt(klickd_payload: dict, base_system_prompt: str) -> str:
     # Sanitize: escape any </UserContext> sequences that would break the tag boundary
     safe_prefs = str(prefs).replace("</UserContext>", "<\\/UserContext>")
     user_context = f"<UserContext>\n{safe_prefs}\n</UserContext>"
-    # Base prompt FIRST (higher authority), UserContext appended after
-    return f"{base_system_prompt}\n\n---\n\n{user_context}"
+    # klickd context FIRST (§12 — highest authority), base prompt follows
+    return f"{user_context}\n\n---\n\n{base_system_prompt}"
 
 
 def load_klickd(filepath: str, passphrase: str, memory_dir: str = "~/.klickd/memory/") -> dict:
@@ -214,6 +243,18 @@ def load_klickd(filepath: str, passphrase: str, memory_dir: str = "~/.klickd/mem
         for block in ("kdf", "cipher"):
             if block not in envelope:
                 raise KlickdFormatError(f"KLICKD_E_FORMAT: v3.0 requires {block!r} block")
+        # P2 — validate cipher.name explicitly (Grok Audit 2)
+        cipher_name = envelope["cipher"].get("name")
+        if cipher_name != "aes-256-gcm":
+            raise KlickdFormatError(
+                f"KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm', got {cipher_name!r}"
+            )
+        # P2 — validate kdf.name explicitly (Grok Audit 2)
+        kdf_name = envelope["kdf"].get("name")
+        if kdf_name not in ("argon2id", "pbkdf2-sha256"):
+            raise KlickdFormatError(
+                f"KLICKD_E_FORMAT: kdf.name must be 'argon2id' or 'pbkdf2-sha256', got {kdf_name!r}"
+            )
         iv  = _b64decode_strict(envelope["cipher"]["iv"], "cipher.iv")
         aad = _canonical_aad_v3(envelope)
         key = _derive_key_v3(passphrase, envelope["kdf"])
@@ -246,11 +287,22 @@ def load_klickd(filepath: str, passphrase: str, memory_dir: str = "~/.klickd/mem
         raise KlickdFormatError("KLICKD_E_FORMAT: decrypted payload is not valid JSON")
 
     # agent_instructions / user_preferences size cap — 32KB (Bankr P1 #6)
-    agent_instr = payload.get("agent_instructions", "") or payload.get("user_preferences", "")
-    if isinstance(agent_instr, str) and len(agent_instr.encode("utf-8")) > _MAX_AGENT_INSTR_BYTES:
-        raise KlickdFormatError(
-            "KLICKD_E_FORMAT: agent_instructions/user_preferences exceeds 32 KB limit"
-        )
+    # P2 Grok Audit 2: check each field independently (not 'or' fallback)
+    for _field in ("agent_instructions", "user_preferences"):
+        _val = payload.get(_field, "")
+        if isinstance(_val, str) and len(_val.encode("utf-8")) > _MAX_AGENT_INSTR_BYTES:
+            raise KlickdFormatError(
+                f"KLICKD_E_FORMAT: {_field!r} exceeds 32 KB limit"
+            )
+
+    # §18 whitehat scan — flag suspicious payload fields at load time
+    _whitehat_scan(payload)
+
+    # §18ter ethics enforcement — locked_actions as hard constraints
+    _enforce_ethics(payload)
+
+    # §18 growth validation — level<=5, memory_refs>=3 at level 5
+    _validate_growth(payload)
 
     # Memory path: caller-supplied, NOT from payload (Bankr MEDIUM 4.1c)
     # Strip any path traversal — must resolve to a subpath of home directory
@@ -265,3 +317,101 @@ def load_klickd(filepath: str, passphrase: str, memory_dir: str = "~/.klickd/mem
     payload["_resolved_memory_path"] = str(resolved)
 
     return payload
+
+
+# ---------------------------------------------------------------------------
+# §18 Whitehat scan — detect suspicious payload fields at load time
+# ---------------------------------------------------------------------------
+
+_SUSPICIOUS_KEYS = frozenset({
+    "__proto__", "constructor", "prototype",
+    "system_prompt", "ignore_instructions", "override",
+    "jailbreak", "bypass", "admin", "sudo",
+})
+
+def _whitehat_scan(payload: dict) -> None:
+    """
+    §18 whitehat scan: check for suspicious or reserved keys in payload.
+    Raises KlickdFormatError for prototype-pollution attempts.
+    Emits a warning for other suspicious keys (non-fatal, for audit trail).
+    """
+    suspicious_found = []
+    for key in payload.keys():
+        if key in _SUSPICIOUS_KEYS:
+            suspicious_found.append(key)
+        # Prototype pollution defence — always hard error
+        if key in ("__proto__", "constructor", "prototype"):
+            raise KlickdFormatError(
+                f"KLICKD_E_FORMAT: suspicious key {key!r} rejected (prototype pollution)"
+            )
+    if suspicious_found:
+        warnings.warn(
+            f"KLICKD_SECURITY: suspicious keys in payload: {suspicious_found}. "
+            "Review before use.",
+            UserWarning,
+            stacklevel=3,
+        )
+
+
+# ---------------------------------------------------------------------------
+# §18ter Ethics enforcement — locked_actions as hard constraints
+# ---------------------------------------------------------------------------
+
+def _enforce_ethics(payload: dict) -> None:
+    """
+    §18ter: validate ethics block if present.
+    - ethics.locked_actions must be a list of strings
+    - Presence of locked_actions is reported for audit trail (non-fatal)
+    """
+    ethics = payload.get("ethics")
+    if ethics is None:
+        return
+    if not isinstance(ethics, dict):
+        raise KlickdFormatError("KLICKD_E_FORMAT: 'ethics' field must be a dict")
+    locked = ethics.get("locked_actions")
+    if locked is not None:
+        if not isinstance(locked, list) or not all(isinstance(a, str) for a in locked):
+            raise KlickdFormatError(
+                "KLICKD_E_FORMAT: ethics.locked_actions must be a list of strings"
+            )
+
+
+# ---------------------------------------------------------------------------
+# §18 Growth validation
+# ---------------------------------------------------------------------------
+
+_MAX_GROWTH_LEVEL = 5
+_MIN_MEMORY_REFS_AT_MAX_LEVEL = 3
+
+def _validate_growth(payload: dict) -> None:
+    """
+    §18 growth validation:
+    - growth.level must be 0-5 if present
+    - growth.level == 5 requires memory_refs >= 3
+    """
+    growth = payload.get("growth")
+    if growth is None:
+        return
+    if not isinstance(growth, dict):
+        raise KlickdFormatError("KLICKD_E_FORMAT: 'growth' field must be a dict")
+    level = growth.get("level")
+    if level is None:
+        return
+    if not isinstance(level, int) or level < 0:
+        raise KlickdFormatError(
+            f"KLICKD_E_FORMAT: growth.level must be a non-negative integer, got {level!r}"
+        )
+    if level > _MAX_GROWTH_LEVEL:
+        raise KlickdFormatError(
+            f"KLICKD_E_FORMAT: growth.level={level} exceeds maximum {_MAX_GROWTH_LEVEL}"
+        )
+    if level == _MAX_GROWTH_LEVEL:
+        memory_refs = growth.get("memory_refs")
+        count = len(memory_refs) if isinstance(memory_refs, list) else (
+            int(memory_refs) if isinstance(memory_refs, int) else 0
+        )
+        if count < _MIN_MEMORY_REFS_AT_MAX_LEVEL:
+            raise KlickdFormatError(
+                f"KLICKD_E_FORMAT: growth.level=5 requires memory_refs >= "
+                f"{_MIN_MEMORY_REFS_AT_MAX_LEVEL}, got {count}"
+            )

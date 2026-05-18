@@ -1,25 +1,38 @@
 """
-save_klickd.py — .klickd v2.5 encryption module
+save_klickd.py — .klickd v3.0 encryption module
 ================================================
-Encrypts a Python dict payload with AES-256-GCM and writes a .klickd v2.5
+Encrypts a Python dict payload with AES-256-GCM and writes a .klickd v3.0
 JSON envelope to disk.
 
 Envelope layout (all bytes fields are standard base64, RFC 4648 §4)
 --------------------------------------------------------------------
-klickd_version : "2.5"
+klickd_version : "3.0"
 encrypted      : true
 domain         : str   caller-supplied, e.g. "general"
 created_at     : str   UTC, RFC 3339, YYYY-MM-DDTHH:MM:SSZ (no fractional sec)
-kdf_salt       : base64(16 random bytes) — PBKDF2-SHA256 salt
-iv             : base64(12 random bytes) — AES-GCM nonce
+kdf            : {name, salt, params: {m, t, p}}   — Argon2id block
+cipher         : {name, iv}                         — AES-256-GCM block
 ciphertext     : base64(ciphertext_bytes || 16-byte GCM tag)
 
 AAD (Additional Authenticated Data)
 -------------------------------------
-Canonical JSON of exactly 4 fields:
-    {klickd_version, encrypted, domain, created_at}
-sorted keys, separators=(',',':'), ensure_ascii=True.
-This matches the AAD that load_klickd.py expects.
+RFC 8785 JCS canonical JSON of exactly 6 fields:
+    {cipher, created_at, domain, encrypted, kdf, klickd_version}
+sorted keys, ensure_ascii=False.
+This matches the AAD that load_klickd.py v3.0 expects.
+
+Payload limits
+--------------
+- Plaintext payload: <= 4 MB  (KLICKD_E_FORMAT if exceeded)
+- agent_instructions / user_preferences: <= 32 KB (KLICKD_E_FORMAT)
+- ethics.locked_actions: validated as list[str] if present
+- growth.level: validated <= 5 if present
+- growth.memory_refs: validated >= 3 if level == 5
+
+KDF defaults
+------------
+Argon2id: m=65536 (64 MiB), t=3 iterations, p=1 thread
+These meet the §14.1 minimum floors enforced by the decoder.
 
 Error classes (imported from load_klickd)
 ------------------------------------------
@@ -36,8 +49,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
+
+try:
+    from argon2.low_level import hash_secret_raw, Type as Argon2Type
+    ARGON2_AVAILABLE = True
+except ImportError:
+    ARGON2_AVAILABLE = False
 
 # Shared error classes from load_klickd
 from load_klickd import KlickdAuthError, KlickdVersionError, KlickdFormatError  # noqa: F401
@@ -55,53 +72,162 @@ class KlickdWeakPassphraseError(Exception):
 # Constants
 # ---------------------------------------------------------------------------
 
-_KLICKD_VERSION   = "2.5"
-_KDF_ITERATIONS   = 600_000
+_KLICKD_VERSION   = "3.0"
 _KEY_BYTES        = 32
 _SALT_BYTES       = 16
 _IV_BYTES         = 12
 _GCM_TAG_BYTES    = 16
 
+# Argon2id defaults — meet §14.1 minimum floors
+_ARGON2_M         = 65536   # 64 MiB
+_ARGON2_T         = 3
+_ARGON2_P         = 1
+
 _MIN_PASSPHRASE_REJECT = 8    # hard reject below this
 _MIN_PASSPHRASE_WARN   = 12   # warn below this
+
+# Payload limits (mirrors decoder)
+_MAX_PAYLOAD_BYTES     = 4 * 1024 * 1024   # 4 MB
+_MAX_AGENT_INSTR_BYTES = 32 * 1024         # 32 KB
+
+# Ethics/growth validation limits
+_MAX_GROWTH_LEVEL = 5
+_MIN_MEMORY_REFS_AT_MAX_LEVEL = 3
 
 
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _derive_key(passphrase: str, salt: bytes) -> bytes:
-    """Derive a 32-byte AES key via PBKDF2-SHA256 (600 000 iterations)."""
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=_KEY_BYTES,
-        salt=salt,
-        iterations=_KDF_ITERATIONS,
-    )
-    return kdf.derive(passphrase.encode("utf-8"))
-
-
-def _build_aad(klickd_version: str, encrypted: bool,
-               domain: str, created_at: str) -> bytes:
+def _jcs_canonicalize(obj: dict) -> bytes:
     """
-    Build Additional Authenticated Data for the 4 canonical envelope fields.
+    RFC 8785 JCS canonical JSON.
+    Covers all .klickd AAD field types: strings, bools, ints, nested objects.
+    NFC normalisation applies to strings (Python str is already NFC in practice;
+    explicit normalisation added for correctness per RFC 8785 §3.2.2.2).
+    Float values with non-zero fractional part must not appear in AAD fields.
+    """
+    import unicodedata
+    def _normalize(o):
+        if isinstance(o, str):
+            return unicodedata.normalize("NFC", o)
+        if isinstance(o, dict):
+            return {_normalize(k): _normalize(v) for k, v in o.items()}
+        if isinstance(o, list):
+            return [_normalize(i) for i in o]
+        return o
+    normalized = _normalize(obj)
+    return json.dumps(
+        normalized,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
 
-    Canonical JSON: sorted keys, no spaces, ensure_ascii=True.
+
+def _derive_key(passphrase: str, salt: bytes,
+                m: int = _ARGON2_M, t: int = _ARGON2_T, p: int = _ARGON2_P) -> bytes:
+    """Derive a 32-byte AES key via Argon2id."""
+    if not ARGON2_AVAILABLE:
+        raise ImportError(
+            "argon2-cffi is required for v3.0 encoding: pip install argon2-cffi"
+        )
+    return hash_secret_raw(
+        secret=passphrase.encode("utf-8"),
+        salt=salt,
+        time_cost=t,
+        memory_cost=m,
+        parallelism=p,
+        hash_len=_KEY_BYTES,
+        type=Argon2Type.ID,
+    )
+
+
+def _build_aad_v3(klickd_version: str, encrypted: bool,
+                  domain: str, created_at: str,
+                  kdf_block: dict, cipher_block: dict) -> bytes:
+    """
+    Build v3.0 AAD: 6 fields via RFC 8785 JCS.
+    Fields: cipher, created_at, domain, encrypted, kdf, klickd_version
     """
     aad_dict = {
-        "klickd_version": klickd_version,
-        "encrypted":      encrypted,
-        "domain":         domain,
+        "cipher":         cipher_block,
         "created_at":     created_at,
+        "domain":         domain,
+        "encrypted":      encrypted,
+        "kdf":            kdf_block,
+        "klickd_version": klickd_version,
     }
-    return json.dumps(aad_dict, sort_keys=True, separators=(",", ":"),
-                      ensure_ascii=True).encode("utf-8")
+    return _jcs_canonicalize(aad_dict)
 
 
 def _utc_now_rfc3339() -> str:
     """Return current UTC time as YYYY-MM-DDTHH:MM:SSZ (no fractional seconds)."""
     now = datetime.now(timezone.utc)
     return now.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _validate_payload(payload: dict) -> None:
+    """
+    Validate payload fields before encryption.
+
+    Checks:
+    - agent_instructions / user_preferences <= 32 KB
+    - ethics.locked_actions is list[str] if present  (§18ter)
+    - growth.level <= 5 if present
+    - growth.memory_refs >= 3 if level == 5  (§18 growth validation)
+    """
+    # agent_instructions / user_preferences size cap
+    for field in ("agent_instructions", "user_preferences"):
+        val = payload.get(field)
+        if isinstance(val, str):
+            size = len(val.encode("utf-8"))
+            if size > _MAX_AGENT_INSTR_BYTES:
+                raise KlickdFormatError(
+                    f"KLICKD_E_FORMAT: {field!r} exceeds 32 KB limit ({size} bytes)"
+                )
+
+    # §18ter — ethics.locked_actions must be a list of strings if present
+    ethics = payload.get("ethics")
+    if ethics is not None:
+        if not isinstance(ethics, dict):
+            raise KlickdFormatError(
+                "KLICKD_E_FORMAT: 'ethics' must be a dict"
+            )
+        locked = ethics.get("locked_actions")
+        if locked is not None:
+            if not isinstance(locked, list) or not all(isinstance(a, str) for a in locked):
+                raise KlickdFormatError(
+                    "KLICKD_E_FORMAT: ethics.locked_actions must be a list of strings"
+                )
+
+    # §18 — growth level and memory_refs validation
+    growth = payload.get("growth")
+    if growth is not None:
+        if not isinstance(growth, dict):
+            raise KlickdFormatError(
+                "KLICKD_E_FORMAT: 'growth' must be a dict"
+            )
+        level = growth.get("level")
+        if level is not None:
+            if not isinstance(level, int) or level < 0:
+                raise KlickdFormatError(
+                    f"KLICKD_E_FORMAT: growth.level must be a non-negative integer, got {level!r}"
+                )
+            if level > _MAX_GROWTH_LEVEL:
+                raise KlickdFormatError(
+                    f"KLICKD_E_FORMAT: growth.level={level} exceeds maximum {_MAX_GROWTH_LEVEL}"
+                )
+            if level == _MAX_GROWTH_LEVEL:
+                memory_refs = growth.get("memory_refs")
+                count = len(memory_refs) if isinstance(memory_refs, list) else (
+                    int(memory_refs) if isinstance(memory_refs, int) else 0
+                )
+                if count < _MIN_MEMORY_REFS_AT_MAX_LEVEL:
+                    raise KlickdFormatError(
+                        f"KLICKD_E_FORMAT: growth.level=5 requires memory_refs >= "
+                        f"{_MIN_MEMORY_REFS_AT_MAX_LEVEL}, got {count}"
+                    )
 
 
 # ---------------------------------------------------------------------------
@@ -113,9 +239,12 @@ def save_klickd(
     passphrase: str,
     domain: str = "general",
     filepath: str = None,
+    argon2_m: int = _ARGON2_M,
+    argon2_t: int = _ARGON2_T,
+    argon2_p: int = _ARGON2_P,
 ) -> str:
     """
-    Encrypt *payload* and write a .klickd v2.5 envelope to *filepath*.
+    Encrypt *payload* and write a .klickd v3.0 envelope to *filepath*.
 
     Parameters
     ----------
@@ -128,6 +257,12 @@ def save_klickd(
     filepath : str, optional
         Destination path.  If None, a UUID-named file is created under
         ``~/.klickd/memory/``.
+    argon2_m : int, optional
+        Argon2id memory cost in KiB (default: 65536 = 64 MiB).
+    argon2_t : int, optional
+        Argon2id time cost / iterations (default: 3).
+    argon2_p : int, optional
+        Argon2id parallelism (default: 1).
 
     Returns
     -------
@@ -139,7 +274,10 @@ def save_klickd(
     KlickdWeakPassphraseError
         If *passphrase* is shorter than 8 characters.
     KlickdFormatError
-        If *payload* is not JSON-serialisable.
+        If *payload* is not JSON-serialisable, exceeds size limits,
+        or contains invalid ethics/growth fields.
+    ImportError
+        If argon2-cffi is not installed.
 
     Warns
     -----
@@ -161,11 +299,20 @@ def save_klickd(
             stacklevel=2,
         )
 
+    # --- validate payload fields (ethics, growth, size) -------------------
+    _validate_payload(payload)
+
     # --- serialise payload --------------------------------------------------
     try:
         plaintext = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     except (TypeError, ValueError) as exc:
         raise KlickdFormatError(f"Payload is not JSON-serialisable: {exc}") from exc
+
+    # --- payload size check (before encryption) ----------------------------
+    if len(plaintext) > _MAX_PAYLOAD_BYTES:
+        raise KlickdFormatError(
+            f"KLICKD_E_FORMAT: payload exceeds 4MB limit ({len(plaintext)} bytes)"
+        )
 
     # --- CSPRNG material ----------------------------------------------------
     salt = os.urandom(_SALT_BYTES)
@@ -174,11 +321,22 @@ def save_klickd(
     # --- timestamp ----------------------------------------------------------
     created_at = _utc_now_rfc3339()
 
-    # --- derive key ---------------------------------------------------------
-    key = _derive_key(passphrase, salt)
+    # --- build kdf + cipher blocks ------------------------------------------
+    kdf_block = {
+        "name":   "argon2id",
+        "salt":   base64.b64encode(salt).decode("ascii"),
+        "params": {"m": argon2_m, "t": argon2_t, "p": argon2_p},
+    }
+    cipher_block = {
+        "name": "aes-256-gcm",
+        "iv":   base64.b64encode(iv).decode("ascii"),
+    }
 
-    # --- build AAD (4 fields) -----------------------------------------------
-    aad = _build_aad(_KLICKD_VERSION, True, domain, created_at)
+    # --- build AAD (6 fields, RFC 8785 JCS) ---------------------------------
+    aad = _build_aad_v3(_KLICKD_VERSION, True, domain, created_at, kdf_block, cipher_block)
+
+    # --- derive key (Argon2id) ----------------------------------------------
+    key = _derive_key(passphrase, salt, m=argon2_m, t=argon2_t, p=argon2_p)
 
     # --- encrypt AES-256-GCM ------------------------------------------------
     aesgcm = AESGCM(key)
@@ -187,8 +345,6 @@ def save_klickd(
     # cipher_bytes = ciphertext_bytes || 16-byte tag  ✓
 
     # --- base64-encode (RFC 4648 §4, standard padded) -----------------------
-    kdf_salt_b64  = base64.b64encode(salt).decode("ascii")
-    iv_b64        = base64.b64encode(iv).decode("ascii")
     ciphertext_b64 = base64.b64encode(cipher_bytes).decode("ascii")
 
     # --- build envelope -----------------------------------------------------
@@ -197,8 +353,8 @@ def save_klickd(
         "encrypted":      True,
         "domain":         domain,
         "created_at":     created_at,
-        "kdf_salt":       kdf_salt_b64,
-        "iv":             iv_b64,
+        "kdf":            kdf_block,
+        "cipher":         cipher_block,
         "ciphertext":     ciphertext_b64,
     }
 
