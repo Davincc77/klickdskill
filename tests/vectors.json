@@ -1,15 +1,12 @@
 {
   "description": ".klickd v2 test vectors \u2014 for implementation self-verification",
   "spec_version": "2.0",
+  "payload_sha256_canonical_form": "sha256(json.dumps(payload, sort_keys=True, separators=(',',':'), ensure_ascii=True).encode('utf-8'))",
   "notes": [
-    "Vector 1: unencrypted (encrypted: false) \u2014 parse only, no crypto",
-    "Vector 2: encrypted, domain=finance, passphrase='test-vector-2'",
-    "Vector 3: encrypted, domain=robotics, passphrase='test-vector-3'",
-    "Vector 4: encrypted, short passphrase (6 chars) \u2014 verify SHOULD-warn fires",
-    "All encrypted vectors use AES-256-GCM + PBKDF2-SHA256 @ 600k iterations",
-    "Wire format: ciphertext || 16-byte GCM tag, base64-encoded as one blob",
-    "AAD = JSON({klickd_version, encrypted, domain, created_at}, sort_keys=True, separators=(',',':'), ensure_ascii=True)",
-    "NOTE: updated_at is NOT sealed in AAD by design \u2014 it changes on every re-encrypt."
+    "AAD = json.dumps({klickd_version,encrypted,domain,created_at}, sort_keys=True, separators=(',',':'), ensure_ascii=True)",
+    "expected_payload_sha256 = sha256(canonical_json(decrypted_payload))",
+    "canonical_json = json.dumps(sort_keys=True, separators=(',',':'), ensure_ascii=True)",
+    "NOTE: v1 and v2 share the same payload content, so their sha256 values are equal \u2014 this is expected"
   ],
   "vectors": [
     {
@@ -23,26 +20,26 @@
         "created_at": "2026-05-18T00:00:00Z",
         "updated_at": "2026-05-18T00:00:00Z",
         "payload": {
-          "identity": {
-            "name": "Alex",
-            "language": "en",
-            "timezone": "Europe/London",
-            "communication_style": "concise, direct"
-          },
           "agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
           "context": {
+            "artifacts": [],
             "current_state": "ETH staking under review.",
             "decisions_locked": [
               "Always display amounts in EUR equivalent"
             ],
-            "artifacts": [],
             "summary": "Portfolio rebalancing, session 2."
+          },
+          "identity": {
+            "communication_style": "concise, direct",
+            "language": "en",
+            "name": "Alex",
+            "timezone": "Europe/London"
           }
         }
       },
       "expected_agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
       "expected_identity_name": "Alex",
-      "expected_payload_sha256": "6b5119c51b6b29a6d56bf3162c2875bbacbe37b220c7eb3cb8fe138eccaa1c8c"
+      "expected_payload_sha256": "62439ba38364c35a056348aed5d2075fb522d14891a3559d2a0a7582973c134e"
     },
     {
       "id": "v2-encrypted-finance",
@@ -55,13 +52,13 @@
         "domain": "finance",
         "created_at": "2026-05-18T00:00:00Z",
         "updated_at": "2026-05-18T00:00:00Z",
-        "salt": "3lQrI6E8ov8etSA9K3B/LQ==",
-        "iv": "PkNnTFwjv0eQH7a1",
-        "payload": "l/cJ4GhYChJcnGPyarLXIgbkJG/BHUmTPl5Jt4FRWGsXtTq5ffviofx1lEGv88/apsirSv871NRez18/0XWhGMU/VrrhLHJVlY7GfbSwnUnrNebr6DpBzPJ7IQnJK6pkc4wGx9B06zE3YN+H+KXbuIB9v8C3KQYcLifA1WLl2p25YeajCt9zO8TltQh73lbn/gBMUcNwHxgFau4dv6i2pVcAAWiTeMzIFscPFiimB615eEsQv/cLscIoXyF5YugoKQ+15RwSXlY7z1OPNjJHVeISWTgXs1H1xbOCroDaXntHVkPTRC8Q1HyPATIQp/0AZAG6HW6VY+Hf1Ox9q4hsTAV5SwLUQErN1ZnZPg/1/ohX9Uw8MjYja3DOqPfe6ZhrcUqX8xupQ/923R5G6JL/EgUAVu1gdfOGlKVjV0uLWMcvLffBd7OcMDMlBHOS99mFwso+teZLXjiNWp1ZY/5fFrelnZ1TSzsctovgv1eT0o3NlwPFtu02CKUHvFLkTVL5NFhsP0o9seyD6n7jlR/2SizdmQO4AUF97+/xvShAZF+y6bSaSFaXD0Q="
+        "salt": "xbOGOEh9009Qv+0cjNzamQ==",
+        "iv": "MJQM1gQskw8Ymwyj",
+        "payload": "GKqhSmZJNvQTDBtOtrXrFMFO6YDWDhIjYLjnLPF5CiOQDy5v8gwGrWeYugQJN2sSEo1KxN0Z7nEnCFweY2YC62oft5mfs11LVIIwlAR+sdEiKSTHHciHjocn4Jm25s89Yx//MkPhypd+TOG2Jp3FkSh2LjSGVu5+y37b35EdAP+DS0KhP19fZZvw2/OZnAnuyeRC5phJ4cSnwa2W3/A9qSqYeK35UYZ28RALVnq4OWqMdwbotpTSpdGBVSZ4kmsUv+AB8V3rdoXo66HVYjUvMTEk8wQDCMeZXdBMAI4RWm4K3z1drMorhxJgtk3PTFeuqphXjVK7WWmXR/y7FUUcj3tZKJVjzHORIC2E1MMO2wcOlX/wEfT7FBYijTaLJLTBYji2zxinC3S4vz/btMQsivmbLcbNWLW8G34NYX7C4C4TDW95Mw0RbzxLnqxyNT75W+uCMqQUTWAaXIH7ug21XUZfIY00rZVkatuMTuz8RSjmsSR/HqOLPfFCX8wSlbZDAKGLSHnz4HpxCFQUgHm+lLp5f/ZF4w=="
       },
       "expected_agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
       "expected_identity_name": "Alex",
-      "expected_payload_sha256": "6b5119c51b6b29a6d56bf3162c2875bbacbe37b220c7eb3cb8fe138eccaa1c8c"
+      "expected_payload_sha256": "62439ba38364c35a056348aed5d2075fb522d14891a3559d2a0a7582973c134e"
     },
     {
       "id": "v3-encrypted-robotics",
@@ -74,17 +71,17 @@
         "domain": "robotics",
         "created_at": "2026-05-18T00:00:00Z",
         "updated_at": "2026-05-18T00:00:00Z",
-        "salt": "i/yjHpOcL7+fDKpb89Tx6w==",
-        "iv": "oVyrDQ7RSNh7Uxp8",
-        "payload": "XiG5JHh5VpaUp+YOj/7wPcKscuY0/Xpik7iAdZC7iMmJP8Z1FnY20PB/OjxZ7yedX9OAVy7W6C2745R42f6ifP3dNTuCU/L9r7TySYSz4mZnJsw9R34VcSeuswpJm2WNlVrXRy2G5Hdj6InWVH/uV+ullGAude4g0mZX/B0X2Ff5Yjd0ntcWkrbSlzbvBYSt+bWQIFg2nKX7sEunhD2MESB8QfsPpV3V+c91gA+cR9KrS+ifx17e33FyAWpolQ5Cy7UfzQ49EqLAZOEvm8PjKvTYgirq9je47WzTo2ILO6+jeEHZijl7rIm/XbI9ODKp9D2lkfiVqZa1KL4ypd+cT86bItcotNMbY0D7eqwt4ZsKG7pGTvl2cckqCA8j5sF79rNeAKhMNGPJ0R75TCWObjS+TcJX1QkCHBT5v3KOwy4i3eJjutMCll3OJBsSgrofC69dqaHYYCr8M0mAiWwz8D09j7GMEQzY7lDSUCf1fsVkhw8e81qdg6EjnbhauX4nKa+LYn7LNcB2tz4Z1ixJnUKF+UJKCWbFQkgk+Jc6akyA1UFNzBr1/FITpc0VQkCIZXlRWFchaN3VocBfcv4wupmqekRLH9yLpTQQrB4RdXnHnRTC/CXHdb7RtP+roVdZi+Dn3kZxmeIipgFFIBEnkcpXoDFSRvpLox7FjYgBS+Wkkit2KIQYmOlP+cplVTjgWkLWkIZuXqKcB7aPcAPZ3AiQpruj8GsY9yk4wnNaKLc8ZugjqOMRefWmMHVz7QHjv1o1o5WkguEz2p9u+25OKf4XUg+dYPxUPlZyCQDiDYHCeWDXKFgzugTNIGv5ZcoLIN6MUJ1LRhAGVnMWnHAAgd300K8xHq+3bLXCkc8AA+ts7uiPayXZTSeJYPZBjfyOFV6Bsl3rS2dLA7BV8SlO0ZO7eQjDY16zf7DzTQRlEY+mUIv1YwZcrCgcXhvOEVfmRSCdREnGCok/sec4iFOfeaGbXgdHafGeMvZSCa8xExPIsi0yuUW/mHR4D4FtLq9zRr0tVfsSIcNmMZUhGPMxRv+7fNgqDOUYjqXN9DJaBoTPJAjnU5Qkp0I2aeAEio4FmR5AgoBRBCIC4Ye1hHvTQAKw5EJM+n/t3ExiUwHfYTaWooDFIQ2x3A/69GV2sjPCtyrERmV1ckzkfR8NQfjVrcZ5QwXaUJlj9T1qdMmVfHu/iwAQLpO4Qb7yR2AAN2s="
+        "salt": "Iqee+oboq/Unnqw+ueA+Cw==",
+        "iv": "qIAxFpK16Q94bxuJ",
+        "payload": "UHBR/Iw6Nqrjs94AGgulAD1u3NJUq6vGsv+HgW1S1/gOjbBI0IZV415bU5PzBu+DkP0lcwTl4dL8A3rkCnhId3qDUqbWwU8QoIULcJS+hsomsfmw5RRLTNw6ok7BCqNu3rK1oIuACNDPmjZ71Mc+On6p79XplFFs0fieM1CVJdTknttVdgptjNPlxUeTUEeccMI/a5li7wXhANgFDs/JsUpC55v3GlidaJeH4L6Uy79XHdheBmZeB0U1vTGjMxEAxR5jACOvfnLhYPI6w9iWdrpLKqrH5mFvCY8DfNxZaqw0tuUlGs2CMbxs7aA5JTu5P4vIsTrHMEPGy0luwEWGfBNCRfFJvpTkI7u3A7KTs/hPoYZCzeMLAH6XrlWaKMmil/mgEcfsOl7LX74LacEXNoAAxVRZeZ42hTcK3dq0vY9lUaVDmeS1T4PmFv2mFzz4T+TiSWLrFakm/bVH9kGa9a91WGEGIDiWMpT/2Cqy3WtERTzjwS6MCxro5jjLsVWPbys6iell9549QAMmKkiAXaD6YjfkpCO8QsAnbQiOLVhLtwaOCehvtzLnvaEqyzzQpPY6u+1kKOcbX+zVpWbnYusz0bnMeyb+tqs3+1ix68n6lShNlTKAueKvN5wciqXVXE3fc/LH75DKlSPtDi1deS17ujWWrvUqbtxgPLeQqqKkwpWG2pqoaJjul9alspVlU9g+7YpkC2Cz3YvBDi3V7+TO84NqA9GcYnt5c1G/aKw8nbfoyZJ1dDVDvB43lN7Mb3GQ2t8EXR8PJ7L1Ocp3K1ZL1a0arAhAOcWTRbQlWMAQuOXHTUBDzSXMpLvixv0F1khZkIpm0T+547gQqPkiIhAaHZqEBLMbgSgnjpQjQFOx/QgPNYq+dhpseN49FNdyNv28AmXfYXP20AsSSSFYggAzW02MrkqZhyk1wyBU+iNekS7N5elOkQx+k+8zvHU+vI4CN0fNByZffm1oHFAdXcPizv4b3taVUEoorGxqSLZriHflozRJ6Huf6yLeiOm9JG2MU4hwLndcI/57wM2lsG+xYUELDDEKyzmalZvfTCN75XIQbt1HI2pxHzwDNH3/z/XYmdIuuTCrBCra2jQ1ncRZbC7sGaWPAprmBGtqM5z7o40fYz+ojHEPPYt0Uj6l7CzAXj4zCsMB1il2lXyU"
       },
       "expected_agent_instructions": "Resuming household management with Jordan's Optimus unit. Jordan prefers morning briefings. Kitchen and bedroom are privacy zones.",
       "expected_identity_name": "Jordan",
-      "expected_payload_sha256": "fc6762bbb61514aee68c2c1a6ecae9e1d6f03381e10261a4bc3e08a1fd2f93ca"
+      "expected_payload_sha256": "ea4dde4f32f17f0f29922aa4c482d1b68ca493dd7b91c78049e3545b9b0e2e38"
     },
     {
       "id": "v4-short-passphrase",
-      "description": "Short passphrase (6 chars) \u2014 implementation SHOULD warn. Decryption must still succeed.",
+      "description": "Short passphrase (6 chars) \u2014 SHOULD warn, MUST decrypt",
       "passphrase": "short1",
       "envelope": {
         "klickd_version": "2.0",
@@ -93,13 +90,13 @@
         "domain": "general",
         "created_at": "2026-05-18T00:00:00Z",
         "updated_at": "2026-05-18T00:00:00Z",
-        "salt": "Y5xtAU6mOk+0YUprCqHMOQ==",
-        "iv": "OxhheE23cAvjK5ib",
-        "payload": "THze19AsKTaeJtVohg19RD/haU70XSEjLzWrtKTloDIhCm3so9DE2KueIjaVDr3v4KAjwtVbNiPwybMZDtY+3vT2GgOwuT5XAaAGDFh7U1ZoQhsmhG6UFL+muqKMTFCEYT5ylVZpy+PjUeAr13Sar+Nv39TYJJ4UAC8BXHQc3AQpBtFtM/HVH76txPmvweQ+YR8MVFq/xb6yneaH0hPOHgBBVnSrBy5UqLg+NOO71WS6a8IoqPUvH57H0RWfphcTh5Ka9XRNTF3F7BGZeg/77DA0PgW2mwda5w4/GVBji4aue7cLm29vJKWY/sBgGt3NEAjHBM8nP5RqLqgP0VO76VsbpfcT2e1aG4flStcs7OKU/tS0MErPhOr195QVtgleobiCPdZcyXdidFeRgg=="
+        "salt": "CNUfbvqD0K34FuGvGmEBlA==",
+        "iv": "xkLNRqrT4dB4pB12",
+        "payload": "VCSnJZALjmEVHuKVGEDt7sjsQX92habvUDEt5oeivgPdKj3YYhcvUHURmQ3MhOZYYqD/piCXx2kQeBQCr2dEdEwXBhWFTEleLPwz6pKkqVakzbCkwG44Wa2/SMtIQdzpC0Gzmx7y6G2OgtZOGZFrzLn5Mf9a+JJsFBV0g0hPw2XMWdRQiFJrAzHC06FdrUcbz8DDBFakXHbsEFgy0HLaeg2T6fclAdIyRJBxdaWsfPbgAosyuYQ+2jmWJfzz68iNwNUxX9qbDfgKmoLKcFMIoUa0AyTyDAGYpB4+qnKIOK/OcOhz8jQuvTaAmq6QqTEbOPVCaeFgsuJc8DeDyqQCwpCyvcPVQvoFuKKLGoaz2AX9KpWYADwIB9jl"
       },
       "expected_agent_instructions": "Test vector for short passphrase warning.",
       "expected_identity_name": "Test",
-      "expected_payload_sha256": "79314cfb0f89dcfaab3a138a73f3c28299203d485426fdba81d9c080e40aabe1",
+      "expected_payload_sha256": "9f793d4543d1e7a9a18aac8063a1ee3031b060391ea1e59ba5ecd37132bf1085",
       "expected_behavior": "SHOULD emit passphrase-too-short warning; decryption MUST succeed"
     }
   ]
