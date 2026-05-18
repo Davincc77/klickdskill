@@ -90,7 +90,7 @@ def encrypt(payload: dict, passphrase: str, domain: str, created_at: str) -> dic
     }
     aad = json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
-    plaintext = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    plaintext = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")  # canonical form — must match expected_payload_sha256
     # Wire format: ciphertext || 16-byte GCM tag (AESGCM appends tag automatically)
     ciphertext = AESGCM(key).encrypt(iv, plaintext, aad)
 
@@ -117,7 +117,7 @@ def main():
     payload    = PAYLOADS[args.domain]
     envelope   = encrypt(payload, args.passphrase, args.domain, created_at)
 
-    print(json.dumps(envelope, indent=2, ensure_ascii=False))
+    print(json.dumps(envelope, indent=2, ensure_ascii=True))
 
 
 if __name__ == "__main__":
