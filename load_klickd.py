@@ -1,238 +1,157 @@
-"""
-load_klickd.py — .klickd v2.5 decryption module
-=================================================
-Reads a .klickd JSON envelope (v2.4 / v2.5) from disk, derives the AES-256
-key via PBKDF2-SHA256 (600 000 iterations), and decrypts the payload with
-AES-256-GCM.
-
-Envelope fields
----------------
-klickd_version : str   e.g. "2.5"
-encrypted      : bool  always True for v2.4+
-domain         : str   e.g. "general"
-created_at     : str   RFC 3339 timestamp, no fractional seconds, Z suffix
-kdf_salt       : str   base64-encoded 16-byte PBKDF2 salt
-iv             : str   base64-encoded 12-byte GCM nonce
-ciphertext     : str   base64-encoded (ciphertext_bytes || 16-byte GCM tag)
-
-AAD (Additional Authenticated Data)
-------------------------------------
-Canonical JSON of exactly 4 envelope fields:
-    {klickd_version, encrypted, domain, created_at}
-Sorted keys, no spaces, separators=(',',':'), ensure_ascii=True.
-The tag protects both the payload and these 4 metadata fields.
-
-Error classes
--------------
-KlickdAuthError        Wrong passphrase / tampered ciphertext (GCM tag mismatch)
-KlickdVersionError     Unrecognised major version number
-KlickdFormatError      Malformed file, bad base64, missing fields, etc.
-"""
-
-import base64
-import hashlib
-import json
-import os
-import warnings
+#!/usr/bin/env python3
+"""load_klickd.py v3.0 — Argon2id + RFC 8785 JCS canonicalization"""
+import json, base64, os, warnings
 from pathlib import Path
 
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
-from cryptography.exceptions import InvalidTag
+try:
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+    from cryptography.hazmat.primitives import hashes
+except ImportError:
+    raise ImportError("pip install cryptography")
+
+try:
+    import jcs
+    JCS_AVAILABLE = True
+except ImportError:
+    JCS_AVAILABLE = False
+    warnings.warn("jcs not installed — falling back to json.dumps canonical (v2.x compat only). pip install jcs for v3.0 support.")
+
+try:
+    from argon2.low_level import hash_secret_raw, Type
+    ARGON2_AVAILABLE = True
+except ImportError:
+    ARGON2_AVAILABLE = False
 
 
-# ---------------------------------------------------------------------------
-# Public error classes
-# ---------------------------------------------------------------------------
+class KlickdError(Exception): pass
+class KlickdAuthError(KlickdError): pass
+class KlickdVersionError(KlickdError): pass
+class KlickdFormatError(KlickdError): pass
+class KlickdWeakPassphraseError(KlickdError): pass
 
-class KlickdAuthError(Exception):
-    """Raised when AES-GCM authentication fails (wrong passphrase or tampered data)."""
-
-
-class KlickdVersionError(Exception):
-    """Raised when the envelope contains an unrecognised major version."""
-
-
-class KlickdFormatError(Exception):
-    """Raised when the envelope is structurally invalid (missing/malformed fields)."""
+SUPPORTED_MAJOR = {"2", "3"}
+MIN_PASSPHRASE_LEN = 8
+WARN_PASSPHRASE_LEN = 12
 
 
-# ---------------------------------------------------------------------------
-# Internal helpers
-# ---------------------------------------------------------------------------
-
-_REQUIRED_FIELDS = ("klickd_version", "encrypted", "domain", "created_at",
-                    "kdf_salt", "iv", "ciphertext")
-
-_SUPPORTED_MAJOR_VERSIONS = {2}  # extend as new major versions land
-
-_MIN_PASSPHRASE_WARN = 12   # chars — emit a warning below this
-_GCM_TAG_BYTES = 16
+def _canonical_aad_v2(envelope: dict) -> bytes:
+    """v2.x AAD: 4 fields, Python json.dumps canonical."""
+    fields = {k: envelope[k] for k in ("created_at", "domain", "encrypted", "klickd_version")}
+    return json.dumps(fields, sort_keys=True, separators=(",",":"), ensure_ascii=True).encode("utf-8")
 
 
-def _decode_b64(field_name: str, value: str) -> bytes:
-    """Decode a standard (RFC 4648 §4) base64 string; raise KlickdFormatError on failure."""
-    try:
-        return base64.b64decode(value, validate=True)
-    except Exception as exc:
-        raise KlickdFormatError(
-            f"Field '{field_name}' contains invalid base64: {exc}"
-        ) from exc
+def _canonical_aad_v3(envelope: dict) -> bytes:
+    """v3.0 AAD: 6 fields (incl kdf+cipher blocks), RFC 8785 JCS."""
+    if not JCS_AVAILABLE:
+        raise KlickdFormatError("v3.0 requires RFC 8785 JCS: pip install jcs")
+    fields = {k: envelope[k] for k in ("cipher", "created_at", "domain", "encrypted", "kdf", "klickd_version")}
+    return jcs.canonicalize(fields)
 
 
-def _derive_key(passphrase: str, salt: bytes) -> bytes:
-    """Derive a 32-byte AES key from *passphrase* and *salt* using PBKDF2-SHA256."""
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=600_000,
-    )
+def _derive_key_v2(passphrase: str, salt: bytes) -> bytes:
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=600000)
     return kdf.derive(passphrase.encode("utf-8"))
 
 
-def _build_aad(envelope: dict) -> bytes:
-    """
-    Build Additional Authenticated Data from the 4 canonical envelope fields.
+def _derive_key_v3(passphrase: str, kdf_block: dict) -> bytes:
+    name = kdf_block.get("name", "argon2id")
+    salt = base64.b64decode(kdf_block["salt"])
+    if name == "argon2id":
+        if not ARGON2_AVAILABLE:
+            raise KlickdFormatError("Argon2id requires: pip install argon2-cffi")
+        params = kdf_block.get("params", {"m": 65536, "t": 3, "p": 1})
+        return hash_secret_raw(
+            secret=passphrase.encode("utf-8"),
+            salt=salt,
+            time_cost=params["t"],
+            memory_cost=params["m"],
+            parallelism=params["p"],
+            hash_len=32,
+            type=Type.ID
+        )
+    elif name == "pbkdf2-sha256":
+        iterations = kdf_block.get("params", {}).get("iterations", 600000)
+        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=iterations)
+        return kdf.derive(passphrase.encode("utf-8"))
+    else:
+        raise KlickdFormatError(f"KLICKD_E_KDF: unsupported kdf.name={name!r}")
 
-    AAD = canonical JSON of {klickd_version, encrypted, domain, created_at}
-          sorted keys, separators=(',',':'), ensure_ascii=True.
-    """
-    aad_dict = {
-        "klickd_version": envelope["klickd_version"],
-        "encrypted":      envelope["encrypted"],
-        "domain":         envelope["domain"],
-        "created_at":     envelope["created_at"],
-    }
-    return json.dumps(aad_dict, sort_keys=True, separators=(",", ":"),
-                      ensure_ascii=True).encode("utf-8")
-
-
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
 
 def load_klickd(filepath: str, passphrase: str) -> dict:
     """
-    Decrypt a .klickd v2.4/v2.5 file and return the plaintext payload dict.
+    Decrypt a .klickd file and return the plaintext payload as a dict.
 
-    Parameters
-    ----------
-    filepath : str
-        Path to the .klickd file.
-    passphrase : str
-        Passphrase used when the file was created.
+    Supports v2.x (PBKDF2, 4-field AAD) and v3.0 (Argon2id, JCS, 6-field AAD).
 
-    Returns
-    -------
-    dict
-        Decrypted JSON payload.
-
-    Raises
-    ------
-    KlickdFormatError
-        If the file cannot be parsed, required fields are missing, or base64
-        values are malformed.
-    KlickdVersionError
-        If the envelope major version is not supported.
-    KlickdAuthError
-        If AES-GCM authentication fails (wrong passphrase or tampered data).
-
-    Warns
-    -----
-    UserWarning
-        If *passphrase* is shorter than 12 characters.
+    Raises:
+        KlickdAuthError: wrong passphrase or tampered ciphertext
+        KlickdVersionError: unsupported major version
+        KlickdFormatError: malformed envelope
     """
-    # --- passphrase strength hint -------------------------------------------
-    if len(passphrase) < _MIN_PASSPHRASE_WARN:
-        warnings.warn(
-            f"Passphrase is only {len(passphrase)} characters; "
-            "a minimum of 12 is recommended.",
-            UserWarning,
-            stacklevel=2,
-        )
-
-    # --- load & parse file ---------------------------------------------------
-    path = Path(filepath).expanduser()
-    try:
-        raw = path.read_text(encoding="utf-8")
-    except OSError as exc:
-        raise KlickdFormatError(f"Cannot read file '{filepath}': {exc}") from exc
+    if len(passphrase) < WARN_PASSPHRASE_LEN:
+        warnings.warn(f"Passphrase is only {len(passphrase)} characters; a minimum of {WARN_PASSPHRASE_LEN} is recommended.")
 
     try:
-        envelope = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise KlickdFormatError(f"File is not valid JSON: {exc}") from exc
+        with open(filepath) as f:
+            envelope = json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        raise KlickdFormatError(f"KLICKD_E_FORMAT: cannot read envelope: {e}")
 
-    if not isinstance(envelope, dict):
-        raise KlickdFormatError("Envelope must be a JSON object.")
+    version_str = envelope.get("klickd_version", "")
+    major = version_str.split(".")[0]
+    if major not in SUPPORTED_MAJOR:
+        raise KlickdVersionError(f"KLICKD_E_VERSION: unsupported version {version_str!r}")
 
-    # --- required fields -----------------------------------------------------
-    for field in _REQUIRED_FIELDS:
+    for field in ("encrypted", "domain", "created_at", "ciphertext"):
         if field not in envelope:
-            raise KlickdFormatError(f"Missing required field: '{field}'")
+            raise KlickdFormatError(f"KLICKD_E_FORMAT: missing field {field!r}")
 
-    # --- version check -------------------------------------------------------
-    version_str = envelope["klickd_version"]
     try:
-        major = int(str(version_str).split(".")[0])
-    except (ValueError, AttributeError) as exc:
-        raise KlickdVersionError(
-            f"Cannot parse major version from '{version_str}'"
-        ) from exc
+        raw = base64.b64decode(envelope["ciphertext"])
+    except Exception:
+        raise KlickdFormatError("KLICKD_E_FORMAT: malformed base64 in ciphertext")
 
-    if major not in _SUPPORTED_MAJOR_VERSIONS:
-        raise KlickdVersionError(
-            f"Unsupported major version {major} (supported: "
-            f"{sorted(_SUPPORTED_MAJOR_VERSIONS)})"
-        )
+    if len(raw) < 16:
+        raise KlickdFormatError("KLICKD_E_FORMAT: ciphertext too short (< 16 bytes)")
 
-    # --- decode base64 fields ------------------------------------------------
-    salt_bytes   = _decode_b64("kdf_salt",   envelope["kdf_salt"])
-    iv_bytes     = _decode_b64("iv",          envelope["iv"])
-    cipher_bytes = _decode_b64("ciphertext",  envelope["ciphertext"])
+    # Version dispatch
+    if major == "3":
+        for block in ("kdf", "cipher"):
+            if block not in envelope:
+                raise KlickdFormatError(f"KLICKD_E_FORMAT: v3.0 requires {block!r} block")
+        try:
+            iv = base64.b64decode(envelope["cipher"]["iv"])
+        except Exception:
+            raise KlickdFormatError("KLICKD_E_FORMAT: malformed cipher.iv")
+        aad = _canonical_aad_v3(envelope)
+        key = _derive_key_v3(passphrase, envelope["kdf"])
+    else:
+        # v2.x
+        for field in ("kdf_salt", "iv"):
+            if field not in envelope:
+                raise KlickdFormatError(f"KLICKD_E_FORMAT: missing field {field!r}")
+        try:
+            salt = base64.b64decode(envelope["kdf_salt"])
+            iv   = base64.b64decode(envelope["iv"])
+        except Exception:
+            raise KlickdFormatError("KLICKD_E_FORMAT: malformed base64 in kdf_salt or iv")
+        aad = _canonical_aad_v2(envelope)
+        key = _derive_key_v2(passphrase, salt)
 
-    # --- validate ciphertext length ------------------------------------------
-    if len(cipher_bytes) < _GCM_TAG_BYTES:
-        raise KlickdFormatError(
-            f"Ciphertext too short ({len(cipher_bytes)} bytes); "
-            f"must be at least {_GCM_TAG_BYTES} bytes (GCM tag alone)."
-        )
-
-    # --- derive key ----------------------------------------------------------
-    key = _derive_key(passphrase, salt_bytes)
-
-    # --- build AAD (4 fields) ------------------------------------------------
-    aad = _build_aad(envelope)
-
-    # --- decrypt AES-256-GCM -------------------------------------------------
-    # ciphertext field = ciphertext_bytes || 16-byte tag  (cryptography lib
-    # expects the tag appended at the end, which is exactly our layout).
-    aesgcm = AESGCM(key)
     try:
-        plaintext = aesgcm.decrypt(iv_bytes, cipher_bytes, aad)
-    except InvalidTag as exc:
-        raise KlickdAuthError(
-            "AES-GCM authentication failed — wrong passphrase or tampered data."
-        ) from exc
+        aesgcm = AESGCM(key)
+        plaintext = aesgcm.decrypt(iv, raw, aad)
+    except Exception:
+        raise KlickdAuthError("KLICKD_E_AUTH: decryption failed — wrong passphrase or tampered file")
 
-    # --- parse payload -------------------------------------------------------
     try:
         payload = json.loads(plaintext.decode("utf-8"))
-    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
-        raise KlickdFormatError(f"Decrypted payload is not valid JSON: {exc}") from exc
+    except Exception:
+        raise KlickdFormatError("KLICKD_E_FORMAT: decrypted payload is not valid JSON")
 
-    # --- post-process known fields ------------------------------------------
-    # Use display_name (not name) for identity display
-    identity = payload.get("identity", {})
-    display_name = identity.get("display_name")  # correct field name
-
-    # Resolve memory path — default to ~/.klickd/memory/ (not /.memory/)
-    memory_path = payload.get(
-        "memory_path",
-        str(Path.home() / ".klickd" / "memory")
-    )
-    payload.setdefault("_resolved_memory_path", os.path.expanduser(memory_path))
+    # Resolve memory path
+    memory_path = payload.get("memory_path", "~/.klickd/memory/")
+    payload["_resolved_memory_path"] = str(Path(memory_path).expanduser())
 
     return payload
