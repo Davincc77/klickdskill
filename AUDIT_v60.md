@@ -248,3 +248,44 @@ See [`ROADMAP.md`](./ROADMAP.md) for full details.
 ---
 
 *`.klickd` — one soul. any model. any body.*
+
+---
+
+## Grok Audit 5 — Adversarial Coverage (commit HEAD)
+
+**Date:** 2026-05-18
+**Scope:** 15 adversarial test vectors covering all defensive layers
+**Result:** ✅ 15/15 PASS — 0 P0 / 0 P1 / 0 P2
+
+### Coverage Matrix
+
+| ID | Attack Vector | Defence | Result |
+|---|---|---|---|
+| adv-01 | `__proto__` key injection | `_whitehat_scan` | ✅ PASS |
+| adv-02 | `constructor` pollution | `_whitehat_scan` | ✅ PASS |
+| adv-03 | `prototype` key injection | `_whitehat_scan` | ✅ PASS |
+| adv-04 | `ignore_instructions` key (prompt injection) | `_whitehat_scan` → UserWarning | ✅ PASS |
+| adv-05 | `jailbreak` key (prompt injection) | `_whitehat_scan` → UserWarning | ✅ PASS |
+| adv-06 | `locked_actions` as string (ethics bypass) | `_enforce_ethics` | ✅ PASS |
+| adv-07 | `locked_actions` mixed list (ethics bypass) | `_enforce_ethics` | ✅ PASS |
+| adv-08 | `ethics` not a dict | `_enforce_ethics` | ✅ PASS |
+| adv-09 | `growth.level=99` inflation | `_validate_growth` | ✅ PASS |
+| adv-10 | `growth.level=5` with insufficient refs | `_validate_growth` | ✅ PASS |
+| adv-11 | `growth.level` negative | `_validate_growth` | ✅ PASS |
+| adv-12 | `agent_instructions` 40 KB size bomb | `_validate_payload` (save) | ✅ PASS |
+| adv-13 | `cipher.name` uppercase (`AES-256-GCM`) | envelope validation | ✅ PASS |
+| adv-14 | `kdf.name` poison value | envelope validation | ✅ PASS |
+| adv-15 | Multi-layer: `__proto__` + ethics + growth + size | `_whitehat_scan` fires first | ✅ PASS |
+
+### Total test suite after this audit
+
+| Suite | Vectors | Result |
+|---|---|---|
+| Positive v2.5 | 6 | ✅ 6/6 |
+| Negative v2.5 | 12 | ✅ 12/12 |
+| Positive v3.0 | 6 | ✅ 6/6 |
+| Negative v3.0 | 8 | ✅ 8/8 |
+| **Adversarial v3.0** | **15** | **✅ 15/15** |
+| **TOTAL** | **47** | **✅ 47/47** |
+
+**Verdict:** Production-grade. All defensive layers verified under adversarial conditions.

@@ -105,6 +105,108 @@ if v30_neg_file.exists():
 else:
     print("\n[WARN] negative_vectors_v30.json not found — skipping v3.0 negative suite")
 
+# ── Adversarial suite — unit tests for each defensive layer ──────────────────
+def run_adversarial_suite() -> tuple[int, int]:
+    from load_klickd import (
+        _whitehat_scan, _enforce_ethics, _validate_growth,
+        KlickdFormatError
+    )
+    import warnings as _warnings
+
+    adv_file = VECTORS_DIR / "adversarial" / "adversarial_v30.json"
+    if not adv_file.exists():
+        print("\n[SKIP] adversarial suite — file not found")
+        return 0, 0
+
+    with open(adv_file) as f:
+        data = json.load(f)
+
+    print(f"\n── ADVERSARIAL vectors — Grok Audit 5 ──────────────────────────")
+    passed = failed = 0
+
+    for v in data["vectors"]:
+        vid = v["id"]
+        expected = v.get("expected_behavior", "")
+        intent   = v.get("payload_intent", {})
+        envelope = v.get("envelope")
+
+        # Determine expected outcome
+        expect_format_error = "KLICKD_E_FORMAT" in expected
+        expect_warning      = "UserWarning" in expected or "KLICKD_SECURITY" in expected
+        expect_success      = "success" in expected.lower() and not expect_format_error
+
+        try:
+            # Unit tests (whitehat / ethics / growth)
+            if "adv-01" in vid or "adv-02" in vid or "adv-03" in vid:
+                _whitehat_scan(intent)
+                # Prototype pollution should have raised
+                print(f"  FAIL {vid}: expected KlickdFormatError, got success"); failed += 1; continue
+
+            elif "adv-04" in vid or "adv-05" in vid:
+                with _warnings.catch_warnings(record=True) as w:
+                    _warnings.simplefilter("always")
+                    _whitehat_scan(intent)
+                if any("suspicious" in str(x.message).lower() or "KLICKD_SECURITY" in str(x.message) for x in w):
+                    print(f"  PASS {vid}: warning emitted as expected"); passed += 1
+                else:
+                    print(f"  FAIL {vid}: expected warning, none emitted"); failed += 1
+                continue
+
+            elif "adv-06" in vid or "adv-07" in vid or "adv-08" in vid:
+                _enforce_ethics(intent)
+                print(f"  FAIL {vid}: expected KlickdFormatError, got success"); failed += 1; continue
+
+            elif "adv-09" in vid or "adv-10" in vid or "adv-11" in vid:
+                _validate_growth(intent)
+                print(f"  FAIL {vid}: expected KlickdFormatError, got success"); failed += 1; continue
+
+            elif "adv-12" in vid:
+                # Size bomb — test via _validate_payload in save
+                from save_klickd import _validate_payload
+                _validate_payload(intent)
+                print(f"  FAIL {vid}: expected KlickdFormatError, got success"); failed += 1; continue
+
+            elif "adv-13" in vid or "adv-14" in vid:
+                # Envelope-level attack — use patched envelope via load_klickd
+                if envelope:
+                    with tempfile.NamedTemporaryFile(mode='w', suffix='.klickd', delete=False) as tmp:
+                        json.dump(envelope, tmp)
+                        tmppath = tmp.name
+                    try:
+                        load_klickd(tmppath, v["passphrase"])
+                        print(f"  FAIL {vid}: expected KlickdFormatError, got success"); failed += 1
+                    except KlickdFormatError:
+                        print(f"  PASS {vid}: KlickdFormatError as expected"); passed += 1
+                    except Exception as e:
+                        print(f"  FAIL {vid}: unexpected {type(e).__name__}: {e}"); failed += 1
+                    finally:
+                        os.unlink(tmppath)
+                else:
+                    print(f"  SKIP {vid}: no envelope to test"); failed += 1
+                continue
+
+            elif "adv-15" in vid:
+                # Multi-layer: whitehat fires first
+                _whitehat_scan(intent)
+                print(f"  FAIL {vid}: expected KlickdFormatError on __proto__, got success"); failed += 1; continue
+
+            else:
+                print(f"  SKIP {vid}: no test handler"); failed += 1; continue
+
+        except KlickdFormatError as e:
+            if expect_format_error:
+                print(f"  PASS {vid}: KlickdFormatError as expected"); passed += 1
+            else:
+                print(f"  FAIL {vid}: unexpected KlickdFormatError: {e}"); failed += 1
+        except Exception as e:
+            print(f"  FAIL {vid}: {type(e).__name__}: {e}"); failed += 1
+
+    return passed, failed
+
+adv_p, adv_f = run_adversarial_suite()
+total_passed += adv_p
+total_failed += adv_f
+
 total = total_passed + total_failed
 print(f"\n{'='*50}")
 print(f"TOTAL: {total_passed}/{total} passed  ({total_failed} failed)")
