@@ -1,0 +1,81 @@
+{
+  "description": ".klickd v2 test vectors — for implementation self-verification",
+  "spec_version": "2.0",
+  "notes": [
+    "Vector 1: unencrypted (encrypted: false) — parse only, no crypto",
+    "Vector 2: encrypted, domain=finance, passphrase='test-vector-2'",
+    "Vector 3: encrypted, domain=robotics, passphrase='test-vector-3'",
+    "All encrypted vectors use AES-256-GCM + PBKDF2-SHA256 @ 600k iterations",
+    "Wire format: ciphertext || 16-byte GCM tag, base64-encoded as one blob",
+    "AAD = JSON({klickd_version, encrypted, domain, created_at}, sort_keys=True, separators=(',', ':'))"
+  ],
+  "vectors": [
+    {
+      "id": "v1-unencrypted",
+      "description": "Minimal unencrypted file. WARNING: NEVER SHIP UNENCRYPTED IN PRODUCTION.",
+      "passphrase": null,
+      "envelope": {
+        "klickd_version": "2.0",
+        "encrypted": false,
+        "domain": "finance",
+        "created_at": "2026-05-18T00:00:00Z",
+        "updated_at": "2026-05-18T00:00:00Z",
+        "payload": {
+          "identity": {
+            "name": "Alex",
+            "language": "en",
+            "timezone": "Europe/London",
+            "communication_style": "concise, direct"
+          },
+          "agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
+          "context": {
+            "current_state": "ETH staking under review.",
+            "decisions_locked": [
+              "Always display amounts in EUR equivalent"
+            ],
+            "artifacts": [],
+            "summary": "Portfolio rebalancing, session 2."
+          }
+        }
+      },
+      "expected_agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
+      "expected_identity_name": "Alex"
+    },
+    {
+      "id": "v2-encrypted-finance",
+      "description": "Encrypted, domain=finance, passphrase='test-vector-2'",
+      "passphrase": "test-vector-2",
+      "envelope": {
+        "klickd_version": "2.0",
+        "encrypted": true,
+        "encryption": "AES-256-GCM",
+        "domain": "finance",
+        "created_at": "2026-05-18T07:25:26Z",
+        "updated_at": "2026-05-18T07:25:26Z",
+        "salt": "BHtJIdWQdi9p09I9Ank6aw==",
+        "iv": "DHvnM3UDU14fbgDX",
+        "payload": "b5XgIhkf7vOhc8GbKoXqrkBirspuDjQC6d2Xmk3xi3ojoFQvCKt5iSOo4O3+F8OvYB/0teMoGL+PLPk9m/4ZaMYIyp8fE+JKPrdAO4NZpBLpsSnxBBZR5MG0dzUQTVtYwEfHayO3STk/r8CWVigqPigmlmG6XBmvA3JSZf00ltXARo8K+k29ppm+O/O5UeMzHqgfIUlf3cO29wfy2nEZr/Y2JO3JNIoP7SFk3mwRhDG2zHMy/+AE403TH+a8CEfBJCME7m9smndf86WDMBLfNkoKTdhb5VLxzMGt5JFnT9e2FsNlqjCLFKxXKlT2jWbl+Jcci3L1T8cu9XFFlIugK78Kl5vkHDQkr0yyVTp4DOgpLjaNRihCMYt6rSDmqK727fwmjDkxfXC1+DvPLCiOkWArbPYquFJsMa0f8tfGY4mHE8IlxnKnGrEsiz5cP0WREsQ/QxSrJXIOjPHhpdNbosoEd3BG4VNtx3wabokM4ydovTo7n/al6WzQ2u0VCDGXmQb3phjiUqVoHfA6jir8WbjC/VgFVB2t//wpZCmnzDV4zoUufrWTI6A="
+      },
+      "expected_agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
+      "expected_identity_name": "Alex"
+    },
+    {
+      "id": "v3-encrypted-robotics",
+      "description": "Encrypted, domain=robotics, passphrase='test-vector-3'",
+      "passphrase": "test-vector-3",
+      "envelope": {
+        "klickd_version": "2.0",
+        "encrypted": true,
+        "encryption": "AES-256-GCM",
+        "domain": "robotics",
+        "created_at": "2026-05-18T07:25:27Z",
+        "updated_at": "2026-05-18T07:25:27Z",
+        "salt": "FQaGqPwHf9Aciu0muwKA4Q==",
+        "iv": "MMhVJFYzE45/xcGa",
+        "payload": "hcgtd1xyWJAlsh8PkK15ysaLyc6hhCkY0n6Mf242g61bIkYiFEo8gBKVG1xEZ3Tow7RtfgPvCQ/kDTZv8O3YdjRN8ZUd/gOXbSq4mxGQUhPPgIxt9hcY+CJfZlmWWRexRmiPYLFFLScvMy8qA7n71N1cNjlbXZKk/9kY+rYjWoZsvEPmOU76mVN4zx0qEJyb8uc/WR15TokCaCMI3OpIs+rHRRlG6U8GrLwDMvKxtTFkLhitU64g0Z+m43MHVTm6o9fhxlbv75GjuPTTrogGOYqbB5Yu5asqCRgBm9d+OGwlLq/Zw0Flv5YNDyVnDyZy/r05dY8aRxrIWwOnmOYAgAAt2yqZUIFCx7bk0wOMds2+JkGJQxz7OnOeflOcxTG8jeIqOlHDtuYkzlne7/28BMuzn+g4G7B705ZcQG9HlAH52VMZsktOwNWDPSvu6LoVAPqTfM7T7/dcnN4Q9lqtr6wAfRoYqAno+o1ensBLGgIHHqiwir3MmMZRR6j1sMGFMH/ao3idQDkVyzZK4YEmObYAQ9CBtiwGmFDPF9PslfsAnaM7koE2812Q/nZ+4xIGfAxd+mLaUl8+bLKjIkxEf7cFqaBZQfeC7c1AsBhNFOoSr9tkrb0sZbnOh5yPeLHrCjnfToxfy/ddiKrMlr1r7Xm/EPVIqolcv50Rfd5Y/bWA4sa2ZVxiORNUj6FGiialiemnbeaZVJRa9GhAxovBXL3HEj8iPLSznSJ/L5kyYyrifxJDdlLpa1O7LaOlNTQyV6EwAaPKdKRXr9o3TGg9GoDHbxTOAY5TDxSU72aqYP0XAZprbs14WI03iUOVkueJZSIi7NDUSPWdY+eZmsdO8SwD13EIgtupL1YjYvB7nFU57Bsvth8DlOnFu4bLvcRL9gqpAmCn5jdVfshXHNygV7hKxiD24Er7MLgHnTwiRDwaLRB0IQuRBpC3m7YIgvsOcqq9lFxMmalqNUO5e3JxqdqJBh/0lYnFtghsx5OOHmbLYr72We5cJmbdHkJ8x56gQKCo4N/baOC+nkfrQCRB4fa/MMcV844E7JwbrI3m2xqNz+LIMIzqgvNg8POxD5F6X7nEZMjlAHQJudRwxRqLSEWwD1TNMg44A3sozYGOXMWdBrkooPKTzRFVHWMLGJ0D0vaYC8Ag3naLKtVOnH212Ai+fSOF+jvoJY3WOrMCRhegSZ5aWaFN1xGOSOk="
+      },
+      "expected_agent_instructions": "Resuming household management with Jordan's Optimus unit. Jordan prefers morning briefings. Kitchen and bedroom are privacy zones.",
+      "expected_identity_name": "Jordan"
+    }
+  ]
+}
