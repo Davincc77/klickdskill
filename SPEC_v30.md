@@ -552,6 +552,8 @@ The AAD input object contains **exactly 6 fields**, in this order:
 {klickd_version, encrypted, domain, created_at, kdf, cipher}
 ```
 
+**Note:** The order listed above is the logical grouping of fields. JCS (RFC 8785) sorts keys lexicographically, so the canonical serialized order is: `cipher, created_at, domain, encrypted, kdf, klickd_version`. Implementers MUST use a JCS library — do not manually construct or sort.
+
 The `ciphertext` field is NOT included in AAD; it is already authenticated by the GCM tag.
 
 ### 17.2 JCS Canonicalization
@@ -581,7 +583,13 @@ The resulting UTF-8 byte string is used directly as the AAD parameter to AES-256
 
 ### 17.3 JCS Field Ordering
 
-Because JCS sorts keys lexicographically, the canonical key order for the AAD object is:
+JCS sorts keys lexicographically (Unicode code point order). The canonical output key order for the 6 AAD fields is:
+
+```
+cipher < created_at < domain < encrypted < kdf < klickd_version
+```
+
+That is:
 
 ```
 cipher, created_at, domain, encrypted, kdf, klickd_version
