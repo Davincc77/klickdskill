@@ -6,7 +6,7 @@ import canonicalize from 'canonicalize';
 import type { KlickdPayload, KlickdEnvelope, KlickdDomain, SaveKlickdOptions } from './types.js';
 import { KlickdError, HTTP_STATUS } from './errors.js';
 
-const KLICKD_VERSION = '3.0.0';
+const KLICKD_VERSION = '3.0';
 
 /** RFC 4648 §4 standard padded base64 */
 function toBase64(buf: Uint8Array): string {

@@ -143,6 +143,10 @@ export async function loadKlickd(
   if (kdf.name === 'argon2id') {
     const salt = fromBase64(kdf.salt);
     const { m, t, p } = kdf.params;
+    // Argon2id parameter floor validation (mirrors Python _validate_argon2_params)
+    if (!m || m < 65536) throw new KlickdError('KLICKD_E_KDF', `kdf.params.m=${m} below minimum 65536`, HTTP_STATUS['KLICKD_E_KDF']);
+    if (!t || t < 3)     throw new KlickdError('KLICKD_E_KDF', `kdf.params.t=${t} below minimum 3`,     HTTP_STATUS['KLICKD_E_KDF']);
+    if (!p || p < 1)     throw new KlickdError('KLICKD_E_KDF', `kdf.params.p=${p} below minimum 1`,     HTTP_STATUS['KLICKD_E_KDF']);
     keyBytes = await deriveKeyArgon2id(passphrase, salt, m, t, p);
   } else if (kdf.name === 'pbkdf2-sha256') {
     if (!legacy) {
@@ -159,6 +163,16 @@ export async function loadKlickd(
       'KLICKD_E_KDF',
       `Unknown KDF: ${(kdf as { name: string }).name}`,
       HTTP_STATUS['KLICKD_E_KDF'],
+    );
+  }
+
+  // Validate cipher name (algorithm agility — reject unknown ciphers explicitly)
+  const cipherName = envelope.cipher.name;
+  if (cipherName !== 'AES-256-GCM') {
+    throw new KlickdError(
+      'KLICKD_E_FORMAT',
+      `Unsupported cipher: ${cipherName}. Only AES-256-GCM is supported in v3.0.`,
+      HTTP_STATUS['KLICKD_E_FORMAT'],
     );
   }
 

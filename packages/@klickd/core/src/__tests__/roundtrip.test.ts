@@ -37,7 +37,7 @@ describe('saveKlickd / loadKlickd roundtrip', () => {
     expect(typeof envelope).toBe('string');
 
     const parsed = JSON.parse(envelope);
-    expect(parsed.klickd_version).toBe('3.0.0');
+    expect(parsed.klickd_version).toBe('3.0');
     expect(parsed.encrypted).toBe(true);
     expect(parsed.domain).toBe('education');
     expect(typeof parsed.ciphertext).toBe('string');
@@ -73,7 +73,7 @@ describe('saveKlickd / loadKlickd roundtrip', () => {
   it('rejects legacy KDF without legacy flag', async () => {
     // Manually craft a v3 envelope with pbkdf2-sha256 KDF
     const fakeEnvelope = JSON.stringify({
-      klickd_version: '3.0.0',
+      klickd_version: '3.0',
       encrypted: true,
       domain: 'education',
       created_at: '2025-01-01T00:00:00Z',
