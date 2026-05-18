@@ -1,103 +1,122 @@
 {
-  "description": ".klickd v2 test vectors \u2014 for implementation self-verification",
-  "spec_version": "2.0",
-  "payload_sha256_canonical_form": "sha256(json.dumps(payload, sort_keys=True, separators=(',',':'), ensure_ascii=True).encode('utf-8'))",
-  "notes": [
-    "AAD = json.dumps({klickd_version,encrypted,domain,created_at}, sort_keys=True, separators=(',',':'), ensure_ascii=True)",
-    "expected_payload_sha256 = sha256(canonical_json(decrypted_payload))",
-    "canonical_json = json.dumps(sort_keys=True, separators=(',',':'), ensure_ascii=True)",
-    "NOTE: v1 and v2 share the same payload content, so their sha256 values are equal \u2014 this is expected"
-  ],
+  "spec_version": "2.5",
+  "notes": {
+    "aad_canonical_form": "AAD is canonical JSON of exactly 4 envelope fields: {klickd_version, encrypted, domain, created_at}. Keys sorted, separators=(',',':'), ensure_ascii=True. NOT 5 fields — the stale '5 fields' comment in earlier versions was a bug.",
+    "base64_variant": "RFC 4648 §4 standard padded base64 (no URL-safe substitution)",
+    "ciphertext_layout": "base64(AES-GCM ciphertext_bytes || 16-byte GCM tag)",
+    "kdf": "PBKDF2-SHA256, 600000 iterations, 32-byte output key",
+    "iv_size": "12 bytes (96 bits) — standard AES-GCM nonce",
+    "salt_size": "16 bytes"
+  },
   "vectors": [
     {
-      "id": "v1-unencrypted",
-      "description": "Minimal unencrypted. WARNING: NEVER SHIP UNENCRYPTED IN PRODUCTION.",
-      "passphrase": null,
+      "id": "v2.5-basic-ascii",
+      "description": "Basic ASCII payload, standard English content",
+      "passphrase": "test-klickd-v25",
+      "domain": "general",
       "envelope": {
-        "klickd_version": "2.0",
-        "encrypted": false,
-        "domain": "finance",
-        "created_at": "2026-05-18T00:00:00Z",
-        "updated_at": "2026-05-18T00:00:00Z",
-        "payload": {
-          "agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
-          "context": {
-            "artifacts": [],
-            "current_state": "ETH staking under review.",
-            "decisions_locked": [
-              "Always display amounts in EUR equivalent"
-            ],
-            "summary": "Portfolio rebalancing, session 2."
-          },
-          "identity": {
-            "communication_style": "concise, direct",
-            "language": "en",
-            "name": "Alex",
-            "timezone": "Europe/London"
-          }
-        }
-      },
-      "expected_agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
-      "expected_identity_name": "Alex",
-      "expected_payload_sha256": "62439ba38364c35a056348aed5d2075fb522d14891a3559d2a0a7582973c134e"
-    },
-    {
-      "id": "v2-encrypted-finance",
-      "description": "Encrypted, domain=finance, passphrase='test-vector-2'",
-      "passphrase": "test-vector-2",
-      "envelope": {
-        "klickd_version": "2.0",
+        "klickd_version": "2.5",
         "encrypted": true,
-        "encryption": "AES-256-GCM",
-        "domain": "finance",
-        "created_at": "2026-05-18T00:00:00Z",
-        "updated_at": "2026-05-18T00:00:00Z",
-        "salt": "xbOGOEh9009Qv+0cjNzamQ==",
-        "iv": "MJQM1gQskw8Ymwyj",
-        "payload": "GKqhSmZJNvQTDBtOtrXrFMFO6YDWDhIjYLjnLPF5CiOQDy5v8gwGrWeYugQJN2sSEo1KxN0Z7nEnCFweY2YC62oft5mfs11LVIIwlAR+sdEiKSTHHciHjocn4Jm25s89Yx//MkPhypd+TOG2Jp3FkSh2LjSGVu5+y37b35EdAP+DS0KhP19fZZvw2/OZnAnuyeRC5phJ4cSnwa2W3/A9qSqYeK35UYZ28RALVnq4OWqMdwbotpTSpdGBVSZ4kmsUv+AB8V3rdoXo66HVYjUvMTEk8wQDCMeZXdBMAI4RWm4K3z1drMorhxJgtk3PTFeuqphXjVK7WWmXR/y7FUUcj3tZKJVjzHORIC2E1MMO2wcOlX/wEfT7FBYijTaLJLTBYji2zxinC3S4vz/btMQsivmbLcbNWLW8G34NYX7C4C4TDW95Mw0RbzxLnqxyNT75W+uCMqQUTWAaXIH7ug21XUZfIY00rZVkatuMTuz8RSjmsSR/HqOLPfFCX8wSlbZDAKGLSHnz4HpxCFQUgHm+lLp5f/ZF4w=="
-      },
-      "expected_agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
-      "expected_identity_name": "Alex",
-      "expected_payload_sha256": "62439ba38364c35a056348aed5d2075fb522d14891a3559d2a0a7582973c134e"
-    },
-    {
-      "id": "v3-encrypted-robotics",
-      "description": "Encrypted, domain=robotics, passphrase='test-vector-3'",
-      "passphrase": "test-vector-3",
-      "envelope": {
-        "klickd_version": "2.0",
-        "encrypted": true,
-        "encryption": "AES-256-GCM",
-        "domain": "robotics",
-        "created_at": "2026-05-18T00:00:00Z",
-        "updated_at": "2026-05-18T00:00:00Z",
-        "salt": "Iqee+oboq/Unnqw+ueA+Cw==",
-        "iv": "qIAxFpK16Q94bxuJ",
-        "payload": "UHBR/Iw6Nqrjs94AGgulAD1u3NJUq6vGsv+HgW1S1/gOjbBI0IZV415bU5PzBu+DkP0lcwTl4dL8A3rkCnhId3qDUqbWwU8QoIULcJS+hsomsfmw5RRLTNw6ok7BCqNu3rK1oIuACNDPmjZ71Mc+On6p79XplFFs0fieM1CVJdTknttVdgptjNPlxUeTUEeccMI/a5li7wXhANgFDs/JsUpC55v3GlidaJeH4L6Uy79XHdheBmZeB0U1vTGjMxEAxR5jACOvfnLhYPI6w9iWdrpLKqrH5mFvCY8DfNxZaqw0tuUlGs2CMbxs7aA5JTu5P4vIsTrHMEPGy0luwEWGfBNCRfFJvpTkI7u3A7KTs/hPoYZCzeMLAH6XrlWaKMmil/mgEcfsOl7LX74LacEXNoAAxVRZeZ42hTcK3dq0vY9lUaVDmeS1T4PmFv2mFzz4T+TiSWLrFakm/bVH9kGa9a91WGEGIDiWMpT/2Cqy3WtERTzjwS6MCxro5jjLsVWPbys6iell9549QAMmKkiAXaD6YjfkpCO8QsAnbQiOLVhLtwaOCehvtzLnvaEqyzzQpPY6u+1kKOcbX+zVpWbnYusz0bnMeyb+tqs3+1ix68n6lShNlTKAueKvN5wciqXVXE3fc/LH75DKlSPtDi1deS17ujWWrvUqbtxgPLeQqqKkwpWG2pqoaJjul9alspVlU9g+7YpkC2Cz3YvBDi3V7+TO84NqA9GcYnt5c1G/aKw8nbfoyZJ1dDVDvB43lN7Mb3GQ2t8EXR8PJ7L1Ocp3K1ZL1a0arAhAOcWTRbQlWMAQuOXHTUBDzSXMpLvixv0F1khZkIpm0T+547gQqPkiIhAaHZqEBLMbgSgnjpQjQFOx/QgPNYq+dhpseN49FNdyNv28AmXfYXP20AsSSSFYggAzW02MrkqZhyk1wyBU+iNekS7N5elOkQx+k+8zvHU+vI4CN0fNByZffm1oHFAdXcPizv4b3taVUEoorGxqSLZriHflozRJ6Huf6yLeiOm9JG2MU4hwLndcI/57wM2lsG+xYUELDDEKyzmalZvfTCN75XIQbt1HI2pxHzwDNH3/z/XYmdIuuTCrBCra2jQ1ncRZbC7sGaWPAprmBGtqM5z7o40fYz+ojHEPPYt0Uj6l7CzAXj4zCsMB1il2lXyU"
-      },
-      "expected_agent_instructions": "Resuming household management with Jordan's Optimus unit. Jordan prefers morning briefings. Kitchen and bedroom are privacy zones.",
-      "expected_identity_name": "Jordan",
-      "expected_payload_sha256": "ea4dde4f32f17f0f29922aa4c482d1b68ca493dd7b91c78049e3545b9b0e2e38"
-    },
-    {
-      "id": "v4-short-passphrase",
-      "description": "Short passphrase (6 chars) \u2014 SHOULD warn, MUST decrypt",
-      "passphrase": "short1",
-      "envelope": {
-        "klickd_version": "2.0",
-        "encrypted": true,
-        "encryption": "AES-256-GCM",
         "domain": "general",
-        "created_at": "2026-05-18T00:00:00Z",
-        "updated_at": "2026-05-18T00:00:00Z",
-        "salt": "CNUfbvqD0K34FuGvGmEBlA==",
-        "iv": "xkLNRqrT4dB4pB12",
-        "payload": "VCSnJZALjmEVHuKVGEDt7sjsQX92habvUDEt5oeivgPdKj3YYhcvUHURmQ3MhOZYYqD/piCXx2kQeBQCr2dEdEwXBhWFTEleLPwz6pKkqVakzbCkwG44Wa2/SMtIQdzpC0Gzmx7y6G2OgtZOGZFrzLn5Mf9a+JJsFBV0g0hPw2XMWdRQiFJrAzHC06FdrUcbz8DDBFakXHbsEFgy0HLaeg2T6fclAdIyRJBxdaWsfPbgAosyuYQ+2jmWJfzz68iNwNUxX9qbDfgKmoLKcFMIoUa0AyTyDAGYpB4+qnKIOK/OcOhz8jQuvTaAmq6QqTEbOPVCaeFgsuJc8DeDyqQCwpCyvcPVQvoFuKKLGoaz2AX9KpWYADwIB9jl"
+        "created_at": "2025-01-15T10:00:00Z",
+        "kdf_salt": "vXCB/3NsUYp7U6cksxsNNA==",
+        "iv": "oSTl97/RqTeAICpA",
+        "ciphertext": "PsAew8+qF0FM1NV1SaZvEU5cKCrB8+Q9sE9eBsMLAl9IrDKVghdOcmRI405yxGFn6Jn6BRelLNLY1pXq/RM0WnDUBh0KXCOvESx3eliIgyBjIsLtFvq5xfGZ6Y172h47MTvy0TgJN8P0fMIkg+kEKg8InQp0pyxng7q9qmDf8hq26smHWy123yDfqC9DWZl+aXHJWxtJbvORHkDlwgGr7YLp+hAnXA=="
       },
-      "expected_agent_instructions": "Test vector for short passphrase warning.",
-      "expected_identity_name": "Test",
-      "expected_payload_sha256": "9f793d4543d1e7a9a18aac8063a1ee3031b060391ea1e59ba5ecd37132bf1085",
-      "expected_behavior": "SHOULD emit passphrase-too-short warning; decryption MUST succeed"
+      "expected_payload": {
+        "identity": {
+          "display_name": "Alice",
+          "role": "assistant"
+        },
+        "agent_instructions": "Answer concisely in English.",
+        "memory_path": "~/.klickd/memory/"
+      },
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v2.5-french-utf8",
+      "description": "French UTF-8 payload with accented characters",
+      "passphrase": "motdepasse-test",
+      "domain": "education",
+      "envelope": {
+        "klickd_version": "2.5",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2025-01-15T10:01:00Z",
+        "kdf_salt": "xMgMRkN5u5oijWiUIZqmnA==",
+        "iv": "DptDABEcMyxjeVIN",
+        "ciphertext": "nVOpZ3qzmOvJ4MMYtSVmJp3wFcyZAY1d3e3hkRhU3WNFvUaMfqW1inebFCpLi5bfuVzZQBtnYuWuaTq3Ie2IuoK2PEi6VRI0JfDoOT2QiJ+kbqFPnsUoyupfgu8PG0+uAwc/rEXyne2/eAqKzwr544ajpqnowT8DSy17y0S+8m+eJL7QNtHaL6g48Kj4o0XQHQQ+HJ3X//V1nVL7LcHwYRwnIVfEdcB2oz/y03WS48LXliPvzUyTQsPyBSsgs3j768Tecqx11M5WZhlnUIVNtQTdvg5Ey9W7Slhsdg5WXw=="
+      },
+      "expected_payload": {
+        "identity": {
+          "display_name": "Léa Müller",
+          "role": "assistant"
+        },
+        "agent_instructions": "Toujours répondre en français. Préfère les explications étape par étape.",
+        "memory_path": "~/.klickd/memory/"
+      },
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v2.5-tampered",
+      "description": "Vector 1 ciphertext with last byte XORed — GCM tag mismatch",
+      "passphrase": "test-klickd-v25",
+      "domain": "general",
+      "envelope": {
+        "klickd_version": "2.5",
+        "encrypted": true,
+        "domain": "general",
+        "created_at": "2025-01-15T10:00:00Z",
+        "kdf_salt": "vXCB/3NsUYp7U6cksxsNNA==",
+        "iv": "oSTl97/RqTeAICpA",
+        "ciphertext": "PsAew8+qF0FM1NV1SaZvEU5cKCrB8+Q9sE9eBsMLAl9IrDKVghdOcmRI405yxGFn6Jn6BRelLNLY1pXq/RM0WnDUBh0KXCOvESx3eliIgyBjIsLtFvq5xfGZ6Y172h47MTvy0TgJN8P0fMIkg+kEKg8InQp0pyxng7q9qmDf8hq26smHWy123yDfqC9DWZl+aXHJWxtJbvORHkDlwgGr7YLp+hAnow=="
+      },
+      "expected_payload": null,
+      "expected_behavior": "KlickdAuthError",
+      "tamper_description": "Last byte of ciphertext XORed with 0xFF (corrupts GCM tag)"
+    },
+    {
+      "id": "v2.5-wrong-passphrase",
+      "description": "Vector 1 envelope decrypted with wrong passphrase",
+      "passphrase": "wrong-passphrase",
+      "domain": "general",
+      "envelope": {
+        "klickd_version": "2.5",
+        "encrypted": true,
+        "domain": "general",
+        "created_at": "2025-01-15T10:00:00Z",
+        "kdf_salt": "vXCB/3NsUYp7U6cksxsNNA==",
+        "iv": "oSTl97/RqTeAICpA",
+        "ciphertext": "PsAew8+qF0FM1NV1SaZvEU5cKCrB8+Q9sE9eBsMLAl9IrDKVghdOcmRI405yxGFn6Jn6BRelLNLY1pXq/RM0WnDUBh0KXCOvESx3eliIgyBjIsLtFvq5xfGZ6Y172h47MTvy0TgJN8P0fMIkg+kEKg8InQp0pyxng7q9qmDf8hq26smHWy123yDfqC9DWZl+aXHJWxtJbvORHkDlwgGr7YLp+hAnXA=="
+      },
+      "expected_payload": null,
+      "expected_behavior": "KlickdAuthError",
+      "tamper_description": "Correct envelope but wrong passphrase supplied"
+    },
+    {
+      "id": "v2.5-short-passphrase",
+      "description": "6-char passphrase — SHOULD warn (< 12), MUST decrypt successfully",
+      "passphrase": "abc123",
+      "domain": "general",
+      "envelope": {
+        "klickd_version": "2.5",
+        "encrypted": true,
+        "domain": "general",
+        "created_at": "2025-01-15T10:02:00Z",
+        "kdf_salt": "6G87y4A/nm7Fdg7DIGEi+w==",
+        "iv": "Gm0Aq0ZuCnXVFy24",
+        "ciphertext": "uo302uml5Qy7AKVobkk5pAu8HU0csPNNaIJmZer7Bml/mA45KExsWDj6Bvs/F6eQJv0Ha7ZTSQ8gxtqlS8731rPNfs/JIUNBQ88VD0h+u66ieE0vPD9MO+06mMWHcUVvAFW2t7tOGTYyBED9u6J0O/21XB95Q/6alO8Yai0OOUjl+2vnx3X7WXHyOyJywrdqV+BhopKB/ZdlcSJckof1VtLKmGcoug=="
+      },
+      "expected_payload": {
+        "identity": {
+          "display_name": "Alice",
+          "role": "assistant"
+        },
+        "agent_instructions": "Answer concisely in English.",
+        "memory_path": "~/.klickd/memory/"
+      },
+      "expected_behavior": "decrypt_success_with_warning",
+      "warning_note": "load_klickd SHOULD emit UserWarning for passphrase < 12 chars; save_klickd MUST raise KlickdWeakPassphraseError for passphrase < 8 chars"
     }
   ]
 }
