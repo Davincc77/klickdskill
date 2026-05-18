@@ -1,6 +1,6 @@
 ---
 name: klickd-context
-version: 4.0
+version: 3.0
 description: Load a user's portable AI context from a .klickd encrypted file. One soul. Any model. Any body. — Decrypts client-side using AES-256-GCM + Argon2id (v3.0) or PBKDF2 (v2.x legacy), writes fields to /.memory/, and injects agent_instructions into the system prompt as untrusted user context.
 tools:
   - name: load_klickd
