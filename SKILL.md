@@ -32,7 +32,7 @@ repo: https://github.com/Davincc77/klickdskill
 # .klickd Agent Skill
 
 **Envelope schema version:** 2.0 (klickd_version field in the file)
-**Spec/doc revision:** 2.2
+**Spec/doc revision:** 2.3
 **License:** CC0 1.0 Universal (Public Domain)
 **Spec:** [SPEC.md](./SPEC.md)
 
@@ -86,12 +86,14 @@ When a user uploads a file with `.klickd` extension or MIME type `application/vn
 
 ### Envelope integrity (AAD)
 
-Fields outside the GCM seal (`klickd_version`, `encrypted`, `domain`, `created_at`) are protected via AES-GCM Additional Authenticated Data (AAD). Any tampering with these fields — including flipping `encrypted: true → false` — will cause decryption to fail with an authentication error.
+Fields outside the GCM seal (`klickd_version`, `encrypted`, `domain`, `created_at`, `updated_at`) are protected via AES-GCM Additional Authenticated Data (AAD). Any tampering with these fields — including flipping `encrypted: true → false` — will cause decryption to fail with an authentication error.
+
+**Canonicalization rule:** AAD field values MUST be ASCII-safe (standard ISO 8601 timestamps, ASCII domain names). Python uses `ensure_ascii=True` (default); JS `JSON.stringify` produces matching output for ASCII values. This avoids cross-language encoding divergence.
 
 AAD construction:
 ```python
-aad_fields = {k: envelope.get(k) for k in ("klickd_version", "encrypted", "domain", "created_at") if k in envelope}
-aad = json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")
+aad_fields = {k: envelope.get(k) for k in ("klickd_version", "encrypted", "domain", "created_at", "updated_at") if k in envelope}
+aad = json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")  # ensure_ascii=True (default)
 ```
 
 ### Passphrase guidance
@@ -139,8 +141,8 @@ def load_klickd(file_bytes: bytes, passphrase: str | None) -> dict:
     key = kdf.derive(passphrase.encode("utf-8"))
 
     # AAD covers klickd_version, encrypted, domain, created_at
-    aad_fields = {k: envelope.get(k) for k in ("klickd_version","encrypted","domain","created_at") if k in envelope}
-    aad = json.dumps(aad_fields, sort_keys=True, separators=(",",":")).encode("utf-8")
+    aad_fields = {k: envelope.get(k) for k in ("klickd_version","encrypted","domain","created_at","updated_at") if k in envelope}
+    aad = json.dumps(aad_fields, sort_keys=True, separators=(",",":")).encode("utf-8")  # ensure_ascii=True (default)
 
     plaintext = AESGCM(key).decrypt(iv, raw, aad)
     return json.loads(plaintext.decode("utf-8"))
@@ -149,6 +151,9 @@ def load_klickd(file_bytes: bytes, passphrase: str | None) -> dict:
 ### Minimal implementation (JavaScript — Web Crypto API)
 
 ```javascript
+// Helper — define once in your module
+const base64ToBuffer = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+
 async function loadKlickd(fileText, passphrase) {
   const envelope = JSON.parse(fileText);
 
@@ -178,13 +183,14 @@ async function loadKlickd(fileText, passphrase) {
     false, ["decrypt"]
   );
 
-  // AAD = same fields as Python implementation
+  // AAD = same fields as Python — values MUST be ASCII-safe (ISO 8601, ASCII domain)
   const aadFields = Object.fromEntries(
-    ["klickd_version","encrypted","domain","created_at"]
+    ["klickd_version","encrypted","domain","created_at","updated_at"]
       .filter(k => k in envelope)
       .map(k => [k, envelope[k]])
       .sort(([a],[b]) => a.localeCompare(b))
   );
+  // JSON.stringify produces compact sorted keys — matches Python json.dumps(sort_keys=True, separators=(',',':'))
   const aad = new TextEncoder().encode(JSON.stringify(aadFields));
 
   const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv, additionalData: aad }, key, raw);
@@ -311,7 +317,7 @@ At the end of a session (or on user request), the agent generates a new `.klickd
 iv        = random_bytes(12)          # always fresh
 salt      = random_bytes(16)          # always fresh
 key       = PBKDF2(passphrase, salt, 600000, SHA-256, 256 bits)
-aad       = JSON({klickd_version, encrypted, domain, created_at}, sort_keys)
+aad       = JSON({klickd_version, encrypted, domain, created_at, updated_at}, sort_keys, ASCII-safe values)
 ciphertext = AES-256-GCM(key, iv, UTF8(inner_json), aad)
 payload   = base64(ciphertext)        # wire format: ciphertext || 16-byte GCM tag
 ```
@@ -408,6 +414,7 @@ Full legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
 ## Changelog
 
+- **v2.3 — 2026-05-18** — AAD extended to include updated_at. AAD canonicalization rule added (ASCII-safe values, Python ensure_ascii=True). base64ToBuffer helper inlined in JS sample. JS AAD comment clarified for cross-language matching.
 - **v2.2 — 2026-05-18** — Security fixes: AAD on envelope, untrusted-input framing for agent_instructions, decisions_locked reframed as user-preference-level. Correctness fixes: encrypted:false branch in code, version check accepts 2.x, removed salt reuse hint, explicit GCM wire format. Added: passphrase guidance, file size limits, test vectors reference.
 - **v2.1 — 2026-05-18** — SKILL.md convention, /.memory/ write snippet, file recognition, "What this is NOT", unencrypted example (finance domain), YAML frontmatter, scripts/load_klickd.py.
 - **v2.0 — 2026-05-18** — Universal release. Multi-domain, CC0. Robotics extension.
