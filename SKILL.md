@@ -1,6 +1,6 @@
 ---
 name: klickd-context
-version: 2.3
+version: 2.4
 description: Load a user's portable AI context from a .klickd encrypted file. Decrypts client-side using AES-256-GCM + PBKDF2, writes fields to /.memory/, and injects agent_instructions into the system prompt as untrusted user context.
 tools:
   - name: load_klickd
@@ -32,7 +32,7 @@ repo: https://github.com/Davincc77/klickdskill
 # .klickd Agent Skill
 
 **Envelope schema version:** 2.0 (klickd_version field in the file)
-**Spec/doc revision:** 2.3
+**Spec/doc revision:** 2.4
 **License:** CC0 1.0 Universal (Public Domain)
 **Spec:** [SPEC.md](./SPEC.md)
 
@@ -400,9 +400,15 @@ Privacy guarantee: the file lives on the user's device. The robot manufacturer h
 
 ## 13. Test Vectors
 
-See `tests/vectors.json` for 3 complete test vectors (1 unencrypted + 2 encrypted) with known passphrases and expected outputs. Use `scripts/generate_vector.py` to regenerate vectors with fresh cryptographic material.
+See `tests/vectors.json` for 4 test vectors (1 unencrypted + 2 encrypted + 1 short-passphrase) with known passphrases and expected outputs. Use `scripts/generate_vector.py` to regenerate vectors with fresh cryptographic material.
 
 All implementations SHOULD verify against these vectors before shipping.
+
+**`expected_payload_sha256` canonical form:**
+```
+sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8"))
+```
+This is the normative form. Compute over the decrypted payload dict after JSON-parsing, before any re-formatting. Note: v1 and v2 share the same payload content, so their sha256 values are equal by design.
 
 
 > **Note:** `/.memory/` directory contents are stored as plaintext on disk. Protect with appropriate filesystem permissions (e.g. `chmod 700 /.memory/`). The `.klickd` file itself remains encrypted on the user's device.
@@ -421,6 +427,7 @@ Full legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
 ## Changelog
 
+- **v2.4 — 2026-05-18** — expected_payload_sha256 canonicalization specified normatively in §13: sha256(json.dumps(sort_keys=True, separators=(",",":"), ensure_ascii=True)). Test vectors regenerated with correct canonical form. generate_vector.py fixed (was using ensure_ascii=False). v4 short-passphrase vector added.
 - **v2.3 — 2026-05-18** — AAD fixed to 4 fields (option A: drop updated_at — excluded by design, changes on every re-encrypt). All five AAD sites aligned: spec text, Python snippet, Python function, JS sample, §9 pseudocode. Test vectors regenerated with 4-field AAD + expected_payload_sha256 + v4 short-passphrase vector. Passphrase stdin/env/warning added to CLI. Session-scoped consent in §3. IANA pending note. /.memory/ plaintext note.
 - **v2.2 — 2026-05-18** — Security fixes: AAD on envelope, untrusted-input framing for agent_instructions, decisions_locked reframed as user-preference-level. Correctness fixes: encrypted:false branch in code, version check accepts 2.x, removed salt reuse hint, explicit GCM wire format. Added: passphrase guidance, file size limits, test vectors reference.
 - **v2.1 — 2026-05-18** — SKILL.md convention, /.memory/ write snippet, file recognition, "What this is NOT", unencrypted example (finance domain), YAML frontmatter, scripts/load_klickd.py.
