@@ -8,7 +8,7 @@ on:
 
 jobs:
   python:
-    name: Python — v2.5 + v3.0 (32 vectors)
+    name: Python — v2.5 + v3.0 (49 vectors + 17 adversarial)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +17,7 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: pip install cryptography argon2-cffi
-      - name: Run all suites (v2.5 + v3.0 — 32 vectors)
+      - name: Run all suites (v2.5 + v3.0 + adversarial)
         run: python3 verify_vectors.py
 
   javascript:
@@ -28,7 +28,37 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install hash-wasm (WASM Argon2id — no native binding required)
-        run: npm install hash-wasm
+      - name: Install dependencies (hash-wasm + canonicalize)
+        run: npm install
       - name: Run all suites (v2.5 + v3.0 via hash-wasm)
         run: node verify_vectors.mjs
+
+  core-package:
+    name: "@klickd/core — package integrity check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install @klickd/core dependencies
+        working-directory: packages/@klickd/core
+        run: npm install
+      - name: Verify package.json integrity
+        working-directory: packages/@klickd/core
+        run: |
+          node -e "
+          const pkg = require('./package.json');
+          const required = ['hash-wasm', 'canonicalize'];
+          const missing = required.filter(d => !pkg.dependencies[d]);
+          if (missing.length) { console.error('Missing deps:', missing); process.exit(1); }
+          console.log('All required dependencies present:', Object.keys(pkg.dependencies));
+          console.log('Package version:', pkg.version);
+          console.log('Wire format: klickd_version 3.0 (see SPEC_v30.md §23.0)');
+          "
+      - name: Verify source files present
+        working-directory: packages/@klickd/core
+        run: |
+          for f in src/decode.ts src/encode.ts src/types.ts src/errors.ts; do
+            [ -f "$f" ] && echo "OK: $f" || { echo "MISSING: $f"; exit 1; }
+          done

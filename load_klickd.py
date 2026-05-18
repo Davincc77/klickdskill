@@ -71,6 +71,7 @@ _GCM_TAG_BYTES      = 16
 
 # Bankr CRITICAL — minimum KDF parameter floors (both encoder and decoder MUST enforce)
 _ARGON2_MIN = {"m": 65536, "t": 3, "p": 1}
+_ARGON2_MAX = {"m": 4_194_304, "t": 999, "p": 255}  # sane upper bounds (OOM / DoS guard)
 _PBKDF2_MIN_ITER = 600_000
 
 # File size limits (Bankr HIGH 2.3a)
@@ -105,12 +106,18 @@ def _derive_key_v2(passphrase: str, salt: bytes) -> bytes:
 
 
 def _validate_argon2_params(params: dict) -> None:
-    """Bankr CRITICAL 1.3b/6.2 — reject files with sub-minimum Argon2id params."""
+    """Bankr CRITICAL 1.3b/6.2 — reject files with sub-minimum or over-maximum Argon2id params."""
     for param, minimum in _ARGON2_MIN.items():
         val = params.get(param)
         if not isinstance(val, int) or val < minimum:
             raise KlickdFormatError(
                 f"KLICKD_E_KDF: kdf.params.{param}={val!r} below minimum {minimum}"
+            )
+    for param, maximum in _ARGON2_MAX.items():
+        val = params.get(param)
+        if isinstance(val, int) and val > maximum:
+            raise KlickdFormatError(
+                f"KLICKD_E_KDF: kdf.params.{param}={val!r} exceeds maximum {maximum}"
             )
 
 

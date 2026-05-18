@@ -1,5 +1,5 @@
 {
-  "description": ".klickd v3.0 negative test vectors",
+  "description": ".klickd v3.0 negative test vectors — 11 vectors covering format errors, auth failures, and KDF parameter validation",
   "spec_version": "3.0",
   "notes": [
     "N1-N3: Argon2id param floor violations → KlickdFormatError (KLICKD_E_KDF)",
@@ -203,6 +203,88 @@
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
       "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT (missing 'cipher' block)"
+    },
+    {
+      "id": "v3.0-neg-unknown-cipher-id",
+      "spec_version": "3.0",
+      "description": "cipher block contains unrecognized 'id' field alongside unknown cipher.name value — decoder MUST reject unknown cipher",
+      "passphrase": "test-passphrase-12",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-18T14:23:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "dGVzdHNhbHQxMjM0NTY="
+        },
+        "cipher": {
+          "name": "chacha20-poly1305",
+          "id": "chacha20",
+          "iv": "dGVzdGl2MTIz"
+        },
+        "ciphertext": "dGVzdGN0MTIzNDU2Nzg5MDEyMzQ1Njc4"
+      },
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm' (got 'chacha20-poly1305')"
+    },
+    {
+      "id": "v3.0-neg-kdf-params-oversized-m",
+      "spec_version": "3.0",
+      "description": "kdf.params.m set to 2^31 (2147483648 MiB) — decoder MUST reject values exceeding implementation-defined ceiling to prevent OOM",
+      "passphrase": "test-passphrase-12",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-18T14:23:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 2147483648,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "a2xpY2tkc2FsdDEyMzQ1Ng=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "a2xpY2tkaXYxMjM0"
+        },
+        "ciphertext": "dGVzdGN0MTIzNDU2Nzg5MDEyMzQ1Njc4"
+      },
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (m=2147483648 exceeds maximum allowed memory parameter)"
+    },
+    {
+      "id": "v3.0-neg-kdf-params-zero-t",
+      "spec_version": "3.0",
+      "description": "kdf.params.t=0 (zero iteration count) — already covered by t-too-low but this tests exact zero boundary",
+      "passphrase": "test-passphrase-12",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-18T14:23:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 0,
+            "p": 1
+          },
+          "salt": "a2xpY2tkc2FsdDEyMzQ1Ng=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "dGVzdGl2MTIz"
+        },
+        "ciphertext": "dGVzdGN0MTIzNDU2Nzg5MDEyMzQ1Njc4"
+      },
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (t=0 below minimum of 3)"
     }
   ]
 }

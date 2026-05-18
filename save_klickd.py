@@ -82,6 +82,12 @@ _GCM_TAG_BYTES    = 16
 _ARGON2_M         = 65536   # 64 MiB
 _ARGON2_T         = 3
 _ARGON2_P         = 1
+_ARGON2_MIN_M     = 65536   # floor (matches decoder)
+_ARGON2_MIN_T     = 3
+_ARGON2_MIN_P     = 1
+_ARGON2_MAX_M     = 4_194_304  # 4 GiB — OOM/DoS guard
+_ARGON2_MAX_T     = 999
+_ARGON2_MAX_P     = 255
 
 _MIN_PASSPHRASE_REJECT = 8    # hard reject below this
 _MIN_PASSPHRASE_WARN   = 12   # warn below this

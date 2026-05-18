@@ -472,7 +472,7 @@ Encoders MUST reject a passphrase shorter than 8 characters (measured in Unicode
 
 ## 15. Key Derivation — PBKDF2-SHA256 (Legacy)
 
-PBKDF2-SHA256 [RFC 8018] is a legacy KDF supported for environments where Argon2id is unavailable. Encoders MAY use PBKDF2-SHA256 but SHOULD prefer Argon2id. New implementations MUST NOT select PBKDF2-SHA256 unless Argon2id is genuinely unavailable.
+PBKDF2-SHA256 [RFC 8018] is a legacy KDF supported for environments where Argon2id is unavailable. **Encoders MUST use Argon2id by default.** Encoders MAY emit `pbkdf2-sha256` only when Argon2id is genuinely unavailable in the target environment (e.g., restricted WASM environments). Decoders MAY accept `pbkdf2-sha256` in v3.0 envelopes for migration compatibility. New implementations MUST NOT select PBKDF2-SHA256 unless Argon2id is genuinely unavailable.
 
 ### 15.1 Parameters
 
@@ -578,6 +578,8 @@ Apply RFC 8785 JCS to produce the canonical byte string. JCS rules:
 - String values use `\uXXXX` escaping only where required by RFC 8785 §3.2.2.2.
 - Numbers use the shortest decimal representation.
 - The output is UTF-8 encoded.
+
+**klickd NFC extension (normative):** Before applying JCS, all string values in the AAD input object MUST be Unicode-normalized to NFC (Canonical Decomposition followed by Canonical Composition, per Unicode Standard Annex #15). This is a klickd-specific requirement beyond RFC 8785, which does not mandate Unicode normalization. Without NFC normalization, implementations using decomposed forms (e.g., `"cafe\u0301"` vs `"caf\u00E9"`) would produce different AAD bytes and fail GCM authentication. All conformant klickd JCS implementations MUST apply NFC normalization before canonicalization.
 
 The resulting UTF-8 byte string is used directly as the AAD parameter to AES-256-GCM.
 
@@ -1075,9 +1077,23 @@ The `agent_instructions` limit is a context-window DoS mitigation. Encoders MUST
 
 ## 23. Versioning Policy
 
+### 23.0 Version Numbering Scheme
+
+The `.klickd` project uses three distinct version namespaces that MUST NOT be conflated:
+
+| Namespace | Location | Meaning |
+|---|---|---|
+| Wire format version | `klickd_version` field in envelope | The binary/JSON format version. Controls parsing, AAD field set, and KDF algorithm selection. Currently `"3.0"`. |
+| Release version | `version` in root `package.json` and `@klickd/core/package.json` | The release version of the reference implementation and npm package. May advance faster than the wire format version. Currently `3.1.1`. |
+| Manifest revision | `version` in `SKILL.md` frontmatter | The revision of the skill manifest, tracking agent-platform compatibility. May differ from both of the above. |
+
+Auditors and installers MUST NOT treat these as equivalent. A `package.json` version of `3.1.1` does not imply wire format `3.1` — the wire format is always authoritative via the `klickd_version` envelope field.
+
 ### 23.1 Current Version
 
-**Version 3.0** is the current version of the `.klickd` format. New implementations MUST produce v3.0 files.
+**Version 3.0** is the current wire format version. New implementations MUST produce v3.0 envelopes (i.e., `klickd_version: "3.0"`).
+
+The current reference implementation release is **v3.1.1** (see `package.json`).
 
 ### 23.2 Legacy Versions
 
@@ -1142,6 +1158,8 @@ Decoders MUST extract the integer portion before the first `.` in `klickd_versio
 6. **Multi-user or multi-party access.** There is no public-key or key-wrapping mechanism. Access requires knowledge of the shared passphrase.
 
 7. **Forward secrecy.** Disclosure of the passphrase compromises all past and future files encrypted with that passphrase.
+
+8. **Rollback / replay attacks.** A `.klickd` file does not contain a monotonic counter or a server-issued nonce. An attacker who possesses an older copy of a user's `.klickd` file can replay it to a compatible agent — the agent will decrypt successfully and load stale context. The `created_at` timestamp in the envelope is authenticated (it is part of the AAD) but is set by the encoder and is not externally verified. Mitigations: (a) applications SHOULD display `created_at` to the user before trusting context; (b) agents SHOULD maintain a local high-watermark of the most recently loaded `created_at` per identity and WARN if a file's `created_at` is earlier than the watermark; (c) for high-security deployments, pair `.klickd` files with an out-of-band version token (e.g., a user-visible version number incremented on each save).
 
 ### 24.3 Mitigations Recommended for High-Security Deployments
 

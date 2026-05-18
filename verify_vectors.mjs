@@ -52,6 +52,10 @@ const STANDARD_B64_RE         = /^[A-Za-z0-9+/]*={0,2}$/;
 const ARGON2_MIN_M = 65536;  // 64 MiB — was 1024
 const ARGON2_MIN_T = 3;      // — was 1
 const ARGON2_MIN_P = 1;
+// Argon2id parameter ceilings (§14.1) — OOM/DoS guard, matches Python decoder
+const ARGON2_MAX_M = 4_194_304;  // 4 GiB
+const ARGON2_MAX_T = 999;
+const ARGON2_MAX_P = 255;
 
 // PBKDF2 floor (§15.1)
 const PBKDF2_MIN_ITERATIONS = 600_000;
@@ -248,6 +252,12 @@ async function decodeKlickdEnvelope(envelope, passphrase) {
         KlickdKdfError(`argon2id t=${p.t} below minimum ${ARGON2_MIN_T}`);
       if (typeof p.p !== 'number' || p.p < ARGON2_MIN_P)
         KlickdKdfError(`argon2id p=${p.p} below minimum ${ARGON2_MIN_P}`);
+      if (p.m > ARGON2_MAX_M)
+        KlickdKdfError(`argon2id m=${p.m} exceeds maximum ${ARGON2_MAX_M}`);
+      if (p.t > ARGON2_MAX_T)
+        KlickdKdfError(`argon2id t=${p.t} exceeds maximum ${ARGON2_MAX_T}`);
+      if (p.p > ARGON2_MAX_P)
+        KlickdKdfError(`argon2id p=${p.p} exceeds maximum ${ARGON2_MAX_P}`);
     }
     // PBKDF2 floor validation (§15.1)
     if (kdfName === 'pbkdf2-sha256') {
