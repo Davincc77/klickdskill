@@ -59,11 +59,12 @@ def _aad_from_envelope(envelope: dict) -> bytes:
     Build Additional Authenticated Data (AAD) from the envelope fields
     that sit outside the GCM seal. This prevents tampering with
     klickd_version, encrypted, domain, created_at without detection.
-    Fields included: klickd_version, encrypted, domain, created_at.
+    Fields included: klickd_version, encrypted, domain, created_at (4 fields).
+    NOTE: updated_at excluded by design — changes on every re-encrypt.
     """
     aad_fields = {
         k: envelope.get(k)
-        for k in ("klickd_version", "encrypted", "domain", "created_at", "updated_at")
+        for k in ("klickd_version", "encrypted", "domain", "created_at")
         if k in envelope
     }  # 5 fields. Values MUST be ASCII-safe. ensure_ascii=True (default) matches JS JSON.stringify for ASCII inputs.
     return json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")
