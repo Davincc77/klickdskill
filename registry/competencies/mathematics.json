@@ -1,0 +1,22 @@
+{
+  "$schema": "https://klickd.app/registry/schemas/competency-v1.schema.json",
+  "registry_id": "math-001",
+  "label": {
+    "en": "Number Sense & Arithmetic",
+    "fr": "Sens des nombres et arithmétique",
+    "de": "Zahlenverständnis und Arithmetik",
+    "lb": "Zueleverstiindnes an Arithmetik"
+  },
+  "domain": "mathematics",
+  "subdomain": "arithmetic",
+  "level_descriptors": [
+    "Can identify and compare integers, fractions, and decimals",
+    "Can perform four basic operations with confidence",
+    "Can apply arithmetic to multi-step word problems",
+    "Can reason about number relationships and estimation strategies",
+    "Can mentor others; derives arithmetic rules from first principles"
+  ],
+  "depends_on": [],
+  "tags": ["core", "foundational", "stem"],
+  "contributor_hash": null
+}

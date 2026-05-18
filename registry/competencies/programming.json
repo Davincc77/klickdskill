@@ -1,0 +1,22 @@
+{
+  "$schema": "https://klickd.app/registry/schemas/competency-v1.schema.json",
+  "registry_id": "prog-001",
+  "label": {
+    "en": "Computational Thinking",
+    "fr": "Pensée computationnelle",
+    "de": "Informatisches Denken",
+    "lb": "Computationellt Denken"
+  },
+  "domain": "programming",
+  "subdomain": "foundations",
+  "level_descriptors": [
+    "Can decompose a problem into discrete steps",
+    "Can write simple algorithms in pseudocode",
+    "Can implement and trace iterative and recursive algorithms",
+    "Can evaluate time/space complexity and choose appropriate data structures",
+    "Can architect systems from first principles; teaches algorithmic design"
+  ],
+  "depends_on": ["math-001"],
+  "tags": ["core", "stem", "logic"],
+  "contributor_hash": null
+}

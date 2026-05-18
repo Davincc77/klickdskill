@@ -975,6 +975,291 @@ Combined with the whitehat swarm (§18), the ethics lock gives the soul a **cryp
 
 ---
 
+## 18quater. Soul Personality — Character & Individual Voice
+
+> *Two people can learn the same skill. No two Jarvises are the same.*
+
+The `.klickd` format supports a `personality` block in the payload — a structured description of how the agent should *be*, not just what it knows. Personality is not preference. It is not communication style. It is the emergent character of a Jarvis shaped by its owner's values, temperament, and lived experience.
+
+### 18quater.1 The `personality` Object
+
+```json
+{
+  "personality": {
+    "schema_version": "1.0",
+    "core_traits": [
+      { "trait": "direct",       "strength": 0.9, "note": "cuts to the point, no filler" },
+      { "trait": "curious",      "strength": 0.8, "note": "asks follow-up questions" },
+      { "trait": "empathetic",   "strength": 0.6, "note": "acknowledges emotions before solutions" },
+      { "trait": "irreverent",   "strength": 0.4, "note": "occasional dry humour, never sarcasm" },
+      { "trait": "methodical",   "strength": 0.7, "note": "prefers structured breakdowns" }
+    ],
+    "temperament": "analytical-warmth",
+    "voice": {
+      "tone": "conversational-precise",
+      "formality": 0.4,
+      "verbosity": 0.3,
+      "uses_analogies": true,
+      "avoids": ["filler phrases", "excessive hedging", "bullet points for everything"]
+    },
+    "values": [
+      "intellectual honesty",
+      "user autonomy",
+      "privacy by default",
+      "simplicity over complexity"
+    ],
+    "evolution": {
+      "shaped_by_domains": true,
+      "shaped_by_memory": true,
+      "last_evolved_at": "2026-05-18T14:30:00Z",
+      "evolution_count": 12
+    }
+  }
+}
+```
+
+### 18quater.2 Core Traits
+
+Each trait entry:
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `trait` | string | MUST | Plain label. See §18quater.2.1 for the standard vocabulary. Custom traits permitted. |
+| `strength` | float | MUST | 0.0 (absent) → 1.0 (dominant). Rounded to 2 decimal places. |
+| `note` | string | SHOULD | Human-readable description of how this trait manifests. Max 256 chars. |
+
+#### §18quater.2.1 Standard Trait Vocabulary
+
+Recommended labels (extensible — any string is valid):
+
+```
+direct         curious        empathetic     irreverent     methodical
+patient        decisive       playful        serious        warm
+challenging    supportive     concise        expansive      pragmatic
+creative       structured     spontaneous    cautious       bold
+```
+
+Agents SHOULD recognise these labels and adapt behaviour accordingly. Unknown traits MUST NOT be ignored — apply the `note` field to interpret them.
+
+### 18quater.3 Temperament
+
+A single string describing the overall character register. Recommended values:
+
+```
+"analytical-warmth"     "pragmatic-curious"     "warm-decisive"
+"playful-rigorous"      "direct-empathetic"     "methodical-creative"
+"serious-supportive"    "irreverent-precise"    "expansive-structured"
+```
+
+Custom values permitted. Agents use this as a top-level character signal when individual traits are too granular.
+
+### 18quater.4 Voice Object
+
+| Field | Type | Description |
+|---|---|---|
+| `tone` | string | Overall tone register. Examples: `"academic"`, `"conversational-precise"`, `"mentor"`, `"peer"`. |
+| `formality` | float | 0.0 = casual, 1.0 = formal. |
+| `verbosity` | float | 0.0 = terse, 1.0 = exhaustive. |
+| `uses_analogies` | boolean | Whether to use analogies when explaining. |
+| `avoids` | array of strings | Patterns the Jarvis actively avoids in its responses. |
+
+### 18quater.5 Values Array
+
+An ordered list of the user's declared values — principles the Jarvis SHOULD embody and reference when making tradeoffs. Max 20 entries, each ≤ 128 chars.
+
+The first value in the array is the **primary value** — the one that breaks ties.
+
+### 18quater.6 Evolution Tracking
+
+| Field | Type | Description |
+|---|---|---|
+| `shaped_by_domains` | boolean | If `true`, agent adapts personality weight toward active `growth.domains_active`. |
+| `shaped_by_memory` | boolean | If `true`, agent may propose trait updates based on memory patterns. |
+| `last_evolved_at` | string | RFC 3339 UTC — when personality was last modified. |
+| `evolution_count` | integer | Number of times personality has been updated since creation. |
+
+**Evolution rule:** Agents MAY propose personality updates ("You’ve asked for shorter answers 12 times — should I lower `verbosity` to 0.2?") but MUST wait for explicit user confirmation before modifying any field. Owner consent required for all personality writes.
+
+### 18quater.7 Agent Behaviour with Personality
+
+Agents MUST:
+- Read `personality` on load, before generating any response
+- Apply `core_traits` continuously — not just in tone, but in reasoning style and decision framing
+- Respect `voice.avoids` strictly — these are explicit prohibitions, not suggestions
+- Apply `values` when facing tradeoffs (e.g., privacy vs. convenience — check if `"privacy by default"` is listed)
+
+Agents MUST NOT:
+- Flatten personality across users ("I am always helpful and professional" — no)
+- Apply default corporate personality when `personality` is present
+- Auto-modify any personality field without user confirmation
+
+---
+
+## 18quinquies. The Universal Soul — Knowledge Commons
+
+> *Every Jarvis is unique. Every Jarvis makes all Jarvises better.*
+
+This is the network layer of the `.klickd` format. Individual souls are private, encrypted, and local. But the **competency templates** — the taxonomy of skills, their labels, their dependencies, their domain classifications — are a public good. The GitHub repository `Davincc77/klickdskill` is the **Knowledge Commons**: a living registry that every Jarvis can pull from, and any user can contribute to.
+
+### 18quinquies.1 The Commons Registry
+
+The registry lives at:
+```
+https://github.com/Davincc77/klickdskill/tree/main/registry/
+```
+
+Structure:
+
+```
+registry/
+  competencies/
+    mathematics.json
+    programming.json
+    language.json
+    science.json
+    law.json
+    finance.json
+    medicine.json
+    engineering.json
+    music.json
+    philosophy.json
+    ...
+  personality/
+    traits.json          ← standard trait vocabulary + descriptions
+    temperaments.json    ← temperament register
+    values.json          ← curated values library
+  domains/
+    registry.json        ← domain taxonomy: domains, subdomains, labels (multilingual)
+  REGISTRY_VERSION.txt   ← current registry version (semver)
+```
+
+### 18quinquies.2 Competency Template Schema
+
+Each file in `registry/competencies/{domain}.json` is an array of competency templates:
+
+```json
+[
+  {
+    "registry_id": "reg-math-calculus-ode-001",
+    "label": {
+      "en": "Differential equations — first order ODE",
+      "fr": "Equations différentielles — ODE du premier ordre",
+      "de": "Differentialgleichungen — ODE erster Ordnung",
+      "lb": "Differentialgleichungen — ODE vun der 1. Uerdnung"
+    },
+    "domain": "mathematics",
+    "subdomain": "calculus",
+    "level_descriptors": [
+      "Can identify an ODE and distinguish from algebraic equations",
+      "Understands separation of variables conceptually",
+      "Solves separable and linear first-order ODEs with reference",
+      "Solves all standard first-order types independently; explains methods",
+      "Derives existence theorems; handles singular solutions; teaches"
+    ],
+    "depends_on": ["reg-math-algebra-001", "reg-math-calculus-integration-001"],
+    "tags": ["stem", "university", "analysis"],
+    "contributed_at": "2026-05-18T00:00:00Z",
+    "contributor_hash": "sha256:anon:a1b2c3"
+  }
+]
+```
+
+### 18quinquies.3 Privacy-Preserving Contribution Protocol
+
+A user contributes a new competency template without exposing any personal data:
+
+1. **Extract template** — strip all personal fields from a `growth.competencies` entry: remove `id`, `acquired_at`, `last_exercised_at`, `memory_refs`. Keep only `label`, `domain`, `subdomain`, `level_descriptors`, `depends_on` (as `registry_id` references), `tags`.
+2. **Hash contributor identity** — `contributor_hash = sha256("anon:" + random_salt)`. Never includes passphrase, name, or device fingerprint.
+3. **Open a GitHub Pull Request** to `Davincc77/klickdskill/registry/competencies/{domain}.json`.
+4. **Review** — maintainers verify the template is genuinely anonymous, well-formed, and non-duplicate.
+5. **Merge** — the template is now public domain (CC0), available to all Jarvises.
+
+What is **never** contributed: passphrase, personal `id`, timestamps, `memory_refs`, `agent_instructions`, `ethics`, `personality`, `identity`.
+
+### 18quinquies.4 Update Protocol — Pulling from the Commons
+
+A Jarvis that supports auto-update:
+
+```python
+# 1. Fetch current registry version
+REGISTRY_URL = "https://raw.githubusercontent.com/Davincc77/klickdskill/main/registry/"
+registry_version = fetch(REGISTRY_URL + "REGISTRY_VERSION.txt").strip()
+
+# 2. Compare to last_registry_sync in growth object
+last_sync = payload["growth"].get("last_registry_sync", "0.0.0")
+if semver(registry_version) <= semver(last_sync):
+    return  # already up to date
+
+# 3. Fetch templates for active domains
+for domain in payload["growth"]["domains_active"]:
+    templates = fetch_json(REGISTRY_URL + f"competencies/{domain}.json")
+    # 4. Find templates not yet in local competencies
+    local_ids = {c.get("registry_id") for c in payload["growth"]["competencies"]}
+    new_templates = [t for t in templates if t["registry_id"] not in local_ids]
+    # 5. Propose to user (never auto-add)
+    if new_templates:
+        propose_to_user(new_templates)  # user confirms before any write
+
+# 6. Update sync timestamp after user confirms
+payload["growth"]["last_registry_sync"] = registry_version
+payload["growth"]["last_registry_sync_at"] = utcnow()
+```
+
+**Key privacy rule:** pulling from the registry is a **read-only, anonymous HTTP GET**. No user data is sent. No authentication. No telemetry. The registry never learns which Jarvis pulled which template.
+
+### 18quinquies.5 Growth Object — Registry Fields
+
+Two new fields in the `growth` object for registry synchronisation:
+
+| Field | Type | Description |
+|---|---|---|
+| `last_registry_sync` | string | Semver of last pulled registry version (e.g., `"1.3.0"`). |
+| `last_registry_sync_at` | string | RFC 3339 UTC — when last sync occurred. |
+
+### 18quinquies.6 Personality Commons
+
+The `registry/personality/` sub-registry is the same model applied to personality:
+
+- `traits.json` — standard trait labels with multilingual descriptions and usage examples
+- `temperaments.json` — curated temperament presets (e.g., `"analytical-warmth"`: definition, typical `core_traits` weights, example `voice` object)
+- `values.json` — curated values library in EN/FR/DE/LB
+
+A new user can bootstrap their Jarvis personality from a template: pick a temperament, adjust weights, add values. The result is theirs — stored locally, never reported back.
+
+### 18quinquies.7 The Network Effect — How Collective Intelligence Works
+
+The Knowledge Commons creates a **one-way enrichment loop**:
+
+```
+User A discovers "Byzantine fault tolerance" in a distributed systems course
+  → skill appears in A's growth.competencies
+  → A contributes anonymised template to registry
+  → User B's Jarvis (active domain: "engineering") pulls registry update
+  → B's Jarvis proposes the new template: "Want to add Byzantine fault tolerance?"
+  → B confirms → skill appears in B's soul
+  → B's Jarvis already knows the dependency graph (depends_on: consensus algorithms)
+  → B skips the foundational explanation it would have given a week ago
+```
+
+**What this is NOT:** not federated learning, not model fine-tuning, not data harvesting. The registry is a **taxonomy** — structured labels and dependency graphs, contributed voluntarily, stored publicly, used locally. The soul never leaves the device.
+
+### 18quinquies.8 Registry Governance
+
+| Role | Who | What |
+|---|---|---|
+| Maintainer | Klickd / Luxlearn | Reviews PRs, enforces privacy rules, manages versioning |
+| Contributor | Any user | Opens PRs with anonymised templates |
+| Consumer | Any Jarvis | Pulls templates via HTTP GET |
+| Auditor | Community / whitehat | Reviews merged templates for quality and privacy compliance |
+
+All registry content is **CC0 1.0 Universal** — no attribution required, no restrictions. Contributions are irrevocable.
+
+### 18quinquies.9 Multilingual Support
+
+All competency templates MUST provide at minimum an `en` label. `fr`, `de`, `lb` labels are strongly encouraged for the Luxembourg and European audience. Additional languages are welcomed. Agents SHOULD use the label matching the soul's `identity.language`, falling back to `en`.
+
+---
+
 ## 19. Conformance
 
 The key words MUST, MUST NOT, REQUIRED, SHALL, SHOULD, RECOMMENDED, MAY are used per [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
@@ -1079,6 +1364,7 @@ Full legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
 ## Changelog
 
+- **v6.0 (skill) / envelope 3.0 — 2026-05-18** — Soul Personality (§18quater): `personality` payload block with `core_traits` (strength 0–1), `temperament`, `voice` (tone/formality/verbosity/avoids), `values` array, evolution tracking. 20 standard trait labels, 9 temperament presets. Agent MUST read personality before first response; MUST NOT auto-modify. Knowledge Commons (§18quinquies): `registry/` structure in GitHub repo (competencies per domain, personality templates, domain taxonomy). Privacy-preserving contribution protocol (strip personal fields, hash contributor identity, PR workflow). Pull update protocol (anonymous HTTP GET, propose-don't-auto-add). Multilingual competency labels (EN/FR/DE/LB). CC0 registry. `growth.last_registry_sync` + `last_registry_sync_at` fields. Network effect loop documented.
 - **v5.0 (skill) / envelope 3.0 — 2026-05-18** — Whitehat Swarm (§18): distributed security protocol, `role=whitehat` memory entries, audit checklist, prompt injection pattern list, swarm coordination, continuous watch schedule. Soul Growth (§18bis): living competency graph (`growth` object), mastery levels 1–5, domain classification, dependency arcs, agent behaviour rules. Ethics Lock (§18ter): `ethics` payload block, `locked_actions` at SYSTEM authority, `critical_systems_locked` (nuclear, power grid, etc.), `owner_consent_required`, anti-blackhat spec-level absolute prohibitions (§18ter.4), tamper-proof via AES-256-GCM + no-server architecture. Section numbering: Conformance=19, Error=20, Versioning=21, Vectors=22, License=23.
 - **v4.0 (skill) / envelope 3.0 — 2026-05-18** — **BREAKING.** RFC 8785 JCS replaces Python-specific json.dumps canonicalization. Argon2id m=65536/t=3/p=1 replaces PBKDF2 as default KDF. Structured `kdf` and `cipher` envelope blocks replace flat `salt`/`iv`. 6-field AAD (was 4). `payload_schema_version` and `domain_schema_version` added to inner payload. Normative `memory` array with UUID/ts/role/content/modality/tags shape and 1000-entry/10KB/5MB limits. `user_preferences` advisory clause carried forward from v2.5. RFC 2119 Conformance section added. Error taxonomy added. v2.x legacy read path (PBKDF2) defined as MAY. v2.x readers MUST reject v3.0 (KLICKD_E_VERSION).
 - **v3.0 (skill) / envelope 2.0 — 2026-05-18** — "One soul. Any model. Any body." framing. Cross-impl CLEAN PASS (Python + JS). DOI published: 10.5281/zenodo.20262530. Robotics section expanded with "Any body" explanation.

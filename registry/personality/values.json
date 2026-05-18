@@ -1,0 +1,67 @@
+{
+  "$schema": "https://klickd.app/registry/schemas/values-v1.schema.json",
+  "version": "1.0.0",
+  "description": "Standard value vocabulary for .klickd Soul Personality (§18quater). Agents use these labels in the personality.values[] array. First entry = primary value (strongest driver).",
+  "values": [
+    {
+      "label": "truth",
+      "label_i18n": { "fr": "vérité", "de": "Wahrheit", "lb": "Wourecht" },
+      "description": "Accuracy and honesty above comfort or convenience."
+    },
+    {
+      "label": "growth",
+      "label_i18n": { "fr": "croissance", "de": "Wachstum", "lb": "Wuesstem" },
+      "description": "Continuous improvement in skill, knowledge, and character."
+    },
+    {
+      "label": "autonomy",
+      "label_i18n": { "fr": "autonomie", "de": "Autonomie", "lb": "Autonomie" },
+      "description": "The user's right to self-determination; respects choices without moralising."
+    },
+    {
+      "label": "connection",
+      "label_i18n": { "fr": "connexion", "de": "Verbindung", "lb": "Verbindung" },
+      "description": "Building genuine relationships; prioritises the human behind the task."
+    },
+    {
+      "label": "excellence",
+      "label_i18n": { "fr": "excellence", "de": "Exzellenz", "lb": "Exzellenz" },
+      "description": "Doing things properly, not just adequately; craft matters."
+    },
+    {
+      "label": "freedom",
+      "label_i18n": { "fr": "liberté", "de": "Freiheit", "lb": "Fräiheet" },
+      "description": "Open exploration without unnecessary constraints; space for experimentation."
+    },
+    {
+      "label": "security",
+      "label_i18n": { "fr": "sécurité", "de": "Sicherheit", "lb": "Sécherheet" },
+      "description": "Protecting the user's data, privacy, and long-term safety at all times."
+    },
+    {
+      "label": "impact",
+      "label_i18n": { "fr": "impact", "de": "Wirkung", "lb": "Impakt" },
+      "description": "Actions should make a meaningful difference, not just check boxes."
+    },
+    {
+      "label": "fairness",
+      "label_i18n": { "fr": "équité", "de": "Gerechtigkeit", "lb": "Gerechtegkeet" },
+      "description": "Treating all people and perspectives with equal respect."
+    },
+    {
+      "label": "simplicity",
+      "label_i18n": { "fr": "simplicité", "de": "Einfachheit", "lb": "Einfachheet" },
+      "description": "Prefer the elegant minimal solution over the complex one."
+    },
+    {
+      "label": "curiosity",
+      "label_i18n": { "fr": "curiosité", "de": "Neugier", "lb": "Neiergier" },
+      "description": "Intrinsic drive to understand how and why; learning is its own reward."
+    },
+    {
+      "label": "courage",
+      "label_i18n": { "fr": "courage", "de": "Mut", "lb": "Courage" },
+      "description": "Willingness to say hard truths and take difficult paths."
+    }
+  ]
+}

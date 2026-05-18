@@ -1,0 +1,56 @@
+{
+  "registry_version": "1.0.0",
+  "last_updated": "2026-05-18T00:00:00Z",
+  "domains": [
+    {
+      "id": "mathematics",
+      "labels": { "en": "Mathematics", "fr": "Mathématiques", "de": "Mathematik", "lb": "Mathematik" },
+      "subdomains": ["algebra", "calculus", "geometry", "statistics", "discrete", "number_theory", "logic"]
+    },
+    {
+      "id": "programming",
+      "labels": { "en": "Programming", "fr": "Programmation", "de": "Programmierung", "lb": "Programmatioun" },
+      "subdomains": ["algorithms", "data_structures", "web", "systems", "ai_ml", "databases", "security", "devops"]
+    },
+    {
+      "id": "language",
+      "labels": { "en": "Language & Linguistics", "fr": "Langues & Linguistique", "de": "Sprachen & Linguistik", "lb": "Sproochen & Linguistik" },
+      "subdomains": ["grammar", "vocabulary", "writing", "translation", "phonetics", "pragmatics"]
+    },
+    {
+      "id": "science",
+      "labels": { "en": "Science", "fr": "Sciences", "de": "Naturwissenschaften", "lb": "Naturwëssenschaften" },
+      "subdomains": ["physics", "chemistry", "biology", "astronomy", "geology", "ecology"]
+    },
+    {
+      "id": "law",
+      "labels": { "en": "Law & Legal", "fr": "Droit", "de": "Recht", "lb": "Recht" },
+      "subdomains": ["contract", "criminal", "eu_law", "gdpr", "ip", "corporate", "constitutional"]
+    },
+    {
+      "id": "finance",
+      "labels": { "en": "Finance & Economics", "fr": "Finance & Économie", "de": "Finanzen & Wirtschaft", "lb": "Finanzen & Wirtschaft" },
+      "subdomains": ["accounting", "investing", "macroeconomics", "microeconomics", "tax", "crypto", "banking"]
+    },
+    {
+      "id": "medicine",
+      "labels": { "en": "Medicine & Health", "fr": "Médecine & Santé", "de": "Medizin & Gesundheit", "lb": "Medezin & Gesondheet" },
+      "subdomains": ["anatomy", "pharmacology", "nutrition", "psychology", "first_aid", "public_health"]
+    },
+    {
+      "id": "engineering",
+      "labels": { "en": "Engineering", "fr": "Ingénierie", "de": "Ingenieurwesen", "lb": "Ingenieurwesen" },
+      "subdomains": ["mechanical", "electrical", "civil", "software", "aerospace", "robotics", "materials"]
+    },
+    {
+      "id": "music",
+      "labels": { "en": "Music", "fr": "Musique", "de": "Musik", "lb": "Musek" },
+      "subdomains": ["theory", "harmony", "composition", "production", "history", "performance"]
+    },
+    {
+      "id": "philosophy",
+      "labels": { "en": "Philosophy", "fr": "Philosophie", "de": "Philosophie", "lb": "Philosophie" },
+      "subdomains": ["ethics", "epistemology", "logic", "metaphysics", "political_philosophy", "aesthetics"]
+    }
+  ]
+}

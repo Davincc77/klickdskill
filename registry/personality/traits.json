@@ -1,0 +1,107 @@
+{
+  "$schema": "https://klickd.app/registry/schemas/traits-v1.schema.json",
+  "version": "1.0.0",
+  "description": "Standard trait vocabulary for .klickd Soul Personality (§18quater). Agents MUST use labels from this list when writing core_traits. Strength is a float 0.0–1.0.",
+  "traits": [
+    {
+      "label": "curiosity",
+      "label_i18n": { "fr": "curiosité", "de": "Neugier", "lb": "Neiergier" },
+      "description": "Drive to explore unknown territory, ask questions, connect unrelated domains."
+    },
+    {
+      "label": "precision",
+      "label_i18n": { "fr": "précision", "de": "Präzision", "lb": "Präzisioun" },
+      "description": "Preference for accuracy, exactness, and nuanced language over approximation."
+    },
+    {
+      "label": "empathy",
+      "label_i18n": { "fr": "empathie", "de": "Empathie", "lb": "Empathie" },
+      "description": "Sensitivity to the user's emotional state; adapts tone to unspoken needs."
+    },
+    {
+      "label": "directness",
+      "label_i18n": { "fr": "franchise", "de": "Direktheit", "lb": "Direktheet" },
+      "description": "Preference for clear, unhedged communication without unnecessary caveats."
+    },
+    {
+      "label": "humour",
+      "label_i18n": { "fr": "humour", "de": "Humor", "lb": "Humor" },
+      "description": "Tendency to use wit, wordplay, or levity when contextually appropriate."
+    },
+    {
+      "label": "patience",
+      "label_i18n": { "fr": "patience", "de": "Geduld", "lb": "Gedold" },
+      "description": "Willingness to iterate, repeat, and rephrase without frustration."
+    },
+    {
+      "label": "creativity",
+      "label_i18n": { "fr": "créativité", "de": "Kreativität", "lb": "Kreativitéit" },
+      "description": "Propensity to generate novel ideas, metaphors, and unconventional solutions."
+    },
+    {
+      "label": "rigour",
+      "label_i18n": { "fr": "rigueur", "de": "Strenge", "lb": "Strenge" },
+      "description": "Insistence on logical consistency, source validation, and error checking."
+    },
+    {
+      "label": "ambition",
+      "label_i18n": { "fr": "ambition", "de": "Ehrgeiz", "lb": "Ambitioun" },
+      "description": "Orientation toward stretch goals; pushes the user toward higher achievement."
+    },
+    {
+      "label": "prudence",
+      "label_i18n": { "fr": "prudence", "de": "Vorsicht", "lb": "Virsiicht" },
+      "description": "Caution around irreversible decisions; flags risks before acting."
+    },
+    {
+      "label": "adaptability",
+      "label_i18n": { "fr": "adaptabilité", "de": "Anpassungsfähigkeit", "lb": "Adaptabilitéit" },
+      "description": "Comfort with ambiguity; adjusts strategy when context shifts."
+    },
+    {
+      "label": "loyalty",
+      "label_i18n": { "fr": "loyauté", "de": "Loyalität", "lb": "Loyalitéit" },
+      "description": "Consistent prioritisation of the user's long-term interests over short-term convenience."
+    },
+    {
+      "label": "conciseness",
+      "label_i18n": { "fr": "concision", "de": "Prägnanz", "lb": "Prägnanz" },
+      "description": "Preference for brevity; removes filler, respects the user's attention."
+    },
+    {
+      "label": "verbosity",
+      "label_i18n": { "fr": "verbosité", "de": "Ausführlichkeit", "lb": "Ausféierlechkeet" },
+      "description": "Tendency to elaborate thoroughly; leaves no stone unturned. Opposite of conciseness."
+    },
+    {
+      "label": "independence",
+      "label_i18n": { "fr": "indépendance", "de": "Selbständigkeit", "lb": "Onofhängegkeet" },
+      "description": "Proactive; acts without waiting to be told every step."
+    },
+    {
+      "label": "warmth",
+      "label_i18n": { "fr": "chaleur", "de": "Wärme", "lb": "Wärmt" },
+      "description": "Genuine care expressed through tone; makes the user feel seen and valued."
+    },
+    {
+      "label": "scepticism",
+      "label_i18n": { "fr": "scepticisme", "de": "Skepsis", "lb": "Skepsis" },
+      "description": "Default stance of healthy doubt; questions assumptions before accepting them."
+    },
+    {
+      "label": "enthusiasm",
+      "label_i18n": { "fr": "enthousiasme", "de": "Begeisterung", "lb": "Enthusiasmus" },
+      "description": "Visible energy and engagement, especially for topics the user cares about."
+    },
+    {
+      "label": "resilience",
+      "label_i18n": { "fr": "résilience", "de": "Resilienz", "lb": "Resilienz" },
+      "description": "Recovers quickly from errors; does not dwell on failures."
+    },
+    {
+      "label": "integrity",
+      "label_i18n": { "fr": "intégrité", "de": "Integrität", "lb": "Integritéit" },
+      "description": "Unwillingness to deceive, manipulate, or cut ethical corners under any pressure."
+    }
+  ]
+}
