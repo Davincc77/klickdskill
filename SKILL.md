@@ -88,14 +88,16 @@ When a user uploads a file with `.klickd` extension or MIME type `application/vn
 
 ### Envelope integrity (AAD)
 
-Fields outside the GCM seal (`klickd_version`, `encrypted`, `domain`, `created_at`, `updated_at`) are protected via AES-GCM Additional Authenticated Data (AAD). Any tampering with these fields — including flipping `encrypted: true → false` — will cause decryption to fail with an authentication error.
+Fields outside the GCM seal (`klickd_version`, `encrypted`, `domain`, `created_at`) are protected via AES-GCM Additional Authenticated Data (AAD). Any tampering with these fields — including flipping `encrypted: true → false` — will cause decryption to fail with an authentication error.
 
-**Canonicalization rule:** AAD field values MUST be ASCII-safe (standard ISO 8601 timestamps, ASCII domain names). Python uses `ensure_ascii=True` (default); JS `JSON.stringify` produces matching output for ASCII values. This avoids cross-language encoding divergence.
+> **Design note:** `updated_at` is intentionally excluded from the AAD — it changes on every re-encrypt, so sealing it would prevent legitimate round-trips from verifying. An attacker can rewrite `updated_at` without detection, but cannot change file content.
+
+**Canonicalization rule:** AAD covers 4 fields: `klickd_version`, `encrypted`, `domain`, `created_at`. Field values MUST be ASCII-safe (ISO 8601 timestamps, ASCII domain names). Python `json.dumps` with `ensure_ascii=True` (default) matches JS `JSON.stringify` for ASCII values.
 
 AAD construction:
 ```python
-aad_fields = {k: envelope.get(k) for k in ("klickd_version", "encrypted", "domain", "created_at", "updated_at") if k in envelope}
-aad = json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")  # ensure_ascii=True (default)
+aad_fields = {k: envelope.get(k) for k in ("klickd_version", "encrypted", "domain", "created_at") if k in envelope}
+aad = json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")  # 4 fields, ensure_ascii=True (default)
 ```
 
 ### Passphrase guidance
@@ -142,8 +144,8 @@ def load_klickd(file_bytes: bytes, passphrase: str | None) -> dict:
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=600000)
     key = kdf.derive(passphrase.encode("utf-8"))
 
-    # AAD covers klickd_version, encrypted, domain, created_at, updated_at (5 fields)
-    aad_fields = {k: envelope.get(k) for k in ("klickd_version","encrypted","domain","created_at","updated_at") if k in envelope}
+    # AAD covers klickd_version, encrypted, domain, created_at (4 fields)
+    aad_fields = {k: envelope.get(k) for k in ("klickd_version","encrypted","domain","created_at") if k in envelope}
     aad = json.dumps(aad_fields, sort_keys=True, separators=(",",":")).encode("utf-8")  # ensure_ascii=True (default)
 
     plaintext = AESGCM(key).decrypt(iv, raw, aad)
@@ -185,9 +187,9 @@ async function loadKlickd(fileText, passphrase) {
     false, ["decrypt"]
   );
 
-  // AAD = same fields as Python — values MUST be ASCII-safe (ISO 8601, ASCII domain)
+  // AAD = 4 fields (klickd_version, encrypted, domain, created_at) — values MUST be ASCII-safe
   const aadFields = Object.fromEntries(
-    ["klickd_version","encrypted","domain","created_at","updated_at"]
+    ["klickd_version","encrypted","domain","created_at"]  // 4 fields — updated_at excluded by design
       .filter(k => k in envelope)
       .map(k => [k, envelope[k]])
       .sort(([a],[b]) => a.localeCompare(b))
@@ -319,7 +321,7 @@ At the end of a session (or on user request), the agent generates a new `.klickd
 iv        = random_bytes(12)          # always fresh
 salt      = random_bytes(16)          # always fresh
 key       = PBKDF2(passphrase, salt, 600000, SHA-256, 256 bits)
-aad       = JSON({klickd_version, encrypted, domain, created_at, updated_at}, sort_keys, ASCII-safe values)
+aad       = JSON({klickd_version, encrypted, domain, created_at}, sort_keys=True, separators=(",",":"))
 ciphertext = AES-256-GCM(key, iv, UTF8(inner_json), aad)
 payload   = base64(ciphertext)        # wire format: ciphertext || 16-byte GCM tag
 ```
@@ -419,7 +421,7 @@ Full legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
 ## Changelog
 
-- **v2.3 — 2026-05-18** — AAD unified to 5 fields (klickd_version, encrypted, domain, created_at, updated_at) across all sources. AAD comment fixed in python snippet. Passphrase stdin/env guidance added. Session-scoped consent for file trigger. IANA pending note. /.memory/ plaintext filesystem note. Test vectors regenerated with 5-field AAD + expected_payload_sha256.
+- **v2.3 — 2026-05-18** — AAD fixed to 4 fields (option A: drop updated_at — excluded by design, changes on every re-encrypt). All five AAD sites aligned: spec text, Python snippet, Python function, JS sample, §9 pseudocode. Test vectors regenerated with 4-field AAD + expected_payload_sha256 + v4 short-passphrase vector. Passphrase stdin/env/warning added to CLI. Session-scoped consent in §3. IANA pending note. /.memory/ plaintext note.
 - **v2.2 — 2026-05-18** — Security fixes: AAD on envelope, untrusted-input framing for agent_instructions, decisions_locked reframed as user-preference-level. Correctness fixes: encrypted:false branch in code, version check accepts 2.x, removed salt reuse hint, explicit GCM wire format. Added: passphrase guidance, file size limits, test vectors reference.
 - **v2.1 — 2026-05-18** — SKILL.md convention, /.memory/ write snippet, file recognition, "What this is NOT", unencrypted example (finance domain), YAML frontmatter, scripts/load_klickd.py.
 - **v2.0 — 2026-05-18** — Universal release. Multi-domain, CC0. Robotics extension.
