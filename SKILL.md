@@ -1,6 +1,6 @@
 ---
 name: klickd-context
-version: 3.0
+version: 2.5
 description: Load a user's portable AI context from a .klickd encrypted file. One soul. Any model. Any body. — Decrypts client-side using AES-256-GCM + PBKDF2, writes fields to /.memory/, and injects user_preferences into the system prompt as untrusted user context.
 tools:
   - name: load_klickd
@@ -153,8 +153,8 @@ def load_klickd(file_bytes: bytes, passphrase: str | None) -> dict:
     envelope = json.loads(file_bytes)
 
     # Version check — accept 2.x; raise KLICKD_E_VERSION if unsupported
-    major = int(str(envelope["klickd_version"]).split(".")[0])
-    if major != 2:
+    major = str(envelope["klickd_version"]).split(".")[0]
+    if major not in ('2', '3'):  # v2.x + v3.0 supported
         raise ValueError(f"KLICKD_E_VERSION: Unsupported klickd_version: {envelope['klickd_version']}")
 
     # Unencrypted mode (development/testing only — never ship unencrypted in production)
@@ -197,7 +197,7 @@ async function loadKlickd(fileText, passphrase) {
 
   // Version check — accept 2.x; throw KLICKD_E_VERSION if unsupported
   const major = parseInt(String(envelope.klickd_version).split(".")[0]);
-  if (major !== 2) throw new Error(`KLICKD_E_VERSION: Unsupported klickd_version: ${envelope.klickd_version}`);
+  if (!['2','3'].includes(String(major))) throw new Error(`KLICKD_E_VERSION: Unsupported klickd_version: ${envelope.klickd_version}`); // v2.x + v3.0 supported
 
   // Unencrypted mode
   if (envelope.encrypted === false) {

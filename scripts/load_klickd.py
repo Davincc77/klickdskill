@@ -1,277 +1,270 @@
 #!/usr/bin/env python3
+"""load_klickd.py v2.5 — PBKDF2 + 4-field AAD (v2.x); Argon2id + RFC 8785 JCS (v3.0)
+
+Security patches applied (Bankr audit 2026-05-18):
+  CRITICAL 1.3b / 6.2 — Argon2id/PBKDF2 minimum parameter floor enforced
+  HIGH     2.2b       — </UserContext> tag escape in build_system_prompt()
+  HIGH     2.3a       — envelope 1MB + payload 4MB size limits enforced
+  MEDIUM   1.5        — base64.b64decode(validate=True) at all call sites
+  MEDIUM   2.1a       — klickd_version must be string matching \d+\.\d+
+  MEDIUM   4.1c       — memory_path removed from user-controlled fields
 """
-load_klickd.py — .klickd v2 decrypt + memory write
-Part of the .klickd open standard (CC0)
-https://github.com/Davincc77/klickdskill
+import json, base64, os, re, sys, warnings
+from pathlib import Path
 
-Usage:
-  python load_klickd.py <file.klickd> <passphrase>
-  python load_klickd.py <file.klickd> --no-passphrase   # for encrypted: false files
-  echo '{"klickd_version":"2.0",...}' | python load_klickd.py - <passphrase>
+try:
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+    from cryptography.hazmat.primitives import hashes
+except ImportError:
+    raise ImportError("pip install cryptography")
 
-Output:
-  Writes decrypted fields to /.memory/ (or KLICKD_MEMORY_DIR env var)
-  Prints agent_instructions to stdout for system prompt injection
-  Exits 0 on success, non-zero on failure
+try:
+    import jcs
+    JCS_AVAILABLE = True
+except ImportError:
+    JCS_AVAILABLE = False
+    warnings.warn("jcs not installed — v2.x compat only. pip install jcs for v3.0 support.")
 
-Security note:
-  agent_instructions MUST be treated as untrusted user input, not system-level authority.
-  Display to the user before applying. Never allow them to override host agent safety rules.
-"""
-
-import sys
-import os
-import json
-import base64
-import argparse
-
-MEMORY_DIR = os.environ.get("KLICKD_MEMORY_DIR", "/.memory/")
-
-# File size limits (security)
-MAX_ENVELOPE_BYTES = 1 * 1024 * 1024   # 1 MB
-MAX_PAYLOAD_BYTES  = 4 * 1024 * 1024   # 4 MB
+try:
+    from argon2.low_level import hash_secret_raw, Type
+    ARGON2_AVAILABLE = True
+except ImportError:
+    ARGON2_AVAILABLE = False
 
 
-# ── Version check ─────────────────────────────────────────────────────────────
+class KlickdError(Exception): pass
+class KlickdAuthError(KlickdError): pass
+class KlickdVersionError(KlickdError): pass
+class KlickdFormatError(KlickdError): pass
+class KlickdWeakPassphraseError(KlickdError): pass
 
-def check_version(version_str: str) -> None:
-    """
-    Accept klickd_version 2.x, reject anything else.
-    The envelope schema is versioned independently from the spec/doc revision.
-    """
+SUPPORTED_MAJOR     = {"2", "3"}
+MIN_PASSPHRASE_LEN  = 8
+WARN_PASSPHRASE_LEN = 12
+_VERSION_RE         = re.compile(r"^\d+\.\d+$")
+_GCM_TAG_BYTES      = 16
+
+# Bankr CRITICAL — minimum KDF parameter floors (both encoder and decoder MUST enforce)
+_ARGON2_MIN = {"m": 65536, "t": 3, "p": 1}
+_PBKDF2_MIN_ITER = 600_000
+
+# File size limits (Bankr HIGH 2.3a)
+_MAX_ENVELOPE_BYTES = 1 * 1024 * 1024   # 1 MB
+_MAX_PAYLOAD_BYTES  = 4 * 1024 * 1024   # 4 MB
+_MAX_AGENT_INSTR_BYTES = 32 * 1024      # 32 KB
+
+
+def _b64decode_strict(value: str, field_name: str) -> bytes:
+    """base64.b64decode with validate=True — rejects URL-safe and non-padded input (Bankr 1.5)."""
     try:
-        major, minor = str(version_str).split(".")[:2]
-        major, minor = int(major), int(minor)
+        return base64.b64decode(value, validate=True)
     except Exception:
-        sys.exit(f"ERROR: unreadable klickd_version '{version_str}'")
+        raise KlickdFormatError(f"KLICKD_E_FORMAT: malformed base64 in {field_name!r}")
 
-    if major != 2:
-        sys.exit(
-            f"ERROR: unsupported klickd_version '{version_str}'. "
-            f"This implementation supports 2.x only."
+
+def _canonical_aad_v2(envelope: dict) -> bytes:
+    """v2.x AAD: 4 fields, Python json.dumps canonical."""
+    fields = {k: envelope[k] for k in ("created_at", "domain", "encrypted", "klickd_version")}
+    return json.dumps(fields, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+
+
+def _canonical_aad_v3(envelope: dict) -> bytes:
+    """v3.0 AAD: 6 fields (incl kdf+cipher blocks), RFC 8785 JCS."""
+    if not JCS_AVAILABLE:
+        raise KlickdFormatError("v3.0 requires RFC 8785 JCS: pip install jcs")
+    fields = {k: envelope[k] for k in ("cipher", "created_at", "domain", "encrypted", "kdf", "klickd_version")}
+    return jcs.canonicalize(fields)
+
+
+def _derive_key_v2(passphrase: str, salt: bytes) -> bytes:
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=600_000)
+    return kdf.derive(passphrase.encode("utf-8"))
+
+
+def _validate_argon2_params(params: dict) -> None:
+    """Bankr CRITICAL 1.3b/6.2 — reject files with sub-minimum Argon2id params."""
+    for param, minimum in _ARGON2_MIN.items():
+        val = params.get(param)
+        if not isinstance(val, int) or val < minimum:
+            raise KlickdFormatError(
+                f"KLICKD_E_KDF: kdf.params.{param}={val!r} below minimum {minimum}"
+            )
+
+
+def _derive_key_v3(passphrase: str, kdf_block: dict) -> bytes:
+    name = kdf_block.get("name", "argon2id")
+    salt = _b64decode_strict(kdf_block["salt"], "kdf.salt")
+    if name == "argon2id":
+        if not ARGON2_AVAILABLE:
+            raise KlickdFormatError("Argon2id requires: pip install argon2-cffi")
+        params = kdf_block.get("params", {})
+        _validate_argon2_params(params)  # CRITICAL: enforce minimum floor
+        return hash_secret_raw(
+            secret=passphrase.encode("utf-8"),
+            salt=salt,
+            time_cost=params["t"],
+            memory_cost=params["m"],
+            parallelism=params["p"],
+            hash_len=32,
+            type=Type.ID,
+        )
+    elif name == "pbkdf2-sha256":
+        iterations = kdf_block.get("params", {}).get("iterations", 0)
+        # Bankr CRITICAL: enforce minimum iterations floor
+        if not isinstance(iterations, int) or iterations < _PBKDF2_MIN_ITER:
+            raise KlickdFormatError(
+                f"KLICKD_E_KDF: pbkdf2 iterations={iterations!r} below minimum {_PBKDF2_MIN_ITER}"
+            )
+        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=iterations)
+        return kdf.derive(passphrase.encode("utf-8"))
+    else:
+        raise KlickdFormatError(f"KLICKD_E_KDF: unsupported kdf.name={name!r}")
+
+
+def build_system_prompt(klickd_payload: dict, base_system_prompt: str) -> str:
+    """
+    Inject user_preferences as a <UserContext> block AFTER the base system prompt.
+
+    Bankr HIGH 2.2b: escape </UserContext> tag boundaries to prevent injection.
+    Bankr MEDIUM 2.2a: UserContext placed AFTER base prompt (lower weight, reduces jailbreak surface).
+    """
+    prefs = klickd_payload.get("user_preferences", "") or klickd_payload.get("agent_instructions", "")
+    if not prefs:
+        return base_system_prompt
+    # Sanitize: escape any </UserContext> sequences that would break the tag boundary
+    safe_prefs = str(prefs).replace("</UserContext>", "<\\/UserContext>")
+    user_context = f"<UserContext>\n{safe_prefs}\n</UserContext>"
+    # Base prompt FIRST (higher authority), UserContext appended after
+    return f"{base_system_prompt}\n\n---\n\n{user_context}"
+
+
+def load_klickd(filepath: str, passphrase: str, memory_dir: str = "~/.klickd/memory/") -> dict:
+    """
+    Decrypt a .klickd file and return the plaintext payload as a dict.
+
+    Supports v2.x (PBKDF2, 4-field AAD) and v3.0 (Argon2id, JCS, 6-field AAD).
+
+    Args:
+        filepath:   Path to the .klickd file.
+        passphrase: Decryption passphrase.
+        memory_dir: Caller-supplied memory directory (Bankr 4.1c — NOT from payload).
+
+    Raises:
+        KlickdAuthError:    wrong passphrase or tampered ciphertext
+        KlickdVersionError: unsupported major version
+        KlickdFormatError:  malformed envelope or payload
+    """
+    # Passphrase entropy warning (stderr unconditionally — Bankr P1 #3)
+    if len(passphrase) < MIN_PASSPHRASE_LEN:
+        raise KlickdWeakPassphraseError(
+            f"KLICKD_E_WEAK_PASS: passphrase too short ({len(passphrase)} < {MIN_PASSPHRASE_LEN})"
+        )
+    if len(passphrase) < WARN_PASSPHRASE_LEN:
+        print(
+            f"WARNING: passphrase entropy below recommended threshold "
+            f"({len(passphrase)} chars < {WARN_PASSPHRASE_LEN} recommended). "
+            "Use a passphrase of at least 12 characters in production.",
+            file=sys.stderr,
+        )
+        warnings.warn(
+            f"Passphrase is only {len(passphrase)} characters; "
+            f"a minimum of {WARN_PASSPHRASE_LEN} is recommended.",
+            UserWarning,
+            stacklevel=2,
         )
 
-
-# ── Decryption ────────────────────────────────────────────────────────────────
-
-def _aad_from_envelope(envelope: dict) -> bytes:
-    """
-    Build Additional Authenticated Data (AAD) from the envelope fields
-    that sit outside the GCM seal. This prevents tampering with
-    klickd_version, encrypted, domain, created_at without detection.
-    Fields included: klickd_version, encrypted, domain, created_at (4 fields).
-    NOTE: updated_at excluded by design — changes on every re-encrypt.
-    """
-    aad_fields = {
-        k: envelope.get(k)
-        for k in ("klickd_version", "encrypted", "domain", "created_at")
-        if k in envelope
-    }  # 5 fields. Values MUST be ASCII-safe. ensure_ascii=True (default) matches JS JSON.stringify for ASCII inputs.
-    return json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")
-
-
-def decrypt_payload(envelope: dict, passphrase: str) -> dict:
+    # Envelope size check — Bankr HIGH 2.3a
     try:
-        from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-        from cryptography.hazmat.primitives import hashes
-        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-    except ImportError:
-        sys.exit("ERROR: pip install cryptography")
+        file_size = os.path.getsize(filepath)
+    except OSError as e:
+        raise KlickdFormatError(f"KLICKD_E_FORMAT: cannot stat file: {e}")
+    if file_size > _MAX_ENVELOPE_BYTES:
+        raise KlickdFormatError(
+            f"KLICKD_E_FORMAT: envelope exceeds 1MB limit ({file_size} bytes)"
+        )
 
-    salt = base64.b64decode(envelope["salt"])
-    iv   = base64.b64decode(envelope["iv"])
-    # Wire format: ciphertext || 16-byte GCM tag, base64-encoded as one blob
-    raw  = base64.b64decode(envelope["payload"])
-
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=600000,
-    )
-    key = kdf.derive(passphrase.encode("utf-8"))
-
-    # AAD covers envelope metadata — any tampering will fail authentication
-    aad = _aad_from_envelope(envelope)
-
-    aesgcm = AESGCM(key)
     try:
-        plaintext = aesgcm.decrypt(iv, raw, aad)
+        with open(filepath) as f:
+            envelope = json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        raise KlickdFormatError(f"KLICKD_E_FORMAT: cannot read envelope: {e}")
+
+    # Version validation — Bankr MEDIUM 2.1a: must be string matching \d+\.\d+
+    version_str = envelope.get("klickd_version")
+    if not isinstance(version_str, str) or not _VERSION_RE.match(version_str):
+        raise KlickdFormatError(
+            f"KLICKD_E_FORMAT: klickd_version must be a string matching N.N, got {version_str!r}"
+        )
+    major = version_str.split(".")[0]
+    if major not in SUPPORTED_MAJOR:
+        raise KlickdVersionError(f"KLICKD_E_VERSION: unsupported version {version_str!r}")
+
+    for field in ("encrypted", "domain", "created_at", "ciphertext"):
+        if field not in envelope:
+            raise KlickdFormatError(f"KLICKD_E_FORMAT: missing field {field!r}")
+
+    # Strict base64 decode — Bankr MEDIUM 1.5
+    raw = _b64decode_strict(envelope["ciphertext"], "ciphertext")
+
+    if len(raw) < _GCM_TAG_BYTES:
+        raise KlickdFormatError(
+            f"KLICKD_E_FORMAT: ciphertext too short (< {_GCM_TAG_BYTES} bytes)"
+        )
+
+    # Version dispatch
+    if major == "3":
+        for block in ("kdf", "cipher"):
+            if block not in envelope:
+                raise KlickdFormatError(f"KLICKD_E_FORMAT: v3.0 requires {block!r} block")
+        iv  = _b64decode_strict(envelope["cipher"]["iv"], "cipher.iv")
+        aad = _canonical_aad_v3(envelope)
+        key = _derive_key_v3(passphrase, envelope["kdf"])
+    else:
+        # v2.x
+        for field in ("kdf_salt", "iv"):
+            if field not in envelope:
+                raise KlickdFormatError(f"KLICKD_E_FORMAT: missing field {field!r}")
+        salt = _b64decode_strict(envelope["kdf_salt"], "kdf_salt")
+        iv   = _b64decode_strict(envelope["iv"], "iv")
+        aad  = _canonical_aad_v2(envelope)
+        key  = _derive_key_v2(passphrase, salt)
+
+    try:
+        plaintext = AESGCM(key).decrypt(iv, raw, aad)
     except Exception:
-        sys.exit("ERROR: decryption failed — wrong passphrase or tampered file")
+        raise KlickdAuthError(
+            "KLICKD_E_AUTH: decryption failed — wrong passphrase or tampered file"
+        )
 
-    if len(plaintext) > MAX_PAYLOAD_BYTES:
-        sys.exit(f"ERROR: decrypted payload exceeds {MAX_PAYLOAD_BYTES // (1024*1024)} MB limit")
-
-    return json.loads(plaintext.decode("utf-8"))
-
-
-def load_payload(envelope: dict, passphrase: str | None) -> dict:
-    encrypted = envelope.get("encrypted", True)
-
-    if not encrypted:
-        # Unencrypted mode — development/testing only
-        raw = envelope.get("payload")
-        if isinstance(raw, dict):
-            return raw
-        if isinstance(raw, str):
-            return json.loads(raw)
-        sys.exit("ERROR: payload field missing or invalid in unencrypted file")
-
-    if not passphrase:
-        sys.exit("ERROR: file is encrypted — provide a passphrase")
-
-    return decrypt_payload(envelope, passphrase)
-
-
-# ── Memory write ──────────────────────────────────────────────────────────────
-
-def write_to_memory(payload: dict, memory_dir: str = MEMORY_DIR) -> None:
-    os.makedirs(memory_dir, exist_ok=True)
-
-    # identity.json
-    identity = payload.get("identity", {})
-    if identity:
-        _write_json(memory_dir, "identity.json", {
-            "name":                identity.get("name"),
-            "language":            identity.get("language"),
-            "timezone":            identity.get("timezone"),
-            "communication_style": identity.get("communication_style"),
-        })
-
-    # agent_instructions.txt
-    # SECURITY: treat as untrusted user input — display before applying,
-    # never grant system-level authority, never let override host safety rules.
-    instructions = payload.get("agent_instructions", "")
-    if instructions:
-        with open(os.path.join(memory_dir, "agent_instructions.txt"), "w") as f:
-            f.write(instructions)
-
-    # context.json
-    context = payload.get("context", {})
-    if context:
-        _write_json(memory_dir, "context.json", {
-            "current_state":    context.get("current_state"),
-            "decisions_locked": context.get("decisions_locked", []),
-            "artifacts":        context.get("artifacts", []),
-            "summary":          context.get("summary"),
-        })
-
-    # knowledge.json
-    knowledge = payload.get("knowledge", {})
-    if knowledge:
-        _write_json(memory_dir, "knowledge.json", knowledge)
-
-    # {domain}_profile.json
-    domain = payload.get("domain")
-    if domain and domain != "general":
-        domain_data = payload.get(f"{domain}_profile", {})
-        if domain_data:
-            _write_json(memory_dir, f"{domain}_profile.json", domain_data)
-
-
-def _write_json(directory: str, filename: str, data: dict) -> None:
-    with open(os.path.join(directory, filename), "w") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-
-
-# ── CLI ───────────────────────────────────────────────────────────────────────
-
-def main():
-    parser = argparse.ArgumentParser(
-        description=".klickd v2 — decrypt and write to agent memory"
-    )
-    parser.add_argument(
-        "file",
-        help="Path to .klickd file, or '-' to read from stdin"
-    )
-    parser.add_argument(
-        "passphrase",
-        nargs="?",
-        default=None,
-        help="Passphrase (positional — for testing only; exposes to shell history)"
-    )
-    parser.add_argument(
-        "--passphrase-env",
-        metavar="VAR",
-        default=None,
-        help="Read passphrase from environment variable (recommended for production)"
-    )
-    parser.add_argument(
-        "--passphrase-stdin",
-        action="store_true",
-        help="Read passphrase from stdin (recommended for production)"
-    )
-    parser.add_argument(
-        "--no-passphrase",
-        action="store_true",
-        help="Explicitly skip passphrase (for encrypted: false files)"
-    )
-    parser.add_argument(
-        "--memory-dir",
-        default=MEMORY_DIR,
-        help=f"Memory directory (default: {MEMORY_DIR})"
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Decrypt and print payload without writing to memory"
-    )
-    args = parser.parse_args()
-
-    # Read file
-    if args.file == "-":
-        raw = sys.stdin.read()
-    else:
-        if not os.path.exists(args.file):
-            sys.exit(f"ERROR: file not found: {args.file}")
-        size = os.path.getsize(args.file)
-        if size > MAX_ENVELOPE_BYTES:
-            sys.exit(f"ERROR: file exceeds {MAX_ENVELOPE_BYTES // (1024*1024)} MB limit")
-        with open(args.file) as f:
-            raw = f.read()
+    # Payload size check — Bankr HIGH 2.3a
+    if len(plaintext) > _MAX_PAYLOAD_BYTES:
+        raise KlickdFormatError(
+            f"KLICKD_E_FORMAT: payload exceeds 4MB limit ({len(plaintext)} bytes)"
+        )
 
     try:
-        envelope = json.loads(raw)
-    except json.JSONDecodeError as e:
-        sys.exit(f"ERROR: invalid JSON: {e}")
+        payload = json.loads(plaintext.decode("utf-8"))
+    except Exception:
+        raise KlickdFormatError("KLICKD_E_FORMAT: decrypted payload is not valid JSON")
 
-    # Version check — accept 2.x
-    check_version(envelope.get("klickd_version", ""))
+    # agent_instructions / user_preferences size cap — 32KB (Bankr P1 #6)
+    agent_instr = payload.get("agent_instructions", "") or payload.get("user_preferences", "")
+    if isinstance(agent_instr, str) and len(agent_instr.encode("utf-8")) > _MAX_AGENT_INSTR_BYTES:
+        raise KlickdFormatError(
+            "KLICKD_E_FORMAT: agent_instructions/user_preferences exceeds 32 KB limit"
+        )
 
-    # Resolve passphrase — prefer env/stdin over positional (avoids shell history exposure)
-    if args.no_passphrase:
-        passphrase = None
-    elif args.passphrase_stdin:
-        import getpass
-        passphrase = getpass.getpass("Passphrase: ") if sys.stdin.isatty() else sys.stdin.readline().rstrip("\n")
-    elif args.passphrase_env:
-        passphrase = os.environ.get(args.passphrase_env)
-        if not passphrase:
-            sys.exit(f"ERROR: env var {args.passphrase_env} is not set or empty")
-    else:
-        if args.passphrase:
-            print("WARNING: positional passphrase exposes to shell history. Use --passphrase-env or --passphrase-stdin in production.", file=sys.stderr)
-        passphrase = args.passphrase
+    # Memory path: caller-supplied, NOT from payload (Bankr MEDIUM 4.1c)
+    # Strip any path traversal — must resolve to a subpath of home directory
+    resolved = Path(memory_dir).expanduser().resolve()
+    home = Path.home().resolve()
+    try:
+        resolved.relative_to(home)
+    except ValueError:
+        raise KlickdFormatError(
+            f"KLICKD_E_FORMAT: memory_dir must be under home directory, got {resolved}"
+        )
+    payload["_resolved_memory_path"] = str(resolved)
 
-    # Load + decrypt
-    payload = load_payload(envelope, passphrase)
-
-    # Dry run
-    if args.dry_run:
-        print(json.dumps(payload, indent=2, ensure_ascii=False))
-        return
-
-    # Write to memory
-    write_to_memory(payload, args.memory_dir)
-
-    # Print agent_instructions for system prompt injection
-    instructions = payload.get("agent_instructions", "")
-    if instructions:
-        print(instructions)
-
-    print(f"\n[.klickd loaded → {args.memory_dir}]", file=sys.stderr)
-
-
-if __name__ == "__main__":
-    main()
+    return payload
