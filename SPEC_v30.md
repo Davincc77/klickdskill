@@ -1084,16 +1084,16 @@ The `.klickd` project uses three distinct version namespaces that MUST NOT be co
 | Namespace | Location | Meaning |
 |---|---|---|
 | Wire format version | `klickd_version` field in envelope | The binary/JSON format version. Controls parsing, AAD field set, and KDF algorithm selection. Currently `"3.0"`. |
-| Release version | `version` in root `package.json` and `@klickd/core/package.json` | The release version of the reference implementation and npm package. May advance faster than the wire format version. Currently `3.1.1`. |
+| Release version | `version` in root `package.json` and `@klickd/core/package.json` | The release version of the reference implementation and npm package. May advance faster than the wire format version. Currently `3.1.2`. |
 | Manifest revision | `version` in `SKILL.md` frontmatter | The revision of the skill manifest, tracking agent-platform compatibility. May differ from both of the above. |
 
-Auditors and installers MUST NOT treat these as equivalent. A `package.json` version of `3.1.1` does not imply wire format `3.1` — the wire format is always authoritative via the `klickd_version` envelope field.
+Auditors and installers MUST NOT treat these as equivalent. A `package.json` version of `3.1.2` does not imply wire format `3.1` — the wire format is always authoritative via the `klickd_version` envelope field.
 
 ### 23.1 Current Version
 
 **Version 3.0** is the current wire format version. New implementations MUST produce v3.0 envelopes (i.e., `klickd_version: "3.0"`).
 
-The current reference implementation release is **v3.1.1** (see `package.json`).
+The current reference implementation release is **v3.1.2** (see `package.json`).
 
 ### 23.2 Legacy Versions
 

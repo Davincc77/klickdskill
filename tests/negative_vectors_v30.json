@@ -33,7 +33,8 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (m below minimum)"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (m below minimum)",
+      "expected_error_code": "KLICKD_E_KDF"
     },
     {
       "id": "v3.0-neg-argon2-t-too-low",
@@ -59,7 +60,8 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (t below minimum)"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (t below minimum)",
+      "expected_error_code": "KLICKD_E_KDF"
     },
     {
       "id": "v3.0-neg-argon2-p-too-low",
@@ -85,7 +87,8 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (p below minimum)"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (p below minimum)",
+      "expected_error_code": "KLICKD_E_KDF"
     },
     {
       "id": "v3.0-neg-unsupported-cipher",
@@ -111,7 +114,8 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm' (validated before decryption)"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm' (validated before decryption)",
+      "expected_error_code": "KLICKD_E_FORMAT"
     },
     {
       "id": "v3.0-neg-unsupported-kdf",
@@ -137,7 +141,8 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (unsupported kdf.name='scrypt')"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (unsupported kdf.name='scrypt')",
+      "expected_error_code": "KLICKD_E_KDF"
     },
     {
       "id": "v3.0-neg-tampered-aad-kdf-params",
@@ -163,7 +168,8 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdAuthError — KLICKD_E_AUTH (kdf.params.m changed post-encryption, AAD mismatch causes GCM auth failure)"
+      "expected_behavior": "KlickdAuthError — KLICKD_E_AUTH (kdf.params.m changed post-encryption, AAD mismatch causes GCM auth failure)",
+      "expected_error_code": "KLICKD_E_AUTH"
     },
     {
       "id": "v3.0-neg-missing-kdf-block",
@@ -180,7 +186,8 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT (missing 'kdf' block)"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT (missing 'kdf' block)",
+      "expected_error_code": "KLICKD_E_FORMAT"
     },
     {
       "id": "v3.0-neg-missing-cipher-block",
@@ -202,7 +209,8 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT (missing 'cipher' block)"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT (missing 'cipher' block)",
+      "expected_error_code": "KLICKD_E_FORMAT"
     },
     {
       "id": "v3.0-neg-unknown-cipher-id",
@@ -230,7 +238,8 @@
         },
         "ciphertext": "dGVzdGN0MTIzNDU2Nzg5MDEyMzQ1Njc4"
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm' (got 'chacha20-poly1305')"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm' (got 'chacha20-poly1305')",
+      "expected_error_code": "KLICKD_E_FORMAT"
     },
     {
       "id": "v3.0-neg-kdf-params-oversized-m",
@@ -257,7 +266,8 @@
         },
         "ciphertext": "dGVzdGN0MTIzNDU2Nzg5MDEyMzQ1Njc4"
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (m=2147483648 exceeds maximum allowed memory parameter)"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (m=2147483648 exceeds maximum allowed memory parameter)",
+      "expected_error_code": "KLICKD_E_KDF"
     },
     {
       "id": "v3.0-neg-kdf-params-zero-t",
@@ -284,7 +294,8 @@
         },
         "ciphertext": "dGVzdGN0MTIzNDU2Nzg5MDEyMzQ1Njc4"
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (t=0 below minimum of 3)"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (t=0 below minimum of 3)",
+      "expected_error_code": "KLICKD_E_KDF"
     }
   ]
 }
