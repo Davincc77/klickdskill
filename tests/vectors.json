@@ -73,7 +73,7 @@
     },
     {
       "id": "v2.5-short-passphrase",
-      "description": "6-char passphrase — SHOULD warn, MUST decrypt",
+      "description": "6-char passphrase — MUST raise KlickdWeakPassphraseError (Bankr patch: <8 now hard error)",
       "passphrase": "abc123",
       "envelope": {
         "klickd_version": "2.5",
@@ -85,7 +85,23 @@
         "ciphertext": "0PlGP2o5W32JARyYUbU71dbThPuBKbnjA4pe3XIJa4Ss/bax9mqPfNNvyr7fif85RfJavatQ0xysAQmjJG/dCwdZb1rWWQM0Nf+XvzHtzwYUPWY/0KDZ5QJgctgCQXaHG0I0pkqvLo1iTFjiSzncdmmO8QxZ4nLxMHWJOnXejqUvUXAzGWdsK3WIuIrKCSr0B4ZkWUIGbDv5S83IVPdXMF0ikG/KaB7P9+RD4DWjOMnzezdw5F8nE04MoyoWmVlK9J6xCMfcjhRbNhZe5aXZuteE+CO12rvzfXxEBeZQ5OI+8KQTc1SrSwpl0fc4/jngmJt1wj66548OFPRw4ESX68sy0g6hwm5HIpVm/sED+ISbyC4e"
       },
       "expected_display_name": "Alice",
-      "expected_behavior": "UserWarning emitted + decrypt_success"
+      "expected_behavior": "KlickdWeakPassphraseError — KLICKD_E_WEAK_PASS (passphrase < 8 chars)"
+    },
+    {
+      "id": "v2.5-warn-passphrase",
+      "description": "8-char passphrase (>= min, < warn threshold 12) — MUST decrypt with stderr warning",
+      "passphrase": "pass1234",
+      "envelope": {
+        "klickd_version": "2.5",
+        "encrypted": true,
+        "domain": "general",
+        "created_at": "2026-05-18T10:00:00Z",
+        "kdf_salt": "R6NOnm2tQjP0YhB3bAtQxA==",
+        "iv": "b4G/bJQwrl8kBjsN",
+        "ciphertext": "Nl1HcaX5bZOLetr5oBDwMEsbFRUa+oT0z366o80VNJRu0FNSYdF+rTrQlTdS1RSjT3uTkhApNjYlgkzxrcNezOUlSJS51lzvyyimvJwCFZDk"
+      },
+      "expected_display_name": "Alice",
+      "expected_behavior": "UserWarning emitted + decrypt_success (passphrase 8 chars: >= min, < 12 recommended)"
     }
   ]
 }

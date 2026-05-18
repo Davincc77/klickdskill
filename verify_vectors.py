@@ -5,6 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from load_klickd import (
+    KlickdWeakPassphraseError,
     load_klickd, KlickdAuthError, KlickdVersionError, KlickdFormatError, KlickdError
 )
 
@@ -15,6 +16,7 @@ ERROR_MAP = {
     "KlickdAuthError":    KlickdAuthError,
     "KlickdVersionError": KlickdVersionError,
     "KlickdFormatError":  KlickdFormatError,
+    "KlickdWeakPassphraseError": KlickdWeakPassphraseError,
 }
 
 def run_suite(vectors_file: Path, label: str) -> tuple[int, int]:
