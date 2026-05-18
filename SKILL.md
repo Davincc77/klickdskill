@@ -1,6 +1,37 @@
+---
+name: klickd-context
+version: 2.1
+description: Load a user's portable AI context from a .klickd encrypted file. Decrypts client-side using AES-256-GCM + PBKDF2, writes fields to /.memory/, and injects agent_instructions into the system prompt.
+tools:
+  - name: load_klickd
+    description: Decrypt a .klickd file and write the result to /.memory/. Returns agent_instructions for system prompt injection.
+    script: scripts/load_klickd.py
+    inputs:
+      - name: file
+        type: file
+        mime: application/vnd.klickd+json
+        extension: .klickd
+        required: true
+        description: The .klickd file to decrypt
+      - name: passphrase
+        type: secret
+        required: false
+        description: Passphrase to decrypt the file (omit for unencrypted files)
+    outputs:
+      - name: agent_instructions
+        type: string
+        description: Verbatim instructions to prepend to the system prompt
+      - name: memory_dir
+        type: string
+        description: Path to the written /.memory/ directory
+license: CC0-1.0
+author: Vince C. (Klickd / Luxlearn, Luxembourg)
+repo: https://github.com/Davincc77/klickdskill
+---
+
 # .klickd Agent Skill
 
-**Format version:** 2.0  
+**Format version:** 2.1  
 **License:** CC0 1.0 Universal (Public Domain)  
 **Spec:** [SPEC.md](./SPEC.md)
 
