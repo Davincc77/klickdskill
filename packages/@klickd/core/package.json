@@ -1,0 +1,48 @@
+{
+  "name": "@klickd/core",
+  "version": "3.0.0",
+  "description": "Official JavaScript/TypeScript library for reading and writing .klickd portable AI context files",
+  "keywords": ["klickd", "ai-context", "portable", "memory", "encrypted"],
+  "homepage": "https://klickd.app",
+  "repository": {"type": "git", "url": "https://github.com/Davincc77/klickdskill"},
+  "license": "CC0-1.0",
+  "author": "Vince C. <Luxlearn@pm.me> (https://klickd.app)",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "canonicalize": "^2.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tsup": "^8.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  },
+  "peerDependencies": {
+    "argon2": ">=0.31.0",
+    "argon2-browser": ">=1.18.0"
+  },
+  "peerDependenciesMeta": {
+    "argon2": {"optional": true},
+    "argon2-browser": {"optional": true}
+  },
+  "engines": {"node": ">=18"},
+  "publishConfig": {"access": "public"}
+}
