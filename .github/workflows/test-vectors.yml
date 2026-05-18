@@ -8,22 +8,25 @@ on:
 
 jobs:
   python:
-    name: Python test vectors
+    name: Python test vectors (v2.5 + v3.0)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install cryptography
-      - run: python3 verify_vectors.py
+      - name: Install dependencies
+        run: pip install cryptography argon2-cffi jcs
+      - name: Run all suites (v2.5 + v3.0 — 32 vectors)
+        run: python3 verify_vectors.py
 
   javascript:
-    name: JavaScript test vectors
+    name: JavaScript test vectors (v2.5 — Argon2id skipped, Web Crypto limitation)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node verify_vectors.mjs
+      - name: Run v2.5 suite (v3.0 Argon2id vectors skipped — Web Crypto has no Argon2id)
+        run: node verify_vectors.mjs
