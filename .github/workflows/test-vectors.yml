@@ -11,19 +11,27 @@ jobs:
     name: Python test vectors
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install cryptography
-      - run: python3 verify_vectors.py
+      - name: Checkout
+        run: |
+          git clone https://github.com/${{ github.repository }} repo
+          cd repo
+          git checkout ${{ github.sha }}
+      - name: Install deps
+        run: pip install cryptography
+        working-directory: repo
+      - name: Run vectors
+        run: python3 verify_vectors.py
+        working-directory: repo
 
   javascript:
     name: JavaScript test vectors
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: node verify_vectors.mjs
+      - name: Checkout
+        run: |
+          git clone https://github.com/${{ github.repository }} repo
+          cd repo
+          git checkout ${{ github.sha }}
+      - name: Run vectors
+        run: node verify_vectors.mjs
+        working-directory: repo
