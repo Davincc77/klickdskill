@@ -5,14 +5,16 @@
     "Vector 1: unencrypted (encrypted: false) \u2014 parse only, no crypto",
     "Vector 2: encrypted, domain=finance, passphrase='test-vector-2'",
     "Vector 3: encrypted, domain=robotics, passphrase='test-vector-3'",
+    "Vector 4: encrypted, short passphrase (6 chars) \u2014 verify SHOULD-warn fires",
     "All encrypted vectors use AES-256-GCM + PBKDF2-SHA256 @ 600k iterations",
     "Wire format: ciphertext || 16-byte GCM tag, base64-encoded as one blob",
-    "AAD = JSON({klickd_version, encrypted, domain, created_at, updated_at}, sort_keys=True, separators=(',',':'), ensure_ascii=True)"
+    "AAD = JSON({klickd_version, encrypted, domain, created_at}, sort_keys=True, separators=(',',':'), ensure_ascii=True)",
+    "NOTE: updated_at is NOT sealed in AAD by design \u2014 it changes on every re-encrypt."
   ],
   "vectors": [
     {
       "id": "v1-unencrypted",
-      "description": "Minimal unencrypted file. WARNING: NEVER SHIP UNENCRYPTED IN PRODUCTION.",
+      "description": "Minimal unencrypted. WARNING: NEVER SHIP UNENCRYPTED IN PRODUCTION.",
       "passphrase": null,
       "envelope": {
         "klickd_version": "2.0",
@@ -40,7 +42,7 @@
       },
       "expected_agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
       "expected_identity_name": "Alex",
-      "expected_payload_sha256": "b08d3657281dac5551870bb121628bc2a4b6d4d865e120e34a9d81f7bd0ee358"
+      "expected_payload_sha256": "6b5119c51b6b29a6d56bf3162c2875bbacbe37b220c7eb3cb8fe138eccaa1c8c"
     },
     {
       "id": "v2-encrypted-finance",
@@ -53,13 +55,13 @@
         "domain": "finance",
         "created_at": "2026-05-18T00:00:00Z",
         "updated_at": "2026-05-18T00:00:00Z",
-        "salt": "ZZ0ttjotv/M0oeyrwUz6Hg==",
-        "iv": "bq1Tr1En+4sRsGA9",
-        "payload": "a2cFDY5HwXKPiZ0qSV4ijvc0TuFVNRwKnj6Horqy8VoaRbg4frXGypltr8GVk/vVbbxLzC1EBlZxbkfi3aNV4d+foB8x//OR7DJuEWMJyL8em4yo8nJ1GtBSjtDOGkZ8WKfUkUeRfHjId4n/Znk83zYCgwvO5bufbhdjfdetbqmBzDL59dm9nItMDD6SJ++XsrDj/iOn/D/PF24VC8PJTRHnJmMgOvtGBQFH/x8Uqeo0Bkf554Pl/ySiNM7gGodMY6tifIStUEOM/qGLCMtK6D6vk2gtqarO+7W/gqL0XlpkcjCeX0YRxWq2ENsEGA8qQdLf98q3HjK6AfRdKXn64f52jKRgpIquI59SArLnmYSfkvpJPmQJWxrK6GhX78kzrA7C7ryNg7b9fM6+T1ji1B0jwI74njm3DNLKrBoEEl5j9ECpYG1eIs2VsYQZIjGbpzbV9BEegabUc8tvqvC6f3Be5r5oIuRDh67yHhRo/eiuEXdCDJy4ylqD2s4FLknJtaz8oBcNLjNRDg8xKV74CoBkaXcYj2taL1AIgRThfZ+Nj1BGzHWnlgs="
+        "salt": "3lQrI6E8ov8etSA9K3B/LQ==",
+        "iv": "PkNnTFwjv0eQH7a1",
+        "payload": "l/cJ4GhYChJcnGPyarLXIgbkJG/BHUmTPl5Jt4FRWGsXtTq5ffviofx1lEGv88/apsirSv871NRez18/0XWhGMU/VrrhLHJVlY7GfbSwnUnrNebr6DpBzPJ7IQnJK6pkc4wGx9B06zE3YN+H+KXbuIB9v8C3KQYcLifA1WLl2p25YeajCt9zO8TltQh73lbn/gBMUcNwHxgFau4dv6i2pVcAAWiTeMzIFscPFiimB615eEsQv/cLscIoXyF5YugoKQ+15RwSXlY7z1OPNjJHVeISWTgXs1H1xbOCroDaXntHVkPTRC8Q1HyPATIQp/0AZAG6HW6VY+Hf1Ox9q4hsTAV5SwLUQErN1ZnZPg/1/ohX9Uw8MjYja3DOqPfe6ZhrcUqX8xupQ/923R5G6JL/EgUAVu1gdfOGlKVjV0uLWMcvLffBd7OcMDMlBHOS99mFwso+teZLXjiNWp1ZY/5fFrelnZ1TSzsctovgv1eT0o3NlwPFtu02CKUHvFLkTVL5NFhsP0o9seyD6n7jlR/2SizdmQO4AUF97+/xvShAZF+y6bSaSFaXD0Q="
       },
       "expected_agent_instructions": "Resuming portfolio review with Alex. BTC at 35%, ETH staking under review.",
       "expected_identity_name": "Alex",
-      "expected_payload_sha256": "b08d3657281dac5551870bb121628bc2a4b6d4d865e120e34a9d81f7bd0ee358"
+      "expected_payload_sha256": "6b5119c51b6b29a6d56bf3162c2875bbacbe37b220c7eb3cb8fe138eccaa1c8c"
     },
     {
       "id": "v3-encrypted-robotics",
@@ -72,13 +74,33 @@
         "domain": "robotics",
         "created_at": "2026-05-18T00:00:00Z",
         "updated_at": "2026-05-18T00:00:00Z",
-        "salt": "DQIbbaMMZN6Tx5W82T6Www==",
-        "iv": "+MIqVGPPmLm0qdkl",
-        "payload": "xx9UR4eLlTxq8INifZeAOGDuiwaIv65jiNjELrNHjKkwfKZSEorST+GeMQLJ0L9ZvscEd0SvGSsbdNEmSph5K43r7dQeShsXxTKiL3/wtPM9BB+XdE+KFbHueghMGZEl54BntaQL3pY5x+oxS6tIGmk4L7GBitPTBMO8FbgSyMDAx7u2upZSb6NmNLz3pBPPRottJ33Ct1YC+DcKSQWByBhEc9b85JuU9UhLV0GLKwLFdvWhCCgupyT7key334aw2b0J4fdc0qjIEshOl+N1Il0xMs0jRNss7Zm6TQnp4yopNWHHg49kLqwNlAnfxSyrnoTsKnha19IbPhsjeGcIo+0MKneLF8Df1d3vx9w59OPzLJ2FJYVhCduF3O3GWTzKIYzYSqCJt47nu9A5NMvWsGr9AQVMwKI2xAk3O0bAxh+6s2ygtOrHPL3knFSS5e2XpUbiolBMD2RcTmatkE/S8a0CyPluGQHtPEjPWjePzCLrsrDqnwmlxnkkKErTwfJeL+j587hglk9Ix4b7538kFYNojrfxu/+1D/ovujLtAF7QZ1eknBAAZQjiUUPOG05tPSEe1OqUIjHyzd5YSRt6uO3PExQLJcb/J5QpLskLcXCSWZ/lIg4Q8JZhyVSZiiXdhTlGzRzK4wbVya1TSvgPN6Lh7VkI9rK0091auTBf3ruJ8tIxyfGoHfDLmi/5+JK4vS2pH/WdRckw4G6cxh+INW598uEJfKixy35ebAaMAq4cswCnNpDUCW6l/LZR/rf9NtHlPNoh1qImZqRIXUF1aZO7Su95z61+9ouSjgIHvOIvU4Jo/M6scVh7HnxRCbappkwkCUHNS2aF3OI23maBnaBibP6EvQPZpzFCdAxVJV3+RVCiXIsZddZ1B6xGt8LWSZpOCpY0l0BN02BAkX2oiJNqSZsF++2hK4+zbaBg3QQpvShDqw6wzdHh5qFOgPD8N82l2QV7Us/SFpW3R99/4crhOOHA4S3bnVz1K289wMoFoO/Q/fKAi8een5E6GNSXSxZ1T1rlHyx0V0EFM9Drzar/IxH6dynqB0TdyXG1hz8C7lfyeHPt2M15T4LHrkZ2RSaIrtp6pMkf6YiWEa3Kw9vjsWniISDyIBlsixyotQre4acQiQTRydbitlKbuHZtlylZz52nVlZOskwZRAwLhs2wx1RoaY1QOhRGcaaYoSHfPi4c+X37zSVkz3+rGSo="
+        "salt": "i/yjHpOcL7+fDKpb89Tx6w==",
+        "iv": "oVyrDQ7RSNh7Uxp8",
+        "payload": "XiG5JHh5VpaUp+YOj/7wPcKscuY0/Xpik7iAdZC7iMmJP8Z1FnY20PB/OjxZ7yedX9OAVy7W6C2745R42f6ifP3dNTuCU/L9r7TySYSz4mZnJsw9R34VcSeuswpJm2WNlVrXRy2G5Hdj6InWVH/uV+ullGAude4g0mZX/B0X2Ff5Yjd0ntcWkrbSlzbvBYSt+bWQIFg2nKX7sEunhD2MESB8QfsPpV3V+c91gA+cR9KrS+ifx17e33FyAWpolQ5Cy7UfzQ49EqLAZOEvm8PjKvTYgirq9je47WzTo2ILO6+jeEHZijl7rIm/XbI9ODKp9D2lkfiVqZa1KL4ypd+cT86bItcotNMbY0D7eqwt4ZsKG7pGTvl2cckqCA8j5sF79rNeAKhMNGPJ0R75TCWObjS+TcJX1QkCHBT5v3KOwy4i3eJjutMCll3OJBsSgrofC69dqaHYYCr8M0mAiWwz8D09j7GMEQzY7lDSUCf1fsVkhw8e81qdg6EjnbhauX4nKa+LYn7LNcB2tz4Z1ixJnUKF+UJKCWbFQkgk+Jc6akyA1UFNzBr1/FITpc0VQkCIZXlRWFchaN3VocBfcv4wupmqekRLH9yLpTQQrB4RdXnHnRTC/CXHdb7RtP+roVdZi+Dn3kZxmeIipgFFIBEnkcpXoDFSRvpLox7FjYgBS+Wkkit2KIQYmOlP+cplVTjgWkLWkIZuXqKcB7aPcAPZ3AiQpruj8GsY9yk4wnNaKLc8ZugjqOMRefWmMHVz7QHjv1o1o5WkguEz2p9u+25OKf4XUg+dYPxUPlZyCQDiDYHCeWDXKFgzugTNIGv5ZcoLIN6MUJ1LRhAGVnMWnHAAgd300K8xHq+3bLXCkc8AA+ts7uiPayXZTSeJYPZBjfyOFV6Bsl3rS2dLA7BV8SlO0ZO7eQjDY16zf7DzTQRlEY+mUIv1YwZcrCgcXhvOEVfmRSCdREnGCok/sec4iFOfeaGbXgdHafGeMvZSCa8xExPIsi0yuUW/mHR4D4FtLq9zRr0tVfsSIcNmMZUhGPMxRv+7fNgqDOUYjqXN9DJaBoTPJAjnU5Qkp0I2aeAEio4FmR5AgoBRBCIC4Ye1hHvTQAKw5EJM+n/t3ExiUwHfYTaWooDFIQ2x3A/69GV2sjPCtyrERmV1ckzkfR8NQfjVrcZ5QwXaUJlj9T1qdMmVfHu/iwAQLpO4Qb7yR2AAN2s="
       },
       "expected_agent_instructions": "Resuming household management with Jordan's Optimus unit. Jordan prefers morning briefings. Kitchen and bedroom are privacy zones.",
       "expected_identity_name": "Jordan",
-      "expected_payload_sha256": "d6392d78e6ddb6ac7dfe260a9af8235db7fa6cbc73becf8762d42607ae85533c"
+      "expected_payload_sha256": "fc6762bbb61514aee68c2c1a6ecae9e1d6f03381e10261a4bc3e08a1fd2f93ca"
+    },
+    {
+      "id": "v4-short-passphrase",
+      "description": "Short passphrase (6 chars) \u2014 implementation SHOULD warn. Decryption must still succeed.",
+      "passphrase": "short1",
+      "envelope": {
+        "klickd_version": "2.0",
+        "encrypted": true,
+        "encryption": "AES-256-GCM",
+        "domain": "general",
+        "created_at": "2026-05-18T00:00:00Z",
+        "updated_at": "2026-05-18T00:00:00Z",
+        "salt": "Y5xtAU6mOk+0YUprCqHMOQ==",
+        "iv": "OxhheE23cAvjK5ib",
+        "payload": "THze19AsKTaeJtVohg19RD/haU70XSEjLzWrtKTloDIhCm3so9DE2KueIjaVDr3v4KAjwtVbNiPwybMZDtY+3vT2GgOwuT5XAaAGDFh7U1ZoQhsmhG6UFL+muqKMTFCEYT5ylVZpy+PjUeAr13Sar+Nv39TYJJ4UAC8BXHQc3AQpBtFtM/HVH76txPmvweQ+YR8MVFq/xb6yneaH0hPOHgBBVnSrBy5UqLg+NOO71WS6a8IoqPUvH57H0RWfphcTh5Ka9XRNTF3F7BGZeg/77DA0PgW2mwda5w4/GVBji4aue7cLm29vJKWY/sBgGt3NEAjHBM8nP5RqLqgP0VO76VsbpfcT2e1aG4flStcs7OKU/tS0MErPhOr195QVtgleobiCPdZcyXdidFeRgg=="
+      },
+      "expected_agent_instructions": "Test vector for short passphrase warning.",
+      "expected_identity_name": "Test",
+      "expected_payload_sha256": "79314cfb0f89dcfaab3a138a73f3c28299203d485426fdba81d9c080e40aabe1",
+      "expected_behavior": "SHOULD emit passphrase-too-short warning; decryption MUST succeed"
     }
   ]
 }
