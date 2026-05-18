@@ -65,7 +65,7 @@ def _aad_from_envelope(envelope: dict) -> bytes:
         k: envelope.get(k)
         for k in ("klickd_version", "encrypted", "domain", "created_at", "updated_at")
         if k in envelope
-    }  # AAD values MUST be ASCII-safe; ensure_ascii=True (default) matches JS JSON.stringify
+    }  # 5 fields. Values MUST be ASCII-safe. ensure_ascii=True (default) matches JS JSON.stringify for ASCII inputs.
     return json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
@@ -188,7 +188,18 @@ def main():
         "passphrase",
         nargs="?",
         default=None,
-        help="Decryption passphrase (omit for encrypted: false files)"
+        help="Passphrase (positional — for testing only; exposes to shell history)"
+    )
+    parser.add_argument(
+        "--passphrase-env",
+        metavar="VAR",
+        default=None,
+        help="Read passphrase from environment variable (recommended for production)"
+    )
+    parser.add_argument(
+        "--passphrase-stdin",
+        action="store_true",
+        help="Read passphrase from stdin (recommended for production)"
     )
     parser.add_argument(
         "--no-passphrase",
@@ -227,8 +238,20 @@ def main():
     # Version check — accept 2.x
     check_version(envelope.get("klickd_version", ""))
 
-    # Resolve passphrase
-    passphrase = None if args.no_passphrase else args.passphrase
+    # Resolve passphrase — prefer env/stdin over positional (avoids shell history exposure)
+    if args.no_passphrase:
+        passphrase = None
+    elif args.passphrase_stdin:
+        import getpass
+        passphrase = getpass.getpass("Passphrase: ") if sys.stdin.isatty() else sys.stdin.readline().rstrip("\n")
+    elif args.passphrase_env:
+        passphrase = os.environ.get(args.passphrase_env)
+        if not passphrase:
+            sys.exit(f"ERROR: env var {args.passphrase_env} is not set or empty")
+    else:
+        if args.passphrase:
+            print("WARNING: positional passphrase exposes to shell history. Use --passphrase-env or --passphrase-stdin in production.", file=sys.stderr)
+        passphrase = args.passphrase
 
     # Load + decrypt
     payload = load_payload(envelope, passphrase)
