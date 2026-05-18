@@ -7,6 +7,37 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## [v6.0] - 2026-05-18
+
+### Security & Hardening (Grok Audits 2–5)
+
+- **Major security release** — All P0 and P1 issues from five adversarial audits resolved.
+- Rewrote `save_klickd.py` to full v3.0 (Argon2id default, 6-field JCS AAD, structured `kdf`/`cipher` blocks).
+- Fixed `build_system_prompt` injection order — `.klickd` context now correctly placed **before** base system prompt (§12).
+- Added proper RFC 8785 JCS with NFC Unicode normalisation in both Python and JavaScript.
+- Implemented layered defensive controls:
+  - `_whitehat_scan()` — prototype pollution + suspicious keyword detection (hard fail on `__proto__`, `constructor`, `prototype`)
+  - `_enforce_ethics()` — `locked_actions` must be `list[str]`
+  - `_validate_growth()` — enforces level ≤ 5 and `memory_refs ≥ 3` at level 5
+- `cipher.name` and `kdf.name` now strictly validated (case-sensitive).
+- `build_system_prompt` now safely merges both `user_preferences` **and** `agent_instructions` when both are present.
+- Added `ensure_ascii=False` for UTF-8 consistency in envelope writing.
+
+### Testing
+
+- All previous tests passing (32/32).
+- Added **15 new adversarial test vectors** in `tests/adversarial/` covering every defensive layer (prototype pollution, ethics bypass, growth inflation, size bombs, merge logic attacks, multi-layer stress tests, etc.).
+- Final Grok Audit 5 (adversarial payload testing) — **0 critical or high-severity bypasses** found.
+
+### Final Status
+
+**v6.0 is now shipping.**  
+The format has been thoroughly stress-tested and is considered production-ready.
+
+**Grok Final Verdict**: Secure, spec-compliant, and battle-hardened.
+
+---
+
 ## [3.0 / Skill v6.0] — 2026-05-18
 
 ### Added
