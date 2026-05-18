@@ -89,6 +89,22 @@ if neg_file.exists():
 else:
     print("\n[WARN] negative_vectors_v25.json not found — skipping negative suite")
 
+# v3.0 positive vectors
+v30_pos_file = VECTORS_DIR / "vectors_v30.json"
+if v30_pos_file.exists():
+    p, f = run_suite(v30_pos_file, "POSITIVE v3.0 vectors")
+    total_passed += p; total_failed += f
+else:
+    print("\n[WARN] vectors_v30.json not found — skipping v3.0 positive suite")
+
+# v3.0 negative vectors
+v30_neg_file = VECTORS_DIR / "negative_vectors_v30.json"
+if v30_neg_file.exists():
+    p, f = run_suite(v30_neg_file, "NEGATIVE v3.0 vectors")
+    total_passed += p; total_failed += f
+else:
+    print("\n[WARN] negative_vectors_v30.json not found — skipping v3.0 negative suite")
+
 total = total_passed + total_failed
 print(f"\n{'='*50}")
 print(f"TOTAL: {total_passed}/{total} passed  ({total_failed} failed)")

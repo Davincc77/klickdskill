@@ -14,7 +14,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 from .errors import KlickdError, KlickdErrorCode
 
-KLICKD_VERSION = "3.0.0"
+KLICKD_VERSION = "3.0"
 DEFAULT_KDF_PARAMS = {"m": 65536, "t": 3, "p": 1}
 
 

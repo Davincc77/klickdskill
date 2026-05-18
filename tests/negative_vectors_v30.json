@@ -1,0 +1,208 @@
+{
+  "description": ".klickd v3.0 negative test vectors",
+  "spec_version": "3.0",
+  "notes": [
+    "N1-N3: Argon2id param floor violations → KlickdFormatError (KLICKD_E_KDF)",
+    "N4:    unsupported cipher name → KlickdAuthError (cipher name is in AAD; tag mismatch) or KlickdFormatError",
+    "N5:    unsupported kdf.name → KlickdFormatError (KLICKD_E_KDF)",
+    "N6:    kdf.params.m mutated post-encryption → KlickdAuthError (GCM AAD mismatch)",
+    "N7-N8: missing required blocks → KlickdFormatError (KLICKD_E_FORMAT)"
+  ],
+  "vectors": [
+    {
+      "id": "v3.0-neg-argon2-m-too-low",
+      "description": "kdf.params.m=1 (below minimum 65536) — MUST raise KlickdFormatError (KLICKD_E_KDF)",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 1,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "eAHMXXcaQvvS/enr4kAuAg=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "sZmmurTJy87gvOG4"
+        },
+        "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
+      },
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (m below minimum)"
+    },
+    {
+      "id": "v3.0-neg-argon2-t-too-low",
+      "description": "kdf.params.t=0 (below minimum 3) — MUST raise KlickdFormatError (KLICKD_E_KDF)",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 0,
+            "p": 1
+          },
+          "salt": "eAHMXXcaQvvS/enr4kAuAg=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "sZmmurTJy87gvOG4"
+        },
+        "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
+      },
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (t below minimum)"
+    },
+    {
+      "id": "v3.0-neg-argon2-p-too-low",
+      "description": "kdf.params.p=0 (below minimum 1) — MUST raise KlickdFormatError (KLICKD_E_KDF)",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 0
+          },
+          "salt": "eAHMXXcaQvvS/enr4kAuAg=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "sZmmurTJy87gvOG4"
+        },
+        "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
+      },
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (p below minimum)"
+    },
+    {
+      "id": "v3.0-neg-unsupported-cipher",
+      "description": "cipher.name='aes-128-gcm' (unsupported) — MUST raise KlickdAuthError or KlickdFormatError",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "eAHMXXcaQvvS/enr4kAuAg=="
+        },
+        "cipher": {
+          "name": "aes-128-gcm",
+          "iv": "sZmmurTJy87gvOG4"
+        },
+        "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
+      },
+      "expected_behavior": "KlickdAuthError — KLICKD_E_AUTH (cipher name in AAD changed, GCM tag mismatch; or KLICKD_E_FORMAT if cipher name validated first)"
+    },
+    {
+      "id": "v3.0-neg-unsupported-kdf",
+      "description": "kdf.name='scrypt' (unsupported) — MUST raise KlickdFormatError (KLICKD_E_KDF)",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "scrypt",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "eAHMXXcaQvvS/enr4kAuAg=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "sZmmurTJy87gvOG4"
+        },
+        "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
+      },
+      "expected_behavior": "KlickdFormatError — KLICKD_E_KDF (unsupported kdf.name='scrypt')"
+    },
+    {
+      "id": "v3.0-neg-tampered-aad-kdf-params",
+      "description": "kdf.params.m mutated post-encryption (kdf is in AAD) — MUST raise KlickdAuthError (GCM tag mismatch)",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 131072,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "eAHMXXcaQvvS/enr4kAuAg=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "sZmmurTJy87gvOG4"
+        },
+        "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
+      },
+      "expected_behavior": "KlickdAuthError — KLICKD_E_AUTH (kdf.params.m changed post-encryption, AAD mismatch causes GCM auth failure)"
+    },
+    {
+      "id": "v3.0-neg-missing-kdf-block",
+      "description": "kdf field absent — MUST raise KlickdFormatError (KLICKD_E_FORMAT)",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "sZmmurTJy87gvOG4"
+        },
+        "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
+      },
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT (missing 'kdf' block)"
+    },
+    {
+      "id": "v3.0-neg-missing-cipher-block",
+      "description": "cipher field absent — MUST raise KlickdFormatError (KLICKD_E_FORMAT)",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "eAHMXXcaQvvS/enr4kAuAg=="
+        },
+        "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
+      },
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT (missing 'cipher' block)"
+    }
+  ]
+}

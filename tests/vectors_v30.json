@@ -1,0 +1,171 @@
+{
+  "description": ".klickd v3.0 positive test vectors",
+  "spec_version": "3.0",
+  "notes": [
+    "AAD = JCS (RFC 8785) over exactly: cipher, created_at, domain, encrypted, kdf, klickd_version",
+    "KDF = Argon2id with m=65536, t=3, p=1 (minimum compliant params)",
+    "Cipher = AES-256-GCM; ciphertext = AESGCM.encrypt output (ciphertext || 16-byte GCM tag), base64-encoded",
+    "Wire format: RFC 4648 §4 standard padded base64"
+  ],
+  "vectors": [
+    {
+      "id": "v3.0-basic-ascii",
+      "description": "Basic ASCII payload — domain=test, Argon2id + JCS AAD, should decrypt successfully",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "L4fNmdKLwGPQxjrB806dPw=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "6C6OVt7aYBatYbx6"
+        },
+        "ciphertext": "uepjL/vWwKded+wRL3JL291fpXVLwSJ0OJdT6zMKx17VdT5uppCC9chcGfDXfGmCrfaOonBImkYts14jKccyJeddvosJQ8uU13/YsQ=="
+      },
+      "expected_display_name": "Alice",
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v3.0-french-utf8",
+      "description": "UTF-8 French payload with accented characters — non-ASCII only in payload, not in AAD fields",
+      "passphrase": "motdepasse-v30",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "Tasi5ofHTvKxh8qWI/Co8A=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "ehAtBo02UkPr0hQy"
+        },
+        "ciphertext": "EEuJTEjhsmEMa1gdhpTGhZ7hyJjwkq36ZY2kVFGsnKAB8uzkLRVmdhf1zZLwkFuM7nAIJ/5akhusAB/I53EFNsYCu8YmZlB7O+f3KJwfLs/HhGors5Tfk1AZ0Z+JtTN7h05/Azi8FaSrPLo/SCvmPyAjJIXzjXqZc8igvB0PKpwYjeup"
+      },
+      "expected_display_name": "Léa Müller",
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v3.0-tampered",
+      "description": "Last byte of ciphertext XOR'd (inside GCM tag) — MUST raise KlickdAuthError",
+      "passphrase": "correct-battery-horse",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "ENHhUlOCV3xzczcrQY37iw=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "fPj+zgrWBHYG2RrX"
+        },
+        "ciphertext": "i7/4ovTwEbZNxJwbq7o9yWEkSx2zhrAqH6uJYl+2RamkaAH9lgJsw2+DaZJRLLa1THgfqr0RizhO+j6L7mkLScYgu3anrDCW8ZcKlA=="
+      },
+      "expected_behavior": "KlickdAuthError — KLICKD_E_AUTH (tampered ciphertext)"
+    },
+    {
+      "id": "v3.0-wrong-passphrase",
+      "description": "Correct v3.0 envelope, wrong passphrase — MUST raise KlickdAuthError",
+      "passphrase": "wrong-passphrase-xyz",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "L4fNmdKLwGPQxjrB806dPw=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "6C6OVt7aYBatYbx6"
+        },
+        "ciphertext": "uepjL/vWwKded+wRL3JL291fpXVLwSJ0OJdT6zMKx17VdT5uppCC9chcGfDXfGmCrfaOonBImkYts14jKccyJeddvosJQ8uU13/YsQ=="
+      },
+      "expected_behavior": "KlickdAuthError — KLICKD_E_AUTH (wrong passphrase)"
+    },
+    {
+      "id": "v3.0-short-passphrase",
+      "description": "Passphrase 'ab' (< 8 chars) — MUST raise KlickdWeakPassphraseError",
+      "passphrase": "ab",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "vnfAi8ESlDacGXWjJ2upZg=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "x6kw1NA1srE1ESFy"
+        },
+        "ciphertext": "Pniia42wXJ8UukyZond5UwwhNvUV2HwwXT4E/SrT9PuBcV4k1cV5IS2Ii9Y4JWmPicOnL1c8BLN6tnFGOyDemd+AbPCl3hbPs0XqM/YEog=="
+      },
+      "expected_behavior": "KlickdWeakPassphraseError — KLICKD_E_WEAK_PASS (passphrase < 8 chars)"
+    },
+    {
+      "id": "v3.0-warn-passphrase",
+      "description": "Passphrase '12345678' (8 chars, < 12 recommended) — decrypt_success with stderr warning",
+      "passphrase": "12345678",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "test",
+        "created_at": "2026-05-18T12:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "9Ur2MITnMW32+Tg7Y2yPtA=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "qJ2MtwC9JMfaEfQb"
+        },
+        "ciphertext": "4ABMmCrxIyOGM5fPwgWpWWLn21h67feWIHDpOOOQBmxp2sJ/SUhRsZGAL84wcpw6XcVfG9/Mivb1zgzn2W9lDQIAofPxQppQ"
+      },
+      "expected_display_name": "Bob",
+      "expected_behavior": "UserWarning emitted + decrypt_success (passphrase 8 chars: >= min, < 12 recommended)"
+    }
+  ]
+}
