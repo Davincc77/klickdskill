@@ -1,7 +1,7 @@
 # .klickd — Security Audit Dossier v6.0
 
 > **Envelope v3.0 / Skill revision v6.0 — 18 May 2026**
-> DOI: [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
+> DOI: [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530) — v3.1: [10.5281/zenodo.20270034](https://zenodo.org/records/20270034)
 > License: CC0 1.0 Universal
 
 ---
