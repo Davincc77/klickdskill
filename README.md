@@ -1,42 +1,114 @@
-# .klickd — Portable Encrypted AI Context
+# .klickd
 
-**v2.0 — Production — 2026-05-18**  
-**License:** CC0 1.0 Universal (Public Domain)  
-**Author:** Vince C. — Klickd / Luxlearn.app — Luxembourg  
-**Contact:** Luxlearn@pm.me
+> **One soul. Any model. Any body.**
 
----
-
-## One file. Zero cloud storage. Any AI.
-
-`.klickd` is an open, encrypted file format that stores a user's AI context on their own device — permanently. No server. No account. No vendor lock-in.
-
-When a user switches AI models (GPT → Claude → Gemini → Llama), or when a robot gets a firmware update, **context no longer dies at the boundary**. The `.klickd` file travels with the user, not the model.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20262530.svg)](https://doi.org/10.5281/zenodo.20262530)
+[![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
+[![Format version: 2.0](https://img.shields.io/badge/format-v2.0-6366F1)]()
 
 ---
 
-## The problem it solves
+Every time you switch AI models, you start over.
 
-Every AI provider today stores user context in their cloud:
-- **Storage cost** that scales linearly with users — PBs/year at scale
-- **GDPR liability** — the provider holds the data, owns the risk
-- **Context loss** on model switch, firmware update, or device change
+GPT doesn't know what Claude built. Gemini doesn't know what Llama taught you. The model resets. Your context, decisions, and progress disappear.
 
-`.klickd` moves all three costs to zero.
+**`.klickd` is the soul that travels with you.**
+
+A single encrypted file — on your device, never on any server — that carries who you are, where you left off, what you've decided, and what the next agent needs to know. Load it into GPT, Claude, Gemini, Llama, Grok, or any model that reads JSON. Resume instantly.
+
+The body changes. The soul persists.
 
 ---
 
-## Properties
+## What it means
+
+**One soul** — your identity, preferences, decisions, and project state, distilled into a single portable file.
+
+**Any model** — GPT, Claude, Gemini, Llama, Grok, Mistral. Any agent that can parse JSON and run AES-256-GCM.
+
+**Any body** — software agents today. Physical robots tomorrow. The same `.klickd` file that carries your context to Claude will carry it to Optimus or Figure. Firmware resets. The soul doesn't.
+
+---
+
+## How it works
+
+1. At the end of a session, your AI generates a `.klickd` file and hands it to you
+2. The file is encrypted client-side with your passphrase — it never touches a server
+3. Next session, on any model: upload the file, enter your passphrase, resume instantly
+
+No account. No cloud. No vendor lock-in. The file is yours.
+
+---
+
+## Technical facts
 
 | Property | Value |
 |---|---|
-| Encryption | AES-256-GCM, key from user passphrase (PBKDF2, 600k iterations) |
-| Generation | Client-side only — zero server call |
-| Portability | Any model or agent that implements the spec |
-| Ownership | File lives on user's hardware only |
-| License | CC0 — free to implement for any provider or manufacturer |
-| GDPR | Art. 20 compliant by architecture |
-| MIME type | `application/vnd.klickd+json` |
+| Encryption | AES-256-GCM |
+| Key derivation | PBKDF2-SHA256, 600,000 iterations (OWASP 2023) |
+| Envelope integrity | AES-GCM AAD on 4 fields — tamper-proof |
+| Format | JSON, UTF-8 |
+| Extension | `.klickd` |
+| MIME type | `application/vnd.klickd+json` *(IANA pending)* |
+| License | CC0 1.0 Universal (public domain) |
+| SDK required | None |
+
+---
+
+## Cross-implementation test status
+
+✅ **CLEAN PASS** — verified independently in Python and JavaScript (Web Crypto API)
+
+- All 4 test vectors pass (unencrypted + 2 encrypted + short-passphrase)
+- Tamper test: correctly rejected (`InvalidTag`)
+- Wrong passphrase: correctly rejected (`InvalidTag`)
+- 5-field AAD (added `updated_at`): correctly rejected on all 3 encrypted vectors
+- Short-passphrase warning fires at `len < 12`
+
+---
+
+## Quickstart
+
+### Decrypt (Python)
+
+```python
+pip install cryptography
+
+python scripts/load_klickd.py myfile.klickd --passphrase-stdin
+```
+
+### Decrypt (JavaScript)
+
+See `SKILL.md` §5 for the full Web Crypto API implementation — no dependencies, runs in any modern browser or Node.js environment.
+
+### Verify test vectors
+
+```bash
+python scripts/generate_vector.py  # regenerates tests/vectors.json with fresh crypto material
+```
+
+---
+
+## File structure
+
+```
+.klickd envelope (always in plaintext)
+├── klickd_version   "2.0"
+├── encrypted        true | false
+├── domain           "finance" | "education" | "work" | "legal" | "robotics" | ...
+├── created_at       ISO 8601 UTC
+├── updated_at       ISO 8601 UTC  (not sealed — changes on every re-encrypt)
+├── salt             base64(16 random bytes)
+├── iv               base64(12 random bytes)
+└── payload          base64(AES-256-GCM(inner_json))
+
+Decrypted payload
+├── identity         name, language, timezone, communication_style
+├── agent_instructions  plain-text briefing for the incoming agent
+├── context          current_state, decisions_locked, artifacts, summary
+├── knowledge        mastered, gaps, next_steps
+└── [domain]_profile  domain-specific extension (e.g. robot_profile)
+```
 
 ---
 
@@ -45,70 +117,52 @@ Every AI provider today stores user context in their cloud:
 | Domain | Use case |
 |---|---|
 | `education` | Learner profile, competency tracking, session continuity |
-| `work` | Project context, decisions, preferences across work tools |
-| `legal` | Case context, constraints, prior decisions |
-| `creative` | Creative project state, style, constraints |
-| `personal` | Personal assistant memory, routines, preferences |
-| `health` | Health context (user-controlled, zero server) |
-| `finance` | Financial context, goals, constraints |
-| `research` | Research context, sources, methodology |
-| `robotics` | Robot user profile — survives firmware updates and unit replacements |
+| `work` | Project state, decisions, tools, stakeholders |
+| `finance` | Portfolio state, strategy decisions, amounts |
+| `legal` | Contract review progress, clauses, constraints |
+| `creative` | Style decisions, project brief, work in progress |
+| `health` | Context for health conversations (no medical data) |
+| `research` | Papers, hypotheses, citations, progress |
+| `robotics` | User preferences, household rules, trust scope |
+| custom | Any string — the format is open |
 
 ---
 
-## Files
+## Repository structure
 
-| File | Description |
-|---|---|
-| [SPEC.md](./SPEC.md) | Full technical specification — schema, encryption, field reference |
-| [AGENT-SKILL.md](./AGENT-SKILL.md) | Installation guide for any AI agent — Python + JS + robotics |
-| [schema/](./schema/) | JSON schema files |
-| [curriculum/](./curriculum/) | Education domain curricula (LU, FR, BE, DE, NL, CH, PT) |
-| [disclosure/](./disclosure/) | Invention disclosure (2026-05-16) |
-
----
-
-## Quick start — any AI agent
-
-```python
-import json, base64
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
-def load_klickd(file_path: str, passphrase: str) -> dict:
-    with open(file_path) as f:
-        envelope = json.load(f)
-    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32,
-                     salt=base64.b64decode(envelope["salt"]),
-                     iterations=600000)
-    key = kdf.derive(passphrase.encode())
-    raw = base64.b64decode(envelope["payload"])
-    iv  = base64.b64decode(envelope["iv"])
-    plaintext = AESGCM(key).decrypt(iv, raw, None)
-    return json.loads(plaintext)
+```
+klickdskill/
+├── SKILL.md              Agent skill file (how to implement .klickd support)
+├── SPEC.md               Full technical specification
+├── README.md             This file
+├── scripts/
+│   ├── load_klickd.py    Reference decrypt implementation
+│   └── generate_vector.py  Test vector generator
+├── tests/
+│   └── vectors.json      4 test vectors for cross-impl verification
+└── schema/               JSON Schema files
 ```
 
-Then inject `payload["agent_instructions"]` at the top of your system prompt.
+---
+
+## Academic reference
+
+> Vince C. (Klickd / Luxlearn, Luxembourg). *".klickd: An Open Encrypted File Format for Portable AI User Context"*. Zenodo, 2026. DOI: [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
 
 ---
 
-## Commercial model
+## License
 
-The format is CC0 — free to implement. Klickd proposes revenue-sharing partnerships with AI providers and robot manufacturers based on documented infrastructure savings. Contact: Luxlearn@pm.me
+**CC0 1.0 Universal — public domain.**
+
+No restrictions. No attribution required. Copy, fork, implement, commercialise freely.
+
+The goal is adoption, not ownership. If `.klickd` becomes a universal standard, every AI user wins.
+
+> To the extent possible under law, Klickd / Luxlearn has waived all copyright and related rights to the `.klickd` format specification. Published from Luxembourg.
+
+https://creativecommons.org/publicdomain/zero/1.0/
 
 ---
 
-## Invention disclosure
-
-Filed: 2026-05-16  
-Inventor: Vince C. — Klickd / Luxlearn.app — Luxembourg  
-See [disclosure/](./disclosure/)
-
----
-
-## Links
-
-- App: [klickd.app](https://klickd.app)
-- Web: [luxlearn.app](https://luxlearn.app)
-- Contact: Luxlearn@pm.me
+*`.klickd` — one soul. any model. any body.*
