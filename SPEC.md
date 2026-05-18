@@ -343,6 +343,7 @@ The GCM authentication tag covers the AAD fields: `klickd_version`, `encrypted`,
 - **LLM provider observation:** once the decrypted payload is injected into a model's context window, the model provider processes it according to their own data policies. Users SHOULD assume the LLM provider observes plaintext after injection.
 - **Coerced disclosure:** `.klickd` provides no legal protection against court orders or compelled decryption.
 - **Weak passphrases:** PBKDF2-600k is insufficient against GPU brute-force on short or common passphrases.
+- **`updated_at` / `created_at` rollback:** the `created_at` and `updated_at` envelope fields are not included in AAD and can be rewritten by an attacker without breaking authentication. A host agent that trusts `created_at` as a freshness indicator can be tricked into accepting a replayed older file as newer. See rollback-detection guidance in §Validation Requirements.
 
 ### Narrowed claim
 
@@ -361,12 +362,14 @@ The `.klickd` *storage* layer is zero-server and locally encrypted. The `.klickd
 - Reject timestamps not conforming to RFC 3339 UTC Z-only format (`YYYY-MM-DDTHH:MM:SSZ`).
 - Use a CSPRNG for salt and IV generation. `Math.random()`, time-based seeds, or any non-cryptographic source are NOT permitted.
 - NOT reuse `(key, IV)` pairs. Each encryption operation MUST use a freshly generated IV.
+- Reject `user_preferences` / `agent_instructions` exceeding **32 KB** (32,768 bytes, UTF-8 encoded). This prevents context-window exhaustion when the field is injected into a model prompt. Return `KLICKD_E_FORMAT`.
 
 ### Implementations SHOULD:
 
-- Warn the user when passphrase length is fewer than 12 characters.
+- Warn the user when passphrase length is fewer than 12 characters. This warning MUST be observable: implementations SHOULD emit it to `stderr` or an equivalent observable channel, not solely via a filtered warnings API.
 - Zero the passphrase from memory after key derivation is complete.
 - Rate-limit decryption attempts to mitigate online brute-force.
+- **Rollback detection:** persist the file fingerprint `sha256(kdf_salt_bytes || iv_bytes)` and the `created_at` value of the last successfully loaded file, keyed by file path or origin. On subsequent loads of the same file, reject loads where the new file's `created_at` is ≤ the persisted value. This prevents an attacker from replaying an older file with a rewritten `created_at`. The fingerprint MUST be stored outside the `.klickd` file itself (e.g., in local app state or a separate `.klickd.meta` file).
 
 ---
 

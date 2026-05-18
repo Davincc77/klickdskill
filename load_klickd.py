@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""load_klickd.py v3.0 — Argon2id + RFC 8785 JCS canonicalization"""
-import json, base64, os, warnings
+"""load_klickd.py v2.5 — PBKDF2 + 4-field AAD (v2.x); Argon2id + RFC 8785 JCS (v3.0)"""
+import json, base64, os, sys, warnings
 from pathlib import Path
 
 try:
@@ -90,7 +90,19 @@ def load_klickd(filepath: str, passphrase: str) -> dict:
         KlickdFormatError: malformed envelope
     """
     if len(passphrase) < WARN_PASSPHRASE_LEN:
-        warnings.warn(f"Passphrase is only {len(passphrase)} characters; a minimum of {WARN_PASSPHRASE_LEN} is recommended.")
+        # Emit to stderr unconditionally — warnings.warn() can be silenced by default filters
+        print(
+            f"WARNING: passphrase entropy below recommended threshold "
+            f"({len(passphrase)} chars < {WARN_PASSPHRASE_LEN} recommended). "
+            "Use a passphrase of at least 12 characters in production.",
+            file=sys.stderr,
+        )
+        warnings.warn(
+            f"Passphrase is only {len(passphrase)} characters; "
+            f"a minimum of {WARN_PASSPHRASE_LEN} is recommended.",
+            UserWarning,
+            stacklevel=2,
+        )
 
     try:
         with open(filepath) as f:
@@ -149,6 +161,13 @@ def load_klickd(filepath: str, passphrase: str) -> dict:
         payload = json.loads(plaintext.decode("utf-8"))
     except Exception:
         raise KlickdFormatError("KLICKD_E_FORMAT: decrypted payload is not valid JSON")
+
+    # agent_instructions size cap — MUST be ≤ 32 KB to prevent context-window DoS
+    agent_instr = payload.get("agent_instructions", "") or payload.get("user_preferences", "")
+    if isinstance(agent_instr, str) and len(agent_instr.encode("utf-8")) > 32 * 1024:
+        raise KlickdFormatError(
+            "KLICKD_E_FORMAT: agent_instructions/user_preferences exceeds 32 KB limit"
+        )
 
     # Resolve memory path
     memory_path = payload.get("memory_path", "~/.klickd/memory/")
