@@ -1,4 +1,4 @@
-name: .klickd Cross-Impl Test Vectors
+name: klickd Cross-Impl Test Vectors
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   python:
-    name: Python — test vectors
+    name: Python test vectors
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,11 +19,11 @@ jobs:
       - run: python3 verify_vectors.py
 
   javascript:
-    name: JavaScript — test vectors
+    name: JavaScript test vectors
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node --experimental-vm-modules verify_vectors.mjs 2>/dev/null || node verify_vectors.mjs
+      - run: node verify_vectors.mjs
