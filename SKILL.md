@@ -1,7 +1,7 @@
 ---
 name: klickd-context
-version: 2.4
-description: Load a user's portable AI context from a .klickd encrypted file. Decrypts client-side using AES-256-GCM + PBKDF2, writes fields to /.memory/, and injects agent_instructions into the system prompt as untrusted user context.
+version: 3.0
+description: Load a user's portable AI context from a .klickd encrypted file. One soul. Any model. Any body. — Decrypts client-side using AES-256-GCM + PBKDF2, writes fields to /.memory/, and injects agent_instructions into the system prompt as untrusted user context.
 tools:
   - name: load_klickd
     description: Decrypt a .klickd file and write the result to /.memory/. Returns agent_instructions for system prompt injection.
@@ -31,20 +31,41 @@ repo: https://github.com/Davincc77/klickdskill
 
 # .klickd Agent Skill
 
+> **One soul. Any model. Any body.**
+
 **Envelope schema version:** 2.0 (klickd_version field in the file)
-**Spec/doc revision:** 2.4
+**Spec/doc revision:** 3.0
 **License:** CC0 1.0 Universal (Public Domain)
 **Spec:** [SPEC.md](./SPEC.md)
+**DOI:** [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
 
 > Note on versioning: `klickd_version` in the envelope identifies the file format schema (currently `"2.0"`).
-> The spec/doc revision (2.2) tracks documentation and tooling improvements — it does not change the envelope schema.
+> The spec/doc revision tracks documentation and tooling improvements — it does not change the envelope schema.
 > Implementations must accept `2.x` and reject anything else.
+
+---
+
+## The idea
+
+Every time you switch AI models, you start over. GPT doesn't know what Claude built. Gemini doesn't know what Llama taught you. The model resets. The soul doesn't transfer.
+
+`.klickd` is the soul.
+
+A single encrypted file — on your device, never on any server — that carries who you are, where you left off, what you've decided, and what the next agent needs to know. Load it into GPT, Claude, Gemini, Llama, Grok, or any model that reads JSON. Resume instantly. No re-explanation. No context loss.
+
+The body changes. The soul persists.
 
 ---
 
 ## 1. What is .klickd
 
-`.klickd` is an open, encrypted, client-side file format that carries a user's AI context across model switches and sessions. When a user moves from one AI model to another, they load their `.klickd` file and the new agent resumes exactly where the previous one left off — with full awareness of project state, user preferences, constraints, and history.
+`.klickd` is an open, encrypted, client-side file format that carries a user's AI context across model switches and sessions. When a user moves from one AI model to another — or from a software agent to a physical robot — they load their `.klickd` file and the new agent resumes exactly where the previous one left off, with full awareness of project state, user preferences, constraints, and history.
+
+**One soul. Any model. Any body.**
+
+- **One soul** — your identity, preferences, decisions, and project state, distilled into a single portable file
+- **Any model** — GPT, Claude, Gemini, Llama, Grok, Mistral, or any model that can parse JSON
+- **Any body** — software agents, browsers, mobile apps, and physical robotic platforms (Optimus, Figure, any firmware that reads a local file)
 
 ---
 
@@ -380,6 +401,8 @@ Full field definitions, encryption specification, MIME type, and versioning poli
 
 Every firmware update on a robot resets the user relationship. `.klickd` on a USB drive or local storage allows the robot to resume the relationship instantly on reboot.
 
+**This is what "Any body" means.** The same file that carries your identity to Claude or GPT carries it to Optimus, Figure, or any robot that reads a local file. No cloud sync. No account. The soul follows you — regardless of the body it inhabits.
+
 ```json
 {
   "domain": "robotics",
@@ -410,6 +433,7 @@ sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=T
 ```
 This is the normative form. Compute over the decrypted payload dict after JSON-parsing, before any re-formatting. Note: v1 and v2 share the same payload content, so their sha256 values are equal by design.
 
+**Cross-implementation test status:** ✅ CLEAN PASS — verified independently in Python and JavaScript (Web Crypto API). All 4 vectors pass. Tamper, wrong-passphrase, and 5-field AAD tests all correctly reject.
 
 > **Note:** `/.memory/` directory contents are stored as plaintext on disk. Protect with appropriate filesystem permissions (e.g. `chmod 700 /.memory/`). The `.klickd` file itself remains encrypted on the user's device.
 
@@ -427,6 +451,7 @@ Full legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
 ## Changelog
 
+- **v3.0 — 2026-05-18** — "One soul. Any model. Any body." framing. Cross-impl CLEAN PASS (Python + JS). DOI published: 10.5281/zenodo.20262530. Robotics section expanded with "Any body" explanation.
 - **v2.4 — 2026-05-18** — expected_payload_sha256 canonicalization specified normatively in §13: sha256(json.dumps(sort_keys=True, separators=(",",":"), ensure_ascii=True)). Test vectors regenerated with correct canonical form. generate_vector.py fixed (was using ensure_ascii=False). v4 short-passphrase vector added.
 - **v2.3 — 2026-05-18** — AAD fixed to 4 fields (option A: drop updated_at — excluded by design, changes on every re-encrypt). All five AAD sites aligned: spec text, Python snippet, Python function, JS sample, §9 pseudocode. Test vectors regenerated with 4-field AAD + expected_payload_sha256 + v4 short-passphrase vector. Passphrase stdin/env/warning added to CLI. Session-scoped consent in §3. IANA pending note. /.memory/ plaintext note.
 - **v2.2 — 2026-05-18** — Security fixes: AAD on envelope, untrusted-input framing for agent_instructions, decisions_locked reframed as user-preference-level. Correctness fixes: encrypted:false branch in code, version check accepts 2.x, removed salt reuse hint, explicit GCM wire format. Added: passphrase guidance, file size limits, test vectors reference.
@@ -436,4 +461,4 @@ Full legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
 ---
 
-*`.klickd` — context follows the user, not the model.*
+*`.klickd` — one soul. any model. any body.*
