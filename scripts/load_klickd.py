@@ -63,9 +63,9 @@ def _aad_from_envelope(envelope: dict) -> bytes:
     """
     aad_fields = {
         k: envelope.get(k)
-        for k in ("klickd_version", "encrypted", "domain", "created_at")
+        for k in ("klickd_version", "encrypted", "domain", "created_at", "updated_at")
         if k in envelope
-    }
+    }  # AAD values MUST be ASCII-safe; ensure_ascii=True (default) matches JS JSON.stringify
     return json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
