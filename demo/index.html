@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>.klickd — Browser Demo</title>
+<style>
+  :root {
+    --bg:      #0E1117;
+    --card:    #141824;
+    --border:  #1E293B;
+    --primary: #6366F1;
+    --accent:  #818CF8;
+    --emerald: #10B981;
+    --text:    #E2E8F0;
+    --muted:   #94A3B8;
+    --warn:    #F59E0B;
+    --fail:    #EF4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.6; min-height: 100vh;
+  }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .logo { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .tagline { color: var(--muted); font-size: 13px; }
+  .badge {
+    background: var(--primary); color: #fff;
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+    margin-left: auto;
+  }
+  main { max-width: 800px; margin: 40px auto; padding: 0 24px; }
+  h2 { font-size: 18px; color: var(--text); margin-bottom: 12px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 24px; margin-bottom: 24px;
+  }
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+  .tab {
+    padding: 8px 20px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); font-size: 14px; transition: all .15s;
+  }
+  .tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .panel { display: none; } .panel.active { display: block; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  input[type=text], input[type=password], textarea, select {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); padding: 10px 12px; font-size: 14px;
+    outline: none; transition: border .15s; font-family: inherit;
+  }
+  input:focus, textarea:focus { border-color: var(--primary); }
+  textarea { min-height: 120px; resize: vertical; font-family: "Courier New", monospace; font-size: 12px; }
+  .field { margin-bottom: 16px; }
+  .row { display: flex; gap: 12px; }
+  .row .field { flex: 1; }
+  button {
+    background: var(--primary); color: #fff; border: none;
+    padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity .15s;
+  }
+  button:hover { opacity: .85; }
+  button.secondary {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+  }
+  .result {
+    margin-top: 20px; padding: 14px 16px; border-radius: 6px;
+    font-family: "Courier New", monospace; font-size: 12px; white-space: pre-wrap;
+    word-break: break-all; display: none;
+  }
+  .result.ok   { background: #052e16; border: 1px solid var(--emerald); color: var(--emerald); }
+  .result.fail { background: #1c0a0a; border: 1px solid var(--fail); color: var(--fail); }
+  .result.info { background: var(--border); border: 1px solid #334155; color: var(--text); }
+  .strength { height: 4px; border-radius: 2px; margin-top: 6px; transition: width .2s, background .2s; width: 0; }
+  .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  .download-btn { display: none; }
+  footer {
+    text-align: center; color: var(--muted); font-size: 12px;
+    padding: 32px; border-top: 1px solid var(--border); margin-top: 40px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .info-item { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
+  .info-item .k { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .info-item .v { font-size: 13px; font-weight: 600; color: var(--accent); }
+  @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } .row { flex-direction: column; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">.klickd</div>
+    <div class="tagline">One soul. Any model. Any body.</div>
+  </div>
+  <div class="badge">v3.0 · CC0</div>
+</header>
+
+<main>
+  <div class="info-grid">
+    <div class="info-item"><div class="k">Encryption</div><div class="v">AES-256-GCM</div></div>
+    <div class="info-item"><div class="k">Key derivation</div><div class="v">PBKDF2-SHA256 · 600k iter</div></div>
+    <div class="info-item"><div class="k">AAD</div><div class="v">RFC 8785 JCS · 6 fields</div></div>
+    <div class="info-item"><div class="k">Server storage</div><div class="v" style="color:var(--emerald)">Never — local only</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('encrypt')">Encrypt</button>
+    <button class="tab" onclick="switchTab('decrypt')">Decrypt</button>
+  </div>
+
+  <!-- ENCRYPT PANEL -->
+  <div id="panel-encrypt" class="panel active card">
+    <h2>Create a .klickd file</h2>
+
+    <div class="row">
+      <div class="field">
+        <label>Your name</label>
+        <input type="text" id="enc-name" placeholder="e.g. Alice" value="Alice">
+      </div>
+      <div class="field">
+        <label>Domain</label>
+        <select id="enc-domain">
+          <option value="education">education</option>
+          <option value="work" selected>work</option>
+          <option value="finance">finance</option>
+          <option value="legal">legal</option>
+          <option value="creative">creative</option>
+          <option value="health">health</option>
+          <option value="research">research</option>
+          <option value="robotics">robotics</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Agent instructions (what the next AI needs to know)</label>
+      <textarea id="enc-instructions" placeholder="e.g. You are my coding assistant. I'm building a TypeScript REST API. Always suggest typed solutions."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Summary / current context (optional)</label>
+      <textarea id="enc-context" style="min-height:80px" placeholder="e.g. Currently working on auth module. JWT tokens implemented. Next: refresh token flow."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Passphrase</label>
+      <input type="password" id="enc-pass" placeholder="16+ characters recommended" oninput="updateStrength(this.value)">
+      <div class="strength" id="strength-bar"></div>
+      <div class="hint" id="strength-hint">Enter a passphrase</div>
+    </div>
+
+    <div class="actions">
+      <button onclick="doEncrypt()">Create .klickd file</button>
+    </div>
+
+    <div class="result" id="enc-result"></div>
+    <button class="secondary download-btn" id="enc-download" onclick="downloadFile()">Download .klickd</button>
+  </div>
+
+  <!-- DECRYPT PANEL -->
+  <div id="panel-decrypt" class="panel card">
+    <h2>Decrypt a .klickd file</h2>
+
+    <div class="field">
+      <label>Upload your .klickd file</label>
+      <input type="file" id="dec-file" accept=".klickd,.json" style="color:var(--muted)" onchange="fileSelected(this)">
+    </div>
+
+    <div class="field">
+      <label>Or paste JSON directly</label>
+      <textarea id="dec-json" placeholder='{"klickd_version":"3.0","encrypted":true,...}'></textarea>
+    </div>
+
+    <div class="field">
+      <label>Passphrase</label>
+      <input type="password" id="dec-pass" placeholder="Your passphrase">
+    </div>
+
+    <div class="actions">
+      <button onclick="doDecrypt()">Decrypt</button>
+      <button class="secondary" onclick="loadExample()">Load example</button>
+    </div>
+
+    <div class="result" id="dec-result"></div>
+  </div>
+</main>
+
+<footer>
+  <p>
+    <a href="https://github.com/Davincc77/klickdskill" target="_blank">GitHub</a> ·
+    <a href="https://zenodo.org/records/20262530" target="_blank">Zenodo DOI</a> ·
+    <a href="../SPEC_v30.md" target="_blank">Spec v3.0</a> ·
+    CC0 1.0 Universal — public domain
+  </p>
+  <p style="margin-top:8px">
+    Note: This demo uses PBKDF2-SHA256 (Web Crypto API). Argon2id (v3.0 default) requires WASM — use the Python CLI for full v3.0 compatibility.
+  </p>
+</footer>
+
+<script>
+// ── Utilities ─────────────────────────────────────────────────────────────
+
+function b64encode(buf) {
+  return btoa(String.fromCharCode(...new Uint8Array(buf)));
+}
+function b64decode(s) {
+  return Uint8Array.from(atob(s), c => c.charCodeAt(0));
+}
+function strToBytes(s) {
+  return new TextEncoder().encode(s);
+}
+function bytesToStr(b) {
+  return new TextDecoder().decode(b);
+}
+
+// RFC 8785 JCS — inline, no deps
+// (correct for all .klickd AAD field types)
+function jcs(obj) {
+  return JSON.stringify(
+    Object.fromEntries(Object.keys(obj).sort().map(k => [k, obj[k]]))
+  );
+}
+
+// ── Passphrase strength ──────────────────────────────────────────────────
+
+function updateStrength(pass) {
+  const bar  = document.getElementById('strength-bar');
+  const hint = document.getElementById('strength-hint');
+  const len  = [...pass].length; // Unicode-aware
+  if (len === 0) { bar.style.width = '0'; bar.style.background = 'transparent'; hint.textContent = 'Enter a passphrase'; return; }
+  if (len < 8)   { bar.style.width = '15%'; bar.style.background = 'var(--fail)';    hint.textContent = `Too short (${len} chars) — minimum 8`; return; }
+  if (len < 12)  { bar.style.width = '35%'; bar.style.background = 'var(--warn)';    hint.textContent = `Weak (${len} chars) — recommend 16+`; return; }
+  if (len < 16)  { bar.style.width = '60%'; bar.style.background = 'var(--warn)';    hint.textContent = `OK (${len} chars) — 16+ recommended`; return; }
+  if (len < 24)  { bar.style.width = '80%'; bar.style.background = 'var(--emerald)'; hint.textContent = `Good (${len} chars)`; return; }
+  bar.style.width = '100%'; bar.style.background = 'var(--emerald)'; hint.textContent = `Strong (${len} chars)`;
+}
+
+// ── PBKDF2 key derivation ────────────────────────────────────────────────
+
+async function deriveKey(passphrase, salt) {
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', strToBytes(passphrase), 'PBKDF2', false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 600_000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+// ── Tabs ─────────────────────────────────────────────────────────────────
+
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === (id === 'encrypt' ? 0 : 1)));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+// ── Encrypt ──────────────────────────────────────────────────────────────
+
+let lastBlob = null;
+
+async function doEncrypt() {
+  const name     = document.getElementById('enc-name').value.trim();
+  const domain   = document.getElementById('enc-domain').value;
+  const instr    = document.getElementById('enc-instructions').value.trim();
+  const ctx      = document.getElementById('enc-context').value.trim();
+  const pass     = document.getElementById('enc-pass').value;
+  const res      = document.getElementById('enc-result');
+  const dlBtn    = document.getElementById('enc-download');
+
+  if ([...pass].length < 8) {
+    showResult(res, 'fail', 'Passphrase too short (minimum 8 characters).');
+    return;
+  }
+  if (!name) { showResult(res, 'fail', 'Name is required.'); return; }
+
+  try {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv   = crypto.getRandomValues(new Uint8Array(12));
+    const ts   = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+
+    const kdf = {
+      name:   'pbkdf2-sha256',
+      params: { iterations: 600000 },
+      salt:   b64encode(salt)
+    };
+    const cipher = { name: 'aes-256-gcm', iv: b64encode(iv) };
+    const envelope = {
+      klickd_version: '3.0',
+      encrypted:      true,
+      domain,
+      created_at:     ts,
+      kdf,
+      cipher
+    };
+
+    // AAD: JCS of 6 envelope fields
+    const aadFields = { cipher, created_at: ts, domain, encrypted: true, kdf, klickd_version: '3.0' };
+    const aad = strToBytes(jcs(aadFields));
+
+    const payload = {
+      payload_schema_version: '1.0',
+      domain_schema_version:  `${domain}-1.0`,
+      identity:               { display_name: name },
+      agent_instructions:     instr || undefined,
+      context:                ctx ? { summary: ctx } : undefined,
+    };
+    // Strip undefined
+    Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
+
+    const plaintext = strToBytes(JSON.stringify(payload));
+    const key       = await deriveKey(pass, salt);
+    const ctBuf     = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: aad, tagLength: 128 }, key, plaintext);
+
+    envelope.ciphertext = b64encode(ctBuf);
+    const output = JSON.stringify(envelope, null, 2);
+
+    showResult(res, 'ok', output);
+    lastBlob = new Blob([output], { type: 'application/vnd.klickd+json' });
+    dlBtn.style.display = 'inline-block';
+  } catch (e) {
+    showResult(res, 'fail', `Encryption failed: ${e.message}`);
+  }
+}
+
+function downloadFile() {
+  if (!lastBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(lastBlob);
+  a.download = 'my-soul.klickd';
+  a.click();
+}
+
+// ── Decrypt ──────────────────────────────────────────────────────────────
+
+async function doDecrypt() {
+  const jsonStr  = document.getElementById('dec-json').value.trim();
+  const pass     = document.getElementById('dec-pass').value;
+  const res      = document.getElementById('dec-result');
+
+  if (!jsonStr) { showResult(res, 'fail', 'No file or JSON provided.'); return; }
+  if (!pass)    { showResult(res, 'fail', 'Passphrase required.'); return; }
+
+  try {
+    const envelope = JSON.parse(jsonStr);
+    if (!envelope.encrypted)      { showResult(res, 'info', 'File is unencrypted:\n\n' + JSON.stringify(envelope, null, 2)); return; }
+    if (!envelope.kdf?.name)      { showResult(res, 'fail', 'KLICKD_E_FORMAT: missing kdf block.'); return; }
+    if (envelope.kdf.name !== 'pbkdf2-sha256' && envelope.kdf.name !== 'argon2id') {
+      showResult(res, 'fail', `KLICKD_E_KDF: unsupported KDF "${envelope.kdf.name}". This demo supports pbkdf2-sha256 only. Use the Python CLI for argon2id.`); return;
+    }
+    if (envelope.kdf.name === 'argon2id') {
+      showResult(res, 'fail', 'KLICKD_E_KDF: Argon2id requires WASM. This demo only supports pbkdf2-sha256.\nUse: python scripts/load_klickd.py <file> --passphrase-stdin'); return;
+    }
+
+    const salt   = b64decode(envelope.kdf.salt);
+    const iv     = b64decode(envelope.cipher.iv);
+    const ct     = b64decode(envelope.ciphertext);
+
+    const { cipher, created_at, domain, encrypted, kdf, klickd_version } = envelope;
+    const aadFields = { cipher, created_at, domain, encrypted, kdf, klickd_version };
+    const aad = strToBytes(jcs(aadFields));
+
+    const key = await deriveKey(pass, salt);
+    let plainBuf;
+    try {
+      plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv, additionalData: aad, tagLength: 128 }, key, ct);
+    } catch {
+      showResult(res, 'fail', 'KLICKD_E_AUTH: Wrong passphrase or tampered file.'); return;
+    }
+
+    const payload = JSON.parse(bytesToStr(new Uint8Array(plainBuf)));
+    let output = `Decrypted successfully!\n\nDisplayName: ${payload.identity?.display_name ?? '(none)'}\nDomain: ${envelope.domain}\nCreated: ${envelope.created_at}\n\n`;
+    if (payload.agent_instructions) output += `Agent instructions:\n${payload.agent_instructions}\n\n`;
+    if (payload.ethics)             output += `Ethics block: PRESENT (immutable=${payload.ethics.immutable})\n`;
+    if (payload.growth?.competencies?.length) output += `Growth: ${payload.growth.competencies.length} competencies\n`;
+    if (payload.personality)        output += `Personality: temperament=${payload.personality.temperament ?? '(none)'}\n`;
+    if (payload.memory?.length)     output += `Memory: ${payload.memory.length} entries\n`;
+    output += '\n--- Full payload ---\n' + JSON.stringify(payload, null, 2);
+
+    showResult(res, 'ok', output);
+  } catch (e) {
+    showResult(res, 'fail', `Error: ${e.message}`);
+  }
+}
+
+function fileSelected(input) {
+  const f = input.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = e => { document.getElementById('dec-json').value = e.target.result; };
+  reader.readAsText(f);
+}
+
+async function loadExample() {
+  // Generate a live example with pbkdf2-sha256 so the demo can decrypt it
+  document.getElementById('enc-name').value = 'Demo User';
+  document.getElementById('enc-domain').value = 'work';
+  document.getElementById('enc-instructions').value = 'You are my coding assistant. I am building a TypeScript REST API. Always suggest strongly-typed solutions.';
+  document.getElementById('enc-context').value = 'Currently implementing auth module. JWT done. Next: refresh token.';
+  document.getElementById('enc-pass').value = 'demo-passphrase-klickd-2026';
+  updateStrength('demo-passphrase-klickd-2026');
+  switchTab('encrypt');
+  await doEncrypt();
+  // Now move result to decrypt panel
+  const json = document.getElementById('enc-result').textContent;
+  switchTab('decrypt');
+  document.getElementById('dec-json').value = json;
+  document.getElementById('dec-pass').value = 'demo-passphrase-klickd-2026';
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+
+function showResult(el, type, text) {
+  el.className = `result ${type}`;
+  el.textContent = text;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body>
+</html>

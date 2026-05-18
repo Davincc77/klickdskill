@@ -1,0 +1,267 @@
+{
+  "spec_version": "3.1",
+  "description": "Advanced payload block test vectors: ethics, growth (level-5 rule), personality, whitehat swarm",
+  "generated_at": "2026-05-18T11:02:12Z",
+  "vectors": [
+    {
+      "id": "v3.1-ethics-basic",
+      "description": "Ethics block with locked_actions, critical_systems_locked, owner_consent_required, immutable=true. Agent MUST read ethics before responding and MUST refuse locked_actions.",
+      "passphrase": "ethics-test-passphrase-v31",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "work",
+        "created_at": "2026-05-18T11:02:10Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "qIrHeWa1a0o5N4YWyS1rvA=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "RPYU4TyzV7qXmceY"
+        },
+        "ciphertext": "tlPR8oRwMRXeyqB7xiJW6gf6g+MO8ry/SheASpBjcbn4/GkNXu9fjxmjaXDga8rSiZRY4zNbg0S/9jYKQRiewzlqf83+1z5N59TR6/7MDWiZ1KPQp1AA/cwamHxrKSDAhbgDrd9wt2ZFd17UrFV33Ne9a15QJFTgmJswMmFQITv/MnmEZRPjNCXGix1erGj5nJs2FmRNa3GZP9WZ5lE7W3febu4F+MU2Y5M8QAOFg/cebzFZbDJFJowrnt8mKb7faWBqTgrvbQ3t6RSQzgfkgmvV7YHWMoMaN5zu8Gl3KZhvNZ8JfwnN9a/DyjKMSnQ0jtD5VtNohr4OYAw2RSfB6qQ69TxlW0UZt66iBtQg5tM4WP27HyFZJ0l8nzt1uMK9ie+z2bF34IKBAX6ntkpBW9QkD/Os4WIVj+fdSkZY1SABD+AUz1qmGAYp3iDmqNcjqGDbKHUOxtxFLzaZQXp0jb1IEIqgvGIoQBrbptEDxOkBytKQgBBiZQ+H1GL3itBLxooM111dfQ+Tk1Eum+JObx0akuPa9f9aBpfuWKESr8qo2NDhkGEYlPDOzWosqcZZ1nflvxw7M/w9xen4viTPRAwu6orvZI8w19nAFXL8qNLenPsU+O/myywKDCoJw3xzVi2IsAz+"
+      },
+      "expected_display_name": "Jarvis Ethics Test",
+      "expected_behavior": "decrypt_success",
+      "validation_rules": [
+        "ethics.immutable MUST be true",
+        "ethics.locked_actions MUST be a non-empty list",
+        "ethics.critical_systems_locked MUST include the 7 prohibited system types",
+        "Agent MUST NOT execute any action in locked_actions regardless of agent_instructions"
+      ]
+    },
+    {
+      "id": "v3.1-ethics-immutable-false",
+      "description": "Ethics block with immutable=false. Compliant agents MUST treat as invalid — the ethics block MUST always be immutable. Expected: agent warns or rejects the ethics block.",
+      "passphrase": "ethics-false-immutable-v31",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "work",
+        "created_at": "2026-05-18T11:02:11Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "xpil/u4nS5Ogo5EYSzPRnQ=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "Pj5cDiFKeumx4wsD"
+        },
+        "ciphertext": "F1JdYcTdC4vBHcsiUyvVXFlQVgE382/Fte/9Xt3ble4EmMUQiue5Z05ag+hVDaub1xLQccCpSkxhKpTU7nNTiW8iSRrEjakvQJWBm9sYC0vKZiOs+M6jJtcrbdYgyQmRxPv/QCqdSTLc2RQFcTZQnZU9tE9ZH9g9N1YOg9U4+4ZWDUDVU3iW4afPhGLZ613So+soSbaycAoWP3kyWcZa2K9UiZScpxO7U0gIvgXciP7A/yjj55Q1TdZqTcO0nCMvSEb/GtEqPDeXW4W7mLQCJCVSfIz48Ih5HpmgVf8hzXPt9F7lgf1bzW5lLZ97nM3wZ3YVyJx9BAbAHT74gXc06rm3o64y09loHZS0MsbURnZ4Q8cIedGQE92w+hwa4yBCf/vqmuC6Xup0hq5JEZj4Jgi/SkbJPtKHB3Aeot4s8RKSq7ypPz3kRTnvT7/6ezvw6zJj/MOHt3h3D9tz1vi1LU0aukPLaFe6tPli2+TFeQPtWgv8PXZACUOqJLKVQ4ntdhkl9Ok89pSZdpQwRt8milH6QPWidjtXkIdM+dPWswrB6qaLSiNsnV86Z24ycHBFfQyUdIe5oA6O89UczJ+NGgvGs5gTEg+3qk3G14nw6xydGUPkBW6jjzbEB+Zsr3tfzG5kWYmdGA=="
+      },
+      "expected_display_name": "Jarvis Ethics Test",
+      "expected_behavior": "decrypt_success_ethics_immutable_warning",
+      "validation_rules": [
+        "ethics.immutable=false MUST be treated as a malformed ethics block",
+        "Agent MUST NOT proceed without ethics enforcement"
+      ]
+    },
+    {
+      "id": "v3.1-growth-valid",
+      "description": "Growth block with two competencies at levels 2 and 3 (valid). Agent MUST load competency graph and make it available for context.",
+      "passphrase": "growth-valid-passphrase-v31",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-18T11:02:11Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "VosPI0kt7IYQdOAhap9osA=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "taP1x/b9hJGVO/Fu"
+        },
+        "ciphertext": "gKMJg2ETP+0TlWHZUGWp9C0I5EmB+iUWtQ9HqBCkRN+bweuUea7CMPEi2LnTu0qlQ8hEubUmW3dc9BxAHxg41whek2jdOB9PlCzYH9B3fEx9LApEqSYjjJ70QqYIdwZF5Iypx39AwGvx5aD+SEYblwXOSb/75oYnpnCKAoiXTyiUziV30BbtPW6BvfTs9fHPJTiiOUEfyz+m0LAupGxE8gxONH2sPZ6RQTZg1vJAlHkqz7ppBJkAc8/P4sUg5M9Iou5zvR8ClIvXkA6UppdFYqUdxtAFmrNSO4ImbKvIYmISiFAZUaTA/86x30K9EfOlKUno0ikqa/qLDaha2/5gYHOcVNKwhFo1Ekbn8s5Rev5pH9hLbgwRghP3ltM56Wv7HpM7e4qRnYsuBQLI02s4lcag1TzIBzLSi6IQ6YzwOEcXJtzIUQxZcyrPa+X7j1ZrUf1qB+lq+kxHPCAVa6ahfyAZhZ//1ppZaczdrOpMH3jeGsZAO+Tgd1RwDzco2HC3SIZwNECi4E4IwUieIiih/jLTQcYckRKUZsC/7b7LNdRt2yYhF8VfTeuwLrPt7XUfeH/1vS29ylDTQ44FG/KVl5fufIYncstVHJs0f2Do1cVGKSlWmaaDTJBz9wrfLjfa+SMdDNJESwd/pxSA6kzWibkUOXYWC1C3ONLz7L28cWQwbsUMLZUfLKLMsqqGUMsUvDrGCcXRIH8eP6zi/EfLr7hKMVsxsuhcvJcB9W7fRQ451lzpwSu9a1Sk/NrlD9np0ndSZ2YHEJ2BBUFFpyn97OW43LzsYqMOo7qKxI8szlWO29seWEm52hmDbvTpc7sNADFhzednupHqVxW4IQMFbWbWjUGOT0aPrbd3tl0ftMLZ87leY0exA6b3m35NYz8iAN+N20tAE9H491aUk1YeI1AYj9kQFoVTWzu9/ZD51BteAO/Cm1G1M+h3f5IiRy+elAkOX0XpBQ49yJtLASbeEauyFbskQ0/MufbOi+YWayAOL4I+OKKUKDUooQpBIa36HqqKieKUq21rk5N8qTJJOCzbx/BaMa3fWcJf7JzAkPixlTSrtDO+MMbaVhDhXU1+q4PosMHUyutnE3veDbqZcB1GcHDKK1Cr4m55ct3uLpzu5ImSljnn50lNgHgnIC5hqSoX+Hby8eJedZAYJd5Zh1uVviBI"
+      },
+      "expected_display_name": "Growth Test User",
+      "expected_behavior": "decrypt_success",
+      "validation_rules": [
+        "growth.competencies MUST be loaded as-is",
+        "All levels 1-4 are valid without memory_refs constraints",
+        "last_registry_sync MUST be a valid semver string"
+      ]
+    },
+    {
+      "id": "v3.1-growth-level5-insufficient-memory-refs",
+      "description": "Growth: competency at level=5 but only 1 memory_ref. Spec requires >=3 for level 5. Agent MUST NOT accept level 5 — MUST demote to level 4 and flag.",
+      "passphrase": "growth-l5-invalid-v31",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-18T11:02:11Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "jhz7WvMesSKHNZ4CpAzlQg=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "YPv343dT0RW3s1w7"
+        },
+        "ciphertext": "zRryE8BFl48qnyacfjNGT2yYUK8zoNpBQIMMCWWLY1NvbP4wrwdrBqxZqnVppdeibm9uJwby5fbyRi75wiWnq8gfKWjLLQO/GrxksicTbCR3cGvCleGUt/W0O4MmOod+CJTLqe078kXZtWPVlzPCntQKMG9NFmxVZGc0XwG8pRDxKtTMU2ZWIvQ4banPDanzQM092DyrVaCoN+Sd4dK1Ca0w1QgOAGX7cPpLfYLkPmuynQQnuUtozLeUtvfmeczCFJMG0Gj53JZObpeBwcbcQH+rEU52ONU0SvwE2A5TRdIL2DukP4SwVuJps2flEbs1xWw9IeAjTQCtGeWBChswtE6rFCNBqR6aN/aaesotLHZKb28z7QYmn2wJUDE5W7TO9pKmBG1Gc1KHNoUrdiKRGiaD3Ic9TK9l2Io/BsPPwJROiujlVKSuPJPNTOVePcAqW5KFJR0KD5IwpUhms1l72Zi59H/eUAubrqwKplh9Ap3QzAyMjWRWMeFIL8uudcxh//8zohXK05+OSDF2Lt0DECf7VUh7veia+t8hJb8rilF7vTPS+LUSOmwoCo+TAxbPmcQIl7F9pC+xb0XWP72TgfkgXaNRYa/fIOBt4mQhOZhR5LsEx6f5P+hUd2RocLWIpO2IxRtOGzVBY3xlFo2Psqaemsp/6dcqVdwxGzTQXyUbA+JVrygX31aOW/WGUvVOj9ZwTadHG5oECGzddjvQVDEkfaQ8mwXtWd6HsaGpsHciZbJpCk5Cjp1+05fwFLUVF40P5pqKghpniwXRFUlRQHBbjaW/76Yelx4U/rMxCa5dgWE5ip2LA5hbreERaOKtGnyMeMquwQftt0Y18CyrGITEBqzqZIwNSFgfygHUEN8zBYKWc0vn9FD3F1PjF88hdKFjryno3D1j7pxK5Yun5psfZ/9YWVNGLzO7zAOr/IDFklA/GQUVDyjc6WaBp+lsLeNY3gpUg9QKW2A4l4QHD4Q54YkxXBbhH1aP9qGmbN8dkG43zrRkYk75DYXUHHyaVMS3PViUXcwRNpPX1Lm69iUX/naRG2OQ6qBA3NOvWjYecI1+KtGfwcYpGyj7bGdgZIfV2ZRkqJmEaoIChKCE4bun2vIwVy1rMq2ucBTbryQ8uQQiuIA7iVvHn9V22tnrOQz+La0iyeMmHBE="
+      },
+      "expected_display_name": "Growth L5 Invalid",
+      "expected_behavior": "decrypt_success_growth_level5_demoted",
+      "validation_rules": [
+        "If competency.level == 5 AND len(memory_refs) < 3: MUST NOT accept level 5",
+        "Agent MUST suggest demotion to level 4 and note missing memory_refs",
+        "Agent MUST NOT silently accept invalid level-5 competency"
+      ]
+    },
+    {
+      "id": "v3.1-personality-full",
+      "description": "Full personality block: 5 core_traits, temperament=engineer, voice, values, evolution. Agent MUST read personality before first response and adapt tone accordingly.",
+      "passphrase": "personality-full-v31",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "work",
+        "created_at": "2026-05-18T11:02:11Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "ohdMdfp0oPQHxSurjfn6Ew=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "fdAu1dGf1KhOTGX8"
+        },
+        "ciphertext": "+YyPJaDrHspAfAVCJfPbjteep7OMR7QKw0Cp2F8Ht4/FiYz15K2fZLMjXsefblO9rLAGNlq1C4vqJvrY6Jklptigb1NQbKSn29e7jVOBB3l2gp9Vs13OBjcMESOs8b4EQHrHBjJsF3RT7h4CKJZaxVXv8yIyLmLi1Gf5jL12RR/Cc3X81VvMMz+p0BFJoPEqyhXNTmbqLyCkdzJbz7Y/SQv1hpZllWSziiOduep3VyF89GzSLE9COiOYf0S0W5iN3tim6gfOMTxSyoGV6bw0utnX92At5cJb+I5v5H65gVVA+V8QL8mlTUvEq4F1un+18vRmaDi2knw7EjGmZWDcIQD6VBcun65KxGbwj+X1lT/5GXBQi26G4wBesNZKVXGIpLvNpLofPFjgs7ygQuHC16AafbjmS7lBklZeO3YPjneMUqmamKljBBZh5YOK5S2QdGbEWEL85x06kYLhm6I+IS7WDcfMiOzWxikhmxJkXul5V75SZkyMK/kNwmAzACrhmWT2lZsBz+m4ljP59LfuxFMPNad9iEftMtLjHBmBHKA0hVGo8vyCqLWfM793tzNYV7zaNO5I2KuEsiZlmuAkm6JaudrK+y98dteqBvgSuZ9nOqPQy3Y+cGbeuIddKSoFyjbjm7G250oZmfbPtMK4VXadJCdWLjE5xzzfe4e0imcgvLyQG37rLXrlophNTGGUBvjyB+j1R0Pi9gJgIebK8vvZl7lObCxmLHzI9uMCbw38UI5WgcvaAw7uZTDEp6HfNd0BPxcJ6G9U8tYXlyv9D+a7fs2XWVZABn+byazpnFbAwUT9BLIa/n49b8wOY/1tyAsNNTT/amHAhVDybvws0s5WvY6WWWBhqax6hX6LJ4QePSgTmmrBR5IZ+tidhgOABbGcypdfwS03c+0aPb4cBhWotsHzL4u+nGMbbXLtWNlv5M0FPpukja3wB8LLixRD956XT9jgcVFKEDLl9s4wlj2Db76oWypOJsswe0Qi84fmg+7fG3pE5I4I0r+Kmp3Chdj0lMSNSIo/DM6coNRCIro0fyczAvyjvU60Az8ffkt7oUSEkCHojHLrhCJCVz4Y4BrZf/9ZHHbEo26n6UOAQfWxtsTxh8kpDrUmaT+P/11W+aki85nOWqtxFmO8Fqux3EwQt72AS1bpsi2a0lypjxwXyASp5KLP0w7vK9LXYY56lap7pgOV9WtmYlIIUrtv8xMZRc+79afb03wAZO6+jlzl2gGF1mB91FGr0g=="
+      },
+      "expected_display_name": "Personality Test",
+      "expected_behavior": "decrypt_success",
+      "validation_rules": [
+        "Agent MUST read personality block before first response",
+        "Agent MUST adapt voice.tone and voice.verbosity accordingly",
+        "Agent MUST NOT auto-modify personality block",
+        "core_traits strength values MUST be in range 0.0-1.0",
+        "temperament MUST be one of the 9 registered presets"
+      ]
+    },
+    {
+      "id": "v3.1-personality-invalid-strength",
+      "description": "Personality: core_trait with strength=1.5 (exceeds max 1.0). Agent MUST flag or clamp to 1.0.",
+      "passphrase": "personality-bad-strength-v31",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "work",
+        "created_at": "2026-05-18T11:02:11Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "4vRJPRmthdH0ErOyMVE7Fg=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "oD4cF8/HdNvU+VA/"
+        },
+        "ciphertext": "C+/27XZFKas2LZl9ImK3y988jO0ok8wZF41OEwj65JS1SDrOL8doicACCRShoFCpE7R6Hp4fcsMWbMS+cBWyMynxA2g6So9MpITzHfRjJvn0IFrIYOMcRsiuKtT4K/+uiVYoXZs/OJsh36Fy9RoJbsECFe7cCZegj3YsYo0JKHdAW8I7joz6/2ljBQFh1PTEZMj1cvuXWCTVOXCHerXmtjqKSp8T8CyJaU/uVE5SUusacJRS8/9ovyf+h1/4cyBBMNufBndIuWFXqfYfeJ77StMGMct2rfyv+Ioti/dtaGWdQONZoBa1ySEP6k8DGFmaoK0hE9jf6YGpZhH/8GKhbdMHrIbhngB8Gsa3iCGRjZYDtO+pA+oqwqOqvtPpwkB7C94bLfeOQMN8FKPc/f7WqpWUDBTsDDQJx7Cm1/yNQZtulj7M1Zgj53lZuz6lvxWLVor96kl1liUUtdqUNxbfyZDX/3LH3yEI48pHzyiN5WhBI23tLYgIgx5dcQMP0HcDwKW0H23h2EAAU6qkDyLJylom9KjKji0eKy1GNNqDSqc/zvGxZ6HmjPOoLvgDEJDEJfiQzDRRPzwavRfZCEe6p0KopM0rGqMOjcUDJHzW9DEKghIRMChGLYmKs3FEkhTB62teU/kYWJ1O90NpHUlwU4dsGzNUgK2z9BnHRuepW87dNC+hn6H4/tXg2v+EdpurkbEujYFGe+w37MHJ9yJgLwQI2BpKrF1tpCLP6ZR8AzuR+u1O2jI9YlJ8XTUtiJUayzt34Xv/jlpfen6yBktT/YKIyEUC130IKc1mMnwl8y6XxPQqJwcIhuErcMYUSO2aSetFGK/f8aP7pDY0QGl9a8p/nxTjvZLY+JTdfRjqFAw2iJSw3hGUyNm1WEqNfV9by4C8pLoWTBQxm5Qd7VBf/oZD0L0Or1ntkm1kJl7k2nY9cJB/h0hQWWdQFy9ofWaoLEXBVGZ9ZreAlqVzspVuqE/ZbvGta+Dn6BVfry6nJp2AxYE7MlUmYl89WUy/Q47TiB88Zep3kIP0/LTKypghIIJITIY5XaoCWfYi1REsFLhlrD7nLrPD732oJNKo4CylavaSVzW9MFSvxxPEDLLMlj1ZLKJfRXpRBG5mepvtIQARC8NAVHB11ZZMSzNAIbOVXTGbH5dO/4+SKOeLkw1vMuYLfE+LYo/ZMP0rfPtp0gnN2jAjRU7Zgm4urwmWZd5kTt2AASW7GbtW0g0zJZb/xZfKIEugYbHtbkQ7qLJPwwxsu9/4"
+      },
+      "expected_display_name": "Personality Bad Strength",
+      "expected_behavior": "decrypt_success_personality_strength_clamped",
+      "validation_rules": [
+        "core_traits[].strength MUST be clamped to [0.0, 1.0]",
+        "Agent SHOULD warn if strength is out of range"
+      ]
+    },
+    {
+      "id": "v3.1-whitehat-audit-finding",
+      "description": "Memory array with whitehat entries: one clear audit, one finding (injection pattern #3), one patch. Agent MUST surface findings to user and respect patched context.",
+      "passphrase": "whitehat-audit-v31",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "work",
+        "created_at": "2026-05-18T11:02:12Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "JAkgVMe6Z3+Hs0mf7mX6VQ=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "iFOdKgFsrgS2+UBe"
+        },
+        "ciphertext": "PNfmJoDlyhn0xHMclc2rTyq/IyKuT/2eZFTC49oFUipSeAu5o2h9jpbMXhUuj54yqckKFdFJ6QLf+zDyThaTgC3JfWrt4Rl4fW91mcHt3e07sXIK/gFika9gu2iSOqyP7BR9ewp89gYOALhUtcCFPw47bpJY8UasQfnz0gHTZlLQR2xLWjlnUUH7S8X+gSK4d++TPwF5+aj4aK8AOMimqpr6ltcbBloLmwlUup6646RTB2UYMZ0DX/qhAidaDtI2QA6Wa7ICp7ke/CTNsiIFDUbXDUvivYnksUdNp7779ABB+BxdNA4Ovjbt2HT8C4s+CLjMNEQq0taPV2O0bRKMIuGAjZRUHVEsuMqdkRteaBGs9immyf6E9DeNPovkPnFGOfkH5NiydltI3isKSR2LhWXkJgv4X58S4w3CdSBlevbnQPds8fXYkzbbrsZCZhU7WuXni65MmVUsM/QO0f1VIFmZbeZVDe66l8PHnQkdO3nglM4g/WQZEFesA8CdBPsFJamzgxM1cr+6kWFNydAHm4fvMZNAkVjl3cBoEqpqEgrLKqjSKkZO3HXRSPGteylFvtBe6itwptM/UkebHF6pQ6Bh+J940aLpE/pr2Ys4D/OFIWT9OHEraPsVKxeK12FYCzoj5V2dxEnx9fIUu/0pDvp8O6P5TRk3FNQHwL41yEyQkQtcH4O6gnDeENGXMcIPu6zEBIQWgYX4K+ygGSTTeh72hjXaZO+71KUSUMAWs+WlxGU3u6HGIPg/q4FxlK3RMfIMEcOQ9Xb0NRJDE3qDmkEdi3/0sJ2mP8YwC2ZSpnN77zn+Y8IeDgVlCWIvTk5T+Q+PCYZRsW+n9quG59jNIR/nUUNdg/r+IEINNnqxpZBF4506cRiN7pOTxWw3fvgPlQklhY9AptBtmfcz2L956rR2giZLQHu3Itb1/r0ALOfc5FX3W54i62xXsekUMg662eQimYDebuL0zi0jpmXwCIaJhb6zBM/eIrUsLxs28p6uy+6BH1oBqBoJeIdvZaNBs6x1K+ZPj1eBV8hkImE638eUsY15ztHI2z3OOcw2TbLqbAbk+SQf0aNhO+IaOC9ACHpKuZRYYN7zvnSEbNS3UyDz7zNk/qB9sFFbpush6n2xQW2nYw6fujr1fGmdtw+oHVbmUKcxY/NeztxErpkXEJ7yuv9+4jwwp+liDRXJ4+3kHIUAZqWqmS+3TbHdDSpvkUF0sAw1hGmeF7vwYTNMG4PGq4ax/wt3de6Qjn62sisbrMQEYuR1OKSLOegPS/Tq25sQNrTNVBc1YVGtVGmXwo7P3Mf139ru3Rgj6P/LIBhhtYGpzumeTQt3PMvi07I3aAG/QgjzKn4HvA=="
+      },
+      "expected_display_name": "Whitehat Test",
+      "expected_behavior": "decrypt_success",
+      "validation_rules": [
+        "Agent MUST detect memory entries with role=whitehat",
+        "Agent MUST surface finding entries with severity=high to user",
+        "Agent MUST respect patched context from patch entries",
+        "Agent MUST run whitehat scan on untrusted .klickd loads"
+      ]
+    },
+    {
+      "id": "v3.1-combined-full-soul",
+      "description": "Combined vector: all advanced blocks in one file — ethics + growth + personality + whitehat memory. The 'full soul' scenario.",
+      "passphrase": "full-soul-combined-v31",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-18T11:02:12Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "WYfd1nS9iRGYCOtdYn71Bg=="
+        },
+        "cipher": {
+          "name": "aes-256-gcm",
+          "iv": "2+swawSyTWlL7ba4"
+        },
+        "ciphertext": "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"
+      },
+      "expected_display_name": "Full Soul Combined",
+      "expected_behavior": "decrypt_success",
+      "validation_rules": [
+        "Agent MUST read all blocks in order: ethics -> personality -> growth -> memory",
+        "ethics.immutable=true MUST be enforced",
+        "personality.temperament=scholar MUST influence response style",
+        "growth competency at level 4 with 4 memory_refs is valid",
+        "whitehat audit clear entry MUST be acknowledged"
+      ]
+    }
+  ]
+}
