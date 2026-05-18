@@ -368,8 +368,10 @@ def save_klickd(
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     # --- write file ---------------------------------------------------------
+    # Auto-audit A4: use ensure_ascii=False for consistency with payload encoding
+    # (ASCII-safe base64 fields are unaffected; domain/created_at remain printable ASCII)
     out_path.write_text(
-        json.dumps(envelope, indent=2, ensure_ascii=True),
+        json.dumps(envelope, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 

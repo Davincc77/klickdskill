@@ -155,12 +155,20 @@ def build_system_prompt(klickd_payload: dict, base_system_prompt: str) -> str:
     The returned prompt layout is:
         <UserContext>\n{prefs}\n</UserContext>\n\n---\n\n{base_system_prompt}
     """
-    prefs = klickd_payload.get("user_preferences", "") or klickd_payload.get("agent_instructions", "")
-    if not prefs:
+    # Auto-audit A3: check both fields independently; prefer user_preferences,
+    # append agent_instructions if different and both present.
+    prefs = klickd_payload.get("user_preferences", "") or ""
+    instr = klickd_payload.get("agent_instructions", "") or ""
+    # Merge: if both non-empty and different, combine them (user_preferences first)
+    if prefs and instr and prefs != instr:
+        combined = f"{prefs}\n\n{instr}"
+    else:
+        combined = prefs or instr
+    if not combined:
         return base_system_prompt
     # Sanitize: escape any </UserContext> sequences that would break the tag boundary
-    safe_prefs = str(prefs).replace("</UserContext>", "<\\/UserContext>")
-    user_context = f"<UserContext>\n{safe_prefs}\n</UserContext>"
+    safe = str(combined).replace("</UserContext>", "<\\/UserContext>")
+    user_context = f"<UserContext>\n{safe}\n</UserContext>"
     # klickd context FIRST (§12 — highest authority), base prompt follows
     return f"{user_context}\n\n---\n\n{base_system_prompt}"
 
@@ -329,21 +337,24 @@ _SUSPICIOUS_KEYS = frozenset({
     "jailbreak", "bypass", "admin", "sudo",
 })
 
+_PROTOTYPE_POLLUTION_KEYS = frozenset({"__proto__", "constructor", "prototype"})
+
 def _whitehat_scan(payload: dict) -> None:
     """
     §18 whitehat scan: check for suspicious or reserved keys in payload.
     Raises KlickdFormatError for prototype-pollution attempts.
     Emits a warning for other suspicious keys (non-fatal, for audit trail).
+    Auto-audit A5: single-pass loop, no redundant sub-check.
     """
     suspicious_found = []
     for key in payload.keys():
-        if key in _SUSPICIOUS_KEYS:
-            suspicious_found.append(key)
-        # Prototype pollution defence — always hard error
-        if key in ("__proto__", "constructor", "prototype"):
+        if key in _PROTOTYPE_POLLUTION_KEYS:
+            # Hard error — always reject, no warning needed
             raise KlickdFormatError(
                 f"KLICKD_E_FORMAT: suspicious key {key!r} rejected (prototype pollution)"
             )
+        if key in _SUSPICIOUS_KEYS:
+            suspicious_found.append(key)
     if suspicious_found:
         warnings.warn(
             f"KLICKD_SECURITY: suspicious keys in payload: {suspicious_found}. "

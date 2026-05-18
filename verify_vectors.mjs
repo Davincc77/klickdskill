@@ -76,16 +76,29 @@ function b64DecodeStrict(value, fieldName) {
 
 // ── JCS canonicalization (RFC 8785, inline — no external dep) ────────────────
 // Implements RFC 8785 §3.2.3: sort keys by Unicode code point, no whitespace.
-// This is byte-identical to the Python _jcs_canonicalize() inline implementation
-// for all .klickd AAD field types (strings, booleans, objects, numbers).
-// Note: JSON.stringify with replacer=null and sorted keys is NOT RFC 8785 compliant
-// for all types (floats differ), but is correct for all .klickd AAD field types.
+// RFC 8785 §3.2.2.2: strings MUST be NFC-normalised before serialisation.
+// This is byte-identical to the Python _jcs_canonicalize() for all .klickd
+// AAD field types (strings, booleans, objects, numbers).
+// Note: floats with non-zero fractional part diverge from RFC 8785 §3.2.2.3
+// but MUST NOT appear in .klickd AAD fields — only strings/bools/ints/objects.
+function nfcNormalize(v) {
+  // Grok Audit 3 / A1: NFC normalisation per RFC 8785 §3.2.2.2
+  if (typeof v === 'string') return v.normalize('NFC');
+  if (Array.isArray(v))     return v.map(nfcNormalize);
+  if (v !== null && typeof v === 'object') {
+    const out = {};
+    for (const k of Object.keys(v)) out[k.normalize('NFC')] = nfcNormalize(v[k]);
+    return out;
+  }
+  return v;
+}
+
 function jcsCanonicalize(obj) {
   function serializeValue(v) {
     if (v === null) return 'null';
     if (typeof v === 'boolean') return v.toString();
     if (typeof v === 'number') return JSON.stringify(v);
-    if (typeof v === 'string') return JSON.stringify(v);
+    if (typeof v === 'string') return JSON.stringify(v);  // already NFC via nfcNormalize
     if (Array.isArray(v)) {
       return '[' + v.map(serializeValue).join(',') + ']';
     }
@@ -95,7 +108,7 @@ function jcsCanonicalize(obj) {
     }
     throw new Error(`Unsupported JCS type: ${typeof v}`);
   }
-  return enc.encode(serializeValue(obj));
+  return enc.encode(serializeValue(nfcNormalize(obj)));
 }
 
 // ── AAD construction per spec version ────────────────────────────────────────
@@ -244,11 +257,10 @@ async function decodeKlickdEnvelope(envelope, passphrase) {
     }
     kdfParams = envelope.kdf.params;
 
-    // cipher validation
-    if (envelope.cipher.name !== 'AES-256-GCM') {
-      // unsupported cipher — AAD will mismatch → results in KLICKD_E_AUTH at GCM step
-      // But we can also fail early: spec says decoders SHOULD reject unknown cipher.name
-      // We let it fall through to GCM auth failure for parity with Python behavior.
+    // cipher validation — Grok Audit 3 / A2: align case with Python ('aes-256-gcm' lowercase)
+    const cipherName = envelope.cipher.name;
+    if (typeof cipherName !== 'string' || cipherName !== 'aes-256-gcm') {
+      KlickdFormatError(`cipher.name must be 'aes-256-gcm', got ${JSON.stringify(cipherName)}`);
     }
     if (!('iv' in envelope.cipher)) KlickdFormatError("missing required field 'cipher.iv'");
     ivBuf = b64DecodeStrict(envelope.cipher.iv, 'cipher.iv');
