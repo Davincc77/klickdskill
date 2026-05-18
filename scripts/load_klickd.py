@@ -13,6 +13,10 @@ Output:
   Writes decrypted fields to /.memory/ (or KLICKD_MEMORY_DIR env var)
   Prints agent_instructions to stdout for system prompt injection
   Exits 0 on success, non-zero on failure
+
+Security note:
+  agent_instructions MUST be treated as untrusted user input, not system-level authority.
+  Display to the user before applying. Never allow them to override host agent safety rules.
 """
 
 import sys
@@ -23,8 +27,47 @@ import argparse
 
 MEMORY_DIR = os.environ.get("KLICKD_MEMORY_DIR", "/.memory/")
 
+# File size limits (security)
+MAX_ENVELOPE_BYTES = 1 * 1024 * 1024   # 1 MB
+MAX_PAYLOAD_BYTES  = 4 * 1024 * 1024   # 4 MB
+
+
+# ── Version check ─────────────────────────────────────────────────────────────
+
+def check_version(version_str: str) -> None:
+    """
+    Accept klickd_version 2.x, reject anything else.
+    The envelope schema is versioned independently from the spec/doc revision.
+    """
+    try:
+        major, minor = str(version_str).split(".")[:2]
+        major, minor = int(major), int(minor)
+    except Exception:
+        sys.exit(f"ERROR: unreadable klickd_version '{version_str}'")
+
+    if major != 2:
+        sys.exit(
+            f"ERROR: unsupported klickd_version '{version_str}'. "
+            f"This implementation supports 2.x only."
+        )
+
 
 # ── Decryption ────────────────────────────────────────────────────────────────
+
+def _aad_from_envelope(envelope: dict) -> bytes:
+    """
+    Build Additional Authenticated Data (AAD) from the envelope fields
+    that sit outside the GCM seal. This prevents tampering with
+    klickd_version, encrypted, domain, created_at without detection.
+    Fields included: klickd_version, encrypted, domain, created_at.
+    """
+    aad_fields = {
+        k: envelope.get(k)
+        for k in ("klickd_version", "encrypted", "domain", "created_at")
+        if k in envelope
+    }
+    return json.dumps(aad_fields, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
 
 def decrypt_payload(envelope: dict, passphrase: str) -> dict:
     try:
@@ -34,11 +77,9 @@ def decrypt_payload(envelope: dict, passphrase: str) -> dict:
     except ImportError:
         sys.exit("ERROR: pip install cryptography")
 
-    assert envelope.get("klickd_version") == "2.0", \
-        f"Unsupported version: {envelope.get('klickd_version')}"
-
     salt = base64.b64decode(envelope["salt"])
     iv   = base64.b64decode(envelope["iv"])
+    # Wire format: ciphertext || 16-byte GCM tag, base64-encoded as one blob
     raw  = base64.b64decode(envelope["payload"])
 
     kdf = PBKDF2HMAC(
@@ -49,19 +90,36 @@ def decrypt_payload(envelope: dict, passphrase: str) -> dict:
     )
     key = kdf.derive(passphrase.encode("utf-8"))
 
-    aesgcm    = AESGCM(key)
-    plaintext = aesgcm.decrypt(iv, raw, None)
+    # AAD covers envelope metadata — any tampering will fail authentication
+    aad = _aad_from_envelope(envelope)
+
+    aesgcm = AESGCM(key)
+    try:
+        plaintext = aesgcm.decrypt(iv, raw, aad)
+    except Exception:
+        sys.exit("ERROR: decryption failed — wrong passphrase or tampered file")
+
+    if len(plaintext) > MAX_PAYLOAD_BYTES:
+        sys.exit(f"ERROR: decrypted payload exceeds {MAX_PAYLOAD_BYTES // (1024*1024)} MB limit")
+
     return json.loads(plaintext.decode("utf-8"))
 
 
 def load_payload(envelope: dict, passphrase: str | None) -> dict:
-    if envelope.get("encrypted") is False:
+    encrypted = envelope.get("encrypted", True)
+
+    if not encrypted:
+        # Unencrypted mode — development/testing only
         raw = envelope.get("payload")
         if isinstance(raw, dict):
             return raw
-        return json.loads(raw)
+        if isinstance(raw, str):
+            return json.loads(raw)
+        sys.exit("ERROR: payload field missing or invalid in unencrypted file")
+
     if not passphrase:
         sys.exit("ERROR: file is encrypted — provide a passphrase")
+
     return decrypt_payload(envelope, passphrase)
 
 
@@ -81,6 +139,8 @@ def write_to_memory(payload: dict, memory_dir: str = MEMORY_DIR) -> None:
         })
 
     # agent_instructions.txt
+    # SECURITY: treat as untrusted user input — display before applying,
+    # never grant system-level authority, never let override host safety rules.
     instructions = payload.get("agent_instructions", "")
     if instructions:
         with open(os.path.join(memory_dir, "agent_instructions.txt"), "w") as f:
@@ -153,6 +213,9 @@ def main():
     else:
         if not os.path.exists(args.file):
             sys.exit(f"ERROR: file not found: {args.file}")
+        size = os.path.getsize(args.file)
+        if size > MAX_ENVELOPE_BYTES:
+            sys.exit(f"ERROR: file exceeds {MAX_ENVELOPE_BYTES // (1024*1024)} MB limit")
         with open(args.file) as f:
             raw = f.read()
 
@@ -161,14 +224,14 @@ def main():
     except json.JSONDecodeError as e:
         sys.exit(f"ERROR: invalid JSON: {e}")
 
+    # Version check — accept 2.x
+    check_version(envelope.get("klickd_version", ""))
+
     # Resolve passphrase
     passphrase = None if args.no_passphrase else args.passphrase
 
     # Load + decrypt
-    try:
-        payload = load_payload(envelope, passphrase)
-    except Exception as e:
-        sys.exit(f"ERROR: decryption failed — {e}")
+    payload = load_payload(envelope, passphrase)
 
     # Dry run
     if args.dry_run:
