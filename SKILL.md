@@ -5,7 +5,7 @@ description: Load a user's portable AI context from a .klickd encrypted file. On
 tools:
   - name: load_klickd
     description: Decrypt a .klickd file and write the result to /.memory/. Returns agent_instructions for system prompt injection.
-    script: scripts/load_klickd.py
+    script: load_klickd.py
     inputs:
       - name: file
         type: file
