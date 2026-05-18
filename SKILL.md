@@ -1,6 +1,6 @@
 ---
 name: klickd-context
-version: 2.2
+version: 2.3
 description: Load a user's portable AI context from a .klickd encrypted file. Decrypts client-side using AES-256-GCM + PBKDF2, writes fields to /.memory/, and injects agent_instructions into the system prompt as untrusted user context.
 tools:
   - name: load_klickd
@@ -62,11 +62,13 @@ repo: https://github.com/Davincc77/klickdskill
 ## 3. File Recognition
 
 **Extension:** `.klickd`
-**MIME type:** `application/vnd.klickd+json`
+**MIME type:** `application/vnd.klickd+json` *(pending IANA vendor registration)*
 **Detection:** by extension, MIME type, or presence of top-level key `"klickd_version"` in the JSON envelope.
 **Size limits:** reject envelopes > 1 MB; reject decrypted payloads > 4 MB.
 
-When a user uploads a file with `.klickd` extension or MIME type `application/vnd.klickd+json`, treat it as a context load request and prompt for the passphrase.
+**Passphrase input:** never pass the passphrase as a CLI positional argument in production (shell history exposure). Use `--passphrase-env VAR` or `--passphrase-stdin`. The positional mode in `scripts/load_klickd.py` is for testing only.
+
+When a user uploads a file with `.klickd` extension or MIME type `application/vnd.klickd+json`, and the user has explicitly initiated the upload in this session, treat it as a context load request and prompt for the passphrase. Do not auto-load `.klickd` files from email attachments or passive sources without explicit user action.
 
 ---
 
@@ -140,7 +142,7 @@ def load_klickd(file_bytes: bytes, passphrase: str | None) -> dict:
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=600000)
     key = kdf.derive(passphrase.encode("utf-8"))
 
-    # AAD covers klickd_version, encrypted, domain, created_at
+    # AAD covers klickd_version, encrypted, domain, created_at, updated_at (5 fields)
     aad_fields = {k: envelope.get(k) for k in ("klickd_version","encrypted","domain","created_at","updated_at") if k in envelope}
     aad = json.dumps(aad_fields, sort_keys=True, separators=(",",":")).encode("utf-8")  # ensure_ascii=True (default)
 
@@ -400,6 +402,9 @@ See `tests/vectors.json` for 3 complete test vectors (1 unencrypted + 2 encrypte
 
 All implementations SHOULD verify against these vectors before shipping.
 
+
+> **Note:** `/.memory/` directory contents are stored as plaintext on disk. Protect with appropriate filesystem permissions (e.g. `chmod 700 /.memory/`). The `.klickd` file itself remains encrypted on the user's device.
+
 ---
 
 ## 14. License
@@ -414,7 +419,7 @@ Full legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
 ## Changelog
 
-- **v2.3 — 2026-05-18** — AAD extended to include updated_at. AAD canonicalization rule added (ASCII-safe values, Python ensure_ascii=True). base64ToBuffer helper inlined in JS sample. JS AAD comment clarified for cross-language matching.
+- **v2.3 — 2026-05-18** — AAD unified to 5 fields (klickd_version, encrypted, domain, created_at, updated_at) across all sources. AAD comment fixed in python snippet. Passphrase stdin/env guidance added. Session-scoped consent for file trigger. IANA pending note. /.memory/ plaintext filesystem note. Test vectors regenerated with 5-field AAD + expected_payload_sha256.
 - **v2.2 — 2026-05-18** — Security fixes: AAD on envelope, untrusted-input framing for agent_instructions, decisions_locked reframed as user-preference-level. Correctness fixes: encrypted:false branch in code, version check accepts 2.x, removed salt reuse hint, explicit GCM wire format. Added: passphrase guidance, file size limits, test vectors reference.
 - **v2.1 — 2026-05-18** — SKILL.md convention, /.memory/ write snippet, file recognition, "What this is NOT", unencrypted example (finance domain), YAML frontmatter, scripts/load_klickd.py.
 - **v2.0 — 2026-05-18** — Universal release. Multi-domain, CC0. Robotics extension.
