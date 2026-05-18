@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: pip install cryptography argon2-cffi jcs
+        run: pip install cryptography argon2-cffi
       - name: Run all suites (v2.5 + v3.0 — 32 vectors)
         run: python3 verify_vectors.py
 

@@ -19,12 +19,11 @@ try:
 except ImportError:
     raise ImportError("pip install cryptography")
 
-try:
-    import jcs
-    JCS_AVAILABLE = True
-except ImportError:
-    JCS_AVAILABLE = False
-    warnings.warn("jcs not installed — v2.x compat only. pip install jcs for v3.0 support.")
+# RFC 8785 JCS — inline, no external dep. json.dumps(sort_keys, ensure_ascii=False)
+# matches jcs.canonicalize for all .klickd AAD field types (strings, bools,
+# ints, nested objects). Float 1.0 diverges but cannot appear in AAD fields.
+def _jcs_canonicalize(obj: dict) -> bytes:
+    return json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8')
 
 try:
     from argon2.low_level import hash_secret_raw, Type
@@ -71,10 +70,8 @@ def _canonical_aad_v2(envelope: dict) -> bytes:
 
 def _canonical_aad_v3(envelope: dict) -> bytes:
     """v3.0 AAD: 6 fields (incl kdf+cipher blocks), RFC 8785 JCS."""
-    if not JCS_AVAILABLE:
-        raise KlickdFormatError("v3.0 requires RFC 8785 JCS: pip install jcs")
     fields = {k: envelope[k] for k in ("cipher", "created_at", "domain", "encrypted", "kdf", "klickd_version")}
-    return jcs.canonicalize(fields)
+    return _jcs_canonicalize(fields)
 
 
 def _derive_key_v2(passphrase: str, salt: bytes) -> bytes:
