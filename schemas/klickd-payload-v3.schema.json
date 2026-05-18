@@ -4,7 +4,10 @@
   "title": "klickd Payload v3.0",
   "description": "Normative schema for the .klickd inner decrypted payload. See SPEC.md v3.0 §20.2. This schema applies after successful AES-256-GCM decryption and authentication.",
   "type": "object",
-  "required": ["payload_schema_version", "domain_schema_version"],
+  "required": [
+    "payload_schema_version",
+    "domain_schema_version"
+  ],
   "unevaluatedProperties": true,
   "properties": {
     "payload_schema_version": {
@@ -43,7 +46,8 @@
     },
     "agent_instructions": {
       "type": "string",
-      "description": "System-prompt injection string. Intended for direct injection into the AI system prompt. Treated as an authoritative directive by consuming agents. See SPEC.md §7.2."
+      "description": "System-prompt injection string. Intended for direct injection into the AI system prompt. Treated as an authoritative directive by consuming agents. See SPEC.md §7.2. Maximum 32,768 bytes (32 KiB) UTF-8 encoded. Exceeding this limit MUST result in KLICKD_E_FORMAT.",
+      "maxLength": 32768
     },
     "user_preferences": {
       "type": "object",
@@ -52,7 +56,11 @@
       "properties": {
         "response_length": {
           "type": "string",
-          "enum": ["short", "medium", "long"],
+          "enum": [
+            "short",
+            "medium",
+            "long"
+          ],
           "description": "Advisory preference for response length."
         },
         "avoid_topics": {
@@ -64,7 +72,11 @@
         },
         "preferred_format": {
           "type": "string",
-          "enum": ["markdown", "plain", "html"],
+          "enum": [
+            "markdown",
+            "plain",
+            "html"
+          ],
           "description": "Advisory preference for output format."
         },
         "locale": {
@@ -156,7 +168,13 @@
       "description": "Structured conversation and event log. Maximum 1000 entries. Each entry MUST NOT exceed 10,240 bytes (UTF-8). Total array MUST NOT exceed 5,242,880 bytes (5 MiB). See SPEC.md §11.",
       "items": {
         "type": "object",
-        "required": ["id", "ts", "role", "content", "modality"],
+        "required": [
+          "id",
+          "ts",
+          "role",
+          "content",
+          "modality"
+        ],
         "unevaluatedProperties": true,
         "description": "A single memory entry.",
         "properties": {
@@ -172,7 +190,11 @@
           },
           "role": {
             "type": "string",
-            "enum": ["user", "assistant", "system"],
+            "enum": [
+              "user",
+              "assistant",
+              "system"
+            ],
             "description": "Message role."
           },
           "content": {
@@ -181,7 +203,12 @@
           },
           "modality": {
             "type": "string",
-            "enum": ["text", "image", "audio", "tool_call"],
+            "enum": [
+              "text",
+              "image",
+              "audio",
+              "tool_call"
+            ],
             "description": "Content modality."
           },
           "tags": {

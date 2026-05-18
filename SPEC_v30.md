@@ -546,19 +546,19 @@ The Authenticated Additional Data (AAD) byte string MUST be constructed using RF
 
 ### 17.1 Fields Included in AAD
 
-The AAD input object contains **exactly 6 fields**, in this order:
+**Algorithm:** The AAD is produced by applying JCS (RFC 8785) to the sub-object of the envelope that contains all fields **except** `ciphertext` and any payload-internal fields. Concretely, for v3.0 this is the object with exactly these 6 keys:
 
 ```
-{klickd_version, encrypted, domain, created_at, kdf, cipher}
+klickd_version, encrypted, domain, created_at, kdf, cipher
 ```
 
-**Note:** The order listed above is the logical grouping of fields. JCS (RFC 8785) sorts keys lexicographically, so the canonical serialized order is: `cipher, created_at, domain, encrypted, kdf, klickd_version`. Implementers MUST use a JCS library — do not manually construct or sort.
+The `ciphertext` field is NOT included in AAD — it is already authenticated by the GCM tag.
 
-The `ciphertext` field is NOT included in AAD; it is already authenticated by the GCM tag.
+Implementers MUST apply JCS to derive the canonical byte string. **Implementers MUST NOT hardcode a specific field order** — the order is determined by JCS and will shift if new fields are added in future minor versions. Always build the input object and let JCS sort it.
 
 ### 17.2 JCS Canonicalization
 
-Given the envelope object `E`, the AAD input object is constructed as:
+Given the envelope object `E`, construct the AAD input object as:
 
 ```json
 {
@@ -571,33 +571,43 @@ Given the envelope object `E`, the AAD input object is constructed as:
 }
 ```
 
-JCS (RFC 8785) is then applied to produce the canonical byte string. JCS rules include:
+Apply RFC 8785 JCS to produce the canonical byte string. JCS rules:
 
 - Keys are sorted lexicographically by Unicode code point value.
 - No insignificant whitespace.
-- String values use `\uXXXX` escaping only where required.
+- String values use `\uXXXX` escaping only where required by RFC 8785 §3.2.2.2.
 - Numbers use the shortest decimal representation.
 - The output is UTF-8 encoded.
 
 The resulting UTF-8 byte string is used directly as the AAD parameter to AES-256-GCM.
 
-### 17.3 JCS Field Ordering
+### 17.3 Observed JCS Output Order (Informative)
 
-JCS sorts keys lexicographically (Unicode code point order). The canonical output key order for the 6 AAD fields is:
-
-```
-cipher < created_at < domain < encrypted < kdf < klickd_version
-```
-
-That is:
+For the 6 AAD fields defined in v3.0, JCS lexicographic sort of the key names produces the following output order:
 
 ```
 cipher, created_at, domain, encrypted, kdf, klickd_version
 ```
 
-This ordering is determined by JCS and is not under implementer control. Implementers MUST use a JCS library and MUST NOT manually construct the AAD byte string by concatenation or templating.
+This is an **informative observation**, not a normative requirement. The normative requirement is §17.2: apply RFC 8785 JCS. If a future minor version (v3.1) adds a field to the AAD set (e.g., `aad_extension`), the JCS output order will change, and implementations relying on the hardcoded v3.0 order will silently produce incorrect AAD. Always apply JCS; never template the AAD byte string.
 
-### 17.4 AAD Construction Example
+### 17.4 v2.x Backward-Read AAD Field Set
+
+When a conformant v3.0 implementation reads a **v2.x envelope** (i.e., `klickd_version` starts with `"2"`), it MUST use the **v2.x AAD field set**, not the v3.0 6-field set. The v2.x AAD is computed from exactly 4 fields:
+
+```
+klickd_version, encrypted, domain, created_at
+```
+
+Apply the same JCS algorithm to these 4 fields. The JCS output order for these keys is:
+
+```
+created_at, domain, encrypted, klickd_version
+```
+
+A v3.0 implementation that uses the 6-field AAD (including `kdf` and `cipher`) when decrypting a v2.x file **will always fail GCM authentication**, because the `kdf` and `cipher` blocks did not exist in v2.x envelopes. Implementations MUST branch on the major version number before constructing AAD.
+
+### 17.5 AAD Construction Example
 
 Input object (before JCS):
 ```json
@@ -1057,6 +1067,9 @@ The following size limits are normative. Violations MUST result in `KLICKD_E_FOR
 | `knowledge.mastered` | 500 entries | Array element count |
 | `knowledge.gaps` | 500 entries | Array element count |
 | `knowledge.next_steps` | 100 entries | Array element count |
+| `agent_instructions` | 32,768 bytes (32 KiB) | UTF-8 byte length of the string value |
+
+The `agent_instructions` limit is a context-window DoS mitigation. Encoders MUST reject values exceeding 32 KiB with `KLICKD_E_FORMAT`. Decoders MUST validate this limit after GCM authentication succeeds and MUST return `KLICKD_E_FORMAT` if exceeded.
 
 ---
 
