@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://klickd.app/schemas/v3/klickd-envelope.schema.json",
+  "title": "klickd Envelope v3.0",
+  "description": "Normative schema for the .klickd envelope (outer JSON structure, encrypted mode). See SPEC.md v3.0 §20.1.",
+  "type": "object",
+  "required": [
+    "klickd_version",
+    "encrypted",
+    "domain",
+    "created_at",
+    "kdf",
+    "cipher",
+    "ciphertext"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "klickd_version": {
+      "type": "string",
+      "pattern": "^3\\.",
+      "description": "Format version. MUST be '3.x' for v3.0 files. Decoders MUST reject unknown major versions with KLICKD_E_VERSION."
+    },
+    "encrypted": {
+      "type": "boolean",
+      "description": "Indicates encrypted mode. MUST be true in encrypted mode."
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Semantic domain category. Registered values: education, work, finance, legal, creative, health, research, robotics. Custom non-empty strings are permitted."
+    },
+    "created_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "RFC 3339 UTC timestamp, Z-suffix only. Fractional seconds are NOT permitted."
+    },
+    "kdf": {
+      "type": "object",
+      "required": ["name", "params", "salt"],
+      "additionalProperties": false,
+      "description": "Key derivation function descriptor. See SPEC.md §14 and §15.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": ["argon2id", "pbkdf2-sha256"],
+          "description": "KDF algorithm identifier. Unknown values MUST trigger KLICKD_E_KDF."
+        },
+        "params": {
+          "description": "Algorithm-specific KDF parameters.",
+          "oneOf": [
+            {
+              "title": "Argon2id parameters",
+              "description": "Parameters for Argon2id KDF (RFC 9106).",
+              "type": "object",
+              "required": ["m", "t", "p"],
+              "additionalProperties": false,
+              "properties": {
+                "m": {
+                  "type": "integer",
+                  "minimum": 65536,
+                  "description": "Memory cost in kibibytes. Minimum 65536 (64 MiB). Default: 65536."
+                },
+                "t": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Time cost (number of passes). Minimum 1. Default: 3."
+                },
+                "p": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Parallelism (number of lanes). Minimum 1. Default: 1."
+                }
+              }
+            },
+            {
+              "title": "PBKDF2-SHA256 parameters",
+              "description": "Parameters for PBKDF2-HMAC-SHA256 KDF (RFC 8018). Legacy; use only when Argon2id is unavailable.",
+              "type": "object",
+              "required": ["iterations"],
+              "additionalProperties": false,
+              "properties": {
+                "iterations": {
+                  "type": "integer",
+                  "minimum": 600000,
+                  "description": "PBKDF2 iteration count. Minimum 600000. Values below minimum MUST trigger KLICKD_E_KDF."
+                }
+              }
+            }
+          ]
+        },
+        "salt": {
+          "type": "string",
+          "description": "RFC 4648 §4 standard base64 (padded). MUST decode to at least 16 bytes. Encoders MUST generate 16 bytes from a CSPRNG."
+        }
+      }
+    },
+    "cipher": {
+      "type": "object",
+      "required": ["name", "iv"],
+      "additionalProperties": false,
+      "description": "Symmetric cipher descriptor. See SPEC.md §16.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "AES-256-GCM",
+          "description": "Cipher algorithm. MUST be 'AES-256-GCM' in v3.0."
+        },
+        "iv": {
+          "type": "string",
+          "description": "RFC 4648 §4 standard base64 (padded). MUST decode to exactly 12 bytes. Encoders MUST generate 12 bytes from a CSPRNG. MUST NOT reuse (key, IV) pair."
+        }
+      }
+    },
+    "ciphertext": {
+      "type": "string",
+      "description": "RFC 4648 §4 standard base64 (padded). Encodes ciphertext_bytes || 16-byte GCM tag. Minimum decoded length: 16 bytes. Values below minimum MUST trigger KLICKD_E_FORMAT."
+    }
+  }
+}

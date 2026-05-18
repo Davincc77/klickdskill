@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://klickd.app/schemas/v3/klickd-payload.schema.json",
+  "title": "klickd Payload v3.0",
+  "description": "Normative schema for the .klickd inner decrypted payload. See SPEC.md v3.0 §20.2. This schema applies after successful AES-256-GCM decryption and authentication.",
+  "type": "object",
+  "required": ["payload_schema_version", "domain_schema_version"],
+  "unevaluatedProperties": true,
+  "properties": {
+    "payload_schema_version": {
+      "type": "string",
+      "const": "3.0",
+      "description": "Payload schema version. MUST be '3.0' for payloads produced by a v3.0 encoder. Unrecognized values MUST trigger KLICKD_E_SCHEMA."
+    },
+    "domain_schema_version": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*-\\d+\\.\\d+$",
+      "description": "Domain-specific schema version in '{domain}-{major}.{minor}' format. Examples: 'education-1.0', 'work-2.1'. Unrecognized major versions SHOULD trigger KLICKD_E_SCHEMA."
+    },
+    "identity": {
+      "type": "object",
+      "description": "Persistent user identity attributes. All sub-fields are OPTIONAL. See SPEC.md §8.",
+      "unevaluatedProperties": true,
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Human-readable display name or pseudonym. Maximum 256 Unicode code points."
+        },
+        "language": {
+          "type": "string",
+          "description": "BCP 47 language tag (e.g., 'en', 'fr-CA'). Used to configure language-sensitive agent behavior."
+        },
+        "timezone": {
+          "type": "string",
+          "description": "IANA time zone identifier (e.g., 'America/New_York', 'UTC')."
+        },
+        "communication_style": {
+          "type": "string",
+          "description": "Advisory preference for response style. Examples: 'concise', 'verbose', 'formal', 'casual'."
+        }
+      }
+    },
+    "agent_instructions": {
+      "type": "string",
+      "description": "System-prompt injection string. Intended for direct injection into the AI system prompt. Treated as an authoritative directive by consuming agents. See SPEC.md §7.2."
+    },
+    "user_preferences": {
+      "type": "object",
+      "description": "Advisory user preferences. MUST be treated as ADVISORY ONLY by consuming agents. An agent MAY override any preference for safety, legal, accuracy, or correctness. See SPEC.md §12.",
+      "unevaluatedProperties": true,
+      "properties": {
+        "response_length": {
+          "type": "string",
+          "enum": ["short", "medium", "long"],
+          "description": "Advisory preference for response length."
+        },
+        "avoid_topics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Topics the user wishes to avoid. Advisory; safety overrides apply."
+        },
+        "preferred_format": {
+          "type": "string",
+          "enum": ["markdown", "plain", "html"],
+          "description": "Advisory preference for output format."
+        },
+        "locale": {
+          "type": "string",
+          "description": "BCP 47 locale string. May overlap with identity.language."
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "description": "Current operational state of the agent session. See SPEC.md §9.",
+      "unevaluatedProperties": true,
+      "properties": {
+        "current_state": {
+          "type": "string",
+          "maxLength": 2048,
+          "description": "Free-text description of the current working state or task. Maximum 2048 characters."
+        },
+        "decisions_locked": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Decisions that MUST NOT be revisited in the session. Each element is a plain-text decision statement."
+        },
+        "artifacts": {
+          "type": "array",
+          "description": "Session artifacts (documents, outputs, etc.).",
+          "items": {
+            "type": "object",
+            "unevaluatedProperties": true,
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Artifact identifier."
+              },
+              "type": {
+                "type": "string",
+                "description": "Artifact type descriptor."
+              },
+              "ref": {
+                "type": "string",
+                "description": "Reference URI or path to the artifact."
+              }
+            }
+          }
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 4096,
+          "description": "Concise plain-text summary of the session context for agent priming. Maximum 4096 characters."
+        }
+      }
+    },
+    "knowledge": {
+      "type": "object",
+      "description": "Structured knowledge state about the user or session subject. See SPEC.md §10.",
+      "unevaluatedProperties": true,
+      "properties": {
+        "mastered": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 500,
+          "description": "Topics or skills the user has demonstrated mastery of. Maximum 500 entries."
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 500,
+          "description": "Topics or skills identified as knowledge gaps. Maximum 500 entries."
+        },
+        "next_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "description": "Recommended next actions or learning objectives. Maximum 100 entries."
+        }
+      }
+    },
+    "memory": {
+      "type": "array",
+      "maxItems": 1000,
+      "description": "Structured conversation and event log. Maximum 1000 entries. Each entry MUST NOT exceed 10,240 bytes (UTF-8). Total array MUST NOT exceed 5,242,880 bytes (5 MiB). See SPEC.md §11.",
+      "items": {
+        "type": "object",
+        "required": ["id", "ts", "role", "content", "modality"],
+        "unevaluatedProperties": true,
+        "description": "A single memory entry.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "description": "UUID version 4, lowercase hyphenated format (RFC 4122)."
+          },
+          "ts": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$",
+            "description": "RFC 3339 UTC timestamp with Z suffix. Fractional seconds are OPTIONAL."
+          },
+          "role": {
+            "type": "string",
+            "enum": ["user", "assistant", "system"],
+            "description": "Message role."
+          },
+          "content": {
+            "type": "string",
+            "description": "Text or serialized content of the memory entry. MUST NOT exceed 10,240 bytes when UTF-8 encoded."
+          },
+          "modality": {
+            "type": "string",
+            "enum": ["text", "image", "audio", "tool_call"],
+            "description": "Content modality."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 32,
+            "description": "Optional categorization tags. Maximum 32 tags per entry. Each tag MUST NOT exceed 64 bytes (UTF-8)."
+          }
+        }
+      }
+    }
+  }
+}
