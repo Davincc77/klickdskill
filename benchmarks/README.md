@@ -1,6 +1,6 @@
 # .klickd Format — Empirical Benchmark
 
-**DOI:** [10.5281/zenodo.20295858](https://doi.org/10.5281/zenodo.20295858)  
+**DOI:** [10.5281/zenodo.20297686](https://doi.org/10.5281/zenodo.20297686)  
 **Format version:** .klickd v3.1.2  
 **Date:** May 19, 2026  
 **Total simulations:** 46  
@@ -137,4 +137,4 @@ benchmarks/
 ---
 
 *Benchmark conducted by the Klickd/Luxlearn team — Made in Luxembourg 🇱🇺*  
-*App: [klickd.app](https://klickd.app) | DOI: [10.5281/zenodo.20295858](https://doi.org/10.5281/zenodo.20295858)*
+*App: [klickd.app](https://klickd.app) | DOI: [10.5281/zenodo.20297686](https://doi.org/10.5281/zenodo.20297686)*

@@ -5,7 +5,7 @@
 **Durée :** ~13 minutes de simulation effective (46 sessions complètes)  
 **Version .klickd :** 3.1.2  
 **Format :** `.klickd` — mémoire IA portable, chiffrée AES-256-GCM, déchiffrée côté client  
-**DOI Zenodo :** [10.5281/zenodo.20295858](https://doi.org/10.5281/zenodo.20295858)
+**DOI Zenodo :** [10.5281/zenodo.20297686](https://doi.org/10.5281/zenodo.20297686)
 
 ---
 
@@ -253,4 +253,4 @@ La restauration de contexte est évaluée par détection de mots-clés des quest
 
 *Généré automatiquement par le benchmark suite .klickd v2 — 19 mai 2026*  
 *Repo : [github.com/Davincc77/klickdskill](https://github.com/Davincc77/klickdskill)*  
-*DOI : [10.5281/zenodo.20295858](https://doi.org/10.5281/zenodo.20295858)*
+*DOI : [10.5281/zenodo.20297686](https://doi.org/10.5281/zenodo.20297686)*
