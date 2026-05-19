@@ -1,0 +1,30 @@
+{
+  "session_id": "switch_gemini_to_gemma9b_with_klickd",
+  "profile": "Sofia — L2 Droit, vice de consentement",
+  "label": "phase2_switch",
+  "model_s1": "gemini-2.5-flash",
+  "model_s2": "gemma2-9b",
+  "with_klickd": true,
+  "s1_total_tokens": 4069,
+  "s2_prompt_tokens": 0,
+  "s2_total_tokens": 0,
+  "context_restored": false,
+  "resume_quality": "none",
+  "keyword_hits": 0,
+  "resume_response": "[ERROR: Groq failed]",
+  "s2_second_response": "[ERROR: Groq failed]",
+  "s1_responses": [
+    "Bonjour Sofia ! Ravi de te retrouver pour cette nouvelle session de Droit des contrats.\n\nC",
+    "Excellente question, Sofia ! C'est une distinction fondamentale en droit des contrats et elle est très souvent une source de confusion.\n\nPour reprendre ce que nous avons vu lors de la session précédente, nous avions abordé l'**erreur sur la substance**, régie par l'**article 1132 du Code civil**, comme l'une des causes de nullité du contrat. Nous avons d'ailleurs mentionné que cette erreur peut entraîner la **nullité relative** du contrat. Tu te souviens de notre exemple du tableau faux ? C'était une parfaite illustration d'erreur sur la substance.\n\nMaintenant, voyons comment la distinguer de l'**erreur sur la valeur**.\n\n1.  **L'erreur sur la substance (ou sur les qualités essentielles)**:\n    *   C'est une erreur sur une des qualités essentielles de la prestation due ou de la personne du cocontractant (si la considération de la personne est déterminante).\n    *   Ces qualités sont dites \"essentielles\" car sans elles, la partie n'aurait pas contracté ou aurait contracté à des conditions différentes.\n    *   L'erreur porte sur **",
+    "Très bon exemple, Sofia ! Il permet de bien comprendre la nuance.\n\nDans ton cas : \"j'achète une voiture en croyant qu'elle est de 2018 mais elle est de 2015\", il s'agit d'une **erreur sur la substance** (ou, plus précisément, sur les qualités essentielles de la chose).\n\nPourquoi ?\n\n*   **L'année de fabrication (2018 vs 2015)** est une caractéristique objective et déterminante de la voiture. C'est une qualité intrinsèque du bien.\n*   Tu as contracté en te fondant sur une qualité que tu jugeais essentielle (le fait qu'elle soit un modèle de 2018). Si tu avais su qu'elle était de 2015, tu n'aurais probablement pas acheté la voiture, ou du moins pas au même prix et aux mêmes conditions.\n*   Ce n'est pas une simple appréciation économique erronée de ta part sur le prix d'une voiture de 2015 ; c'est une erreur sur l'identité même du bien, sur l'une de ses caractéristiques essentielles.\n\n**Pour faire le lien avec ce que nous avons vu :**\n\n*   L'erreur porte bien sur \"une qualité essentielle de la prestation due\" (l'année du véhicule).\n*   Ce n'est pas une erreur sur la valeur au sens où tu aurais mal estimé le *prix* d'une voiture de 2015 que tu savais être de 2015. L'erreur est en amont : elle porte sur ce qu'est la chose elle-même. La conséquence de cette erreur sur la substance peut bien sûr être une erreur sur la valeur (une voiture de 2015 vaut moins qu'une de 2018), mais la cause première et le vice du consentement est l'erreur sur la substance.\n\nSi cette erreur est prouvée et qu'elle a été déterminante de ton consentement (ce qui semble évident ici), tu pourrais potentiellement demander la **nullité relative** du contrat sur le fondement de l'**article 1132 du Code civil**.\n\nC'est clair pour cet exemple ? N'hésite pas si tu as d'autres cas en tête !",
+    "Absolument, Sofia ! C'est le point que nous devions approfondir,"
+  ],
+  "s1_exchanges": [
+    "C'est quoi l'erreur sur la substance en droit des contrats ?",
+    "Comment distinguer erreur sur la substance vs erreur sur la valeur ?",
+    "Si j'achète une voiture en croyant qu'elle est de 2018 mais elle est de 2015, c'est quelle erreur ?",
+    "Parlez-moi du dol — c'est quoi selon le Code civil ?"
+  ],
+  "notes": "Switch gemini-2.5-flash→gemma2-9b, with .klickd",
+  "timestamp": "2026-05-19T18:49:12.974587"
+}
