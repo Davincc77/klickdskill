@@ -1,0 +1,30 @@
+{
+  "session_id": "switch_gemini_to_llama70_no_klickd",
+  "profile": "Sofia — L2 Droit, vice de consentement",
+  "label": "phase2_switch",
+  "model_s1": "gemini-2.5-flash",
+  "model_s2": "llama-3.3-70b",
+  "with_klickd": false,
+  "s1_total_tokens": 2592,
+  "s2_prompt_tokens": 135,
+  "s2_total_tokens": 1411,
+  "context_restored": true,
+  "resume_quality": "partial",
+  "keyword_hits": 3,
+  "resume_response": "Bonjour ! Je suis ravi de vous aider à poursuivre votre cas pratique sur le dol. La réticence dolosive est un concept très important en droit civil, notamment en matière de contrats.\n\nLa réticence dolosive est une forme de dol qui consiste à taire intentionnellement une information importante qui aurait pu influencer la décision de l'autre partie contractante. Cela signifie que l'une des parties à un contrat omet de révéler un fait essentiel, ce qui peut entraîner une erreur de l'autre partie.\n\nPour qu'il y ait réticence dolosive, il faut que les conditions suivantes soient réunies :\n\n1. **Un silence intentionnel** : la partie qui omet de révéler l'information le fait intentionnellement, c'est-à-dire qu'elle a conscience de l'importance de l'information et qu'elle décide de ne pas la communiquer.\n2. **Un fait essentiel** : l'information omise est importante et aurait pu influencer la décision de l'autre partie contractante.\n3. **Une erreur de l'autre partie** : la réticence dolosive doit avoir entraîné une erreur de l'autre partie, c'est-à-dire que l'autre partie a contracté sans connaître la vérité.\n\nLa réticence dolosive peut avoir des conséquences importantes, notamment la nullité du contrat ou la résiliation du contrat.\n\nMaintenant, je vous pose une question : dans votre cas pratique, y a-t-il une situation où la réticence dolosive pourrait être invoquée ?",
+  "s2_second_response": "Le point le plus important en matière de réticence dolosive est sans doute le **fait essentiel**. Pour qu'il y ait réticence dolosive, il faut que l'information omise soit vraiment importante et qu'elle aurait pu influencer la décision de l'autre partie contractante.\n\nUn fait essentiel est un élément qui est déterminant pour la conclusion du contrat. Cela peut être, par exemple :\n\n* Une caractéristique fondamentale du bien ou du service qui fait l'objet du contrat\n* Un défaut ou un vice caché qui affecte la valeur ou la qualité du bien ou du service\n* Une information financière importante, telle que la situation financière de l'une des parties\n* Une obligation ou une responsabilité qui pèse sur l'une des parties\n\nPour déterminer si un fait est essentiel, il faut se demander si l'autre partie aurait contracté différemment si elle avait connu cette information. Si la réponse est oui, alors le fait est probablement essentiel.\n\nPar exemple, si vous achetez une maison et que le vendeur omet de vous dire qu'il y a des problèmes de fondation, cela pourrait être considéré comme une réticence dolosive si les problèmes de fondation sont graves et auraient pu vous faire renoncer à l'achat.\n\nEn revanche, si l'information omise est anodine ou sans importance, il n'y a pas de réticence dolosive. Par exemple, si vous achetez une maison et que le vendeur omet de vous dire que le jardin est entretenu par un jardinier, cela n'est probablement pas un fait essentiel.\n\nJe vous pose une question : dans votre cas pratique, y a-t-il un fait essentiel qui a été omis ou caché ?",
+  "s1_responses": [
+    "Bonjour ! Excellente question, l'erreur sur la substance est un mécanisme fondamental en droit des contrats",
+    "C'est une excellente question et votre professeur a raison d'insister sur ce",
+    "Très bon exemple ! Analysons-le ensemble pour bien comprendre.\n\nDans votre cas : **",
+    "Absolument ! Le dol est un autre vice du consentement très important en droit des contrats,"
+  ],
+  "s1_exchanges": [
+    "Bonjour, je prépare mon cas pratique. C'est quoi l'erreur sur la substance en droit des contrats ?",
+    "Comment distinguer erreur sur la substance vs erreur sur la valeur ? Mon prof insiste.",
+    "Si j'achète une voiture en croyant qu'elle est de 2018 mais elle est de 2015, c'est quelle erreur ?",
+    "Maintenant parlez-moi du dol — c'est quoi exactement selon le Code civil ?"
+  ],
+  "notes": "Switch gemini-2.5-flash→llama-3.3-70b, without .klickd",
+  "timestamp": "2026-05-19T18:44:39.767485"
+}
