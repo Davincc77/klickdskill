@@ -312,7 +312,7 @@ def _print_what_this_proves(saved_name: str):
         print(f"  {GREEN('✓')} {CYAN(claim)}")
         print(f"       {DIM(evidence)}")
         print()
-    print(DIM("  Full spec: https://zenodo.org/records/20274327"))
+    print(DIM("  Full spec: https://zenodo.org/records/20295858"))
     print(DIM(f"  File used: {saved_name}"))
 
 
@@ -528,7 +528,7 @@ def main():
         print()
         kdf_label = "Argon2id 64MiB/3/1"
         print(DIM(f"  Format: .klickd v3.0 | KDF: {kdf_label} | Cipher: AES-256-GCM"))
-        print(DIM("  Spec:   https://zenodo.org/records/20274327"))
+        print(DIM("  Spec:   https://zenodo.org/records/20295858"))
         print(DIM("  Repo:   https://github.com/Davincc77/klickdskill"))
         print()
 

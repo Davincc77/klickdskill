@@ -3,7 +3,7 @@
 
 **Date :** 19 mai 2026  
 **Format :** `.klickd` v3.1.2 — mémoire IA portable, chiffrée AES-256-GCM, stockage local, open source CC0  
-**DOI Zenodo :** [10.5281/zenodo.20274327](https://doi.org/10.5281/zenodo.20274327)  
+**DOI Zenodo :** [10.5281/zenodo.20295858](https://doi.org/10.5281/zenodo.20295858)  
 **Repo :** [github.com/Davincc77/klickdskill](https://github.com/Davincc77/klickdskill)
 
 ---
@@ -480,6 +480,6 @@ Le deuxième chantier prioritaire est l'UX autour du `next_step` : en faire le p
 
 ---
 
-*Benchmark réalisé le 19 mai 2026 — klickdskill v3.1.2 — DOI [10.5281/zenodo.20274327](https://doi.org/10.5281/zenodo.20274327)*  
+*Benchmark réalisé le 19 mai 2026 — klickdskill v3.1.2 — DOI [10.5281/zenodo.20295858](https://doi.org/10.5281/zenodo.20295858)*  
 *Rapport consolidé produit à partir des rapports des Agents A, B, C, D, E et F*  
 *Format .klickd : open source CC0 — [klickd.app](https://klickd.app) · Luxlearn.app (Luxembourg)*
