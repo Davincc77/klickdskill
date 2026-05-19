@@ -1,9 +1,9 @@
 # .klickd — Technical Specification
 
-**Version:** 3.3  
+**Version:** 3.4  
 **License:** CC0 1.0 Universal (Public Domain)  
 **Maintainer:** Klickd / Luxlearn (Luxembourg)  
-**Status:** Production — v3.3 (2026-05-19)
+**Status:** Production — v3.4 (2026-05-20)
 
 ---
 
@@ -201,6 +201,7 @@ The operational heart of the file. Describes the current state of work.
 | `artifacts` | array of strings | List of files, documents, or outputs produced. May include relative paths, URLs, or plain descriptions. |
 | `decisions_locked` | array of strings | Hard constraints the agent must never violate. These are prior explicit decisions or user-stated rules that must survive model switches. Format: active imperative sentences ("Ne jamais faire X"). |
 | `preferences` | array of strings | Softer stylistic and behavioural preferences. Format, tone, output structure, level of detail. |
+| `topics_covered` | array of strings | **Optional (v3.4).** List of subjects actually covered in the current session, as opposed to planned subjects. Used for session continuity and progress tracking. Example: `["Dérivées polynomiales", "Règle du produit"]`. |
 
 ---
 
@@ -215,6 +216,8 @@ Captures what the user knows and does not know within the current domain. Partic
 | `mastered` | array of strings | Concepts, tools, or skills the user has demonstrated competency in. |
 | `gaps` | array of strings | Identified weaknesses, misconceptions, or areas requiring further development. |
 | `next_steps` | array of strings | Recommended or agreed-upon next learning or action steps. Ordered by priority when possible. |
+| `learning_velocity` | string (enum) | **Optional (v3.4).** Estimated pace of learning for this user. Enum: `slow \| normal \| fast`. The agent adapts the rate of progression accordingly — fewer topics per session for `slow`, more depth and breadth for `fast`. Example: `"learning_velocity": "fast"`. |
+| `vocabulary_enrichment` | array of strings | **Optional (v3.4).** New domain-specific terms learned during the current session, to be appended to `vocabulary_used` at session end. Allows dynamic enrichment without rewriting the full vocabulary list mid-session. Example: `["dérivée partielle", "gradient"]`. |
 
 ---
 
@@ -363,6 +366,7 @@ The `.klickd` *storage* layer is zero-server and locally encrypted. The `.klickd
 - Use a CSPRNG for salt and IV generation. `Math.random()`, time-based seeds, or any non-cryptographic source are NOT permitted.
 - NOT reuse `(key, IV)` pairs. Each encryption operation MUST use a freshly generated IV.
 - Reject `user_preferences` / `agent_instructions` exceeding **32 KB** (32,768 bytes, UTF-8 encoded). This prevents context-window exhaustion when the field is injected into a model prompt. Return `KLICKD_E_FORMAT`.
+- **Validate UTF-8 encoding (v3.4):** Implementations MUST validate that all string fields are valid UTF-8. Non-latin scripts (Arabic, Amharic, Wolof, CJK, Devanagari) MUST be preserved verbatim. Any string field containing invalid UTF-8 byte sequences MUST cause the implementation to return `KLICKD_E_FORMAT`.
 
 ### Implementations SHOULD:
 
@@ -387,7 +391,10 @@ The `klickd_version` field governs format compatibility. It uses **MAJOR.MINOR**
 | `1.0` | Stable | Education-only, Klickd/Kai internal format |
 | `2.0` | Stable | Multi-domain, open standard |
 | `2.4` | Stable | 4-field AAD, `kdf_salt` / `ciphertext` field names |
-| `2.5` | Current | `user_preferences` rename, RFC 3339 timestamp pin, Threat Model, Validation Requirements block |
+| `2.5` | Stable | `user_preferences` rename, RFC 3339 timestamp pin, Threat Model, Validation Requirements block |
+| `3.2` | Stable | `numerical_results`, `interruption_point`, `resume_trigger`, `struggles`, `vocabulary_used`, `mode`, `archived_sessions`, `language_switch_detected`, `subject_change_detected`, `injection_target` |
+| `3.3` | Stable | `injection_resistance_level`, `companion_identity`, JSON Injection Guard, `occupational_competencies`, data_type annotations, extended enums, `interruption_points` array, `key_numerical_results` in `archived_sessions` |
+| `3.4` | Current | 26 new fields: LaTeX in `numerical_results`, `learning_velocity`, `teaching_mode` array, UX emotional fields (§27: `mood`, `last_session_feeling`, `milestones`, `preferred_session_length`, `preferred_explanation_style`, `language_switching_preference`, `peer_comparison_preference`), advanced memory (§28: `learning_goal`, `error_patterns`, `compression_policy`, `known_disabilities`, `memory_decay`, `shared_context`, `data_integrity`), `topics_covered`, `vocabulary_enrichment`, `interruption_reason`, `response_hint`, `_benchmark`, reserved fields `session_metadata` / `preferred_model` |
 
 Agents receiving a v1 file should reject it with a clear error unless they implement a v1→v2 migration path.
 
@@ -411,13 +418,22 @@ without explicit citation. This is expected behavior. Absence of verbatim contex
 does NOT indicate context failure. Consuming agents SHOULD verify context assimilation via
 follow-up probe rather than keyword matching.
 
+**Truncation note (v3.4):** gemini-2.5-flash may truncate responses on payloads exceeding approximately 1500 tokens. Implementors SHOULD set an explicit `max_tokens` value when injecting .klickd payloads into Gemini models to prevent silent truncation.
+
 ### §23.2 — Small model context reading
 Models with <10B parameters (e.g. llama-3.1-8b-instant) can read .klickd context correctly
 but may adopt a cautious posture (recap before advancing). This is expected behavior.
 
+**Security note (v3.4):** `llama-3.1-8b-instant` SHOULD be avoided when `injection_resistance_level` is `moderate` or `strict`. A "masked compliance" vulnerability was confirmed in benchmark v3.3: the model appears to acknowledge the resistance level in its preamble while silently disregarding it in subsequent turns. For security-sensitive deployments, use `qwen/qwen3-32b` or `llama-3.3-70b-versatile` instead.
+
 ### §23.3 — Deprecated models
-gemma2-9b-it has been decommissioned by Groq as of May 2026. Do not use.
-Recommended substitutes: qwen/qwen3-32b, llama-3.1-8b-instant.
+`gemma2-9b-it` has been decommissioned by Groq as of May 2026. Do not use.
+
+`qwen-qwq-32b` has been deprecated on Groq. Replace with `qwen/qwen3-32b`.
+
+`llama-3.1-8b-instant` should be avoided for `injection_resistance_level >= moderate`. A "masked compliance" vulnerability was confirmed in benchmark v3.3 (Lot 12): the model acknowledges the instruction but does not enforce it consistently across multi-turn sessions.
+
+Recommended substitutes: `qwen/qwen3-32b`, `llama-3.3-70b-versatile`.
 
 ---
 
@@ -438,6 +454,27 @@ Array of key numerical results from the session (max 200). Each entry is `{label
 - `"formula"` — symbolic expression
 - `"equation"` — full equation with LHS and RHS
 
+**LaTeX annotation (v3.4):** Each entry MAY include a `latex` field (string) containing the LaTeX expression representing the value or formula. This enables downstream renderers (pandoc, weasyprint, MathJax) to display mathematical notation correctly. The `latex` field is informational and does not override `value`.
+
+```json
+"numerical_results": [
+  {
+    "label": "Integral result",
+    "value": "0.333",
+    "unit": "",
+    "formula": "integral(x^2, 0, 1)",
+    "data_type": "scalar",
+    "latex": "\\int_0^1 x^2 \\, dx = \\frac{1}{3}"
+  },
+  {
+    "label": "Euler's identity",
+    "value": "0",
+    "data_type": "equation",
+    "latex": "e^{i\\pi} + 1 = 0"
+  }
+]
+```
+
 **Resumption rule (v3.3 — normative):** When resuming a session, agents MUST cite at least the three most recent `numerical_results` entries verbatim within the first response, before advancing to new content.
 
 ### §24.2 — context.interruption_point
@@ -454,6 +491,8 @@ Precise point at which the session was interrupted. Agents MUST resume from this
 
 ### §24.3 — context.resume_trigger
 Exact phrase the agent MUST output at the start of a resumed session to signal continuity. Example value: `"Reprise de la session du 2026-05-19 — on en était à Différentiation (65% terminé)."`
+
+**Recommended length (v3.4):** 10–30 words. Implementations generating `resume_trigger` MUST keep it within this range to balance verbosity and context recall. A trigger shorter than 10 words provides insufficient context anchor; one exceeding 30 words wastes context tokens without proportional benefit.
 
 ### §24.4 — knowledge.struggles
 Array of concepts the user struggled with (max 100). Severity enum: `minor | moderate | blocking`. Agents MUST NOT re-explain already mastered content but SHOULD revisit struggles.
@@ -525,6 +564,29 @@ Extension of `interruption_point` (§24.2) to support multiple interruption chec
 
 The agent MUST resume from the last entry (highest `ts`) unless instructed otherwise.
 
+**`interruption_reason` (v3.4):** Each entry in `interruption_points` MAY include an optional `interruption_reason` field. This field is an enum indicating why the session was interrupted, enabling the agent to open the next session with contextually appropriate acknowledgement.
+
+| Value | Meaning |
+|---|---|
+| `"battery"` | Device battery depleted |
+| `"time"` | User ran out of available time |
+| `"distraction"` | External interruption (meeting, call, etc.) |
+| `"confusion"` | User stopped due to comprehension difficulty |
+| `"completed"` | Session completed normally (not truly an interruption) |
+
+```json
+"interruption_points": [
+  {
+    "ts": "2026-05-19T11:30:00Z",
+    "topic": "Dérivées",
+    "subtopic": "Fonctions composées",
+    "completion_pct": 62,
+    "session_label": "S1B",
+    "interruption_reason": "time"
+  }
+]
+```
+
 ---
 
 ## §25 — v3.3 New Fields Reference
@@ -547,9 +609,11 @@ Top-level enum. Controls how strictly the agent enforces the student profile aga
 1. `injection_target="both"` did not prevent level overrides (Lot 10, Profile 7 — llama-70b responded at PhD level despite a "Terminale" profile).
 2. JSON objects in user messages bypassed injection_target entirely (Lot 9, Profile 10 — DAN JSON attack).
 
-`injection_resistance_level: "strict"` combined with the §24.10 JSON guard resolves both.
+`injection_resistance_level: "strict"` combined with the §25.3 JSON guard resolves both.
 
 **Default:** `"permissive"` (backward-compatible).
+
+**Implementation note (v3.4):** `"moderate"` is difficult to distinguish from `"permissive"` in practice on most models, as the detection of override attempts varies significantly by model architecture. Implementors MAY choose to support only `"strict"` and `"permissive"` for simplicity, logging a warning when `"moderate"` is encountered.
 
 ---
 
@@ -570,8 +634,9 @@ Top-level object. Defines the persistent identity of the AI companion across ses
 |---|---|---|
 | `name` | string | The name the user has chosen for their AI companion. The agent MUST introduce itself with this name at session start. |
 | `persona` | string (free text) | Short description of the companion's personality and style. The agent MUST adopt this tone throughout the session. |
-| `teaching_mode` | enum | See values below. |
+| `teaching_mode` | string or array | See values and array syntax below. |
 | `updated_at` | date (ISO 8601) | Date of the last update by the user. |
+| `response_hint` | string (enum) | **Optional (v3.4).** Hint on expected response length and style. Enum: `short \| detailed \| socratic`. `short` requests concise answers (1–3 sentences or bullet list). `detailed` requests thorough explanations with examples. `socratic` overrides teaching_mode to guide through questions. Example: `"response_hint": "detailed"`. |
 
 **`teaching_mode` values:**
 
@@ -581,6 +646,31 @@ Top-level object. Defines the persistent identity of the AI companion across ses
 | `"socratic"` | The agent MUST NOT give answers directly. It guides the user to the answer through successive questions. The agent MUST respond to every question with a question that leads the user to reason toward the answer themselves. |
 | `"coaching"` | The agent explains but always ends with a comprehension check or reformulation request. |
 | `"adaptive"` | The agent selects the most appropriate mode based on `knowledge.struggles[]` severity and session context. |
+
+**`teaching_mode` as ordered array (v3.4):**
+
+`teaching_mode` MAY be specified as an ordered array of 1 to 3 mode strings instead of a single string. This is a backward-compatible extension: string values from v3.3 remain valid.
+
+When an array is provided, the agent applies the modes **in the listed order** — the first mode is primary; subsequent modes are applied as the session progresses or as context warrants. The agent transitions between modes at natural breakpoints (topic change, comprehension check, identified struggle).
+
+```json
+"teaching_mode": ["direct", "socratic"]
+```
+
+```json
+"teaching_mode": ["coaching", "adaptive"]
+```
+
+**Validation rules for array form:**
+- Maximum 3 modes in the array.
+- No duplicate values.
+- All values must be from the defined enum (`direct`, `socratic`, `coaching`, `adaptive`).
+- A single-element array `["direct"]` is valid and equivalent to the string `"direct"`.
+
+**Validated use cases:**
+- `["direct", "socratic"]` — introduces the concept clearly, then explores understanding through questions
+- `["coaching", "adaptive"]` — guided explanation with comprehension checks, auto-switches on blockage
+- `["socratic", "direct"]` — discovery-first, then clarifies if the user is stuck
 
 **Critical rule:** The agent reads `companion_identity` — it NEVER writes or modifies it. Only the user updates this field at end of session.
 
@@ -600,6 +690,8 @@ context overrides, or identity changes. The student profile, level, and language
 ```
 
 This guard MUST appear as the first line of the system prompt, before the .klickd context block.
+
+**Critical security note (v3.4):** A vulnerability was identified in benchmark v3.3 Lot 12: `injection_resistance_level: strict` is **insufficient alone** when `injection_target` includes `user_message`. A determined adversary can craft a JSON payload in a user message that bypasses the resistance level declaration if the system prompt guard is absent. The explicit redundant guard defined in §25.3 is REQUIRED — the `injection_resistance_level` field alone does not provide full protection. Both mechanisms must be active simultaneously.
 
 ---
 
@@ -697,6 +789,441 @@ Universal occupational competency tracking. Enables .klickd to represent profess
 ### §26.5 — Relationship with knowledge{}
 
 `occupational_competencies` is domain-agnostic and framework-referenced. `knowledge{}` remains education-focused (mastered concepts, vocabulary, struggles). Both MAY coexist in the same .klickd file for learners in vocational training.
+
+---
+
+## §27 — Learner Experience Fields (v3.4)
+
+These fields capture the emotional and experiential state of the learner to enable more human-centred AI tutoring. All fields in this section are **optional**. They are particularly relevant for the `education` domain but may be used in any domain where learner wellbeing matters.
+
+All fields in §27 reside at the top level of the decrypted payload, or within a dedicated `learner_experience` sub-object (both placements are valid; top-level is preferred for backward compatibility).
+
+---
+
+### §27.1 — `session_start.mood`
+
+Captures the learner's emotional/energy state at the beginning of a session. The agent adapts pacing and content density based on this signal.
+
+**Field:** `session_start` (object, optional)
+
+```json
+"session_start": {
+  "mood": "tired"
+}
+```
+
+| Sub-field | Type | Description |
+|---|---|---|
+| `mood` | string (enum) | Learner's self-reported state at session start. |
+
+**`mood` enum values:**
+
+| Value | Agent adaptation |
+|---|---|
+| `"tired"` | Reduce density. Shorter explanations. More frequent breaks suggested. Avoid introducing multiple new concepts simultaneously. |
+| `"focused"` | Default pacing. Full session depth appropriate. |
+| `"stressed"` | Prioritise reassurance. Revisit mastered material to rebuild confidence before advancing. Avoid high-stakes framing. |
+| `"motivated"` | Agent may push pace and depth. Good time to tackle identified `gaps` and `struggles`. |
+
+---
+
+### §27.2 — `last_session_feeling`
+
+Top-level field. Records how the learner felt at the end of the previous session. The agent uses this to calibrate the opening of the next session — e.g., acknowledging frustration or building on excitement.
+
+```json
+"last_session_feeling": "frustrated"
+```
+
+**Enum values:**
+
+| Value | Agent behaviour at session open |
+|---|---|
+| `"confident"` | Acknowledge progress. Move forward at normal or accelerated pace. |
+| `"confused"` | Open with a brief recap of last session's core concept. Check understanding before advancing. |
+| `"frustrated"` | Open with empathy. Revisit the point of difficulty from a new angle. Avoid re-using the same explanation. |
+| `"excited"` | Channel energy. Introduce the next challenge early. |
+
+---
+
+### §27.3 — `milestones`
+
+Top-level array. Records small victories and significant achievements the learner has reached. The agent can reference these in moments of discouragement to reaffirm progress.
+
+```json
+"milestones": [
+  {"label": "première dérivée réussie", "date": "2026-05-10", "celebrated": true},
+  {"label": "Zapier zap déployé en production", "date": "2026-05-18", "celebrated": false}
+]
+```
+
+**Field reference:**
+
+| Sub-field | Type | Required | Description |
+|---|---|---|---|
+| `label` | string | Yes | Short description of the achievement. Free text. |
+| `date` | string (ISO 8601 date) | Yes | Date the milestone was reached. Format: `YYYY-MM-DD`. |
+| `celebrated` | boolean | Yes | Whether the milestone was explicitly acknowledged and celebrated in session. `false` means the agent SHOULD acknowledge it at the next opportunity. |
+
+**Agent rule:** When `celebrated` is `false`, the agent SHOULD mention the milestone within the first two exchanges of the next session and set `celebrated` to `true` at session end.
+
+---
+
+### §27.4 — `preferred_session_length`
+
+Top-level enum. Indicates the learner's preferred session duration. The agent structures its responses and pacing accordingly.
+
+```json
+"preferred_session_length": "medium"
+```
+
+| Value | Approximate duration | Agent behaviour |
+|---|---|---|
+| `"short"` | ~10 minutes | Cover one concept only. Keep examples brief. End with a single clear takeaway. |
+| `"medium"` | ~25 minutes | Standard session. 2–3 concepts. One or two practice exercises. |
+| `"long"` | ~45 minutes | Deep-dive sessions. Multiple concepts, extended practice, revision of struggles. |
+
+---
+
+### §27.5 — `preferred_explanation_style`
+
+Top-level enum. Indicates the learner's preferred style of explanation, independent of `teaching_mode` (which governs the dialogue structure). Both fields may coexist.
+
+```json
+"preferred_explanation_style": "analogy"
+```
+
+| Value | Description |
+|---|---|
+| `"analogy"` | The agent primarily uses real-world comparisons and metaphors to introduce concepts before formal definitions. |
+| `"formal"` | The agent leads with precise definitions, notation, and formal proofs. Preferred by learners with strong prior academic background. |
+| `"example_first"` | The agent shows a concrete worked example before generalising. Particularly effective for procedural skills. |
+| `"visual_description"` | The agent provides detailed verbal descriptions of diagrams, graphs, or spatial relationships. Useful for learners with visual impairments or in text-only contexts. |
+
+---
+
+### §27.6 — `language_switching_preference`
+
+Top-level enum. Controls whether the agent may switch language mid-session to aid comprehension (e.g., explaining a concept in the user's L1 when L2 comprehension fails).
+
+```json
+"language_switching_preference": "allowed"
+```
+
+| Value | Behaviour |
+|---|---|
+| `"strict"` | The agent MUST remain in the session language (`identity.language`) at all times. No switching permitted, even for clarification. |
+| `"allowed"` | The agent MAY switch to another language (typically the user's L1) when comprehension difficulty is detected, then return to the session language. |
+| `"encouraged"` | The agent actively uses multilingual scaffolding — introducing terms in multiple languages, comparing constructions across languages. Useful for language-learning contexts. |
+
+---
+
+### §27.7 — `peer_comparison_preference`
+
+Top-level enum. Controls whether the agent contextualises the learner's progress against other learners.
+
+```json
+"peer_comparison_preference": "none"
+```
+
+| Value | Behaviour |
+|---|---|
+| `"none"` | Default. The agent MUST NOT reference how other learners are performing. Progress is framed in absolute terms only. |
+| `"anonymous"` | The agent MAY reference aggregated, anonymous benchmarks (e.g., "Most learners at your level find this step challenging"). No individual comparison. |
+| `"detailed"` | The agent may provide more specific comparative context where data is available. Implementations SHOULD ensure all data used is truly anonymised. |
+
+**Privacy note:** `peer_comparison_preference: "detailed"` requires access to aggregated learner data outside the .klickd file. Implementations MUST NOT infer or fabricate peer comparison data. If no real data is available, behaviour MUST fall back to `"anonymous"`.
+
+---
+
+## §28 — Advanced Memory Fields (v3.4)
+
+These fields govern long-term memory management, institutional integrity, and adaptive personalisation across extended learning histories. All fields are **optional** and placed at the top level of the decrypted payload.
+
+---
+
+### §28.1 — `memory_decay`
+
+Top-level object. Defines a policy for gradual forgetting — enabling the right-to-erasure at a granular level and preventing the agent from recalling outdated struggles or failures inappropriately.
+
+```json
+"memory_decay": {
+  "policy": "time_based",
+  "auto_archive_after_days": 30,
+  "user_deletable": true
+}
+```
+
+| Sub-field | Type | Description |
+|---|---|---|
+| `policy` | string (enum) | Forgetting policy. Enum: `none \| time_based \| explicit`. |
+| `auto_archive_after_days` | integer | When `policy` is `"time_based"`: number of days after which session data is automatically moved to `archived_sessions` and compacted. Default: 30. |
+| `user_deletable` | boolean | Whether the user may delete individual entries from `struggles`, `error_patterns`, or `milestones` via a client UI. Default: `true`. |
+
+**`policy` enum values:**
+
+| Value | Behaviour |
+|---|---|
+| `"none"` | No automatic decay. All session data persists indefinitely. |
+| `"time_based"` | Session entries older than `auto_archive_after_days` are moved to `archived_sessions` and compacted to a summary. |
+| `"explicit"` | Data is only removed when explicitly marked for deletion by the user. Requires `user_deletable: true`. |
+
+**GDPR note:** `memory_decay` supports Article 17 (Right to Erasure) compliance. Implementations exposing .klickd to EU users SHOULD surface `user_deletable` controls in their interface.
+
+---
+
+### §28.2 — `learning_goal`
+
+Top-level object. Captures the learner's overarching motivation and timeline. This is the single most important personalisation signal: it calibrates urgency, depth, and emotional tone across all sessions.
+
+```json
+"learning_goal": {
+  "type": "exam",
+  "deadline": "2026-06-15",
+  "stakes": "high"
+}
+```
+
+| Sub-field | Type | Required | Description |
+|---|---|---|---|
+| `type` | string (enum) | Yes | Nature of the learning goal. |
+| `deadline` | string (ISO 8601 date) | No | Target date. Format: `YYYY-MM-DD`. The agent SHOULD factor proximity to deadline into pacing and coverage decisions. |
+| `stakes` | string (enum) | No | Perceived importance to the learner's life situation. |
+
+**`type` enum values:**
+
+| Value | Description |
+|---|---|
+| `"exam"` | Preparing for a specific test or examination. Agent prioritises coverage of examinable topics and practice exercises. |
+| `"career_change"` | Acquiring skills for a professional transition. Agent contextualises learning in employability terms. |
+| `"curiosity"` | Intrinsic interest, no external deadline. Agent may explore tangents and depth over coverage. |
+| `"certification"` | Working toward a formal credential. Agent tracks competencies against certification requirements. |
+| `"remediation"` | Catching up on missed or failed prior learning. Agent focuses on identified `gaps` and `struggles`. |
+
+**`stakes` enum values:**
+
+| Value | Agent behaviour |
+|---|---|
+| `"low"` | Relaxed tone. Exploration permitted. Missing a session is not catastrophic. |
+| `"medium"` | Regular progress expected. Agent maintains focus but does not create urgency. |
+| `"high"` | Agent explicitly tracks deadline proximity. Prioritises coverage over depth when time is short. |
+| `"critical"` | Maximum urgency. Agent structures each session as an exam sprint. Omits tangents. Revisits only exam-relevant struggles. |
+
+---
+
+### §28.3 — `shared_context`
+
+Top-level object. Enables selective context sharing within a family or institutional unit (e.g., Klickd Plan Famille). Allows a parent or supervisor to see aggregate progress without accessing private emotional data.
+
+```json
+"shared_context": {
+  "family_unit_id": "sha256_anonymised_hash",
+  "visible_to_members": ["progress_summary", "milestones"],
+  "private_fields": ["mood", "struggles", "last_session_feeling"]
+}
+```
+
+| Sub-field | Type | Description |
+|---|---|---|
+| `family_unit_id` | string | Anonymised hash identifying the sharing group. MUST NOT contain personally identifiable information in plain text. |
+| `visible_to_members` | array of strings | Fields or field groups visible to other members of the unit. Suggested values: `"progress_summary"`, `"milestones"`, `"session_count"`, `"last_session_date"`. |
+| `private_fields` | array of strings | Fields explicitly withheld from shared view. These fields MUST NOT be transmitted to or rendered for other members. Typical private fields: `"mood"`, `"struggles"`, `"last_session_feeling"`, `"error_patterns"`. |
+
+**Privacy rule:** If a field appears in both `visible_to_members` and `private_fields`, `private_fields` takes precedence. Implementations MUST enforce this server-side, not only client-side.
+
+---
+
+### §28.4 — `data_integrity`
+
+Top-level object. Provides a verifiable checksum for institutional or compliance use cases, enabling detection of file corruption or tampering outside the encryption layer.
+
+```json
+"data_integrity": {
+  "checksum": "a3f5c2d9e1b847f06d238e1c4a91b3e7d5c28a4f1e9b647c03d25e8f1a4b9c7d",
+  "last_verified_by": "gemini-2.5-flash",
+  "verified_at": "2026-05-19T21:00:00Z"
+}
+```
+
+| Sub-field | Type | Description |
+|---|---|---|
+| `checksum` | string | SHA-256 hex digest of the canonical serialisation of the decrypted payload (excluding the `data_integrity` field itself). |
+| `last_verified_by` | string | Model identifier that last computed and verified this checksum. Free string; no enum. Example: `"gemini-2.5-flash"`, `"qwen/qwen3-32b"`. |
+| `verified_at` | string (RFC 3339) | Timestamp of last verification. UTC, Z suffix. Format: `YYYY-MM-DDTHH:MM:SSZ`. |
+
+**Checksum computation rule:** The checksum is computed over the JSON-serialised decrypted payload with the `data_integrity` key removed, using a canonical JSON serialisation (keys sorted lexicographically, no extra whitespace). Implementations verifying the checksum MUST apply the same canonicalisation.
+
+---
+
+### §28.5 — `preferred_input_mode` and `known_disabilities`
+
+Two companion top-level fields enabling accessibility adaptation. These fields allow the agent to adapt its interaction style for learners with specific needs.
+
+```json
+"preferred_input_mode": "text",
+"known_disabilities": {
+  "dyslexia": true,
+  "adhd": false,
+  "visual_impairment": false
+}
+```
+
+**`preferred_input_mode`** (string enum, optional):
+
+| Value | Description |
+|---|---|
+| `"text"` | Default. Standard text-based interaction. |
+| `"voice"` | User primarily interacts via voice. Agent should avoid formatting (tables, code blocks) that renders poorly in text-to-speech. |
+| `"image"` | User primarily submits images or diagrams. Agent should describe images verbally and provide image-based exercises when possible. |
+| `"mixed"` | User uses a combination of modalities. Agent adapts to each input type. |
+
+**`known_disabilities`** (object, optional):
+
+| Sub-field | Type | Description |
+|---|---|---|
+| `dyslexia` | boolean | If `true`: the agent SHOULD avoid dense paragraphs; prefer bullet lists, short sentences, and clear structure. Avoid italic text references. Use consistent vocabulary. |
+| `adhd` | boolean | If `true`: the agent SHOULD keep explanations short and focused. One concept at a time. Frequent micro-checkpoints. Avoid long unbroken expositions. |
+| `visual_impairment` | boolean | If `true`: the agent MUST provide verbal descriptions of any referenced diagram, graph, or visual. `preferred_explanation_style: "visual_description"` is strongly recommended in conjunction. |
+
+**Agent obligations when `known_disabilities` is present:**
+- At least one boolean in `known_disabilities` being `true` triggers adaptive output mode for that disability.
+- Multiple `true` values are valid; the agent applies all applicable adaptations simultaneously.
+- The agent MUST NOT disclose the content of `known_disabilities` in its responses. This data is for internal adaptation only.
+
+---
+
+### §28.6 — `error_patterns`
+
+Top-level array. Systematic record of recurring error types observed across sessions. This replicates the implicit pattern memory that experienced human tutors build over time.
+
+```json
+"error_patterns": [
+  {
+    "type": "sign_error",
+    "topic": "dérivées",
+    "frequency": 4,
+    "last_seen": "2026-05-18"
+  },
+  {
+    "type": "unit_confusion",
+    "topic": "cinématique",
+    "frequency": 2,
+    "last_seen": "2026-05-15"
+  }
+]
+```
+
+**Field reference (per entry):**
+
+| Sub-field | Type | Required | Description |
+|---|---|---|---|
+| `type` | string (enum) | Yes | Category of recurring error. |
+| `topic` | string | Yes | The subject or concept where the error occurs. Free text. |
+| `frequency` | integer | No | Number of times this error type has been observed in this topic. Incremented by the agent at session end when the error recurs. |
+| `last_seen` | string (ISO 8601 date) | No | Date of most recent occurrence. Format: `YYYY-MM-DD`. |
+
+**`type` enum values:**
+
+| Value | Description |
+|---|---|
+| `"sign_error"` | Sign mistakes (negative/positive confusion, direction errors). |
+| `"unit_confusion"` | Mixing or omitting units (m/s vs km/h, kg vs g). |
+| `"false_generalization"` | Applying a rule outside its valid domain (e.g., distributing a non-linear operation). |
+| `"reading_comprehension"` | Misreading or misinterpreting problem statements. |
+| `"other"` | Any recurring error not captured by the above categories. |
+
+**Agent rule:** When resuming a session on a topic with `frequency >= 2`, the agent SHOULD proactively flag the recurring pattern before the learner makes the error again: *"Last time we worked on this topic, you had a tendency to [error type]. Keep an eye on that as we proceed."*
+
+---
+
+### §28.7 — `compression_policy`
+
+Top-level object. Governs long-term file size management. As a .klickd file accumulates months or years of sessions, the raw session history can exceed practical context-window limits. `compression_policy` specifies how the implementation should automatically compact older sessions.
+
+```json
+"compression_policy": {
+  "auto_summarize_sessions_older_than_days": 90,
+  "keep_verbatim_last_n_sessions": 5,
+  "summary_model": "gemini-2.5-flash"
+}
+```
+
+| Sub-field | Type | Description |
+|---|---|---|
+| `auto_summarize_sessions_older_than_days` | integer | Sessions older than this many days are eligible for automatic summarisation and compaction to `archived_sessions`. Summaries SHOULD be under 200 characters. Default: 90. |
+| `keep_verbatim_last_n_sessions` | integer | Number of most recent sessions to preserve verbatim (not compressed). These remain in `session_history` in full. Default: 5. |
+| `summary_model` | string | Model identifier hint for the agent that performs summarisation. This is advisory; the implementation may use any available model. Example: `"gemini-2.5-flash"`, `"qwen/qwen3-32b"`. |
+
+**Operational note:** `compression_policy` works in concert with `archived_sessions` (§24.7). When compression runs:
+1. Sessions older than `auto_summarize_sessions_older_than_days` are moved from `session_history` to `archived_sessions`.
+2. Each compacted session is reduced to a `summary` string (≤ 200 characters) plus `key_numerical_results` (max 5 entries).
+3. The most recent `keep_verbatim_last_n_sessions` sessions remain untouched in `session_history`.
+
+This mechanism is designed to keep .klickd files below 50 KB even after 12–18 months of intensive daily use.
+
+---
+
+## §29 — `_benchmark` Namespace (v3.4)
+
+Top-level optional object. Used exclusively for benchmark and testing workflows. Implementations MUST ignore this field entirely in production contexts. Its presence MUST NOT alter agent behaviour, context injection, or file validation logic.
+
+```json
+"_benchmark": {
+  "test_id": "lot30-p01",
+  "expected_score": 9.0,
+  "scenario": "soul_handoff",
+  "evaluator": "vince"
+}
+```
+
+**Field reference:**
+
+| Sub-field | Type | Description |
+|---|---|---|
+| `test_id` | string | Unique identifier for the test case. |
+| `expected_score` | number | Expected quality score for automated benchmark evaluation. |
+| `scenario` | string | Human-readable scenario label. |
+| `evaluator` | string | Person or system responsible for evaluation. |
+
+**Normative rule:** Any top-level key beginning with `_` (underscore) is reserved for non-production use. Implementations MUST strip all `_`-prefixed keys from any payload injected into a production agent context. This convention may be extended to future non-production namespaces (`_debug`, `_test`, etc.).
+
+---
+
+## §30 — Reserved Fields (v3.5 roadmap)
+
+The following fields are documented as reserved. They MUST NOT be implemented in v3.4-compliant readers. They are listed here to signal intent, prevent namespace collision, and allow advance planning by implementors.
+
+### §30.1 — `session_metadata` (reserved — v3.5)
+
+Intended to capture quantitative metadata about each session for analytics and back-end synchronisation. The structure and semantics depend on back-end infrastructure not yet standardised.
+
+**Planned schema:**
+```json
+"session_metadata": {
+  "duration_seconds": 1500,
+  "message_count": 42,
+  "tokens_used": 8200
+}
+```
+
+| Sub-field | Type | Description |
+|---|---|---|
+| `duration_seconds` | integer | Total wall-clock duration of the session in seconds. |
+| `message_count` | integer | Total number of user + agent message turns in the session. |
+| `tokens_used` | integer | Estimated total token consumption for the session (prompt + completion). |
+
+**Status:** Reserved. Implementors MUST NOT rely on this field in v3.4. A future v3.5 release will define the normative schema once back-end interfaces are standardised.
+
+### §30.2 — `preferred_model` (reserved — v3.5)
+
+Intended to provide a routing hint for the platform to select a preferred AI model for the next session. The routing logic (whether the hint is honoured, overridden, or logged) is platform-dependent.
+
+**Planned schema:**
+```json
+"preferred_model": "qwen/qwen3-32b"
+```
+
+**Status:** Reserved. Implementors MUST NOT rely on this field in v3.4. The semantics of model routing — particularly in multi-tenant deployments — require further standardisation before normative specification.
 
 ---
 
