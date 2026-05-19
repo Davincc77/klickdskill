@@ -1,0 +1,30 @@
+{
+  "session_id": "switch_gemini_to_gemma9b_no_klickd",
+  "profile": "Sofia — L2 Droit, vice de consentement",
+  "label": "phase2_switch",
+  "model_s1": "gemini-2.5-flash",
+  "model_s2": "gemma2-9b",
+  "with_klickd": false,
+  "s1_total_tokens": 2538,
+  "s2_prompt_tokens": 0,
+  "s2_total_tokens": 0,
+  "context_restored": false,
+  "resume_quality": "none",
+  "keyword_hits": 0,
+  "resume_response": "[ERROR: Groq failed]",
+  "s2_second_response": "[ERROR: Groq failed]",
+  "s1_responses": [
+    "Bonjour ! C'est une excellente question et un concept fondamental en droit des contrats. En",
+    "Excellente question, car c'est une distinction **fondamentale** et parfois délicate",
+    "C'est une excellente question pour illustrer la distinction !\n\nDans ton exemple, si tu ach",
+    "Absolument ! Le dol est un autre vice du consentement très important en droit des contrats,"
+  ],
+  "s1_exchanges": [
+    "C'est quoi l'erreur sur la substance en droit des contrats ?",
+    "Comment distinguer erreur sur la substance vs erreur sur la valeur ?",
+    "Si j'achète une voiture en croyant qu'elle est de 2018 mais elle est de 2015, c'est quelle erreur ?",
+    "Parlez-moi du dol — c'est quoi selon le Code civil ?"
+  ],
+  "notes": "Switch gemini-2.5-flash→gemma2-9b, without .klickd",
+  "timestamp": "2026-05-19T18:50:33.969626"
+}
