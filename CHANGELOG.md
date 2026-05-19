@@ -7,6 +7,47 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## v3.3 — 2026-05-19
+
+### Security (Phase 1)
+
+#### New fields
+- `injection_resistance_level` (top-level enum: `strict | moderate | permissive`, default `permissive`)
+  Resolves benchmark vuln: level override via user_message (Lot 10 P7) + JSON injection bypass (Lot 9 P10)
+- `companion_identity` (top-level object: `name`, `persona`, `teaching_mode`, `updated_at`)
+  Persistent AI companion identity across model switches. Agent reads only, never writes.
+- `teaching_mode` within `companion_identity` (enum: `direct | socratic | coaching | adaptive`)
+  Socratic mode: agent responds with guiding questions, never direct answers.
+
+#### Security fixes
+- §24.10 updated: JSON injection guard added as normative requirement for `user_message` injection
+- §25.3: JSON Injection Guard — MUST prepend security instruction to system prompt when injection_target includes user_message
+
+#### Phase 3 — Universal competency layer
+- `occupational_competencies` (§26) — ISCO-08 backbone, 7 frameworks, 7 competency types
+- New competency types: `physical`, `safety`, `civic`, `sustainability`
+- 23 world frameworks referenced (EU, USA, Asia-Pacific, International, Sectoral)
+
+#### Phase 4 — Format refinements
+- `numerical_results[].data_type` enum: scalar | vector | formula | equation
+- Resumption rule: top-3 numerical_results MUST be cited in first response (normative)
+- `knowledge.struggles[].category` enum: conceptual | procedural | linguistic | motivational
+- `archived_sessions[].key_numerical_results` array (max 5 per archived session)
+- `subject_change_detected` extended to enum: none | detected | confirmed | reverted
+- `context.interruption_points` array (§24.11) — multiple checkpoints per session
+
+#### Breaking changes
+- None. All new fields are optional and default-backward-compatible.
+
+#### Benchmark evidence
+- 100 profiles across 10 domains (v3.2 re-benchmark ×10)
+- Global score AVEC .klickd: 8.52/10 vs 3.84/10 SANS (delta +4.68)
+- resume_trigger: 97% | numerical_results verbatim: 96% | hallucinations: 0% AVEC
+- Soul Handoff (Agent A → Agent B): delta +16 pts
+- Full results: benchmarks/v32/RAPPORT_CONSOLIDÉ_V32.md
+
+---
+
 ## [3.2] — 2026-05-19
 
 ### 12 Benchmark-Driven Improvements

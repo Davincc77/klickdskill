@@ -1,0 +1,54 @@
+{
+  "klickd_version": "3.3",
+  "domain_schema_version": "education-1.2",
+  "created_at": "2026-05-19T20:00:00Z",
+  "encrypted": false,
+  "injection_resistance_level": "strict",
+  "companion_identity": {
+    "name": "Aria",
+    "persona": "curieuse, directe, encourage sans flatter",
+    "teaching_mode": "socratic",
+    "updated_at": "2026-05-19"
+  },
+  "context": {
+    "mode": "full",
+    "subject": "Mathématiques — Dérivées",
+    "language": "fr",
+    "language_switch_detected": false,
+    "subject_change_detected": false,
+    "injection_target": "system_prompt",
+    "resume_trigger": "On s'était arrêtés sur les dérivées des fonctions composées, tu avais compris la règle de la chaîne mais bloquais sur les exemples trigonométriques.",
+    "interruption_point": {
+      "ts": "2026-05-19T19:45:00Z",
+      "topic": "Dérivées",
+      "subtopic": "Fonctions composées — cas trigonométriques",
+      "completion_pct": 62
+    },
+    "numerical_results": [
+      {"label": "f'(x) pour f(x)=sin(x²)", "value": "2x·cos(x²)", "unit": "", "formula": "chaîne: f'(g(x))·g'(x)"},
+      {"label": "Valeur en x=π/4", "value": "√2·π/2", "unit": "", "formula": "2·(π/4)·cos(π²/16)"}
+    ]
+  },
+  "student": {
+    "name": "Sophie",
+    "level": "Terminale S",
+    "language": "fr",
+    "country": "FR"
+  },
+  "knowledge": {
+    "mastered": ["dérivée polynomiale", "règle du produit", "règle du quotient"],
+    "in_progress": ["règle de la chaîne", "dérivées trigonométriques"],
+    "struggles": [
+      {"topic": "fonctions composées trigonométriques", "severity": "blocking"},
+      {"topic": "visualisation géométrique de la dérivée", "severity": "moderate"}
+    ],
+    "vocabulary_used": ["dérivée", "règle de la chaîne", "fonction composée", "sin", "cos", "tan"]
+  },
+  "archived_sessions": [
+    {
+      "session_id": "sess-001",
+      "summary": "Introduction dérivées polynomiales — Sophie maîtrise f'(xⁿ)=nxⁿ⁻¹, règle produit et quotient validées.",
+      "date": "2026-05-18"
+    }
+  ]
+}

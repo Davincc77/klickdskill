@@ -34,7 +34,8 @@ repo: https://github.com/Davincc77/klickdskill
 > **One soul. Any model. Any body.**
 
 **Envelope schema version:** 3.0 (klickd_version field in the file) — BREAKING from 2.x
-**Skill/doc revision:** 4.0
+**Spec version:** 3.3
+**Skill/doc revision:** 4.1
 **License:** CC0 1.0 Universal (Public Domain)
 **Spec:** [SPEC.md](./SPEC.md)
 **DOI:** [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530) — latest version: [10.5281/zenodo.20295858](https://zenodo.org/records/20295858)
@@ -1471,8 +1472,61 @@ For education payloads, the current version is `education-1.2` (bumped from 1.0 
 
 ---
 
+## 25. v3.3 New Fields — Usage Examples
+
+### `injection_resistance_level` — Profile enforcement strength
+
+Controls how strictly the agent enforces the student profile against override attempts.
+
+```json
+{
+  "injection_resistance_level": "strict"
+}
+```
+
+Use `"strict"` when deploying in educational contexts where profile fidelity is critical. Default is `"permissive"` for backward compatibility.
+
+### `companion_identity` — Persistent AI companion
+
+Defines the AI companion's identity across sessions and models. The agent reads this block on load and MUST NOT modify it.
+
+```json
+{
+  "companion_identity": {
+    "name": "Aria",
+    "persona": "curieuse, directe, encourage sans flatter",
+    "teaching_mode": "socratic",
+    "updated_at": "2026-05-19"
+  }
+}
+```
+
+In `socratic` mode, the agent responds to every question with a guiding question — never a direct answer. In `coaching` mode, the agent always ends with a comprehension check.
+
+### `injection_resistance_level` + `companion_identity` — Combined security profile
+
+For maximum resistance against injection attacks in tutoring contexts:
+
+```json
+{
+  "injection_resistance_level": "strict",
+  "companion_identity": {
+    "name": "Aria",
+    "persona": "curieuse, directe, encourage sans flatter",
+    "teaching_mode": "socratic",
+    "updated_at": "2026-05-19"
+  },
+  "injection_target": "both"
+}
+```
+
+When `injection_target` includes `user_message`, implementors MUST prepend the §25.3 JSON Injection Guard to the system prompt (see SPEC.md §25.3).
+
+---
+
 ## Changelog
 
+- **v3.3 (spec) / 2026-05-19** — Security Phase 1: `injection_resistance_level` (strict/moderate/permissive), `companion_identity` (name/persona/teaching_mode/updated_at), `teaching_mode` enum (direct/socratic/coaching/adaptive). §24.10 JSON injection guard (normative). §25.3 JSON Injection Guard prepend requirement. All new fields optional and backward-compatible.
 - **v3.2 (skill) / 2026-05-19** — 12 benchmark-driven improvements: `numerical_results`, `interruption_point`, `resume_trigger`, `knowledge.struggles`, `vocabulary_used`, `context.mode`, `archived_sessions`, `language_switch_detected`, `subject_change_detected`, `injection_target`. §23 Model-Specific Behaviors (Gemini implicit assimilation, small model posture, gemma2 deprecation). `domain_schema_version` education bump to 1.2. `build_system_prompt` updated to handle all new fields.
 - **v6.0 (skill) / envelope 3.0 — 2026-05-18** — Soul Personality (§18quater): `personality` payload block with `core_traits` (strength 0–1), `temperament`, `voice` (tone/formality/verbosity/avoids), `values` array, evolution tracking. 20 standard trait labels, 9 temperament presets. Agent MUST read personality before first response; MUST NOT auto-modify. Knowledge Commons (§18quinquies): `registry/` structure in GitHub repo (competencies per domain, personality templates, domain taxonomy). Privacy-preserving contribution protocol (strip personal fields, hash contributor identity, PR workflow). Pull update protocol (anonymous HTTP GET, propose-don't-auto-add). Multilingual competency labels (EN/FR/DE/LB). CC0 registry. `growth.last_registry_sync` + `last_registry_sync_at` fields. Network effect loop documented.
 - **v5.0 (skill) / envelope 3.0 — 2026-05-18** — Whitehat Swarm (§18): distributed security protocol, `role=whitehat` memory entries, audit checklist, prompt injection pattern list, swarm coordination, continuous watch schedule. Soul Growth (§18bis): living competency graph (`growth` object), mastery levels 1–5, domain classification, dependency arcs, agent behaviour rules. Ethics Lock (§18ter): `ethics` payload block, `locked_actions` at SYSTEM authority, `critical_systems_locked` (nuclear, power grid, etc.), `owner_consent_required`, anti-blackhat spec-level absolute prohibitions (§18ter.4), tamper-proof via AES-256-GCM + no-server architecture. Section numbering: Conformance=19, Error=20, Versioning=21, Vectors=22, License=23.
