@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""load_klickd.py v3.0 -- PBKDF2 + 4-field AAD (v2.x); Argon2id + RFC 8785 JCS (v3.0)
+"""load_klickd.py v3.2 -- PBKDF2 + 4-field AAD (v2.x); Argon2id + RFC 8785 JCS (v3.0)
+v3.2 additions (2026-05-19):
+  build_system_prompt handles: resume_trigger, numerical_results, interruption_point,
+  context.mode (lightweight), vocabulary_used.
 
 Security patches applied (Bankr audit 2026-05-18):
   CRITICAL 1.3b / 6.2 — Argon2id/PBKDF2 minimum parameter floor enforced
@@ -159,9 +162,19 @@ def build_system_prompt(klickd_payload: dict, base_system_prompt: str) -> str:
     first and treats it as the highest-priority instruction source.
     Bankr HIGH 2.2b: escape </UserContext> tag boundaries to prevent injection.
 
+    v3.2: handles resume_trigger, numerical_results, interruption_point,
+    context.mode (lightweight), vocabulary_used.
+
     The returned prompt layout is:
         <UserContext>\n{prefs}\n</UserContext>\n\n---\n\n{base_system_prompt}
     """
+    context = klickd_payload.get("context", {}) or {}
+    knowledge = klickd_payload.get("knowledge", {}) or {}
+
+    # v3.2: Check context.mode — lightweight = condensed prompt
+    mode = context.get("mode", "full")
+    is_lightweight = (mode == "lightweight")
+
     # Auto-audit A3: check both fields independently; prefer user_preferences,
     # append agent_instructions if different and both present.
     prefs = klickd_payload.get("user_preferences", "") or ""
@@ -171,10 +184,86 @@ def build_system_prompt(klickd_payload: dict, base_system_prompt: str) -> str:
         combined = f"{prefs}\n\n{instr}"
     else:
         combined = prefs or instr
-    if not combined:
+
+    # --- v3.2 NEW FIELD HANDLING ---
+    extra_parts = []
+
+    # resume_trigger: MUST be output at start of resumed session
+    resume_trigger = context.get("resume_trigger")
+    if resume_trigger and not is_lightweight:
+        extra_parts.append(
+            f"RESUME SIGNAL (output this verbatim at session start): {resume_trigger}"
+        )
+
+    # interruption_point: resume from this exact point
+    interruption_point = context.get("interruption_point")
+    if interruption_point and not is_lightweight:
+        ip_parts = []
+        if interruption_point.get("topic"):
+            ip_parts.append(f"Topic: {interruption_point['topic']}")
+        if interruption_point.get("subtopic"):
+            ip_parts.append(f"Subtopic: {interruption_point['subtopic']}")
+        if interruption_point.get("completion_pct") is not None:
+            ip_parts.append(f"Completion: {interruption_point['completion_pct']}%")
+        if interruption_point.get("last_message_excerpt"):
+            ip_parts.append(f"Last excerpt: {interruption_point['last_message_excerpt']}")
+        if ip_parts:
+            extra_parts.append(
+                "INTERRUPTION POINT (resume exactly from here):\n" + "\n".join(ip_parts)
+            )
+
+    # numerical_results: MUST cite verbatim
+    numerical_results = context.get("numerical_results")
+    if numerical_results and not is_lightweight:
+        nr_lines = []
+        for nr in numerical_results:
+            label = nr.get("label", "")
+            value = nr.get("value", "")
+            unit = nr.get("unit", "")
+            formula = nr.get("formula", "")
+            line = f"  - {label}: {value}{unit}"
+            if formula:
+                line += f" (formula: {formula})"
+            nr_lines.append(line)
+        if nr_lines:
+            extra_parts.append(
+                "NUMERICAL RESULTS (MUST cite verbatim when resuming):\n"
+                + "\n".join(nr_lines)
+            )
+
+    # vocabulary_used: MUST reuse this exact vocabulary
+    vocabulary_used = knowledge.get("vocabulary_used")
+    if vocabulary_used and not is_lightweight:
+        vocab_str = ", ".join(vocabulary_used[:50])  # cap at 50 terms in prompt
+        extra_parts.append(
+            f"DOMAIN VOCABULARY (MUST reuse in resumed session): {vocab_str}"
+        )
+
+    # language_switch_detected
+    if context.get("language_switch_detected") and not is_lightweight:
+        extra_parts.append(
+            "NOTE: Language switch detected. Context is language-agnostic — adapt response language to user."
+        )
+
+    # subject_change_detected
+    if context.get("subject_change_detected") and not is_lightweight:
+        extra_parts.append(
+            "NOTE: Subject change detected. Acknowledge previous session is paused; treat this as a new context branch."
+        )
+
+    # Build full combined context
+    all_parts = []
+    if combined:
+        all_parts.append(combined)
+    all_parts.extend(extra_parts)
+
+    if not all_parts:
         return base_system_prompt
+
+    full_context = "\n\n".join(all_parts)
+
     # Sanitize: escape any </UserContext> sequences that would break the tag boundary
-    safe = str(combined).replace("</UserContext>", "<\\/UserContext>")
+    safe = str(full_context).replace("</UserContext>", "<\\/UserContext>")
     user_context = f"<UserContext>\n{safe}\n</UserContext>"
     # klickd context FIRST (§12 — highest authority), base prompt follows
     return f"{user_context}\n\n---\n\n{base_system_prompt}"

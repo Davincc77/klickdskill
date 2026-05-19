@@ -7,6 +7,32 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## [3.2] — 2026-05-19
+
+### 12 Benchmark-Driven Improvements
+
+- **numerical_results** (`context`): Array of `{label, value, unit?, formula?}` objects (max 200). Agents MUST cite these values verbatim when resuming sessions.
+- **interruption_point** (`context`): Object capturing the precise point of session interruption — `ts`, `last_message_excerpt` (512 chars), `topic`, `subtopic`, `completion_pct` (0–100). Agents MUST resume from this exact point.
+- **resume_trigger** (`context`): Exact phrase the agent MUST output at the start of a resumed session to signal continuity.
+- **knowledge.struggles**: Array of `{concept, severity, context}` objects (max 100). Severity enum: `minor | moderate | blocking`. Agents MUST NOT re-explain mastered content but SHOULD revisit struggles.
+- **vocabulary_used** (`knowledge`): Array of domain-specific terms (max 500, 128 chars each). Agents MUST reuse this exact vocabulary in resumed sessions.
+- **context.mode**: Enum `full | lightweight` (default: `full`). Lightweight mode reduces overhead for simple sessions.
+- **archived_sessions** (top-level): Array of compressed past-session summaries (max 50). Bounds file growth by archiving old sessions out of active `memory[]`.
+- **language_switch_detected** (`context`): Boolean flag — context survives language switches.
+- **subject_change_detected** (`context`): Boolean flag — agent SHOULD acknowledge previous session pause and create a new context branch.
+- **injection_target** (top-level): Enum `system_prompt | user_message | both` (default: `system_prompt`). `user_message` may improve verbatim recall for some models.
+- **§23 Model-Specific Behaviors** (SPEC.md): Documents Gemini implicit assimilation, small-model cautious posture, and gemma2-9b-it deprecation.
+- **domain_schema_version** example bump: `education-1.0` → `education-1.2`; new fields documented in SKILL.md.
+
+### Updated Files
+- `schemas/klickd-payload-v3.schema.json` — bumped title to v3.2, `$id` URL to v3.2, all new fields added
+- `SPEC.md` — v3.2 header, §23 Model-Specific Behaviors added, all new fields documented
+- `SKILL.md` — usage examples for `numerical_results`, `interruption_point`, `resume_trigger`, `vocabulary_used`
+- `load_klickd.py` — `build_system_prompt` handles all new context fields
+- `klickd_v320_spec.pdf` — updated specification PDF
+
+---
+
 ## [v6.0] - 2026-05-18
 
 ### Security & Hardening (Grok Audits 2–5)

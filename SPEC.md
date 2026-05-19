@@ -1,9 +1,9 @@
-# .klickd v2 — Technical Specification
+# .klickd — Technical Specification
 
-**Version:** 2.5  
+**Version:** 3.2  
 **License:** CC0 1.0 Universal (Public Domain)  
 **Maintainer:** Klickd / Luxlearn (Luxembourg)  
-**Status:** Production — v2.5
+**Status:** Production — v3.2 (2026-05-19)
 
 ---
 
@@ -400,6 +400,73 @@ Agents receiving a v1 file should reject it with a clear error unless they imple
 | File extension | `.klickd` |
 | Suggested MIME type | `application/vnd.klickd+json` |
 | Encoding | UTF-8 without BOM |
+
+---
+
+## §23 — Model-Specific Behaviors
+
+### §23.1 — Gemini implicit context assimilation
+Google Gemini models (gemini-2.5-flash and successors) are known to assimilate .klickd context
+without explicit citation. This is expected behavior. Absence of verbatim context citation
+does NOT indicate context failure. Consuming agents SHOULD verify context assimilation via
+follow-up probe rather than keyword matching.
+
+### §23.2 — Small model context reading
+Models with <10B parameters (e.g. llama-3.1-8b-instant) can read .klickd context correctly
+but may adopt a cautious posture (recap before advancing). This is expected behavior.
+
+### §23.3 — Deprecated models
+gemma2-9b-it has been decommissioned by Groq as of May 2026. Do not use.
+Recommended substitutes: qwen/qwen3-32b, llama-3.1-8b-instant.
+
+---
+
+## §24 — v3.2 New Fields Reference
+
+### §24.1 — context.numerical_results
+Array of key numerical results from the session (max 200). Each entry is `{label, value, unit?, formula?}`. Agents MUST cite these values verbatim when resuming. Example:
+```json
+"numerical_results": [
+  {"label": "Pass rate", "value": "78", "unit": "%"},
+  {"label": "Mean score", "value": "14.2", "unit": "/20", "formula": "sum(scores)/n"}
+]
+```
+
+### §24.2 — context.interruption_point
+Precise point at which the session was interrupted. Agents MUST resume from this exact point.
+```json
+"interruption_point": {
+  "ts": "2026-05-19T10:30:00Z",
+  "last_message_excerpt": "...we were computing the derivative of x²+3x...",
+  "topic": "Differentiation",
+  "subtopic": "Polynomial derivatives",
+  "completion_pct": 65
+}
+```
+
+### §24.3 — context.resume_trigger
+Exact phrase the agent MUST output at the start of a resumed session to signal continuity. Example value: `"Reprise de la session du 2026-05-19 — on en était à Différentiation (65% terminé)."`
+
+### §24.4 — knowledge.struggles
+Array of concepts the user struggled with (max 100). Severity enum: `minor | moderate | blocking`. Agents MUST NOT re-explain already mastered content but SHOULD revisit struggles.
+
+### §24.5 — knowledge.vocabulary_used
+Array of domain-specific terms introduced and confirmed understood (max 500). Agents MUST reuse this exact vocabulary in resumed sessions.
+
+### §24.6 — context.mode
+Enum `full | lightweight` (default: `full`). In `lightweight` mode, the system prompt is condensed to minimize token overhead for simple sessions.
+
+### §24.7 — archived_sessions
+Top-level array (max 50) of compressed past-session summaries. When `memory[]` grows large, older sessions SHOULD be compressed to `archived_sessions` entries to bound file size.
+
+### §24.8 — context.language_switch_detected
+Boolean. Set to `true` if the user switched language between sessions. Context is language-agnostic and survives language switches.
+
+### §24.9 — context.subject_change_detected
+Boolean. Set to `true` if the user is starting a completely new topic. Agent SHOULD acknowledge the previous session is paused and create a new context branch.
+
+### §24.10 — injection_target
+Top-level enum `system_prompt | user_message | both` (default: `system_prompt`). Controls where the .klickd context block is injected. `user_message` injection may improve verbatim recall for models that weight user turns more heavily.
 
 ---
 

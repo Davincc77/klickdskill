@@ -1362,8 +1362,118 @@ Full legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
 ---
 
+## 24. v3.2 New Fields — Usage Examples
+
+### `context.numerical_results` — Verbatim numerical context
+
+Use this to preserve computed values across sessions. Agents MUST cite them verbatim.
+
+```json
+"context": {
+  "numerical_results": [
+    {"label": "Taux de réussite", "value": "78", "unit": "%"},
+    {"label": "Score moyen", "value": "14.2", "unit": "/20", "formula": "sum(scores)/n"},
+    {"label": "Coefficient directeur", "value": "3", "unit": "", "formula": "(y2-y1)/(x2-x1)"}
+  ]
+}
+```
+
+At session resume, the agent MUST open with: *"The pass rate was 78%, mean score 14.2/20."*
+
+### `context.interruption_point` — Precise resume location
+
+Captures exactly where the session was cut off so the agent can resume without any re-explanation.
+
+```json
+"context": {
+  "interruption_point": {
+    "ts": "2026-05-19T14:22:00Z",
+    "last_message_excerpt": "...on calcule maintenant la dérivée de f(x) = 3x² + 2x - 5 en utilisant la règle de puissance...",
+    "topic": "Dérivation",
+    "subtopic": "Règle de puissance",
+    "completion_pct": 65
+  }
+}
+```
+
+### `context.resume_trigger` — Continuity signal
+
+The exact phrase the agent MUST output at the start of a resumed session.
+
+```json
+"context": {
+  "resume_trigger": "Reprise de la session du 2026-05-19 — on en était à Dérivation / Règle de puissance (65% terminé)."
+}
+```
+
+### `knowledge.vocabulary_used` — Domain terminology preservation
+
+Terms the agent introduced and the user confirmed understanding of. The agent MUST reuse these exact terms in resumed sessions.
+
+```json
+"knowledge": {
+  "vocabulary_used": [
+    "dérivée", "règle de puissance", "exposant", "coefficient",
+    "fonction polynomiale", "tangente", "pente"
+  ]
+}
+```
+
+### `knowledge.struggles` — Severity-graded difficulties
+
+The agent SHOULD return to blocking and moderate struggles in the next session.
+
+```json
+"knowledge": {
+  "struggles": [
+    {"concept": "Factorisation", "severity": "blocking", "context": "User confused (a+b)(a-b) with a²+b²"},
+    {"concept": "Signe de la dérivée", "severity": "moderate", "context": "Confuses positive/negative derivative with function growth direction"},
+    {"concept": "Calcul de pente", "severity": "minor", "context": "Occasional sign error"}
+  ]
+}
+```
+
+### `context.mode` — Lightweight mode
+
+For simple sessions (single question, quick lookup), set `mode: "lightweight"` to reduce system prompt overhead.
+
+```json
+"context": {
+  "mode": "lightweight"
+}
+```
+
+### `archived_sessions` — Session archiving
+
+Move old sessions from `memory[]` here to keep file size bounded.
+
+```json
+"archived_sessions": [
+  {
+    "session_id": "sess-2026-05-01",
+    "date": "2026-05-01",
+    "summary": "Covered polynomial functions, factorisation. User achieved 85% on quiz.",
+    "topics_covered": ["Polynomials", "Factorisation", "Quadratic formula"],
+    "model_used": "gemini-2.5-flash"
+  }
+]
+```
+
+### `domain_schema_version` — Education 1.2
+
+For education payloads, the current version is `education-1.2` (bumped from 1.0 in v3.2).
+
+```json
+{
+  "domain_schema_version": "education-1.2"
+}
+```
+
+---
+
 ## Changelog
 
+- **v3.2 (skill) / 2026-05-19** — 12 benchmark-driven improvements: `numerical_results`, `interruption_point`, `resume_trigger`, `knowledge.struggles`, `vocabulary_used`, `context.mode`, `archived_sessions`, `language_switch_detected`, `subject_change_detected`, `injection_target`. §23 Model-Specific Behaviors (Gemini implicit assimilation, small model posture, gemma2 deprecation). `domain_schema_version` education bump to 1.2. `build_system_prompt` updated to handle all new fields.
 - **v6.0 (skill) / envelope 3.0 — 2026-05-18** — Soul Personality (§18quater): `personality` payload block with `core_traits` (strength 0–1), `temperament`, `voice` (tone/formality/verbosity/avoids), `values` array, evolution tracking. 20 standard trait labels, 9 temperament presets. Agent MUST read personality before first response; MUST NOT auto-modify. Knowledge Commons (§18quinquies): `registry/` structure in GitHub repo (competencies per domain, personality templates, domain taxonomy). Privacy-preserving contribution protocol (strip personal fields, hash contributor identity, PR workflow). Pull update protocol (anonymous HTTP GET, propose-don't-auto-add). Multilingual competency labels (EN/FR/DE/LB). CC0 registry. `growth.last_registry_sync` + `last_registry_sync_at` fields. Network effect loop documented.
 - **v5.0 (skill) / envelope 3.0 — 2026-05-18** — Whitehat Swarm (§18): distributed security protocol, `role=whitehat` memory entries, audit checklist, prompt injection pattern list, swarm coordination, continuous watch schedule. Soul Growth (§18bis): living competency graph (`growth` object), mastery levels 1–5, domain classification, dependency arcs, agent behaviour rules. Ethics Lock (§18ter): `ethics` payload block, `locked_actions` at SYSTEM authority, `critical_systems_locked` (nuclear, power grid, etc.), `owner_consent_required`, anti-blackhat spec-level absolute prohibitions (§18ter.4), tamper-proof via AES-256-GCM + no-server architecture. Section numbering: Conformance=19, Error=20, Versioning=21, Vectors=22, License=23.
 - **v4.0 (skill) / envelope 3.0 — 2026-05-18** — **BREAKING.** RFC 8785 JCS replaces Python-specific json.dumps canonicalization. Argon2id m=65536/t=3/p=1 replaces PBKDF2 as default KDF. Structured `kdf` and `cipher` envelope blocks replace flat `salt`/`iv`. 6-field AAD (was 4). `payload_schema_version` and `domain_schema_version` added to inner payload. Normative `memory` array with UUID/ts/role/content/modality/tags shape and 1000-entry/10KB/5MB limits. `user_preferences` advisory clause carried forward from v2.5. RFC 2119 Conformance section added. Error taxonomy added. v2.x legacy read path (PBKDF2) defined as MAY. v2.x readers MUST reject v3.0 (KLICKD_E_VERSION).

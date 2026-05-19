@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://klickd.app/schemas/v3/klickd-payload.schema.json",
-  "title": "klickd Payload v3.0",
-  "description": "Normative schema for the .klickd inner decrypted payload. See SPEC.md v3.0 §20.2. This schema applies after successful AES-256-GCM decryption and authentication.",
+  "$id": "https://klickd.app/schemas/v3.2/klickd-payload.schema.json",
+  "title": "klickd Payload v3.2",
+  "description": "Normative schema for the .klickd inner decrypted payload. See SPEC.md v3.2 §20.2. This schema applies after successful AES-256-GCM decryption and authentication.",
   "type": "object",
   "required": [
     "payload_schema_version",
@@ -18,7 +18,28 @@
     "domain_schema_version": {
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]*-\\d+\\.\\d+$",
-      "description": "Domain-specific schema version in '{domain}-{major}.{minor}' format. Examples: 'education-1.0', 'work-2.1'. Unrecognized major versions SHOULD trigger KLICKD_E_SCHEMA."
+      "description": "Domain-specific schema version in '{domain}-{major}.{minor}' format. Examples: 'education-1.2', 'work-2.1'. Unrecognized major versions SHOULD trigger KLICKD_E_SCHEMA."
+    },
+    "injection_target": {
+      "type": "string",
+      "enum": ["system_prompt", "user_message", "both"],
+      "default": "system_prompt",
+      "description": "Where to inject the .klickd context. 'user_message' may improve verbatim recall for some models."
+    },
+    "archived_sessions": {
+      "type": "array",
+      "maxItems": 50,
+      "description": "Compressed summaries of past sessions. Active context stays in memory[]. Old sessions are archived here to bound file growth.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "session_id": {"type": "string"},
+          "date": {"type": "string"},
+          "summary": {"type": "string", "maxLength": 1024},
+          "topics_covered": {"type": "array", "items": {"type": "string"}},
+          "model_used": {"type": "string"}
+        }
+      }
     },
     "identity": {
       "type": "object",
@@ -128,6 +149,51 @@
           "type": "string",
           "maxLength": 4096,
           "description": "Concise plain-text summary of the session context for agent priming. Maximum 4096 characters."
+        },
+        "numerical_results": {
+          "type": "array",
+          "maxItems": 200,
+          "description": "Key numerical results from the session. Agents MUST cite these values verbatim when resuming. Each entry is a {label, value, unit?, formula?} object.",
+          "items": {
+            "type": "object",
+            "required": ["label", "value"],
+            "properties": {
+              "label": {"type": "string", "maxLength": 256},
+              "value": {"type": "string", "maxLength": 256},
+              "unit": {"type": "string", "maxLength": 64},
+              "formula": {"type": "string", "maxLength": 1024}
+            }
+          }
+        },
+        "interruption_point": {
+          "type": "object",
+          "description": "Precise point at which the session was interrupted. Agents MUST resume from this exact point.",
+          "properties": {
+            "ts": {"type": "string", "description": "RFC 3339 UTC timestamp of interruption"},
+            "last_message_excerpt": {"type": "string", "maxLength": 512, "description": "Last 512 chars of the last message before interruption"},
+            "topic": {"type": "string", "maxLength": 256, "description": "Topic being discussed at interruption"},
+            "subtopic": {"type": "string", "maxLength": 256},
+            "completion_pct": {"type": "number", "minimum": 0, "maximum": 100, "description": "Estimated % completion of current topic (0-100)"}
+          }
+        },
+        "resume_trigger": {
+          "type": "string",
+          "maxLength": 512,
+          "description": "Exact phrase the agent MUST output at the start of a resumed session to signal continuity. Example: 'Reprise de la session du [date] — on en était à [topic] ([completion_pct]% terminé).'"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["full", "lightweight"],
+          "default": "full",
+          "description": "lightweight: minimal context for simple sessions (overhead reduction). full: complete context preservation (default)."
+        },
+        "language_switch_detected": {
+          "type": "boolean",
+          "description": "Set to true if the user switched language between sessions. Context is language-agnostic and survives language switches."
+        },
+        "subject_change_detected": {
+          "type": "boolean",
+          "description": "Set to true if the user is starting a completely new topic. Agent SHOULD acknowledge the previous session is paused and create a new context branch."
         }
       }
     },
@@ -151,6 +217,25 @@
           },
           "maxItems": 500,
           "description": "Topics or skills identified as knowledge gaps. Maximum 500 entries."
+        },
+        "struggles": {
+          "type": "array",
+          "maxItems": 100,
+          "description": "Specific concepts the user struggled with. Agents MUST NOT re-explain already mastered content but SHOULD revisit struggles.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "concept": {"type": "string", "maxLength": 256},
+              "severity": {"type": "string", "enum": ["minor", "moderate", "blocking"]},
+              "context": {"type": "string", "maxLength": 512}
+            }
+          }
+        },
+        "vocabulary_used": {
+          "type": "array",
+          "maxItems": 500,
+          "description": "Domain-specific terms introduced and confirmed understood. Agents MUST reuse this exact vocabulary in resumed sessions.",
+          "items": {"type": "string", "maxLength": 128}
         },
         "next_steps": {
           "type": "array",
