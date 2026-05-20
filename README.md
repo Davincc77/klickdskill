@@ -33,7 +33,7 @@ pip install klickd
 
 **Node.js / TypeScript**
 ```bash
-npm install @klickd/sdk
+npm install @klickd/core
 ```
 
 ---
