@@ -7,7 +7,7 @@
 
 ## Files Created
 
-### npm @klickd/core (`packages/npm/@klickd/core/`)
+### npm @klickd/core (`packages/@klickd/core/`)
 
 | File | Description |
 |------|-------------|
@@ -44,7 +44,7 @@
 ### npm
 
 ```bash
-# From packages/npm/@klickd/core/
+# From packages/@klickd/core/
 
 # 1. Install dependencies
 npm install
