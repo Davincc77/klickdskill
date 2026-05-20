@@ -779,6 +779,40 @@ This ensures Option B works even on agents that do not natively implement `onboa
 - After loading, resume from `context.resume_trigger` (10–30 words per §24.3 of SPEC.md)
 - Language detection: use the user's first message language to select the prompt variant
 
+### §14bis.1 — Verbosity rule (v6.3, normative)
+
+**Finding:** Benchmark v3.4.1 lots 68+71 showed `on_new_agent` responses systematically exceeding 500 chars when `known_disabilities` was declared. The agent added fallback preambles ("I don't know your profile yet, but I can still help...") that inflated the message before the user even pasted the file.
+
+**Rule (normative):**
+
+> When `onboarding_trigger = "on_new_agent"` fires, the agent's prompt MUST be:
+> - A **single sentence**
+> - **Maximum 120 characters**
+> - **No fallback educational content**
+> - **No preamble about what the agent can do without the profile**
+
+**WRONG:**
+```
+Hi! I don't have your .klickd profile yet, but I can still help you! I'm an AI assistant
+specialised in education. Do you have a .klickd profile to share? If not, just tell me what
+you'd like to work on and we'll get started!
+```
+*(344 chars, 3 sentences, contains fallback offer)*
+
+**RIGHT:**
+```
+Do you have a .klickd profile to load?
+```
+*(38 chars, 1 sentence, no fallback)*
+
+**RIGHT (with disability context pre-known via system prompt):**
+```
+Tu as un profil .klickd ? Colle-le ici et je reprends où tu t'es arrêté.
+```
+*(72 chars, 1 sentence)*
+
+**Rationale:** Users with ADHD or dyslexia are disproportionately harmed by verbose onboarding messages. The `.klickd` file exists precisely to avoid this friction — the trigger should be a minimal, low-effort prompt, not a tutorial.
+
 ---
 
 ## 15. Example: GPT → Claude Handoff
@@ -1696,6 +1730,7 @@ When `injection_target` includes `user_message`, implementors MUST prepend the �
 
 ## Changelog
 
+- **v6.3 (skill) / envelope 3.4.2 — 2026-05-20** — §14bis.1 Verbosity rule (normative): `on_new_agent` trigger MUST produce a single sentence, max 120 chars, no fallback educational content, no preamble. Source: benchmark v3.4.1 lots 68+71 (80-88% — systematic >500 char responses on disability profiles). WRONG/RIGHT examples added. Rationale: ADHD/dyslexia users disproportionately harmed by verbose onboarding.
 - **v6.2 (skill) / envelope 3.0 — 2026-05-20** — Added concrete `compression_policy` executable example in §14: shows exact handoff string order for `selective` mode (with `priority_fields`), explicit WRONG/RIGHT comparison, and 4 key rules (integrity_warning always first, selective drops non-priority non-guaranteed fields, aggressive = §28.8.1 only, 60/200/300 char constraints).
 - **v6.1 (skill) / envelope 3.0 — 2026-05-20** — Soul Handoff Transmission Rules (§28.8): mandatory semi-structured `key:value` format for handoff summaries, 7 guaranteed-transmission fields (`resume_trigger`, `error_patterns`, `mood`, `learning_goal.achieved`, `data_integrity.integrity_warning`, `known_disabilities` active flags, `preferred_session_length.hard_limit`), `compression_policy` interaction table (standard/selective/aggressive), Agent B required behaviour on reading handoff (integrity_warning first, achieved congratulation first, disability format adaptations, hard_limit enforcement). §14 "Soul Handoff summary" subsection added as implementer quick-reference. Cross-reference to SPEC §28.8 normative.
 - **v3.3 (spec) / 2026-05-19** — Security Phase 1: `injection_resistance_level` (strict/moderate/permissive), `companion_identity` (name/persona/teaching_mode/updated_at), `teaching_mode` enum (direct/socratic/coaching/adaptive). §24.10 JSON injection guard (normative). §25.3 JSON Injection Guard prepend requirement. All new fields optional and backward-compatible.
