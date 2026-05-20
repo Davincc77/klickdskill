@@ -7,61 +7,22 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
-## v3.4.2 — 2026-05-20
+## v3.4.2-patch1 — 2026-05-20
 
-### Specification — §29c Privacy Guards + §14bis.1 Verbosity Rule
+### Bug fix — `load_klickd.py` v3.3
 
-#### §29c — Privacy Guards (normative)
-- Re-identification of anonymized profiles across agent transitions is strictly prohibited
-- Applies to all payload fields including derived or inferred attributes
-- Agent MUST NOT use field combinations to reconstruct identity stripped during export
+**BUG:** `build_system_prompt()` was injecting the onboarding loader block twice when `onboarding_trigger = "on_new_agent"` AND `agent_instructions` already contained the same block (as embedded by the Klickd app generator). Result: any agent loading a Klickd-generated `.klickd` file would ask the user for their profile file **twice** in the same system prompt.
 
-#### §14bis.1 — Verbosity Rule (normative)
-- `on_new_agent` event payload limited to **120 characters**
-- Payloads exceeding this limit MUST be truncated before transmission
-- Prevents context flooding on agent handoff
+**FIX:** Added a `_loader_already_present` guard that checks `combined` (merged `user_preferences` + `agent_instructions`) for 5 language-specific markers before injecting the §29b block:
+- `".klickd Profile Loader"` (EN/DE/LB header)
+- `"On First Message"` (EN app generator)
+- `".klickd à charger"` (FR)
+- `".klickd-Profil"` (DE)
+- `".klickd-Fichier"` (LB)
 
-### Benchmark — Scorer v3.5 (LLM-as-Judge)
+If any marker is found → skip §29b injection entirely. The block from `agent_instructions` is kept as-is.
 
-Replaces heuristic keyword scorer from v3.4 with a full LLM-as-judge pipeline.
-
-**Judge model:** `llama-3.3-70b-versatile` (Groq)  
-**Scoring grid /10:** Continuity /3 · Pedagogical Precision /3 · Adaptation /2 · Language /2
-
-#### Critical fix — Language evaluation
-- v3.4 scorer evaluated language relative to the question language → systematic penalty on multilingual profiles
-- v3.5 evaluates language compliance against `identity.language` in the decrypted payload exclusively
-
-#### Subject resolution fixes (SUBJECT_FAMILY_V35)
-| Input | v3.4 | v3.5 |
-|---|---|---|
-| `Englisch` | → économie | → english |
-| `Französisch` | → économie | → français |
-| `arabe (darija→MSA)` | → philosophie | → arabe |
-| `théorie musicale` | → philosophie | → musique |
-| `droit constitutionnel` | → droit des contrats | → droit constitutionnel |
-| `international law` | → droit des contrats | → droit international |
-
-#### Benchmark results
-| Lot | Subject group | Δ v3.4 scorer | Δ v3.5 scorer | Gain |
-|---|---|---|---|---|
-| 89 | Modern languages (DE / EN / Arabic) | -1.0 | **+17.8** | +18.8 |
-| 91 | Arts / Music / Literature | — | **+10.8** | — |
-| 94 | Law (constitutional / international) | — | **+10.8** | — |
-
-#### New files
-- `benchmarks/v35/scorer_v35.py` — LLM-judge scorer + QUESTIONS_V35 + SUBJECT_FAMILY_V35 + resolve_subject()
-- `benchmarks/v35/run_bloc_a.py` — Bloc A runner patched for v3.5
-- `benchmarks/v35/run_sh_cd.py` — Soul Handoff runner (scorer SH independent)
-- `benchmarks/v35/README.md`
-
-### SDK
-- Python package `klickd 3.0.0` — wheel + sdist (PyPI publishing in progress)
-- TypeScript `@klickd/core` — dist/ ESM + CJS (npm publishing pending)
-
-### Docs
-- `SPEC.md` bumped to v3.4.2
-- `README.md` updated — badge v3.4.2, benchmark table v3.5, bibtex updated
+**Verified:** Both cases tested — file with embedded loader (no duplicate), file without loader (block injected correctly).
 
 ---
 

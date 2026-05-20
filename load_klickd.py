@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""load_klickd.py v3.2 -- PBKDF2 + 4-field AAD (v2.x); Argon2id + RFC 8785 JCS (v3.0)
+"""load_klickd.py v3.3 -- PBKDF2 + 4-field AAD (v2.x); Argon2id + RFC 8785 JCS (v3.0)
+v3.3 fix (2026-05-20):
+  BUG FIX — build_system_prompt: duplicate onboarding block suppressed.
+  When agent_instructions already contains a .klickd Profile Loader / On First Message
+  block (injected by the Klickd app generator), the §29b onboarding_trigger path
+  no longer injects a second identical block. Guard checks 5 language variants.
+  Impact: users were being asked for their .klickd file TWICE in the same prompt.
+
 v3.2 additions (2026-05-19):
   build_system_prompt handles: resume_trigger, numerical_results, interruption_point,
   context.mode (lightweight), vocabulary_used.
@@ -252,10 +259,18 @@ def build_system_prompt(klickd_payload: dict, base_system_prompt: str) -> str:
         )
 
     # §29b — onboarding_trigger: if 'on_new_agent', prepend the profile-loader block
-    # This block is also embedded in agent_instructions by the file generator (Klickd app),
-    # but we inject it here explicitly so Python-based agents honour it too.
+    # Guard: skip injection if agent_instructions already embeds the loader block
+    # (Klickd app generators embed it inside agent_instructions — injecting again
+    # produces a duplicate prompt that asks the user twice for their .klickd file).
+    _loader_already_present = (
+        ".klickd Profile Loader" in combined
+        or "On First Message" in combined
+        or ".klickd à charger" in combined
+        or ".klickd-Profil" in combined
+        or ".klickd-Fichier" in combined
+    )
     onboarding_trigger = klickd_payload.get("onboarding_trigger", "manual")
-    if onboarding_trigger == "on_new_agent" and not is_lightweight:
+    if onboarding_trigger == "on_new_agent" and not is_lightweight and not _loader_already_present:
         # Detect language from identity field, fallback to EN
         lang = (klickd_payload.get("identity") or {}).get("language", "en").lower()
         onboarding_prompts = {
