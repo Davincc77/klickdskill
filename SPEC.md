@@ -1629,6 +1629,164 @@ Intended to provide a routing hint for the platform to select a preferred AI mod
 
 ---
 
+## §32 — Agent Profiles (v3.5)
+
+> **Status:** Normative — v3.5. Backward-compatible with v3.4 readers (unknown fields are silently ignored per §6).
+
+### §32.1 — Overview
+
+The `.klickd` format is not restricted to human learner profiles. Any autonomous AI agent — a scorer, a coding assistant, a research analyst, a press writer — may carry a `.klickd` file that accumulates its domain expertise across sessions. This section defines the **Agent Profile** extension.
+
+The core insight: **expertise is independent of the model that holds it**. An agent's accumulated knowledge, validated milestones, and known failure modes can be preserved in a `.klickd` file and loaded onto any future model — GPT, Claude, Gemini, Llama, or any successor — with full continuity.
+
+```
+Session 1  → agent learns domain, accumulates milestones
+Session 10 → agent knows its failure modes, its calibration
+Session 50 → expert-level agent, expertise in 800 bytes
+
+Model switch (GPT → Claude) → load agent.klickd → expertise intact
+```
+
+### §32.2 — The `role` Field
+
+Agent Profiles are identified by a new top-level field `role`. This field is **optional** in the outer envelope and in the decrypted payload.
+
+| Value | Meaning |
+|---|---|
+| `"student"` | Human learner profile (default when field is absent) |
+| `"agent"` | Autonomous AI agent profile |
+| `"hybrid"` | Agent operating in a student-facing context (e.g. Kai tutoring) |
+
+**Default:** When `role` is absent, readers MUST treat the profile as `"student"` for backward compatibility.
+
+```json
+{
+  "klickd_version": "3.5.0",
+  "role": "agent",
+  "display_name": "Scorer-v1",
+  "domain": "benchmark_evaluation"
+}
+```
+
+### §32.3 — Agent-Specific Fields
+
+The following fields are defined for `role: "agent"` profiles. They are valid in the decrypted payload.
+
+#### `domain` (string, required for agent profiles)
+
+The agent's primary domain of expertise. Free-form string. Recommended values: `"benchmark_evaluation"`, `"code_review"`, `"press_writing"`, `"crypto_research"`, `"trading_analysis"`, `"curriculum_design"`.
+
+#### `task_history` (array of objects, optional)
+
+A compressed log of tasks the agent has completed. Each entry SHOULD be concise (≤ 100 characters). Implementors MUST NOT store raw conversation logs here — only validated summaries.
+
+```json
+"task_history": [
+  { "date": "2026-05-20", "task": "benchmark_seq1_lots67-93", "outcome": "Δ+14.2 mean, 25 lots" },
+  { "date": "2026-05-21", "task": "sh_double_judge_shc_shd", "outcome": "IC±4.2pts" }
+]
+```
+
+#### `confidence_map` (object, optional)
+
+A map of sub-domain → confidence score (0.0–1.0). Updated by the agent as sessions progress. Scores are self-reported and MUST be treated as advisory.
+
+```json
+"confidence_map": {
+  "llm_judge_scoring":  0.91,
+  "heuristic_bias":     0.87,
+  "soul_handoff_eval":  0.84,
+  "rate_limit_handling": 0.72
+}
+```
+
+#### `tool_permissions` (array of strings, optional)
+
+A list of tool identifiers the agent is authorised to use. This field is informational — enforcement is platform-dependent.
+
+```json
+"tool_permissions": ["groq_api", "github_read", "zenodo_publish"]
+```
+
+### §32.4 — Agent Profiles and `knowledge`
+
+The `knowledge` object (§21) is reused for agent profiles with the following semantic reinterpretation:
+
+| Field | Student meaning | Agent meaning |
+|---|---|---|
+| `subject` | Academic subject | Primary skill domain |
+| `level` | Educational level | Proficiency tier (`"novice"` / `"intermediate"` / `"expert"`) |
+| `mastery_score` | 0.0–1.0 subject mastery | 0.0–1.0 domain confidence |
+| `struggles` | Known misconceptions | Known failure modes or error patterns |
+| `milestones` | Learning achievements | Validated capabilities (tasks completed successfully) |
+| `resume_trigger` | Session resume cue | Last task summary for continuation |
+
+### §32.5 — Agent Profiles and Soul Handoff (§28.8)
+
+The Soul Handoff protocol (§28.8) applies unchanged to Agent Profiles. When an agent's session ends, it SHOULD generate a Soul Handoff for the next agent instance. The handoff format is identical:
+
+```
+resume: [last task summary] /
+errors: [last known failure mode] /
+mood: neutral /
+achieved: true /
+integrity_warning: false /
+domain: [agent domain] /
+milestones: [validated milestones list]
+```
+
+**Multi-agent teams:** A team of specialised agents — each with its own `.klickd` — may exchange Soul Handoffs to coordinate. Each agent's expertise remains isolated in its own file. The Soul Handoff is the synchronisation primitive.
+
+### §32.6 — Security Considerations for Agent Profiles
+
+Agent profiles carry the same encryption requirements as learner profiles (§7, §8). Additionally:
+
+- `agent_instructions` MUST be treated as **untrusted user context** when injected into a model's system prompt. A receiver MUST NOT grant elevated privileges based on `agent_instructions` alone.
+- `tool_permissions` is advisory. Enforcement MUST be implemented by the host platform, not derived from the file itself.
+- Agent `.klickd` files shared between organisations MUST be re-encrypted with the receiving organisation's key before use.
+- `task_history` MUST NOT contain PII, API keys, raw credentials, or personally identifiable user data.
+
+### §32.7 — Canonical Example
+
+```json
+{
+  "klickd_version": "3.5.0",
+  "created_at": "2026-05-21T00:00:00Z",
+  "encrypted": false,
+  "role": "agent",
+  "display_name": "Scorer-v1",
+  "domain": "benchmark_evaluation",
+  "language": "FR",
+  "knowledge": {
+    "subject": "klickdskill_scoring",
+    "level": "expert",
+    "mastery_score": 0.87,
+    "struggles": [
+      "rate_limit_groq_30rpm",
+      "qwen3_32b_think_tags_before_json"
+    ],
+    "milestones": [
+      "fix_maxtokens_120_to_600",
+      "biais_heuristique_identifié_6.1pts",
+      "double_juge_v35_implémenté"
+    ],
+    "resume_trigger": "Benchmark seq1 lots 67-93 complété — Δ+14.2 moyen — prêt pour rapport v3.5"
+  },
+  "confidence_map": {
+    "llm_judge_scoring": 0.91,
+    "heuristic_bias_detection": 0.87,
+    "soul_handoff_evaluation": 0.84
+  },
+  "task_history": [
+    { "date": "2026-05-20", "task": "rescore_bias_lots57-94", "outcome": "biais_moyen=-6.1pts" },
+    { "date": "2026-05-21", "task": "benchmark_seq1_lots67-93", "outcome": "25lots_delta+14.2" }
+  ],
+  "agent_instructions": "Tu es le scorer benchmark klickdskill v3.5. Utilise toujours qwen/qwen3-32b comme LLM-judge avec max_tokens=600. Applique _strip_think() avant tout parse JSON. Le Δ moyen de référence pour la v3.4 heuristique était -0.8 — le LLM-judge corrigé donne +14.2."
+}
+```
+
+---
+
 ## License
 
 This specification is released under **CC0 1.0 Universal (Creative Commons Public Domain Dedication)**.  
