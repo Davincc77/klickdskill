@@ -943,6 +943,104 @@ At every session end, the agent MUST:
 
 ---
 
+### §14ter.6 — "Remember Me" Protocol (GDPR-native)
+
+#### Behaviour
+
+A checkbox **“Se souvenir de moi sur cet appareil”** (unchecked by default) is shown at first load alongside the passphrase field.
+
+| Checkbox | What happens | What is stored |
+|---|---|---|
+| **Unchecked** (default) | User re-enters passphrase every session | Nothing. Zero trace on device. |
+| **Checked** | Passphrase is wrapped in a device-bound key and stored in IndexedDB. Next session: auto-load, no passphrase prompt. | `.klickd` file (encrypted) + wrapped AES key. Never the raw passphrase. |
+
+#### Why this is GDPR-compliant
+
+- **No server** — everything stays on the user’s device. No personal data leaves the browser.
+- **Explicit opt-in** — checkbox is unchecked by default. User actively chooses to persist.
+- **No raw passphrase stored** — only a wrapped `CryptoKey` (non-extractable via Web Crypto API).
+- **Right to erasure (Art. 17)** — “Effacer mes données” button calls `indexedDB.deleteDatabase()` + deletes wrapped key. Complete, immediate, auditable.
+- **Data minimisation** — only the already-encrypted `.klickd` file and its wrapped key are stored. No plaintext personal data.
+- **Portability (Art. 20)** — user can export their `.klickd` at any time.
+
+#### Technical implementation — Web Crypto API
+
+The passphrase is **never stored in localStorage, sessionStorage, or any plaintext form**. The storage mechanism uses the browser’s native `SubtleCrypto` API:
+
+```
+FIRST LOAD ("Remember Me" checked):
+  1. Derive AES-256 key from passphrase using Argon2id
+     key = Argon2id(passphrase, salt, m=65536, t=3, p=1)
+  2. Generate a device-bound wrapping key (non-extractable)
+     wrapKey = SubtleCrypto.generateKey(AES-KW, non-extractable)
+  3. Wrap the AES key with the device key
+     wrappedKey = SubtleCrypto.wrapKey(key, wrapKey)
+  4. Store in IndexedDB:
+     - The .klickd file (already encrypted)
+     - wrappedKey (bytes)
+     - salt (bytes, needed to re-derive for verification)
+  5. Store wrapKey in sessionStorage (survives page refresh, gone on tab close)
+
+NEXT SESSION (auto-load):
+  1. Detect .klickd + wrappedKey in IndexedDB
+  2. Retrieve wrapKey from sessionStorage
+     If absent (new tab/browser restart): re-derive from device fingerprint
+     If unavailable: fall back to passphrase prompt
+  3. Unwrap: key = SubtleCrypto.unwrapKey(wrappedKey, wrapKey)
+  4. Decrypt .klickd with key
+  5. Load payload → transition(session, 'file_provided', payload)
+
+ERASURE ("Effacer mes données" button):
+  1. indexedDB.deleteDatabase('klickd_remember_me')
+  2. sessionStorage.clear()
+  3. Confirm to user: "Toutes tes données locales ont été effacées."
+```
+
+#### Agent behaviour in NO_PROFILE state (updated)
+
+When the agent starts and `Remember Me` storage is detected:
+- Do **not** ask for a passphrase
+- Do **not** show the onboarding prompt
+- Auto-load silently → transition directly to `PROFILE_LOADED`
+- First output: `resume_trigger` verbatim
+
+When `Remember Me` is not set:
+- Normal `NO_PROFILE` flow (1-sentence prompt, ≤120 chars)
+
+#### UI requirements (normative)
+
+```
+┌────────────────────────────────────────────┐
+│  Charger ton profil .klickd                     │
+│                                                  │
+│  [  Glisse ton fichier ici ou clique  ]          │
+│                                                  │
+│  Passphrase : [________________________]         │
+│                                                  │
+│  ☐ Se souvenir de moi sur cet appareil          │
+│    (ton profil se charge automatiquement          │
+│     la prochaine fois)                            │
+│                                                  │
+│  [  Charger  ]          [  Sans profil  ]        │
+│                                                  │
+│  🛡️ Rien n’est envoyé — tout reste sur ton device.  │
+└────────────────────────────────────────────┘
+
+In Settings / Profil:
+  [Exporter mon .klickd]   [Effacer mes données]
+```
+
+#### Rules (normative)
+
+- Checkbox MUST be **unchecked by default** (opt-in)
+- The label MUST mention “sur cet appareil” (scoped to device)
+- The UI MUST show “Rien n’est envoyé” or equivalent privacy signal
+- “Effacer mes données” MUST be reachable within 2 taps from any screen
+- The wrapped key MUST be non-extractable (`extractable: false` in `SubtleCrypto.generateKey`)
+- Raw passphrase MUST be zeroed from JS memory after key derivation
+
+---
+
 ### §14ter.5 — State machine summary table
 
 | State | Trigger | Agent output | Next state |
