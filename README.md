@@ -1,8 +1,8 @@
 # .klickd — Open Learner Context Format
 
-[![.klickd version](https://img.shields.io/badge/.klickd-v3.4-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
+[![.klickd version](https://img.shields.io/badge/.klickd-v3.4.2-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 [![License: CC0](https://img.shields.io/badge/License-CC0%201.0-lightgrey?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20302252-blue?style=flat-square)](https://doi.org/10.5281/zenodo.20302252)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20297686-blue?style=flat-square)](https://doi.org/10.5281/zenodo.20297686)
 
 A portable, AI-provider-agnostic context file format that carries a user's conversation history, expertise state, and session continuity across AI models — with zero server involvement. Drop a `.klickd` file into any compatible AI client to resume exactly where you left off, regardless of whether the previous session was on GPT-4o, Claude, Gemini, or Llama.
 
@@ -12,7 +12,7 @@ A portable, AI-provider-agnostic context file format that carries a user's conve
 
 ```json
 {
-  "klickd_version": "3.4",
+  "klickd_version": "3.4.2",
   "created_at": "2026-05-19T21:00:00Z",
   "encrypted": false,
   "domain": "education",
@@ -83,20 +83,21 @@ print('Valid.')
 ```
 
 Schema file: [`schema/klickd-v3.4.schema.json`](schema/klickd-v3.4.schema.json)  
-`$id`: `https://klickd.app/schema/v3.4.json`
+`$id`: `https://klickd.app/schema/v3.4.2.json`
 
 ---
 
 ## Benchmark Results
 
-v3.4 benchmark — 200 profiles across 6 AI models:
+v3.5 LLM-judge scorer — lots 89, 91, 94:
 
-| Metric | Result |
-|---|---|
-| Mean delta vs baseline | **+4.68** |
-| Soul Handoff score | **+16** |
-| Profiles evaluated | 200 |
-| Models tested | GPT-4o, Claude Opus 4, Gemini 2.5 Flash, Llama 3.3 70B, Qwen3-32B, Mistral Large |
+| Lot | Subject group | Δ v3.4 scorer | Δ v3.5 scorer |
+|---|---|---|---|
+| 89 | Modern languages (DE / EN / Arabic) | -1.0 | **+17.8** |
+| 91 | Arts / Music / Literature | — | **+10.8** |
+| 94 | Law (constitutional / international) | — | **+10.8** |
+
+The v3.5 scorer uses `llama-3.3-70b-versatile` as LLM-judge (/10 grid: Continuity /3 + Pedagogical Precision /3 + Adaptation /2 + Language /2). Key fix: language is evaluated against the student profile, not the question language.
 
 The Soul Handoff scenario measures how well a new AI model resumes a session originally started on a different model, using only the `.klickd` file as context bridge.
 
@@ -108,15 +109,15 @@ If you use `.klickd` in academic or research work, please cite:
 
 ```bibtex
 @misc{klickd2026,
-  title  = {.klickd — Open Learner Context Format, v3.4.1},
+  title  = {.klickd — Open Learner Context Format, v3.4.2},
   author = {Cirilli, Vincenzo},
   year   = {2026},
-  doi    = {10.5281/zenodo.20302252},
+  doi    = {10.5281/zenodo.20297686},
   url    = {https://github.com/Davincc77/klickdskill}
 }
 ```
 
-DOI: [10.5281/zenodo.20302252](https://doi.org/10.5281/zenodo.20302252)
+DOI: [10.5281/zenodo.20297686](https://doi.org/10.5281/zenodo.20297686) *(v3.3 — v3.4.2 pending)*
 
 ---
 
@@ -125,7 +126,7 @@ DOI: [10.5281/zenodo.20302252](https://doi.org/10.5281/zenodo.20302252)
 Add to your README if your project supports `.klickd v3.4`:
 
 ```markdown
-[![.klickd compatible](https://img.shields.io/badge/.klickd-v3.4%20compatible-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
+[![.klickd compatible](https://img.shields.io/badge/.klickd-v3.4.2%20compatible-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 ```
 
 See [`docs/badge.md`](docs/badge.md) for all badge variants (certified, experimental).
@@ -134,7 +135,7 @@ See [`docs/badge.md`](docs/badge.md) for all badge variants (certified, experime
 
 ## Full Specification
 
-[`SPEC.md`](SPEC.md) — 1,235 lines, version 3.4 (production)
+[`SPEC.md`](SPEC.md) — version 3.4.2 (production)
 
 Covers: encryption (AES-256-GCM), all field references, teaching modes, Soul Handoff, JSON Injection Guard, benchmark namespace, memory decay, shared context, and versioning policy.
 
