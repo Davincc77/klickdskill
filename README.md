@@ -2,7 +2,7 @@
 
 [![.klickd version](https://img.shields.io/badge/.klickd-v3.4.2-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 [![License: CC0](https://img.shields.io/badge/License-CC0%201.0-lightgrey?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20297686-blue?style=flat-square)](https://doi.org/10.5281/zenodo.20297686)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20313317-blue?style=flat-square)](https://doi.org/10.5281/zenodo.20313317)
 
 A portable, AI-provider-agnostic context file format that carries a user's conversation history, expertise state, and session continuity across AI models — with zero server involvement. Drop a `.klickd` file into any compatible AI client to resume exactly where you left off, regardless of whether the previous session was on GPT-4o, Claude, Gemini, or Llama.
 
@@ -112,12 +112,12 @@ If you use `.klickd` in academic or research work, please cite:
   title  = {.klickd — Open Learner Context Format, v3.4.2},
   author = {Cirilli, Vincenzo},
   year   = {2026},
-  doi    = {10.5281/zenodo.20297686},
+  doi    = {10.5281/zenodo.20313317},
   url    = {https://github.com/Davincc77/klickdskill}
 }
 ```
 
-DOI: [10.5281/zenodo.20297686](https://doi.org/10.5281/zenodo.20297686) *(v3.3 — v3.4.2 pending)*
+DOI: [10.5281/zenodo.20313317](https://doi.org/10.5281/zenodo.20313317) **
 
 ---
 

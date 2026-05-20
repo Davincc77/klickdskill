@@ -1,6 +1,6 @@
 ---
-name: klickd-context
-version: 3.4.1
+name: klickdskill-v341
+version: 3.4.2
 description: Load a user's portable AI context from a .klickd encrypted file. One soul. Any model. Any body. — Decrypts client-side using AES-256-GCM + Argon2id (v3.0) or PBKDF2 (v2.x legacy), writes fields to /.memory/, and injects agent_instructions into the system prompt as untrusted user context.
 tools:
   - name: load_klickd
@@ -38,7 +38,7 @@ repo: https://github.com/Davincc77/klickdskill
 **Skill/doc revision:** 6.1
 **License:** CC0 1.0 Universal (Public Domain)
 **Spec:** [SPEC.md](./SPEC.md)
-**DOI:** [10.5281/zenodo.20302252](https://doi.org/10.5281/zenodo.20302252) — root DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
+**DOI:** [10.5281/zenodo.20313317](https://doi.org/10.5281/zenodo.20313317) — root DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
 
 > **BREAKING CHANGE NOTICE:** v3.0 is not backwards-compatible with v2.x. New envelope structure,
 > RFC 8785 JCS canonicalization, Argon2id default KDF, and structured `kdf`/`cipher` blocks.
