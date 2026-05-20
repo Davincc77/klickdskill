@@ -28,7 +28,7 @@ Save as `profile.klickd`, then load it with any compatible SDK or inject `user_p
 
 **Python**
 ```bash
-pip install klickd-sdk
+pip install klickd
 ```
 
 **Node.js / TypeScript**

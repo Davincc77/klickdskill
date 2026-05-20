@@ -46,7 +46,7 @@ This is a living document. Items are aspirational, not committed.
 ## v3.5 (near-term)
 
 - [ ] JOSS submission — paper.md + peer review
-- [ ] PyPI publish `klickd 3.0.0` (token pending)
+- [x] PyPI publish `klickd 3.0.0` — https://pypi.org/project/klickd/3.0.0/
 - [ ] npm publish `@klickd/core` (token pending)
 - [ ] DOI update to v3.4.2 Zenodo record
 - [ ] IANA MIME type registration (`application/vnd.klickd+json`)
