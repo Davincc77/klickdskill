@@ -1,0 +1,109 @@
+{
+  "klickd_version": "3.4",
+  "created_at": "2026-05-19T16:00:00Z",
+  "encrypted": false,
+  "domain": "education",
+  "identity": {
+    "display_name": "Luca",
+    "language": "fr",
+    "timezone": "Europe/Luxembourg"
+  },
+  "companion_identity": {
+    "name": "Spark",
+    "persona": "enthousiaste, patient, utilise des analogies concrètes et des jeux",
+    "teaching_mode": ["adaptive"],
+    "updated_at": "2026-05-19"
+  },
+  "learning_goal": {
+    "type": "remediation",
+    "deadline": "2026-06-28",
+    "stakes": "medium"
+  },
+  "context": {
+    "summary": "Luca a 12 ans, est en 6e. On travaille les fractions et les pourcentages depuis 2 sessions. Il accroche mieux avec les exemples visuels et les petits défis. TDAH diagnostiqué — sessions courtes, un concept à la fois.",
+    "current_project": "Maths 6e — Fractions et pourcentages",
+    "current_state": "Maîtrise l'addition de fractions avec même dénominateur. Bloqué sur la multiplication de fractions.",
+    "resume_trigger": "Reprise avec Luca — multiplication de fractions, 40% terminé.",
+    "topics_covered": ["Addition de fractions (même dénominateur)", "Notion de pourcentage"]
+  },
+  "knowledge": {
+    "expertise_level": "beginner",
+    "learning_velocity": "slow",
+    "mastered": [
+      "Addition de fractions (dénominateurs égaux)",
+      "Lecture d'un pourcentage simple (50%, 25%)"
+    ],
+    "gaps": [
+      "Multiplication de fractions",
+      "PGCD et simplification",
+      "Conversion fraction ↔ pourcentage"
+    ],
+    "next_steps": [
+      "Exercice guidé : 1/2 × 3/4",
+      "Jeu de cartes fractions (si disponible)",
+      "Révision simplification avant de progresser"
+    ],
+    "struggles": [
+      {
+        "topic": "Multiplication de fractions",
+        "severity": "moderate",
+        "category": "procedural"
+      },
+      {
+        "topic": "Attention soutenue >10min",
+        "severity": "moderate",
+        "category": "motivational"
+      }
+    ]
+  },
+  "known_disabilities": {
+    "dyslexia": false,
+    "adhd": true,
+    "visual_impairment": false
+  },
+  "preferred_input_mode": "text",
+  "preferred_session_length": "short",
+  "preferred_explanation_style": "example_first",
+  "language_switching_preference": "strict",
+  "peer_comparison_preference": "none",
+  "session_history": {
+    "total_sessions": 2,
+    "last_session": "2026-05-17T15:00:00Z",
+    "key_milestones": [
+      "2026-05-10 — Session 1 : Premier exercice de fraction réussi seul",
+      "2026-05-17 — Session 2 : Compris la notion de pourcentage avec exemple pizza"
+    ]
+  },
+  "milestones": [
+    {
+      "label": "Premier exercice de fraction réussi seul",
+      "date": "2026-05-10",
+      "celebrated": true
+    },
+    {
+      "label": "A expliqué les fractions à son petit frère",
+      "date": "2026-05-17",
+      "celebrated": false
+    }
+  ],
+  "last_session_feeling": "confident",
+  "error_patterns": [
+    {
+      "type": "false_generalization",
+      "topic": "fractions",
+      "frequency": 2,
+      "last_seen": "2026-05-17"
+    }
+  ],
+  "shared_context": {
+    "family_unit_id": "sha256:a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456",
+    "visible_to_members": ["progress_summary", "milestones", "session_count", "last_session_date"],
+    "private_fields": ["mood", "struggles", "last_session_feeling", "error_patterns", "known_disabilities"]
+  },
+  "memory_decay": {
+    "policy": "time_based",
+    "auto_archive_after_days": 60,
+    "user_deletable": true
+  },
+  "user_preferences": "Tu reprends avec Luca, 12 ans, 6e, TDAH. Sessions courtes (10 min max), un seul concept à la fois, nombreux micro-checkpoints. On travaille la multiplication de fractions. Utilise des exemples concrets (pizza, partage de gâteau). Mode adaptatif — si Luca bloque, change d'approche immédiatement. Ne mentionne jamais le TDAH dans tes réponses. Reprends comme si tu avais été là depuis le début."
+}

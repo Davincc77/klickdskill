@@ -1,9 +1,9 @@
 # .klickd — Technical Specification
 
-**Version:** 3.4  
+**Version:** 3.4.1  
 **License:** CC0 1.0 Universal (Public Domain)  
 **Maintainer:** Klickd / Luxlearn (Luxembourg)  
-**Status:** Production — v3.4 (2026-05-20)
+**Status:** Production — v3.4.1 (2026-05-20)
 
 ---
 
@@ -394,7 +394,7 @@ The `klickd_version` field governs format compatibility. It uses **MAJOR.MINOR**
 | `2.5` | Stable | `user_preferences` rename, RFC 3339 timestamp pin, Threat Model, Validation Requirements block |
 | `3.2` | Stable | `numerical_results`, `interruption_point`, `resume_trigger`, `struggles`, `vocabulary_used`, `mode`, `archived_sessions`, `language_switch_detected`, `subject_change_detected`, `injection_target` |
 | `3.3` | Stable | `injection_resistance_level`, `companion_identity`, JSON Injection Guard, `occupational_competencies`, data_type annotations, extended enums, `interruption_points` array, `key_numerical_results` in `archived_sessions` |
-| `3.4` | Current | 26 new fields: LaTeX in `numerical_results`, `learning_velocity`, `teaching_mode` array, UX emotional fields (§27: `mood`, `last_session_feeling`, `milestones`, `preferred_session_length`, `preferred_explanation_style`, `language_switching_preference`, `peer_comparison_preference`), advanced memory (§28: `learning_goal`, `error_patterns`, `compression_policy`, `known_disabilities`, `memory_decay`, `shared_context`, `data_integrity`), `topics_covered`, `vocabulary_enrichment`, `interruption_reason`, `response_hint`, `_benchmark`, reserved fields `session_metadata` / `preferred_model` |
+| `3.4` | Current | 26 new fields: LaTeX in `numerical_results`, `learning_velocity`, `teaching_mode` array, UX emotional fields (§27: `mood`, `last_session_feeling`, `milestones`, `preferred_session_length`, `preferred_explanation_style`, `language_switching_preference`, `peer_comparison_preference`), advanced memory (§28: `learning_goal`, `error_patterns`, `compression_policy`, `known_disabilities`, `memory_decay`, `shared_context`, `data_integrity`), `topics_covered`, `vocabulary_enrichment`, `interruption_reason`, `response_hint`, `_benchmark`, reserved fields `session_metadata` / `preferred_model`; **§28.8 Soul Handoff Transmission Rules**: guaranteed fields, mandatory semi-structured format, compression_policy interaction, Agent B required behaviour |
 
 Agents receiving a v1 file should reject it with a clear error unless they implement a v1→v2 migration path.
 
@@ -1163,6 +1163,88 @@ This mechanism is designed to keep .klickd files below 50 KB even after 12–18 
 
 ---
 
+### §28.8 — Soul Handoff Transmission Rules (v3.4)
+
+When an agent generates a Soul Handoff summary (for transfer to a new agent or model), it MUST follow a structured transmission format and MUST propagate a defined set of **guaranteed fields** regardless of `compression_policy` settings or handoff length constraints.
+
+#### §28.8.1 — Guaranteed transmission fields
+
+The following fields MUST always appear in any Soul Handoff, even if `compression_policy.mode = "aggressive"` or the handoff target length is very short (< 100 tokens). These fields are never optional in a handoff context:
+
+| Field | Reason | Format in handoff |
+|---|---|---|
+| `context.resume_trigger` | Exact re-entry point — the most critical field | `resume: <value>` |
+| `error_patterns` (top 2 max) | Avoids agent B repeating known mistakes | `errors: <e1> / <e2>` |
+| `mood` | Tone calibration — cannot be inferred | `mood: <value>` |
+| `learning_goal.achieved` (if `true`) | Triggers congratulation before any advice | `achieved: true` |
+| `data_integrity.integrity_warning` (if `true`) | Safety-critical — MUST appear first | `⚠️ integrity_warning: true` |
+| `known_disabilities` (active flags only) | Format adaptation — cannot be inferred from question | `disability: adhd / dyslexia` |
+| `preferred_session_length` (if `hard_limit: true`) | Hard constraint on response length | `hard_limit: <N>min` |
+
+#### §28.8.2 — Mandatory handoff format
+
+All Soul Handoff summaries MUST use a **semi-structured key:value format**, not free prose. Free prose is permitted only for `resume` (which may be a short sentence) and `notes` (optional tail).
+
+**Required format:**
+
+```
+resume: <10–30 word state description>
+errors: <pattern 1> / <pattern 2>                  ← omit if no error_patterns
+mood: <value>  feeling: <last_session_feeling>     ← omit feeling if null
+mode: <teaching_mode[0]> + <teaching_mode[1]>      ← first two modes only
+milestones: <last achieved> → <next target>        ← omit if no milestones
+[achieved: true]                                   ← only if learning_goal.achieved = true
+[⚠️ integrity_warning: true]                       ← only if data_integrity.integrity_warning = true
+[disability: adhd / dyslexia / ...]                ← only active flags
+[hard_limit: <N>min]                               ← only if hard_limit = true
+[goal: <target> by <deadline>]                     ← optional, if deadline < 90 days
+[notes: <free prose, max 1 sentence>]              ← optional
+```
+
+**Length targets:**
+- Minimum viable: 60 chars (resume + mood only)
+- Recommended: 100–200 chars
+- Maximum: 300 chars (hard cap)
+
+#### §28.8.3 — `compression_policy.mode` interaction
+
+When `compression_policy` is present and `mode = "selective"`, the `priority_fields` array MUST be used to order the handoff content after the guaranteed fields. Non-priority fields are dropped first when approaching the 300-char cap.
+
+When `mode = "aggressive"`, only the guaranteed fields (§28.8.1) are transmitted. All other fields are dropped.
+
+When `mode` is absent or `"standard"`, all populated fields from §28.8.2 are included up to the 300-char cap.
+
+#### §28.8.4 — Concrete examples
+
+**Minimal handoff (60 chars) — aggressive mode:**
+```
+resume: Intégration par parties — erreur signe uv', LIATE ex.4
+mood: stressed
+errors: signe erroné uv' / oublie constante C
+```
+
+**Standard handoff (157 chars) — vocabulary_enrichment profile:**
+```
+resume: B2→C1 business English, session 4, vocab partial: leverage / bottleneck
+errors: overuses 'very' / avoids phrasal verbs
+mood: motivated  feeling: confident
+mode: direct + coaching
+goal: C1 by 2026-09
+```
+
+**Full handoff with critical flags (220 chars):**
+```
+resume: Choc septique — SOFA vu, ATB probabiliste à consolider
+⚠️ integrity_warning: true
+errors: confond ATB probabiliste/documenté / rate CI urgence
+mood: exhausted  feeling: overwhelmed
+mode: direct + coaching
+hard_limit: 20min
+milestones: Cardio ✓ Pneumo 80% → Infectio 60%
+```
+
+---
+
 ## §29 — `_benchmark` Namespace (v3.4)
 
 Top-level optional object. Used exclusively for benchmark and testing workflows. Implementations MUST ignore this field entirely in production contexts. Its presence MUST NOT alter agent behaviour, context injection, or file validation logic.
@@ -1186,6 +1268,71 @@ Top-level optional object. Used exclusively for benchmark and testing workflows.
 | `evaluator` | string | Person or system responsible for evaluation. |
 
 **Normative rule:** Any top-level key beginning with `_` (underscore) is reserved for non-production use. Implementations MUST strip all `_`-prefixed keys from any payload injected into a production agent context. This convention may be extended to future non-production namespaces (`_debug`, `_test`, etc.).
+
+---
+
+## §29b — Onboarding Trigger (v3.4)
+
+This section defines the standard mechanism for a `.klickd` file to instruct a newly-onboarded AI agent to prompt the user to load their existing profile at the start of a new session.
+
+### §29b.1 — Problem statement
+
+When a user opens a new AI agent that does not yet have their `.klickd` file loaded, there is no automatic signal that a profile exists. Without a standard trigger, the user must either remember to mention their file manually, or the context is lost entirely. This is the single highest-friction point in cross-agent portability.
+
+### §29b.2 — `onboarding_trigger` field
+
+**Applies to:** `user_preferences` injection text, and `AGENT-SKILL.md` system prompt preamble.
+
+The `onboarding_trigger` field is a **top-level string enum** that instructs a `.klickd`-aware agent on how to handle the case where a profile may not yet be loaded.
+
+**Schema:**
+```json
+"onboarding_trigger": "on_new_agent"
+```
+
+| Value | Behaviour |
+|---|---|
+| `"on_new_agent"` | At the very first user message, the agent MUST ask: *"Do you have a .klickd profile to load? You can paste the file content or upload it directly."* If the user responds with a `.klickd` payload, the agent loads it immediately and resumes context. If the user says no, the agent continues without profile. |
+| `"manual"` | Default. No automatic prompt. The user must explicitly mention the file. |
+| `"auto_inject"` | The file is pre-loaded via system prompt (Claude Projects, GPT Memory, etc.). No prompt needed — the agent already has context. |
+
+**Default:** `"manual"` (if field is absent, behaviour is unchanged — no regression).
+
+### §29b.3 — Standard prompt template
+
+When `onboarding_trigger` is `"on_new_agent"`, the agent MUST use the following prompt on the first user message, adapted to the detected UI language:
+
+| Language | Prompt |
+|---|---|
+| EN | *"Do you have a .klickd profile to load? Paste the content or upload the file — I'll pick up exactly where you left off."* |
+| FR | *"Tu as un profil .klickd à charger ? Colle le contenu ou upload le fichier — je reprends exactement là où tu t'es arrêté."* |
+| DE | *"Hast du ein .klickd-Profil zum Laden? Füge den Inhalt ein oder lade die Datei hoch — ich mache genau dort weiter, wo du aufgehört hast."* |
+| LB | *"Hues du e .klickd-Profil ze lueden? Klëbs den Inhalt an oder lued d'Fichier héich — ech maachen do weider, wou du opgehalen hues."* |
+
+Agents SHOULD NOT ask again after the first exchange, whether or not a file was provided.
+
+### §29b.4 — Implementation in `user_preferences`
+
+File generators (including the Klickd app) SHOULD append the following block to the `user_preferences` string when `onboarding_trigger` is `"on_new_agent"`:
+
+```
+## On First Message
+If no .klickd file is loaded yet, ask the user: "Do you have a .klickd profile to load? Paste the content or upload the file — I'll pick up exactly where you left off." Ask once only. Do not ask again.
+```
+
+This makes Option B functional even on agents that do not natively implement `onboarding_trigger` — the instruction travels inside the `user_preferences` field itself.
+
+### §29b.5 — Implementation in `AGENT-SKILL.md`
+
+The `.klickd` AGENT-SKILL.md installer SHOULD include the following block in the system prompt it generates:
+
+```markdown
+## .klickd Profile Loader
+On your very first message to the user: check if a .klickd payload has already been provided. If not, ask once: "Do you have a .klickd profile? Paste or upload it and I'll resume your context instantly."
+Do not repeat this question.
+```
+
+**Status:** Normative in v3.4. All compliant AGENT-SKILL.md generators MUST implement §29b.4 by default.
 
 ---
 
@@ -1224,6 +1371,19 @@ Intended to provide a routing hint for the platform to select a preferred AI mod
 ```
 
 **Status:** Reserved. Implementors MUST NOT rely on this field in v3.4. The semantics of model routing — particularly in multi-tenant deployments — require further standardisation before normative specification.
+
+---
+
+## Changelog
+
+### v3.4.1 — 2026-05-20
+**DOI:** `10.5281/zenodo.20302252` — https://doi.org/10.5281/zenodo.20302252
+
+**Added:**
+- §28.8 Soul Handoff Transmission Rules: guaranteed fields list, mandatory semi-structured `key:value` format, length targets (60 min / 100–200 recommended / 300 hard cap), `compression_policy` interaction table, Agent B required behaviour rules
+- 7 guaranteed-transmission fields formalised: `resume_trigger`, `error_patterns` (top 2), `mood`, `learning_goal.achieved`, `data_integrity.integrity_warning`, `known_disabilities` active flags, `preferred_session_length.hard_limit`
+- 3 concrete handoff examples (aggressive / standard / full-flags)
+- Version table updated: v3.4 entry includes §28.8
 
 ---
 

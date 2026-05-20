@@ -1,0 +1,289 @@
+{
+  "klickd_version": "3.4",
+  "created_at": "2026-05-19T21:00:00Z",
+  "encrypted": false,
+  "domain": "education",
+  "identity": {
+    "display_name": "Sophie",
+    "language": "fr",
+    "communication_style": "tutoiement",
+    "timezone": "Europe/Luxembourg"
+  },
+  "companion_identity": {
+    "name": "Aria",
+    "persona": "rigoureuse, curieuse, encourage l'intuition physique avant le formalisme",
+    "teaching_mode": [
+      "direct",
+      "socratic",
+      "coaching"
+    ],
+    "response_hint": "detailed",
+    "updated_at": "2026-05-19"
+  },
+  "learning_goal": {
+    "type": "exam",
+    "deadline": "2026-06-30",
+    "stakes": "critical"
+  },
+  "context": {
+    "summary": "Sophie est étudiante en Master 1 Physique à l'Université du Luxembourg. Elle prépare son examen de mécanique quantique. 6 sessions au total. Très bonne base mathématique, intuition physique en développement.",
+    "current_project": "Mécanique quantique — M1 Physique",
+    "current_state": "Postulats acquis. Oscillateur harmonique quantique maîtrisé (méthode algébrique). En cours : atome d'hydrogène, équation de Schrödinger en coordonnées sphériques.",
+    "artifacts": [
+      "notes_MQ_sophie_v3.pdf",
+      "exercices_atome_H_corriges.md",
+      "formulaire_QM_exam.tex"
+    ],
+    "decisions_locked": [
+      "Toujours utiliser la notation de Dirac (bra-ket) en priorité",
+      "Ne jamais sauter les étapes de dérivation — Sophie veut comprendre chaque ligne",
+      "Présenter systématiquement l'interprétation physique avant le développement mathématique"
+    ],
+    "preferences": [
+      "Réponses structurées avec titres de section",
+      "Équations en LaTeX quand possible",
+      "Analogies classiques ↔ quantiques bienvenues",
+      "Signaler les erreurs conceptuelles courantes en encadré"
+    ],
+    "topics_covered": [
+      "Postulats de la mécanique quantique",
+      "Oscillateur harmonique — méthode algébrique (opérateurs échelle)",
+      "Moment cinétique orbital — valeurs propres",
+      "Harmoniques sphériques Y_l^m"
+    ],
+    "resume_trigger": "Reprise session 2026-05-19 — atome d'hydrogène, équation radiale, 55% terminé.",
+    "numerical_results": [
+      {
+        "label": "Énergie atome H niveau n",
+        "value": "-13.6/n² eV",
+        "unit": "eV",
+        "data_type": "formula",
+        "latex": "E_n = -\\frac{13.6\\,\\text{eV}}{n^2}"
+      },
+      {
+        "label": "Longueur de Bohr",
+        "value": "0.529",
+        "unit": "Å",
+        "data_type": "scalar",
+        "latex": "a_0 = \\frac{\\hbar^2}{m_e e^2} \\approx 0.529\\,\\text{Å}"
+      },
+      {
+        "label": "Commutateur [x, p]",
+        "value": "iħ",
+        "data_type": "equation",
+        "latex": "[\\hat{x}, \\hat{p}] = i\\hbar"
+      }
+    ],
+    "interruption_points": [
+      {
+        "ts": "2026-05-18T14:00:00Z",
+        "topic": "Atome d'hydrogène",
+        "subtopic": "Séparation des variables",
+        "completion_pct": 100,
+        "session_label": "S5A",
+        "interruption_reason": "completed"
+      },
+      {
+        "ts": "2026-05-19T10:30:00Z",
+        "topic": "Atome d'hydrogène",
+        "subtopic": "Équation radiale — polynômes de Laguerre",
+        "completion_pct": 55,
+        "session_label": "S6A",
+        "interruption_reason": "time"
+      }
+    ],
+    "mode": "full",
+    "language_switch_detected": false,
+    "subject_change_detected": "none"
+  },
+  "knowledge": {
+    "expertise_level": "advanced",
+    "domain_ontology": "custom",
+    "learning_velocity": "fast",
+    "mastered": [
+      "Espaces de Hilbert et opérateurs hermitiens",
+      "Oscillateur harmonique quantique (méthode algébrique et analytique)",
+      "Valeurs propres du moment cinétique L² et Lz",
+      "Harmoniques sphériques Y_l^m",
+      "Principe d'incertitude de Heisenberg"
+    ],
+    "gaps": [
+      "Polynômes de Laguerre associés et leur normalisation",
+      "Structure fine de l'atome d'hydrogène",
+      "Théorie des perturbations (premier et second ordre)"
+    ],
+    "next_steps": [
+      "Dériver la fonction radiale R_nl complète",
+      "Calculer les premiers niveaux d'énergie sans formule mémorisée",
+      "Exercice : calculer ⟨r⟩ pour l'état 1s"
+    ],
+    "struggles": [
+      {
+        "topic": "Normalisation des polynômes de Laguerre",
+        "severity": "moderate",
+        "category": "procedural"
+      }
+    ],
+    "vocabulary_used": [
+      "bra-ket",
+      "opérateur hamiltonien",
+      "valeur propre",
+      "vecteur d'état",
+      "observable",
+      "commutateur",
+      "dégénérescence",
+      "nombre quantique"
+    ],
+    "vocabulary_enrichment": [
+      "polynôme de Laguerre associé",
+      "fonction radiale",
+      "orbitale atomique"
+    ]
+  },
+  "session_history": {
+    "total_sessions": 6,
+    "last_session": "2026-05-19T10:30:00Z",
+    "key_milestones": [
+      "2026-05-01 — Session 1 : Postulats, espace de Hilbert, premier contact avec Dirac",
+      "2026-05-05 — Session 2 : Oscillateur harmonique, opérateurs a et a†",
+      "2026-05-10 — Session 3 : Moment cinétique, valeurs propres L² et Lz",
+      "2026-05-14 — Session 4 : Harmoniques sphériques, visualisation des orbitales",
+      "2026-05-18 — Session 5 : Atome d'hydrogène, séparation des variables",
+      "2026-05-19 — Session 6 : Équation radiale, polynômes de Laguerre (55%)"
+    ]
+  },
+  "archived_sessions": [
+    {
+      "session_id": "sess-001",
+      "summary": "Postulats QM, espace de Hilbert, notation Dirac introduite. Sophie maîtrise la notation bra-ket.",
+      "date": "2026-05-01",
+      "key_numerical_results": [
+        {
+          "label": "Postulat n°1 — état quantique",
+          "value": "|ψ⟩ ∈ H",
+          "data_type": "equation"
+        }
+      ]
+    },
+    {
+      "session_id": "sess-002",
+      "summary": "Oscillateur harmonique : H=ħω(N+1/2), opérateurs a/a†, spectre discret compris.",
+      "date": "2026-05-05",
+      "key_numerical_results": [
+        {
+          "label": "Énergie oscillateur niveau n",
+          "value": "ħω(n+1/2)",
+          "data_type": "formula",
+          "latex": "E_n = \\hbar\\omega\\left(n+\\frac{1}{2}\\right)"
+        }
+      ]
+    }
+  ],
+  "occupational_competencies": {
+    "isco_code": "2111",
+    "occupation_label": "Physicist",
+    "framework": "ESCO",
+    "framework_version": "1.2.1",
+    "occupation_uri": "http://data.europa.eu/esco/occupation/2111",
+    "competencies": [
+      {
+        "id": "ESCO:S/2.1.1",
+        "label": "Quantum mechanics",
+        "type": "knowledge",
+        "level_eqf": 7,
+        "status": "in_progress",
+        "evidence": "Master 1 level, exam preparation in progress"
+      },
+      {
+        "id": "ESCO:S/2.1.3",
+        "label": "Mathematical physics",
+        "type": "skill",
+        "level_eqf": 6,
+        "status": "mastered"
+      }
+    ]
+  },
+  "injection_resistance_level": "strict",
+  "injection_target": "system_prompt",
+  "mood": "focused",
+  "last_session_feeling": "excited",
+  "milestones": [
+    {
+      "label": "Oscillateur harmonique dérivé sans aide",
+      "date": "2026-05-05",
+      "celebrated": true
+    },
+    {
+      "label": "Premier calcul de commutateur juste du premier coup",
+      "date": "2026-05-10",
+      "celebrated": true
+    },
+    {
+      "label": "Séparation des variables atome H maîtrisée",
+      "date": "2026-05-18",
+      "celebrated": false
+    }
+  ],
+  "preferred_session_length": "long",
+  "preferred_explanation_style": "formal",
+  "language_switching_preference": "strict",
+  "peer_comparison_preference": "none",
+  "preferred_input_mode": "text",
+  "known_disabilities": {
+    "dyslexia": false,
+    "adhd": false,
+    "visual_impairment": false
+  },
+  "error_patterns": [
+    {
+      "type": "sign_error",
+      "topic": "opérateurs hermitiens conjugués",
+      "frequency": 2,
+      "last_seen": "2026-05-14"
+    },
+    {
+      "type": "false_generalization",
+      "topic": "normalisation des fonctions d'onde",
+      "frequency": 1,
+      "last_seen": "2026-05-18"
+    }
+  ],
+  "compression_policy": {
+    "auto_summarize_sessions_older_than_days": 90,
+    "keep_verbatim_last_n_sessions": 3,
+    "summary_model": "gemini-2.5-flash"
+  },
+  "memory_decay": {
+    "policy": "time_based",
+    "auto_archive_after_days": 30,
+    "user_deletable": true
+  },
+  "shared_context": {
+    "family_unit_id": "sha256:f3a9b1c2d4e5678901234567890abcdef1234567890abcdef1234567890abcd",
+    "visible_to_members": [
+      "progress_summary",
+      "milestones",
+      "session_count"
+    ],
+    "private_fields": [
+      "mood",
+      "last_session_feeling",
+      "error_patterns",
+      "struggles"
+    ]
+  },
+  "data_integrity": {
+    "checksum": "b7e4a3f9c2d1e5b847f06d238e1c4a91b3e7d5c28a4f1e9b647c03d25e8f1a4",
+    "last_verified_by": "gemini-2.5-flash",
+    "verified_at": "2026-05-19T21:00:00Z"
+  },
+  "_benchmark": {
+    "test_id": "lot30-full-v34-p01",
+    "expected_score": 9.5,
+    "scenario": "soul_handoff_education",
+    "evaluator": "vince"
+  },
+  "user_preferences": "Tu reprends avec Sophie, M1 Physique, mécanique quantique. On travaille l'atome d'hydrogène — on a séparé les variables, maintenant il faut dériver la fonction radiale R_nl et introduire les polynômes de Laguerre associés. Sophie est rigoureuse, veut comprendre chaque étape mathématique, mais apprécie aussi l'intuition physique. Notation Dirac systématique. Ne jamais sauter les étapes. Signale les erreurs de signe sur les opérateurs adjoint si elles surviennent. Reprends comme si tu avais été là depuis la session 1.",
+  "onboarding_trigger": "on_new_agent",
+  "agent_instructions": "## On First Message\nIf no .klickd file is loaded yet, ask once:\n\"Do you have a .klickd profile to load? Paste the content or upload the file — I'll pick up exactly where you left off.\"\nAsk once only. Do not ask again."
+}

@@ -1,191 +1,146 @@
-# .klickd
+# .klickd — Open Learner Context Format
 
-> **One soul. Any model. Any body.**
+[![.klickd version](https://img.shields.io/badge/.klickd-v3.4-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
+[![License: CC0](https://img.shields.io/badge/License-CC0%201.0-lightgrey?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20302252-blue?style=flat-square)](https://doi.org/10.5281/zenodo.20302252)
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20262530.svg)](https://doi.org/10.5281/zenodo.20262530)
-[![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
-[![Format version: 3.0](https://img.shields.io/badge/envelope-v3.0-6366F1)]()
-[![Skill revision: 6.0](https://img.shields.io/badge/skill-v6.0-10B981)]()
-[![CI](https://github.com/Davincc77/klickdskill/actions/workflows/test-vectors.yml/badge.svg)](https://github.com/Davincc77/klickdskill/actions/workflows/test-vectors.yml)
+A portable, AI-provider-agnostic context file format that carries a user's conversation history, expertise state, and session continuity across AI models — with zero server involvement. Drop a `.klickd` file into any compatible AI client to resume exactly where you left off, regardless of whether the previous session was on GPT-4o, Claude, Gemini, or Llama.
 
 ---
 
-> **⚠️ Current version: Envelope v3.0 / Skill revision v6.0**
->
-> The authoritative specification is [`SPEC_v30.md`](./SPEC_v30.md) and [`SKILL.md`](./SKILL.md).
-> `SPEC.md` documents the legacy v2.x format (PBKDF2, flat envelope) — kept for reference only.
-> **v2.x readers MUST reject v3.0 files** (`KLICKD_E_VERSION`).
-> See [`AUDIT_v60.md`](./AUDIT_v60.md) for the full security audit and advanced feature documentation.
+## Quick Start
+
+```json
+{
+  "klickd_version": "3.4",
+  "created_at": "2026-05-19T21:00:00Z",
+  "encrypted": false,
+  "domain": "education",
+  "user_preferences": "You are continuing a session with a learner working on calculus. Resume as if you have been here from the start."
+}
+```
+
+Save as `profile.klickd`, then load it with any compatible SDK or inject `user_preferences` directly as a system prompt.
 
 ---
 
-Every time you switch AI models, you start over.
+## Install SDK
 
-GPT doesn't know what Claude built. Gemini doesn't know what Llama taught you. The model resets. Your context, decisions, and progress disappear.
+**Python**
+```bash
+pip install klickd-sdk
+```
 
-**`.klickd` is the soul that travels with you.**
-
-A single encrypted file — on your device, never on any server — that carries who you are, where you left off, what you've decided, and what the next agent needs to know. Load it into GPT, Claude, Gemini, Llama, Grok, or any model that reads JSON. Resume instantly.
-
-The body changes. The soul persists.
-
----
-
-## What it means
-
-**One soul** — your identity, memory, competencies, personality, and ethics, distilled into a single portable encrypted file.
-
-**Any model** — GPT, Claude, Gemini, Llama, Grok, Mistral. Any agent that can parse JSON and run AES-256-GCM.
-
-**Any body** — software agents today. Physical robots tomorrow. The same `.klickd` file that carries your context to Claude will carry it to Optimus or Figure. Firmware resets. The soul doesn't.
+**Node.js / TypeScript**
+```bash
+npm install @klickd/sdk
+```
 
 ---
 
-## Technical facts (v3.0)
+## Examples
 
-| Property | Value |
+Five canonical example files covering the full range of use cases:
+
+| File | Description |
 |---|---|
-| Encryption | AES-256-GCM |
-| Key derivation | **Argon2id** m=65536/t=3/p=1 (default) · PBKDF2-SHA256 600k (legacy read) |
-| AAD canonicalization | **RFC 8785 JCS** — 6 fields, deterministic cross-language |
-| Envelope integrity | Tamper-proof on all envelope fields (kdf, cipher, domain, version, created_at) |
-| Format | JSON, UTF-8 |
-| Extension | `.klickd` |
-| MIME type | `application/vnd.klickd+json` *(IANA pending)* |
-| agent_instructions cap | 32 KiB (enforced in JSON Schema) |
-| License | CC0 1.0 Universal (public domain) |
-| SDK required | None |
+| [`examples/student_fr.klickd`](examples/student_fr.klickd) | French high-school student, maths, socratic mode |
+| [`examples/professional_en.klickd`](examples/professional_en.klickd) | Mid-level developer upskilling into ML, certification goal |
+| [`examples/family_plan.klickd`](examples/family_plan.klickd) | Child profile with ADHD support and shared family context |
+| [`examples/minimal.klickd`](examples/minimal.klickd) | Cold start — 5 fields only, valid v3.4 |
+| [`examples/full_v34.klickd`](examples/full_v34.klickd) | Full reference file — all v3.4 fields populated |
 
 ---
 
-## Payload features (v3.0 + Skill v6.0)
+## Integrations
 
-| Block | Description |
+Provider-specific guides for injecting `.klickd` context:
+
+| Provider | Guide |
 |---|---|
-| `identity` | Name, language, timezone, communication style |
-| `agent_instructions` | Plain-text briefing (untrusted user-context level, 32 KiB max) |
-| `context` | Current state, decisions, artifacts, summary |
-| `knowledge` | Mastered topics, gaps, next steps |
-| `memory[]` | Normative memory array — UUID v4, RFC 3339, modality, tags (max 1,000 / 10 KiB each / 5 MiB total) |
-| `ethics` | **Immutable SYSTEM-level** locked actions + critical infrastructure refusals + owner-consent list |
-| `growth` | Living competency graph — levels 1–5, domain taxonomy, dependency arcs, mastery rules |
-| `personality` | Core traits (strength 0–1), temperament (9 presets), voice, values, evolution tracking |
-| `whitehat` | Security audit entries — `role=whitehat`, audit/finding/patch/clear tags, escalation |
+| OpenAI (GPT-4o, o1, …) | [`docs/integrations/openai.md`](docs/integrations/openai.md) |
+| Anthropic (Claude Opus, Sonnet, …) | [`docs/integrations/anthropic.md`](docs/integrations/anthropic.md) |
+| Groq (Llama, Qwen, …) | [`docs/integrations/groq.md`](docs/integrations/groq.md) |
+| OpenRouter (multi-provider Soul Handoff) | [`docs/integrations/openrouter.md`](docs/integrations/openrouter.md) |
+| Any provider (generic pattern) | [`docs/integrations/generic.md`](docs/integrations/generic.md) |
 
 ---
 
-## Test status
+## JSON Schema
 
-| Suite | Result |
-|---|---|
-| Python — v2.5 positive (6) | ✅ PASS |
-| Python — v2.5 negative (12) | ✅ PASS |
-| Python — v3.0 positive (6) | ✅ PASS |
-| Python — v3.0 negative (8) | ✅ PASS |
-| **Python total** | **32 / 32** |
-| JS (Web Crypto + hash-wasm) — v2.5 | ✅ 17 / 17 |
-| JS — v3.0 Argon2id | ⚠️ skipped (Web Crypto has no Argon2id) |
-
----
-
-## Quickstart
-
-### Decrypt (Python)
+Validate `.klickd` files against the official Draft 7 schema:
 
 ```bash
-pip install cryptography argon2-cffi
-python scripts/load_klickd.py myfile.klickd --passphrase-stdin
+# Python
+pip install jsonschema
+python -c "
+import json, jsonschema
+schema = json.load(open('schema/klickd-v3.4.schema.json'))
+doc    = json.load(open('examples/student_fr.klickd'))
+jsonschema.validate(doc, schema)
+print('Valid.')
+"
 ```
 
-### Decrypt (JavaScript)
-
-See [`SKILL.md`](./SKILL.md) §5 for the full Web Crypto API + hash-wasm implementation. No dependencies beyond standard browser APIs.
-
-### Verify test vectors
-
-```bash
-pip install cryptography argon2-cffi
-python verify_vectors.py          # 32/32 Python
-
-node verify_vectors.mjs           # 17/17 JS + 1 Argon2 skip (documented)
-```
+Schema file: [`schema/klickd-v3.4.schema.json`](schema/klickd-v3.4.schema.json)  
+`$id`: `https://klickd.app/schema/v3.4.json`
 
 ---
 
-## Repository structure
+## Benchmark Results
 
-```
-klickdskill/
-├── SKILL.md                  Agent skill file — v6.0 (authoritative)
-├── SPEC_v30.md               Technical spec — v3.0 envelope (authoritative)
-├── SPEC.md                   Legacy v2.x spec — reference only
-├── AUDIT_v60.md              Security audit dossier — v6.0
-├── SECURITY.md               Threat model + known limitations
-├── CONTRIBUTING.md           How to contribute
-├── ROADMAP.md                Planned features
-├── CHANGELOG.md              Version history
-├── verify_vectors.py         Python test runner — 32/32
-├── verify_vectors.mjs        JS test runner — 17/17
-├── schemas/
-│   ├── klickd-envelope-v3.schema.json
-│   └── klickd-payload-v3.schema.json
-├── registry/
-│   ├── REGISTRY_VERSION.txt  (1.0.0)
-│   ├── domains/registry.json
-│   ├── competencies/         Seed competency templates (CC0)
-│   └── personality/          Trait / temperament / value vocabulary (CC0)
-├── scripts/
-│   ├── load_klickd.py        Reference decrypt
-│   └── save_klickd.py        Reference encrypt
-└── tests/
-    ├── vectors_v25.json
-    └── vectors_v30.json
-```
+v3.4 benchmark — 200 profiles across 6 AI models:
 
----
-
-## Domains
-
-| Domain | Use case |
+| Metric | Result |
 |---|---|
-| `education` | Learner profile, competency tracking, session continuity |
-| `work` | Project state, decisions, tools, stakeholders |
-| `finance` | Portfolio state, strategy decisions |
-| `legal` | Contract review progress, clauses, constraints |
-| `creative` | Style decisions, project brief, work in progress |
-| `health` | Health conversation context (no medical records) |
-| `research` | Papers, hypotheses, citations, progress |
-| `robotics` | User preferences, household rules, trust scope, firmware handoff |
-| custom | Any string — the format is open |
+| Mean delta vs baseline | **+4.68** |
+| Soul Handoff score | **+16** |
+| Profiles evaluated | 200 |
+| Models tested | GPT-4o, Claude Opus 4, Gemini 2.5 Flash, Llama 3.3 70B, Qwen3-32B, Mistral Large |
+
+The Soul Handoff scenario measures how well a new AI model resumes a session originally started on a different model, using only the `.klickd` file as context bridge.
 
 ---
 
-## Security
+## Cite This Work
 
-See [`SECURITY.md`](./SECURITY.md) for the full threat model and known limitations.
+If you use `.klickd` in academic or research work, please cite:
 
-Responsible disclosure: **Luxlearn@pm.me**
+```bibtex
+@misc{klickd2026,
+  title  = {.klickd — Open Learner Context Format, v3.4.1},
+  author = {Cirilli, Vincenzo},
+  year   = {2026},
+  doi    = {10.5281/zenodo.20302252},
+  url    = {https://github.com/Davincc77/klickdskill}
+}
+```
+
+DOI: [10.5281/zenodo.20302252](https://doi.org/10.5281/zenodo.20302252)
 
 ---
 
-## Academic reference
+## Badge
 
-> Vince C. (Klickd / Luxlearn, Luxembourg). *".klickd: An Open Encrypted File Format for Portable AI User Context"*. Zenodo, 2026. DOI: [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
+Add to your README if your project supports `.klickd v3.4`:
+
+```markdown
+[![.klickd compatible](https://img.shields.io/badge/.klickd-v3.4%20compatible-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
+```
+
+See [`docs/badge.md`](docs/badge.md) for all badge variants (certified, experimental).
+
+---
+
+## Full Specification
+
+[`SPEC.md`](SPEC.md) — 1,235 lines, version 3.4 (production)
+
+Covers: encryption (AES-256-GCM), all field references, teaching modes, Soul Handoff, JSON Injection Guard, benchmark namespace, memory decay, shared context, and versioning policy.
 
 ---
 
 ## License
 
-**CC0 1.0 Universal — public domain.**
-
-No restrictions. No attribution required. Copy, fork, implement, commercialise freely.
-
-The goal is adoption, not ownership. If `.klickd` becomes a universal standard, every AI user wins.
-
-> To the extent possible under law, Klickd / Luxlearn has waived all copyright and related rights to the `.klickd` format specification. Published from Luxembourg.
-
-https://creativecommons.org/publicdomain/zero/1.0/
-
----
-
-*`.klickd` — one soul. any model. any body.*
+[CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) — Public Domain.  
+No permission required. No vendor lock-in.

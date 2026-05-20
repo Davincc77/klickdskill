@@ -7,6 +7,40 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## v3.4.1 — 2026-05-20
+
+### Soul Handoff Transmission Rules (normative)
+
+#### New section: SPEC §28.8
+- **Guaranteed transmission fields** (7 fields that MUST always appear in any Soul Handoff, regardless of `compression_policy` or length pressure): `context.resume_trigger`, `error_patterns` (top 2), `mood`, `learning_goal.achieved` (if true), `data_integrity.integrity_warning` (if true), `known_disabilities` active flags, `preferred_session_length.hard_limit` (if true)
+- **Mandatory semi-structured format**: Soul Handoff MUST use `key:value` format — free prose prohibited. Length targets: 60 chars minimum · 100–200 recommended · 300 hard cap
+- **`compression_policy.mode` interaction table**: standard (all §28.8.2 fields) / selective (`priority_fields` order after guaranteed) / aggressive (guaranteed fields only)
+- **Agent B required behaviour on reading handoff**: `integrity_warning` before any content, `achieved: true` triggers congratulation before advice, disability flags trigger format adaptation, `hard_limit` enforced on full response
+- **3 concrete handoff examples** (aggressive / standard / full-flags)
+
+#### Benchmark results (v3.4 final)
+- 105 profils valides across 21 lots (19 standard + 2 Soul Handoff dedicated)
+- Global delta: **+19.4 pts average** (43.1/50 WITH vs 23.7/50 WITHOUT)
+- Soul Handoff v3.4: **+22.3 pts** (40.7/50 WITH vs 18.4/50 WITHOUT) — up from +16.0 in v3.3 (+39%)
+- Best case: SHB-P05 TDAH+dyslexie SVT — **+38 pts** (39/50 vs 1/50)
+- Perfect scores: avocat junior, CrossFit coaching, maths prépa socratic, philosophie socratic (4× 50/50)
+
+#### SKILL.md §14 update (v6.1)
+- "Soul Handoff summary" subsection added as implementer quick-reference
+- Guaranteed fields table with priority ordering
+- Agent B reading rules (7 normative behaviours)
+- Cross-reference to SPEC §28.8
+
+#### Option B — onboarding_trigger (v3.4)
+- New field `onboarding_trigger`: `on_new_agent | manual | auto_inject`
+- SPEC §29b: full specification with 4-language prompts (FR/EN/DE/LB)
+- SKILL.md §14bis: "New Agent Onboarding" — flow diagram, rules, multilingual prompt
+- `load_klickd.py`: `build_system_prompt()` injects "Profile Loader" block if `onboarding_trigger == on_new_agent`
+- `KaiPersonnel.tsx`: `handleExport` auto-injects `onboarding_trigger: on_new_agent` + i18n block in `agent_instructions`
+- Principle: instruction travels in `agent_instructions` → works on any agent without native field support
+
+---
+
 ## v3.3 — 2026-05-19
 
 ### Security (Phase 1)

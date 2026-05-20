@@ -251,6 +251,52 @@ def build_system_prompt(klickd_payload: dict, base_system_prompt: str) -> str:
             "NOTE: Subject change detected. Acknowledge previous session is paused; treat this as a new context branch."
         )
 
+    # §29b — onboarding_trigger: if 'on_new_agent', prepend the profile-loader block
+    # This block is also embedded in agent_instructions by the file generator (Klickd app),
+    # but we inject it here explicitly so Python-based agents honour it too.
+    onboarding_trigger = klickd_payload.get("onboarding_trigger", "manual")
+    if onboarding_trigger == "on_new_agent" and not is_lightweight:
+        # Detect language from identity field, fallback to EN
+        lang = (klickd_payload.get("identity") or {}).get("language", "en").lower()
+        onboarding_prompts = {
+            "fr": (
+                "## .klickd Profile Loader\n"
+                "Au tout premier message de l'utilisateur dans cette session : vérifie si un fichier .klickd "
+                "a déjà été fourni.\n"
+                "Si ce n'est pas le cas, demande une seule fois :\n"
+                "\"Tu as un profil .klickd à charger ? Colle le contenu ou upload le fichier — "
+                "je reprends exactement là où tu t'es arrêté.\"\n"
+                "Ne pose pas la question une deuxième fois."
+            ),
+            "de": (
+                "## .klickd Profile Loader\n"
+                "Beim allerersten Nutzer-Nachricht in dieser Sitzung: prüfe, ob bereits eine .klickd-Datei bereitgestellt wurde.\n"
+                "Falls nicht, frage einmal:\n"
+                "\"Hast du ein .klickd-Profil? Füge den Inhalt ein oder lade die Datei hoch — "
+                "ich mache genau dort weiter, wo du aufgehört hast.\"\n"
+                "Frage nicht noch einmal."
+            ),
+            "lb": (
+                "## .klickd Profile Loader\n"
+                "Bei der allererster Noriicht vum Benotzer an denger Sessioun: kucke ob eng .klickd-Fichier "
+                "scho geluede ginn ass.\n"
+                "Wann net, frî eng Kier:\n"
+                "\"Hues du e .klickd-Profil ze lueden? Klëbs den Inhalt an oder lued d'Fichier héich — "
+                "ech maachen do weider, wou du opgehalen hues.\"\n"
+                "Nur eng Kier frî."
+            ),
+        }
+        # Default to English for all other languages
+        onboarding_block = onboarding_prompts.get(lang, (
+            "## .klickd Profile Loader\n"
+            "On your very first message to the user in this session: check if a .klickd payload "
+            "has already been provided.\n"
+            "If not, ask once:\n"
+            "\"Do you have a .klickd profile? Paste or upload it and I'll resume your context instantly.\"\n"
+            "Do not ask again after the first exchange."
+        ))
+        extra_parts.insert(0, onboarding_block)  # Prepend so it's seen first
+
     # Build full combined context
     all_parts = []
     if combined:

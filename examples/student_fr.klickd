@@ -1,0 +1,75 @@
+{
+  "klickd_version": "3.4",
+  "created_at": "2026-05-19T21:00:00Z",
+  "encrypted": false,
+  "domain": "education",
+  "identity": {
+    "display_name": "Emma",
+    "language": "fr",
+    "timezone": "Europe/Luxembourg"
+  },
+  "companion_identity": {
+    "name": "Aria",
+    "persona": "curieuse, directe, encourage sans flatter",
+    "teaching_mode": [
+      "socratic",
+      "coaching"
+    ],
+    "updated_at": "2026-05-19"
+  },
+  "learning_goal": {
+    "type": "exam",
+    "deadline": "2026-06-20",
+    "stakes": "high"
+  },
+  "context": {
+    "summary": "Emma prépare son bac S. On travaille les intégrales depuis 3 sessions.",
+    "current_project": "Intégrales — Terminale S",
+    "current_state": "Maîtrise ∫x²dx. Bloquée sur les intégrales par parties.",
+    "resume_trigger": "Reprise session 2026-05-19 — intégrales par parties, 65% terminé.",
+    "numerical_results": [
+      {
+        "label": "∫x²dx",
+        "value": "x³/3 + C",
+        "data_type": "formula",
+        "latex": "\\int x^2 dx = \\frac{x^3}{3} + C"
+      }
+    ]
+  },
+  "knowledge": {
+    "expertise_level": "intermediate",
+    "learning_velocity": "normal",
+    "mastered": [
+      "∫x^n dx",
+      "∫e^x dx",
+      "règle de Chasles"
+    ],
+    "struggles": [
+      {
+        "topic": "Intégration par parties",
+        "severity": "blocking",
+        "category": "procedural"
+      }
+    ]
+  },
+  "error_patterns": [
+    {
+      "type": "sign_error",
+      "topic": "intégrales",
+      "frequency": 3,
+      "last_seen": "2026-05-19"
+    }
+  ],
+  "mood": "focused",
+  "last_session_feeling": "confident",
+  "milestones": [
+    {
+      "label": "Première intégrale réussie seule",
+      "date": "2026-05-10",
+      "celebrated": true
+    }
+  ],
+  "user_preferences": "Tu reprends avec Emma, terminale S, intégrales par parties. Elle maîtrise les bases. Mode socratique — ne jamais donner la réponse directement. Reprends comme si tu étais là depuis le début.",
+  "onboarding_trigger": "on_new_agent",
+  "agent_instructions": "## On First Message\nSi aucun fichier .klickd n'est encore chargé, demande une seule fois :\n\"Tu as un profil .klickd à charger ? Colle le contenu ou upload le fichier — je reprends exactement là où tu t'es arrêté.\"\nDemande une seule fois. Ne répète pas la question."
+}

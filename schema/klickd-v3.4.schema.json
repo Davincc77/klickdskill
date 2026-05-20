@@ -1,0 +1,666 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://klickd.app/schema/v3.4.json",
+  "title": "klickd v3.4",
+  "description": "JSON Schema for the .klickd Open Learner Context Format, version 3.4. A .klickd file is a portable AI context document that enables session continuity and soul handoff across AI models.",
+  "type": "object",
+
+  "required": ["klickd_version", "created_at", "encrypted", "domain"],
+
+  "properties": {
+
+    "klickd_version": {
+      "type": "string",
+      "description": "Version of the .klickd format. MAJOR.MINOR format. Current production value: '3.4'.",
+      "pattern": "^\\d+\\.\\d+$",
+      "example": "3.4"
+    },
+
+    "created_at": {
+      "type": "string",
+      "description": "Timestamp of file creation. MUST conform to RFC 3339 UTC, Z suffix, no fractional seconds. Format: YYYY-MM-DDTHH:MM:SSZ. Implementations MUST reject files where this does not match.",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "format": "date-time",
+      "example": "2026-05-19T21:00:00Z"
+    },
+
+    "encrypted": {
+      "type": "boolean",
+      "description": "Whether the payload is AES-256-GCM encrypted. If false, all fields are inline plaintext. If true, ciphertext, iv, kdf_salt, and encryption fields are required."
+    },
+
+    "encryption": {
+      "type": "string",
+      "description": "Encryption algorithm. Required when encrypted is true. Must be 'AES-256-GCM'.",
+      "enum": ["AES-256-GCM"]
+    },
+
+    "domain": {
+      "type": "string",
+      "description": "Semantic category of the context. Defined values are listed; custom strings are permitted.",
+      "enum": ["education", "work", "legal", "creative", "personal", "health", "finance", "research", "robotics"],
+      "examples": ["education", "work"]
+    },
+
+    "ciphertext": {
+      "type": "string",
+      "description": "AES-256-GCM ciphertext of the full inner JSON, base64-encoded (RFC 4648 §4 standard alphabet with padding). The 16-byte GCM authentication tag is appended before encoding. Required when encrypted is true.",
+      "contentEncoding": "base64"
+    },
+
+    "iv": {
+      "type": "string",
+      "description": "12-byte initialisation vector used for AES-GCM, base64-encoded. Required when encrypted is true.",
+      "contentEncoding": "base64"
+    },
+
+    "kdf_salt": {
+      "type": "string",
+      "description": "16-byte PBKDF2 salt used to derive the AES key from the user passphrase, base64-encoded. Required when encrypted is true. (Formerly 'salt' in ≤ v2.4.)",
+      "contentEncoding": "base64"
+    },
+
+    "identity": {
+      "type": "object",
+      "description": "Describes who the user is and how they communicate. All fields optional; the more populated, the better the handoff quality.",
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "description": "How the agent should address the user. Optional — some users prefer anonymity.",
+          "maxLength": 100
+        },
+        "language": {
+          "type": "string",
+          "description": "Primary language for interaction, as a BCP 47 language tag.",
+          "examples": ["fr", "en", "de", "lb", "pt"]
+        },
+        "communication_style": {
+          "type": "string",
+          "description": "Tone and register. Suggested values: formal, casual, tutoiement, vouvoiement, technical, plain-language. Custom values permitted.",
+          "examples": ["formal", "casual", "tutoiement", "vouvoiement", "technical", "plain-language"]
+        },
+        "timezone": {
+          "type": "string",
+          "description": "User's local timezone as an IANA TZ identifier.",
+          "examples": ["Europe/Luxembourg", "America/New_York", "Asia/Tokyo"]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "companion_identity": {
+      "type": "object",
+      "description": "Defines the persistent identity of the AI companion across sessions and models. The agent reads this but NEVER writes or modifies it — only the user updates it.",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name the user has chosen for their AI companion. The agent MUST introduce itself with this name at session start.",
+          "maxLength": 50
+        },
+        "persona": {
+          "type": "string",
+          "description": "Short description of the companion's personality and style. The agent MUST adopt this tone throughout the session.",
+          "maxLength": 300
+        },
+        "teaching_mode": {
+          "description": "Interaction/teaching mode. May be a single string value or an ordered array of 1–3 mode strings. In array form, the first mode is primary; subsequent modes are applied as the session progresses.",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["direct", "socratic", "coaching", "adaptive"],
+              "description": "Single teaching mode (v3.3 compatible)."
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["direct", "socratic", "coaching", "adaptive"]
+              },
+              "minItems": 1,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "description": "Ordered array of up to 3 teaching modes (v3.4). No duplicates permitted."
+            }
+          ]
+        },
+        "response_hint": {
+          "type": "string",
+          "description": "Optional hint on expected response length and style. 'short': 1–3 sentences or bullet list. 'detailed': thorough with examples. 'socratic': overrides teaching_mode to guide through questions.",
+          "enum": ["short", "detailed", "socratic"]
+        },
+        "updated_at": {
+          "type": "string",
+          "description": "Date of the last update by the user. ISO 8601 date format: YYYY-MM-DD.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "learning_goal": {
+      "type": "object",
+      "description": "Captures the learner's overarching motivation and timeline. The single most important personalisation signal — calibrates urgency, depth, and emotional tone.",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Nature of the learning goal.",
+          "enum": ["exam", "career_change", "curiosity", "certification", "remediation"]
+        },
+        "deadline": {
+          "type": "string",
+          "description": "Target date. Format: YYYY-MM-DD. The agent SHOULD factor deadline proximity into pacing decisions.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "stakes": {
+          "type": "string",
+          "description": "Perceived importance to the learner's life situation. Drives urgency calibration.",
+          "enum": ["low", "medium", "high", "critical"]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "context": {
+      "type": "object",
+      "description": "The operational heart of the file. Describes the current state of work.",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "Narrative paragraph: who the user is, what domain they work in, what was accomplished. Written for the incoming agent to read as background."
+        },
+        "current_project": {
+          "type": "string",
+          "description": "Short label for the active project or topic.",
+          "maxLength": 200
+        },
+        "current_state": {
+          "type": "string",
+          "description": "Precise description of where the work stands — what is done, what is in progress, what is immediately next. Specific enough that a new agent can act on it immediately."
+        },
+        "artifacts": {
+          "type": "array",
+          "description": "List of files, documents, or outputs produced. May include relative paths, URLs, or plain descriptions.",
+          "items": { "type": "string" }
+        },
+        "decisions_locked": {
+          "type": "array",
+          "description": "Hard constraints the agent must never violate. Prior explicit decisions or user-stated rules that must survive model switches. Format: active imperative sentences.",
+          "items": { "type": "string" }
+        },
+        "preferences": {
+          "type": "array",
+          "description": "Softer stylistic and behavioural preferences — format, tone, output structure, level of detail.",
+          "items": { "type": "string" }
+        },
+        "topics_covered": {
+          "type": "array",
+          "description": "Optional (v3.4). Subjects actually covered in the current session (as opposed to planned). Used for session continuity and progress tracking.",
+          "items": { "type": "string" }
+        },
+        "numerical_results": {
+          "type": "array",
+          "description": "Key numerical results from the session (max 200). Agents MUST cite at least the 3 most recent entries verbatim when resuming.",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "required": ["label", "value"],
+            "properties": {
+              "label": { "type": "string", "description": "Human-readable label for the result." },
+              "value": { "type": "string", "description": "The result value. Always a string for format neutrality." },
+              "unit": { "type": "string", "description": "Physical or mathematical unit, if applicable." },
+              "formula": { "type": "string", "description": "Symbolic expression or formula used to compute the value." },
+              "data_type": {
+                "type": "string",
+                "description": "Type annotation for the result. 'scalar': single number. 'vector': array of values. 'formula': symbolic expression. 'equation': full equation with LHS and RHS.",
+                "enum": ["scalar", "vector", "formula", "equation"]
+              },
+              "latex": {
+                "type": "string",
+                "description": "Optional LaTeX expression (v3.4). Enables downstream renderers (MathJax, pandoc, weasyprint) to display notation correctly. Informational only — does not override value."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "resume_trigger": {
+          "type": "string",
+          "description": "Exact phrase the agent MUST output at session start to signal continuity. Recommended: 10–30 words.",
+          "minLength": 10
+        },
+        "interruption_point": {
+          "type": "object",
+          "description": "Precise point at which the session was interrupted. Agents MUST resume from this exact point. Superseded by interruption_points array when both are present.",
+          "properties": {
+            "ts": { "type": "string", "description": "RFC 3339 UTC timestamp of interruption.", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$" },
+            "last_message_excerpt": { "type": "string", "description": "Short excerpt of the last message in context." },
+            "topic": { "type": "string" },
+            "subtopic": { "type": "string" },
+            "completion_pct": { "type": "integer", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "interruption_points": {
+          "type": "array",
+          "description": "Array of interruption checkpoints (v3.3+). Supersedes interruption_point. Agent resumes from the entry with the highest ts value.",
+          "items": {
+            "type": "object",
+            "required": ["ts", "topic"],
+            "properties": {
+              "ts": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$" },
+              "topic": { "type": "string" },
+              "subtopic": { "type": "string" },
+              "completion_pct": { "type": "integer", "minimum": 0, "maximum": 100 },
+              "session_label": { "type": "string", "description": "Human-readable label for the sub-session. E.g. 'S1A'." },
+              "interruption_reason": {
+                "type": "string",
+                "description": "Optional (v3.4). Why the session was interrupted. Enables contextually appropriate session opening.",
+                "enum": ["battery", "time", "distraction", "confusion", "completed"]
+              }
+            }
+          }
+        },
+        "mode": {
+          "type": "string",
+          "description": "Injection mode. 'full': complete system prompt (default). 'lightweight': condensed prompt to minimise token overhead.",
+          "enum": ["full", "lightweight"],
+          "default": "full"
+        },
+        "language_switch_detected": {
+          "type": "boolean",
+          "description": "True if the user switched language between sessions. Context is language-agnostic and survives language switches."
+        },
+        "subject_change_detected": {
+          "description": "Whether a subject change was detected. Extended enum in v3.3. Boolean true is accepted as 'detected' for backward compatibility.",
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "string", "enum": ["none", "detected", "confirmed", "reverted"] }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "knowledge": {
+      "type": "object",
+      "description": "Captures what the user knows and does not know within the current domain.",
+      "properties": {
+        "expertise_level": {
+          "type": "string",
+          "description": "Self-reported or inferred expertise level.",
+          "enum": ["beginner", "intermediate", "advanced", "expert"]
+        },
+        "domain_ontology": {
+          "type": "string",
+          "description": "Competency framework used to structure mastered and gaps.",
+          "enum": ["EQF", "ESCO", "CEFR", "custom"]
+        },
+        "learning_velocity": {
+          "type": "string",
+          "description": "Optional (v3.4). Estimated pace of learning. The agent adapts rate of progression: fewer topics for 'slow', more depth and breadth for 'fast'.",
+          "enum": ["slow", "normal", "fast"]
+        },
+        "mastered": {
+          "type": "array",
+          "description": "Concepts, tools, or skills the user has demonstrated competency in.",
+          "items": { "type": "string" }
+        },
+        "gaps": {
+          "type": "array",
+          "description": "Identified weaknesses, misconceptions, or areas requiring further development.",
+          "items": { "type": "string" }
+        },
+        "next_steps": {
+          "type": "array",
+          "description": "Recommended or agreed-upon next learning or action steps, ordered by priority when possible.",
+          "items": { "type": "string" }
+        },
+        "struggles": {
+          "type": "array",
+          "description": "Concepts the user struggled with (max 100). Severity: minor | moderate | blocking. Agents MUST NOT re-explain mastered content but SHOULD revisit struggles.",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "required": ["topic", "severity"],
+            "properties": {
+              "topic": { "type": "string" },
+              "severity": { "type": "string", "enum": ["minor", "moderate", "blocking"] },
+              "category": {
+                "type": "string",
+                "description": "Category annotation (v3.3).",
+                "enum": ["conceptual", "procedural", "linguistic", "motivational"]
+              }
+            }
+          }
+        },
+        "vocabulary_used": {
+          "type": "array",
+          "description": "Domain-specific terms introduced and confirmed understood (max 500). Agents MUST reuse this exact vocabulary in resumed sessions.",
+          "maxItems": 500,
+          "items": { "type": "string" }
+        },
+        "vocabulary_enrichment": {
+          "type": "array",
+          "description": "Optional (v3.4). New domain-specific terms learned during the current session. Appended to vocabulary_used at session end.",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "session_history": {
+      "type": "object",
+      "description": "Lightweight audit trail of prior sessions.",
+      "properties": {
+        "total_sessions": { "type": "integer", "description": "Total number of sessions recorded." },
+        "last_session": { "type": "string", "description": "RFC 3339 UTC timestamp of the most recent session.", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$" },
+        "key_milestones": {
+          "type": "array",
+          "description": "Important events, decisions, or deliverables, each prefixed with an ISO date.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "archived_sessions": {
+      "type": "array",
+      "description": "Compressed past-session summaries (max 50). When session_history grows large, older sessions SHOULD be compressed here.",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "properties": {
+          "session_id": { "type": "string" },
+          "summary": { "type": "string", "maxLength": 200 },
+          "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+          "key_numerical_results": {
+            "type": "array",
+            "maxItems": 5,
+            "items": { "type": "object" }
+          }
+        }
+      }
+    },
+
+    "occupational_competencies": {
+      "type": "object",
+      "description": "Universal occupational competency tracking. Enables professional skill profiles for any occupation across any recognized competency framework worldwide.",
+      "properties": {
+        "isco_code": { "type": "string", "description": "ISCO-08 occupation code.", "examples": ["9211", "2320", "1111", "2521"] },
+        "occupation_label": { "type": "string" },
+        "framework": { "type": "string", "enum": ["ESCO", "O*NET", "NCS", "SkillsFuture", "NOS", "AQF", "custom"] },
+        "framework_version": { "type": "string" },
+        "occupation_uri": { "type": "string", "format": "uri" },
+        "competencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "label", "type", "status"],
+            "properties": {
+              "id": { "type": "string", "description": "Namespaced competency ID. E.g. 'ESCO:S/x.y.z', 'ONET:x.x', 'GreenComp:x', 'HSE:x'." },
+              "label": { "type": "string" },
+              "type": { "type": "string", "enum": ["knowledge", "skill", "attitude", "physical", "safety", "civic", "sustainability"] },
+              "level_eqf": { "type": "integer", "minimum": 1, "maximum": 8 },
+              "status": { "type": "string", "enum": ["mastered", "in_progress", "target"] },
+              "evidence": { "type": "string", "description": "Optional free-text evidence for the competency status." }
+            }
+          }
+        }
+      }
+    },
+
+    "injection_resistance_level": {
+      "type": "string",
+      "description": "Controls how strictly the agent enforces the learner profile against override attempts from user messages. Default: 'permissive'.",
+      "enum": ["strict", "moderate", "permissive"],
+      "default": "permissive"
+    },
+
+    "injection_target": {
+      "type": "string",
+      "description": "Controls where the .klickd context block is injected. Default: 'system_prompt'. When 'user_message' or 'both', implementors MUST add the JSON Injection Guard (§25.3) to the system prompt.",
+      "enum": ["system_prompt", "user_message", "both"],
+      "default": "system_prompt"
+    },
+
+    "mood": {
+      "type": "string",
+      "description": "Learner's self-reported emotional/energy state at session start. The agent adapts pacing and content density based on this signal. (v3.4, from §27.1 session_start.mood — top-level shorthand accepted.)",
+      "enum": ["tired", "focused", "stressed", "motivated"]
+    },
+
+    "session_start": {
+      "type": "object",
+      "description": "Object wrapper for session-start state (§27.1). Top-level 'mood' field is the preferred shorthand.",
+      "properties": {
+        "mood": {
+          "type": "string",
+          "enum": ["tired", "focused", "stressed", "motivated"]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "last_session_feeling": {
+      "type": "string",
+      "description": "Optional (v3.4, §27.2). How the learner felt at the end of the previous session. The agent uses this to calibrate the opening of the next session.",
+      "enum": ["confident", "confused", "frustrated", "excited"]
+    },
+
+    "milestones": {
+      "type": "array",
+      "description": "Optional (v3.4, §27.3). Small victories and significant achievements. Agent references these in moments of discouragement.",
+      "items": {
+        "type": "object",
+        "required": ["label", "date", "celebrated"],
+        "properties": {
+          "label": { "type": "string", "description": "Short description of the achievement." },
+          "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+          "celebrated": {
+            "type": "boolean",
+            "description": "If false, agent SHOULD acknowledge this milestone within the first two exchanges of the next session."
+          }
+        }
+      }
+    },
+
+    "preferred_session_length": {
+      "type": "string",
+      "description": "Optional (v3.4, §27.4). Learner's preferred session duration. 'short': ~10 min. 'medium': ~25 min. 'long': ~45 min.",
+      "enum": ["short", "medium", "long"]
+    },
+
+    "preferred_explanation_style": {
+      "type": "string",
+      "description": "Optional (v3.4, §27.5). Preferred explanation style, independent of teaching_mode. 'analogy': real-world comparisons first. 'formal': definitions and proofs. 'example_first': worked examples before generalisation. 'visual_description': detailed verbal descriptions of visuals.",
+      "enum": ["analogy", "formal", "example_first", "visual_description"]
+    },
+
+    "language_switching_preference": {
+      "type": "string",
+      "description": "Optional (v3.4, §27.6). Controls whether the agent may switch language mid-session. 'strict': no switching. 'allowed': may switch for comprehension. 'encouraged': active multilingual scaffolding.",
+      "enum": ["strict", "allowed", "encouraged"]
+    },
+
+    "peer_comparison_preference": {
+      "type": "string",
+      "description": "Optional (v3.4, §27.7). Controls whether the agent contextualises progress against other learners. Default: 'none'.",
+      "enum": ["none", "anonymous", "detailed"],
+      "default": "none"
+    },
+
+    "preferred_input_mode": {
+      "type": "string",
+      "description": "Optional (v3.4, §28.5). User's preferred interaction modality.",
+      "enum": ["text", "voice", "image", "mixed"],
+      "default": "text"
+    },
+
+    "known_disabilities": {
+      "type": "object",
+      "description": "Optional (v3.4, §28.5). Enables accessibility adaptation. The agent MUST NOT disclose this content in responses — for internal adaptation only.",
+      "properties": {
+        "dyslexia": {
+          "type": "boolean",
+          "description": "If true: avoid dense paragraphs; prefer bullet lists, short sentences, consistent vocabulary. Avoid italic text."
+        },
+        "adhd": {
+          "type": "boolean",
+          "description": "If true: keep explanations short and focused. One concept at a time. Frequent micro-checkpoints. Avoid long unbroken expositions."
+        },
+        "visual_impairment": {
+          "type": "boolean",
+          "description": "If true: agent MUST provide verbal descriptions of any referenced diagram, graph, or visual. Strongly recommend preferred_explanation_style: 'visual_description'."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "error_patterns": {
+      "type": "array",
+      "description": "Optional (v3.4, §28.6). Systematic record of recurring error types observed across sessions. When frequency >= 2 on a topic, agent SHOULD proactively flag the pattern before the error occurs.",
+      "items": {
+        "type": "object",
+        "required": ["type", "topic"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["sign_error", "unit_confusion", "false_generalization", "reading_comprehension", "other"]
+          },
+          "topic": { "type": "string" },
+          "frequency": { "type": "integer", "minimum": 0 },
+          "last_seen": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
+        }
+      }
+    },
+
+    "compression_policy": {
+      "type": "object",
+      "description": "Optional (v3.4, §28.7). Governs long-term file size management by compacting older sessions.",
+      "properties": {
+        "auto_summarize_sessions_older_than_days": {
+          "type": "integer",
+          "description": "Sessions older than this many days are eligible for automatic summarisation. Default: 90.",
+          "default": 90
+        },
+        "keep_verbatim_last_n_sessions": {
+          "type": "integer",
+          "description": "Number of most recent sessions to preserve verbatim. Default: 5.",
+          "default": 5
+        },
+        "summary_model": {
+          "type": "string",
+          "description": "Advisory model identifier for the agent performing summarisation.",
+          "examples": ["gemini-2.5-flash", "qwen/qwen3-32b"]
+        }
+      }
+    },
+
+    "memory_decay": {
+      "type": "object",
+      "description": "Optional (v3.4, §28.1). Defines a policy for gradual forgetting — supports GDPR Article 17 (Right to Erasure) at granular level.",
+      "properties": {
+        "policy": {
+          "type": "string",
+          "description": "'none': all data persists indefinitely. 'time_based': auto-archive after N days. 'explicit': remove only when user explicitly marks for deletion.",
+          "enum": ["none", "time_based", "explicit"]
+        },
+        "auto_archive_after_days": {
+          "type": "integer",
+          "description": "Days after which session data is archived. Used when policy is 'time_based'. Default: 30.",
+          "default": 30
+        },
+        "user_deletable": {
+          "type": "boolean",
+          "description": "Whether the user may delete individual entries from struggles, error_patterns, or milestones via a client UI. Default: true.",
+          "default": true
+        }
+      }
+    },
+
+    "shared_context": {
+      "type": "object",
+      "description": "Optional (v3.4, §28.3). Enables selective context sharing within a family or institutional unit (e.g., Klickd Plan Famille). private_fields takes precedence over visible_to_members.",
+      "properties": {
+        "family_unit_id": {
+          "type": "string",
+          "description": "Anonymised hash identifying the sharing group. MUST NOT contain personally identifiable information in plain text."
+        },
+        "visible_to_members": {
+          "type": "array",
+          "description": "Fields or field groups visible to other members. Suggested values: 'progress_summary', 'milestones', 'session_count', 'last_session_date'.",
+          "items": { "type": "string" }
+        },
+        "private_fields": {
+          "type": "array",
+          "description": "Fields withheld from shared view. If a field appears here AND in visible_to_members, private_fields takes precedence. MUST be enforced server-side.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "data_integrity": {
+      "type": "object",
+      "description": "Optional (v3.4, §28.4). Verifiable checksum for institutional or compliance use cases.",
+      "properties": {
+        "checksum": {
+          "type": "string",
+          "description": "SHA-256 hex digest of the canonical serialisation of the decrypted payload (excluding the data_integrity field itself, keys sorted lexicographically)."
+        },
+        "last_verified_by": {
+          "type": "string",
+          "description": "Model identifier that last computed and verified this checksum. Free string.",
+          "examples": ["gemini-2.5-flash", "qwen/qwen3-32b"]
+        },
+        "verified_at": {
+          "type": "string",
+          "description": "RFC 3339 UTC timestamp of last verification.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        }
+      }
+    },
+
+    "user_preferences": {
+      "type": "string",
+      "description": "ADVISORY ONLY. A preference briefing for the incoming AI agent. Implementations MUST NOT allow this field to override platform safety policies, system prompts, or operator instructions. Should be under 300 words. Written in second person, ending with an instruction to continue as if the agent was there from the start. Max 32,768 bytes UTF-8. (Formerly 'agent_instructions' in ≤ v2.4.)",
+      "maxLength": 32768
+    },
+
+    "_benchmark": {
+      "type": "object",
+      "description": "Reserved for benchmark and testing workflows (v3.4, §29). Implementations MUST ignore this field in production. MUST NOT alter agent behaviour. MUST be stripped before production injection.",
+      "properties": {
+        "test_id": { "type": "string" },
+        "expected_score": { "type": "number" },
+        "scenario": { "type": "string" },
+        "evaluator": { "type": "string" }
+      }
+    },
+
+    "session_metadata": {
+      "type": "object",
+      "description": "RESERVED (v3.5 roadmap). Implementations MUST NOT rely on this field in v3.4. Do not implement.",
+      "properties": {
+        "duration_seconds": { "type": "integer" },
+        "message_count": { "type": "integer" },
+        "tokens_used": { "type": "integer" }
+      }
+    },
+
+    "preferred_model": {
+      "type": "string",
+      "description": "RESERVED (v3.5 roadmap). Routing hint for model selection. Implementations MUST NOT rely on this field in v3.4. Do not implement."
+    }
+  },
+
+  "if": { "properties": { "encrypted": { "const": true } } },
+  "then": {
+    "required": ["encryption", "ciphertext", "iv", "kdf_salt"],
+    "properties": {
+      "ciphertext": { "minLength": 24 },
+      "iv": { "minLength": 16 },
+      "kdf_salt": { "minLength": 20 }
+    }
+  },
+
+  "additionalProperties": true
+}

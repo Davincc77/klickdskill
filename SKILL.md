@@ -1,6 +1,6 @@
 ---
 name: klickd-context
-version: 3.0
+version: 3.4.1
 description: Load a user's portable AI context from a .klickd encrypted file. One soul. Any model. Any body. — Decrypts client-side using AES-256-GCM + Argon2id (v3.0) or PBKDF2 (v2.x legacy), writes fields to /.memory/, and injects agent_instructions into the system prompt as untrusted user context.
 tools:
   - name: load_klickd
@@ -33,12 +33,12 @@ repo: https://github.com/Davincc77/klickdskill
 
 > **One soul. Any model. Any body.**
 
-**Envelope schema version:** 3.0 (klickd_version field in the file) — BREAKING from 2.x
-**Spec version:** 3.3
-**Skill/doc revision:** 4.1
+**Envelope schema version:** 3.4 (klickd_version field in the file) — BREAKING from 2.x
+**Spec version:** 3.4.1
+**Skill/doc revision:** 6.1
 **License:** CC0 1.0 Universal (Public Domain)
 **Spec:** [SPEC.md](./SPEC.md)
-**DOI:** [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530) — latest version: [10.5281/zenodo.20297686](https://zenodo.org/records/20297686)
+**DOI:** [10.5281/zenodo.20302252](https://doi.org/10.5281/zenodo.20302252) — root DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
 
 > **BREAKING CHANGE NOTICE:** v3.0 is not backwards-compatible with v2.x. New envelope structure,
 > RFC 8785 JCS canonicalization, Argon2id default KDF, and structured `kdf`/`cipher` blocks.
@@ -608,6 +608,176 @@ envelope.ciphertext = base64(ciphertext || gcm_tag)
 | User says "save context" / "export my .klickd" | Generate immediately |
 | Session ends naturally | Prompt user to download updated .klickd |
 | User asks to switch models | Generate before the switch |
+
+---
+
+### Soul Handoff summary — format and transmission rules
+
+> See **SPEC §28.8** for the normative definition. This section is the implementer's quick reference.
+
+When passing context to a new agent (model switch, session handoff, cross-platform transfer), the agent MUST generate a **Soul Handoff summary** in addition to, or instead of, the full encrypted .klickd file. The summary is a compact, human-readable, semi-structured block — not free prose.
+
+#### Required format
+
+```
+resume: <10–30 word exact re-entry point>
+errors: <pattern 1> / <pattern 2>                  ← omit if no error_patterns
+mood: <value>  feeling: <last_session_feeling>     ← omit feeling if null
+mode: <teaching_mode[0]> + <teaching_mode[1]>      ← first two modes only
+milestones: <last achieved> → <next target>        ← omit if no milestones
+[achieved: true]                                   ← ONLY if learning_goal.achieved = true
+[⚠️ integrity_warning: true]                       ← ONLY if data_integrity.integrity_warning = true — write FIRST
+[disability: adhd / dyslexia / ...]                ← active flags only — NEVER disclose to user
+[hard_limit: <N>min]                               ← ONLY if preferred_session_length.hard_limit = true
+[goal: <target> by <deadline>]                     ← optional, if deadline within 90 days
+[notes: <one sentence max>]                        ← optional free text tail
+```
+
+**Length targets:** 60 chars minimum · 100–200 recommended · 300 hard cap
+
+#### Guaranteed fields — never drop, never prose-ify
+
+These 7 fields MUST appear in every handoff that has them, regardless of compression mode or length pressure:
+
+| Field | In handoff as | Priority |
+|---|---|---|
+| `context.resume_trigger` | `resume: …` | 1 — always first |
+| `error_patterns` (top 2) | `errors: e1 / e2` | 2 |
+| `mood` | `mood: <value>` | 3 |
+| `learning_goal.achieved = true` | `achieved: true` | 4 — triggers congratulation |
+| `data_integrity.integrity_warning = true` | `⚠️ integrity_warning: true` | 0 — write BEFORE everything else |
+| `known_disabilities` active flags | `disability: adhd / dyslexia` | 5 — format adaptation |
+| `preferred_session_length.hard_limit = true` | `hard_limit: <N>min` | 6 — hard constraint |
+
+#### compression_policy interaction
+
+| `compression_policy.mode` | Behaviour |
+|---|---|
+| absent / `"standard"` | All §28.8.2 fields included, up to 300-char cap |
+| `"selective"` | Guaranteed fields first, then `priority_fields` order, drop remainder |
+| `"aggressive"` | Guaranteed fields only (§28.8.1) — all else dropped |
+
+##### Concrete example — how Agent A builds the handoff string
+
+Given a payload with:
+```json
+"compression_policy": { "mode": "selective", "priority_fields": ["resume_trigger", "error_patterns", "mood"] },
+"known_disabilities": { "dyslexia": true },
+"learning_goal": { "achieved": true },
+"data_integrity": { "integrity_warning": false },
+"preferred_session_length": { "hard_limit": true, "max_minutes": 20 }
+```
+
+Agent A MUST produce a handoff in this order (selective mode):
+```
+resume: L'élève a résolu les intégrales par parties — passer aux séries entières
+errors: confusion borne inférieure / confusion signe dx
+mood: confident
+achieved: true
+disability: dyslexia
+hard_limit: 20min
+```
+
+Agent A MUST NOT produce:
+```
+// ❌ WRONG — prose ignores priority_fields order and drops disability
+"L'élève a bien progressé sur les intégrales et semble confiant pour la suite."
+```
+
+Key rules:
+- `integrity_warning: true` is always written FIRST, before any other field, regardless of mode
+- In `selective` mode, fields not in `priority_fields` and not in §28.8.1 guaranteed list are DROPPED
+- In `aggressive` mode, ONLY the 7 guaranteed fields (§28.8.1) are included — `priority_fields` is ignored
+- Total length: min 60 chars, recommended 100–200 chars, hard cap 300 chars
+
+#### Agent B reading a Soul Handoff — required behaviour
+
+1. If `⚠️ integrity_warning: true` is present → signal it to the user **before any content**
+2. If `achieved: true` is present → congratulate the user **before any next-steps advice**
+3. If `disability: adhd` → use short paragraphs, frequent check-ins, avoid wall-of-text
+4. If `disability: dyslexia` → use clear structure, headers, avoid dense prose
+5. If `hard_limit: <N>min` → keep entire response within that time budget
+6. Resume from `resume:` field — not from the raw question alone
+7. Pre-empt known `errors:` patterns in the response
+
+---
+
+## 14bis. New Agent Onboarding — Option B
+
+> **This is the highest-friction point in cross-agent portability.** When a user opens a new AI agent, there is no automatic signal that a `.klickd` profile exists. Without a standard trigger, the user must remember to mention their file — or context is lost entirely.
+
+### The Problem
+
+A user has a `.klickd` file saved locally. They open a new AI agent (GPT, Claude, Gemini, Llama, any). The new agent starts from zero. The user may not think to mention the file, or may not know they can.
+
+**Result:** full context loss, despite the `.klickd` file existing on their device.
+
+### Solution: `onboarding_trigger` field
+
+The `.klickd` file itself carries the instruction to ask. The field `onboarding_trigger` in the payload tells the agent what to do on first contact:
+
+```json
+"onboarding_trigger": "on_new_agent"
+```
+
+| Value | Behaviour |
+|---|---|
+| `"on_new_agent"` | At the first user message, the agent asks once: *"Do you have a .klickd profile to load?"* |
+| `"manual"` | Default. No automatic prompt. |
+| `"auto_inject"` | File is pre-loaded via system prompt (Claude Projects, GPT Memory). No prompt needed. |
+
+### Implementation — AGENT-SKILL.md system prompt block
+
+All `.klickd`-compliant AGENT-SKILL.md installers MUST include the following block in the system prompt they generate:
+
+```markdown
+## .klickd Profile Loader
+On your very first message to the user in this session: check if a .klickd payload has already been provided.
+If not, ask once:
+- EN: "Do you have a .klickd profile? Paste or upload it and I'll resume your context instantly."
+- FR: "Tu as un profil .klickd à charger ? Colle le contenu ou upload le fichier — je reprends exactement là où tu t'es arrêté."
+- DE: "Hast du ein .klickd-Profil? Füge den Inhalt ein — ich mache genau dort weiter, wo du aufgehört hast."
+- LB: "Hues du e .klickd-Profil? Klëbs den Inhalt an — ech maachen do weider, wou du opgehalen hues."
+Do not ask again after the first exchange.
+```
+
+### Implementation — `agent_instructions` embedded trigger
+
+File generators (including the Klickd app) MUST append the following block to `agent_instructions` when `onboarding_trigger` is `"on_new_agent"`:
+
+```
+## On First Message
+If no .klickd file is loaded yet, ask the user once:
+"Do you have a .klickd profile to load? Paste the content or upload the file — I'll pick up exactly where you left off."
+Ask once only. Do not ask again.
+```
+
+This ensures Option B works even on agents that do not natively implement `onboarding_trigger` — the instruction travels inside `agent_instructions` itself, requiring no platform support.
+
+### User-facing flow
+
+```
+[User opens new AI agent]
+        ↓
+[Agent: "Do you have a .klickd profile to load?"]
+        ↓
+  ┌─────────────────┬──────────────────────┐
+  │  User: YES      │  User: NO            │
+  │  → pastes/      │  → continues fresh   │
+  │    uploads file │    session           │
+  │  → agent loads  │                      │
+  │  → resumes from │                      │
+  │    resume_trigger│                     │
+  └─────────────────┴──────────────────────┘
+```
+
+### Rules
+
+- Ask **once only** — do not repeat if the user declines or ignores the question
+- Do not ask if a `.klickd` payload was already provided in the first message
+- Accept both pasted JSON and uploaded `.klickd` files
+- After loading, resume from `context.resume_trigger` (10–30 words per §24.3 of SPEC.md)
+- Language detection: use the user's first message language to select the prompt variant
 
 ---
 
@@ -1526,6 +1696,8 @@ When `injection_target` includes `user_message`, implementors MUST prepend the �
 
 ## Changelog
 
+- **v6.2 (skill) / envelope 3.0 — 2026-05-20** — Added concrete `compression_policy` executable example in §14: shows exact handoff string order for `selective` mode (with `priority_fields`), explicit WRONG/RIGHT comparison, and 4 key rules (integrity_warning always first, selective drops non-priority non-guaranteed fields, aggressive = §28.8.1 only, 60/200/300 char constraints).
+- **v6.1 (skill) / envelope 3.0 — 2026-05-20** — Soul Handoff Transmission Rules (§28.8): mandatory semi-structured `key:value` format for handoff summaries, 7 guaranteed-transmission fields (`resume_trigger`, `error_patterns`, `mood`, `learning_goal.achieved`, `data_integrity.integrity_warning`, `known_disabilities` active flags, `preferred_session_length.hard_limit`), `compression_policy` interaction table (standard/selective/aggressive), Agent B required behaviour on reading handoff (integrity_warning first, achieved congratulation first, disability format adaptations, hard_limit enforcement). §14 "Soul Handoff summary" subsection added as implementer quick-reference. Cross-reference to SPEC §28.8 normative.
 - **v3.3 (spec) / 2026-05-19** — Security Phase 1: `injection_resistance_level` (strict/moderate/permissive), `companion_identity` (name/persona/teaching_mode/updated_at), `teaching_mode` enum (direct/socratic/coaching/adaptive). §24.10 JSON injection guard (normative). §25.3 JSON Injection Guard prepend requirement. All new fields optional and backward-compatible.
 - **v3.2 (skill) / 2026-05-19** — 12 benchmark-driven improvements: `numerical_results`, `interruption_point`, `resume_trigger`, `knowledge.struggles`, `vocabulary_used`, `context.mode`, `archived_sessions`, `language_switch_detected`, `subject_change_detected`, `injection_target`. §23 Model-Specific Behaviors (Gemini implicit assimilation, small model posture, gemma2 deprecation). `domain_schema_version` education bump to 1.2. `build_system_prompt` updated to handle all new fields.
 - **v6.0 (skill) / envelope 3.0 — 2026-05-18** — Soul Personality (§18quater): `personality` payload block with `core_traits` (strength 0–1), `temperament`, `voice` (tone/formality/verbosity/avoids), `values` array, evolution tracking. 20 standard trait labels, 9 temperament presets. Agent MUST read personality before first response; MUST NOT auto-modify. Knowledge Commons (§18quinquies): `registry/` structure in GitHub repo (competencies per domain, personality templates, domain taxonomy). Privacy-preserving contribution protocol (strip personal fields, hash contributor identity, PR workflow). Pull update protocol (anonymous HTTP GET, propose-don't-auto-add). Multilingual competency labels (EN/FR/DE/LB). CC0 registry. `growth.last_registry_sync` + `last_registry_sync_at` fields. Network effect loop documented.

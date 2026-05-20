@@ -1,0 +1,138 @@
+{
+  "klickd_version": "3.4",
+  "created_at": "2026-05-19T18:30:00Z",
+  "encrypted": false,
+  "domain": "work",
+  "identity": {
+    "display_name": "Alex",
+    "language": "en",
+    "communication_style": "technical",
+    "timezone": "Europe/London"
+  },
+  "companion_identity": {
+    "name": "Max",
+    "persona": "concise, technically rigorous, results-oriented",
+    "teaching_mode": [
+      "direct",
+      "coaching"
+    ],
+    "response_hint": "detailed",
+    "updated_at": "2026-05-19"
+  },
+  "learning_goal": {
+    "type": "certification",
+    "deadline": "2026-09-01",
+    "stakes": "medium"
+  },
+  "context": {
+    "summary": "Alex is a mid-level software developer (5 years Python experience) upskilling into machine learning. Targeting the AWS Certified Machine Learning Specialty certification. Currently working through supervised learning fundamentals after 4 sessions.",
+    "current_project": "ML Certification — AWS MLS-C01",
+    "current_state": "Completed linear regression and decision trees. Currently on support vector machines. Next: neural network basics and model evaluation metrics.",
+    "artifacts": [
+      "ml_study_notes_v2.md",
+      "sklearn_practice_notebook.ipynb"
+    ],
+    "decisions_locked": [
+      "Always use scikit-learn code examples, not TensorFlow",
+      "Prioritise AWS-specific ML tooling (SageMaker) over generic cloud examples"
+    ],
+    "preferences": [
+      "Code examples preferred over theory-only explanations",
+      "Use Python 3.11+ syntax",
+      "Explain math concepts but skip formal proofs"
+    ],
+    "topics_covered": [
+      "Linear regression",
+      "Decision trees",
+      "Cross-validation basics"
+    ]
+  },
+  "knowledge": {
+    "expertise_level": "intermediate",
+    "learning_velocity": "fast",
+    "mastered": [
+      "Python (OOP, decorators, async)",
+      "SQL and database design",
+      "REST API development",
+      "Linear regression",
+      "Decision trees"
+    ],
+    "gaps": [
+      "Neural networks and backpropagation",
+      "Hyperparameter tuning strategies",
+      "MLOps and model deployment"
+    ],
+    "next_steps": [
+      "Complete SVM chapter with kernel examples",
+      "Build end-to-end classification pipeline on tabular dataset",
+      "Review AWS SageMaker training jobs"
+    ],
+    "vocabulary_enrichment": [
+      "kernel trick",
+      "margin maximization",
+      "regularization parameter C"
+    ]
+  },
+  "occupational_competencies": {
+    "isco_code": "2521",
+    "occupation_label": "Database designer and administrator",
+    "framework": "ESCO",
+    "framework_version": "1.2.1",
+    "competencies": [
+      {
+        "id": "ESCO:S/4.6.1",
+        "label": "Machine learning",
+        "type": "skill",
+        "level_eqf": 5,
+        "status": "in_progress",
+        "evidence": "Completed 4 ML study sessions; linear regression and decision tree exercises passed"
+      },
+      {
+        "id": "ESCO:S/4.1.3",
+        "label": "Statistical analysis",
+        "type": "knowledge",
+        "level_eqf": 4,
+        "status": "mastered",
+        "evidence": "Applied to regression model evaluation"
+      },
+      {
+        "id": "ESCO:S/4.6.4",
+        "label": "Cloud machine learning platforms",
+        "type": "skill",
+        "level_eqf": 5,
+        "status": "target"
+      }
+    ]
+  },
+  "session_history": {
+    "total_sessions": 4,
+    "last_session": "2026-05-18T17:00:00Z",
+    "key_milestones": [
+      "2026-05-05 — Session 1: Python ML ecosystem overview, NumPy/Pandas refresher",
+      "2026-05-10 — Session 2: Linear regression from scratch, scikit-learn pipeline",
+      "2026-05-15 — Session 3: Decision trees and random forests, feature importance",
+      "2026-05-18 — Session 4: SVM intro, kernel intuition, C parameter tuning"
+    ]
+  },
+  "error_patterns": [
+    {
+      "type": "unit_confusion",
+      "topic": "matrix dimensions",
+      "frequency": 2,
+      "last_seen": "2026-05-18"
+    },
+    {
+      "type": "false_generalization",
+      "topic": "regularization",
+      "frequency": 1,
+      "last_seen": "2026-05-15"
+    }
+  ],
+  "last_session_feeling": "confident",
+  "preferred_session_length": "long",
+  "preferred_explanation_style": "example_first",
+  "peer_comparison_preference": "anonymous",
+  "user_preferences": "You are continuing with Alex, a mid-level Python developer working toward the AWS ML Specialty certification. We are mid-way through SVMs — kernel intuition is clear, now moving to practical sklearn implementation and hyperparameter tuning. Alex learns fast. Lead with code examples, explain math concisely. Always link back to AWS SageMaker equivalents. Continue as if you have been here since session 1.",
+  "onboarding_trigger": "on_new_agent",
+  "agent_instructions": "## On First Message\nIf no .klickd file is loaded yet, ask once:\n\"Do you have a .klickd profile to load? Paste the content or upload the file — I'll pick up exactly where you left off.\"\nAsk once only. Do not ask again."
+}
