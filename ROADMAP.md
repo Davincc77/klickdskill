@@ -4,7 +4,7 @@ This is a living document. Items are aspirational, not committed.
 
 ---
 
-## v3.0 (current — shipped)
+## v3.0–v3.4.2 (shipped)
 
 - [x] Argon2id default KDF (m=65536/t=3/p=1)
 - [x] AES-256-GCM with RFC 8785 JCS canonicalization for AAD
@@ -19,6 +19,15 @@ This is a living document. Items are aspirational, not committed.
 - [x] JSON Schema 2020-12 (envelope + payload)
 - [x] Python + JS cross-impl test vectors (32/32 + 17/17)
 - [x] Knowledge Commons registry seed (CC0)
+- [x] Soul Handoff transmission rules §28.8 (guaranteed fields, key:value format, 300-char cap)
+- [x] `onboarding_trigger` field + §29b multilingual onboarding (v3.4)
+- [x] 26 new payload fields — UX/emotional, accessibility, learning analytics, memory (v3.4)
+- [x] §29c Privacy Guards — re-identification prohibition (v3.4.2)
+- [x] §14bis.1 Verbosity Rule — on_new_agent max 120 chars (v3.4.2)
+- [x] Benchmark scorer v3.5 — LLM-as-judge (llama-3.3-70b-versatile)
+- [x] Python SDK `klickd 3.0.0` — wheel + sdist
+- [x] TypeScript SDK `@klickd/core` — ESM + CJS dist
+- [x] Benchmark results: lot 89 Δ+17.8, lot 91 Δ+10.8, lot 94 Δ+10.8
 
 ---
 
@@ -27,10 +36,22 @@ This is a living document. Items are aspirational, not committed.
 - [ ] IANA MIME type registration (`application/vnd.klickd+json`)
 - [ ] Mandatory `whitehat` scan on every load from untrusted source (spec-level, not advisory)
 - [ ] Passphrase strength: recommend 16+ chars; add zxcvbn-style entropy warning
-- [ ] Browser demo page (`/demo/`) — pure JS + WASM, encrypt/decrypt in-browser
-- [ ] Example `.klickd` files in `examples/` (unencrypted test vectors + agent integration)
-- [ ] Agent integration examples: minimal Python / JS system-prompt injection snippets
+- [x] Browser demo page (`/demo/`) — pure JS + WASM, encrypt/decrypt in-browser
+- [x] Example `.klickd` files in `examples/` (unencrypted test vectors + agent integration)
+- [x] Agent integration examples: minimal Python / JS system-prompt injection snippets
 - [ ] Argon2id high-security preset: m=131072/t=4 (opt-in, documented)
+
+---
+
+## v3.5 (near-term)
+
+- [ ] JOSS submission — paper.md + peer review
+- [ ] PyPI publish `klickd 3.0.0` (token pending)
+- [ ] npm publish `@klickd/core` (token pending)
+- [ ] DOI update to v3.4.2 Zenodo record
+- [ ] IANA MIME type registration (`application/vnd.klickd+json`)
+- [ ] Benchmark expansion — lots 95–100 (v3.5 scorer)
+- [ ] `klickd.app/playground` — client-side JSON editor generating system prompt in real-time from .klickd file (zero server)
 
 ---
 
