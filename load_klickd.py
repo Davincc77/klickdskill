@@ -583,3 +583,282 @@ def _validate_growth(payload: dict) -> None:
                 f"KLICKD_E_FORMAT: growth.level=5 requires memory_refs >= "
                 f"{_MIN_MEMORY_REFS_AT_MAX_LEVEL}, got {count}"
             )
+
+
+# ---------------------------------------------------------------------------
+# §14ter — Agent Session Lifecycle State Machine
+# ---------------------------------------------------------------------------
+#
+# Three states:
+#   NO_PROFILE      — no .klickd context present in the session
+#   PROFILE_LOADED  — file decrypted, payload in context, not yet active
+#   SESSION_ACTIVE  — conversation underway
+#
+# Transitions are driven by: file upload, user decline, session end signals.
+# ---------------------------------------------------------------------------
+
+from datetime import datetime, timezone as _tz
+import copy as _copy
+import uuid as _uuid
+
+# Session end signals (§14ter — SESSION_ACTIVE)
+_END_SIGNALS = frozenset({
+    "bye", "goodbye", "à bientôt", "a bientôt", "tschüss", "tschuss",
+    "äddi", "addi", "au revoir", "ciao", "end session", "fin de session",
+    "save my progress", "sauvegarde", "export my .klickd", "save context",
+})
+
+# Onboarding prompts — NO_PROFILE state, first message (≤120 chars, 1 sentence)
+_NO_PROFILE_PROMPTS = {
+    "fr": "Tu as un profil .klickd ? Upload ou colle-le — sinon je t'en crée un automatiquement en fin de session.",
+    "de": "Hast du ein .klickd-Profil? Lade es hoch oder füge es ein — sonst erstelle ich dir am Sitzungsende eines.",
+    "lb": "Hues du e .klickd-Profil? Lued et héich oder klëbs et an — soss erstellen ech dir eent um Enn vun der Sessioun.",
+    "en": "Do you have a .klickd profile? Upload or paste it — or I'll create one for you at the end of this session.",
+}
+
+# AUTO_SAVE delivery messages (§14ter.3)
+_SAVE_MESSAGES = {
+    "fr": "Session sauvegardée. Télécharge ton fichier .klickd mis à jour pour garder ta progression.",
+    "de": "Sitzung gespeichert. Lade deine aktualisierte .klickd-Datei herunter.",
+    "lb": "Sessioun gespäichert. Lued deng aktualiséiert .klickd-Fichier erof.",
+    "en": "Session saved. Download your updated .klickd file to keep your progress.",
+}
+
+
+def get_session_state(session: dict) -> str:
+    """
+    Return the current session state: 'NO_PROFILE', 'PROFILE_LOADED', or 'SESSION_ACTIVE'.
+
+    The session dict is a simple mutable dict the agent maintains across turns:
+        {
+            'state': str,           # current state
+            'payload': dict|None,   # decrypted .klickd payload, or None
+            'passphrase': str|None, # in-memory only — zeroed after AUTO_SAVE
+            'lang': str,            # detected language ('en', 'fr', 'de', 'lb')
+            'dirty': bool,          # True if session has changes to save
+        }
+
+    If 'state' is absent, initialises to 'NO_PROFILE'.
+    """
+    if "state" not in session:
+        session["state"] = "NO_PROFILE"
+        session.setdefault("payload", None)
+        session.setdefault("passphrase", None)
+        session.setdefault("lang", "en")
+        session.setdefault("dirty", False)
+    return session["state"]
+
+
+def build_no_profile_prompt(lang: str = "en") -> str:
+    """
+    Return the single-sentence NO_PROFILE onboarding prompt in the given language.
+    §14ter: max 120 chars, 1 sentence, no fallback educational content.
+    Falls back to English for unknown languages.
+    """
+    prompt = _NO_PROFILE_PROMPTS.get(lang[:2].lower(), _NO_PROFILE_PROMPTS["en"])
+    assert len(prompt) <= 120, f"KLICKD_BUG: NO_PROFILE prompt exceeds 120 chars: {len(prompt)}"
+    return prompt
+
+
+def transition(session: dict, event: str, **kwargs) -> dict:
+    """
+    Drive the state machine forward based on an event.
+
+    Events:
+        'file_provided'   — user uploaded or pasted a .klickd file
+                            kwargs: payload (dict), passphrase (str)
+        'user_declined'   — user ignored or declined the profile prompt
+        'first_message'   — first user message in a fresh NO_PROFILE session
+                            kwargs: lang (str, detected from message)
+        'session_end'     — session end signal detected
+                            kwargs: session_summary (str), memory_entries (list)
+        'export_request'  — user explicitly asked to export .klickd mid-session
+
+    Returns a dict with:
+        'state'   — new state
+        'action'  — what the agent should do: 'output_resume', 'output_prompt',
+                    'proceed', 'auto_save', None
+        'message' — string for the agent to output (if any)
+    """
+    state = get_session_state(session)
+
+    # ── NO_PROFILE ──────────────────────────────────────────────────────────
+    if state == "NO_PROFILE":
+        if event == "first_message":
+            lang = kwargs.get("lang", session.get("lang", "en"))
+            session["lang"] = lang
+            # Only prompt once — set flag so we don't prompt again
+            if session.get("_onboarding_asked"):
+                return {"state": state, "action": "proceed", "message": None}
+            session["_onboarding_asked"] = True
+            return {
+                "state": "NO_PROFILE",
+                "action": "output_prompt",
+                "message": build_no_profile_prompt(lang),
+            }
+
+        if event == "file_provided":
+            payload = kwargs["payload"]
+            passphrase = kwargs.get("passphrase")
+            session["payload"] = payload
+            session["passphrase"] = passphrase
+            session["state"] = "PROFILE_LOADED"
+            # Inherit language from payload identity if available
+            payload_lang = (payload.get("identity") or {}).get("language", session.get("lang", "en"))
+            session["lang"] = payload_lang[:2].lower()
+            resume = (payload.get("context") or {}).get("resume_trigger", "")
+            return {
+                "state": "PROFILE_LOADED",
+                "action": "output_resume",
+                "message": resume,
+            }
+
+        if event == "user_declined":
+            session["state"] = "SESSION_ACTIVE"
+            return {"state": "SESSION_ACTIVE", "action": "proceed", "message": None}
+
+    # ── PROFILE_LOADED ───────────────────────────────────────────────────────
+    if state == "PROFILE_LOADED":
+        # Always transition to SESSION_ACTIVE on first user message
+        session["state"] = "SESSION_ACTIVE"
+        resume = (session.get("payload") or {}).get("context", {}).get("resume_trigger", "")
+        return {
+            "state": "SESSION_ACTIVE",
+            "action": "output_resume",
+            "message": resume,
+        }
+
+    # ── SESSION_ACTIVE ───────────────────────────────────────────────────────
+    if state == "SESSION_ACTIVE":
+        if event in ("session_end", "export_request"):
+            summary = kwargs.get("session_summary", "")
+            memory_entries = kwargs.get("memory_entries", [])
+            updated_payload = merge_session_changes(
+                session.get("payload"), summary, memory_entries
+            )
+            session["payload"] = updated_payload
+            session["dirty"] = True
+            lang = session.get("lang", "en")
+            if event == "session_end":
+                session["state"] = "NO_PROFILE"  # ready for next session
+                # Zero passphrase after flagging for save
+                _save_msg = _SAVE_MESSAGES.get(lang[:2].lower(), _SAVE_MESSAGES["en"])
+                return {
+                    "state": "NO_PROFILE",
+                    "action": "auto_save",
+                    "message": _save_msg,
+                    "payload": updated_payload,
+                    "passphrase": session.get("passphrase"),
+                }
+            else:  # export_request — stay active
+                _save_msg = _SAVE_MESSAGES.get(lang[:2].lower(), _SAVE_MESSAGES["en"])
+                return {
+                    "state": "SESSION_ACTIVE",
+                    "action": "auto_save",
+                    "message": _save_msg,
+                    "payload": updated_payload,
+                    "passphrase": session.get("passphrase"),
+                }
+
+    return {"state": state, "action": None, "message": None}
+
+
+def is_session_end_signal(text: str) -> bool:
+    """
+    Return True if the user's message matches a known session end signal.
+    §14ter — SESSION_ACTIVE: agent MUST recognise these signals.
+    Case-insensitive, strips punctuation.
+    """
+    cleaned = text.lower().strip().rstrip(".,!?")
+    # Exact match
+    if cleaned in _END_SIGNALS:
+        return True
+    # Substring match for multi-word signals
+    for signal in _END_SIGNALS:
+        if len(signal) > 4 and signal in cleaned:
+            return True
+    return False
+
+
+def merge_session_changes(
+    existing_payload: dict | None,
+    session_summary: str,
+    memory_entries: list,
+) -> dict:
+    """
+    Merge session changes into an existing payload, or build a minimal one
+    from scratch if no profile was loaded (NO_PROFILE → AUTO_SAVE path).
+
+    §14ter.3 AUTO_SAVE Protocol:
+    - Update context.current_state
+    - Update context.resume_trigger
+    - Append new memory entries (max 5 per session, total max 1000)
+    - Bump created_at to current UTC
+
+    Returns the updated payload dict (does NOT encrypt — caller handles that).
+    """
+    now = datetime.now(_tz.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    if existing_payload is None:
+        # Build minimal payload from scratch
+        payload = {
+            "payload_schema_version": "3.0",
+            "domain_schema_version": "education-1.0",
+            "identity": {},
+            "agent_instructions": "",
+            "context": {},
+            "knowledge": {},
+            "memory": [],
+        }
+    else:
+        payload = _copy.deepcopy(existing_payload)
+
+    # Update context
+    ctx = payload.setdefault("context", {})
+    if session_summary:
+        ctx["current_state"] = session_summary
+        # resume_trigger = first 30 words of summary
+        words = session_summary.split()
+        ctx["resume_trigger"] = " ".join(words[:30])
+
+    # Update created_at
+    payload["created_at"] = now
+
+    # Append new memory entries (max 5 per call, total max 1000)
+    mem = payload.setdefault("memory", [])
+    for entry in memory_entries[:5]:
+        if not isinstance(entry, dict):
+            continue
+        # Ensure required fields
+        entry.setdefault("id", str(_uuid.uuid4()))
+        entry.setdefault("ts", now)
+        entry.setdefault("role", "assistant")
+        entry.setdefault("modality", "text")
+        entry.setdefault("tags", [])
+        if "content" not in entry:
+            continue
+        mem.append(entry)
+    # Enforce 1000-entry cap
+    if len(mem) > 1000:
+        payload["memory"] = mem[-1000:]
+
+    return payload
+
+
+def detect_lang(text: str) -> str:
+    """
+    Minimal language detection from first user message.
+    Returns 'fr', 'de', 'lb', or 'en'.
+    Fast heuristic — no external dependency.
+    """
+    t = text.lower()
+    # Luxembourgish markers
+    if any(w in t for w in ("moien", "äddi", "addi", "klëbs", "hues du", "wéi")):
+        return "lb"
+    # French markers
+    if any(w in t for w in ("je ", "tu ", "vous ", "nous ", "bonjour", "salut", "merci", "c'est")):
+        return "fr"
+    # German markers
+    if any(w in t for w in ("ich ", "du ", "sie ", "hallo", "guten", "danke", "bitte")):
+        return "de"
+    return "en"

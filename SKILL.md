@@ -38,7 +38,7 @@ repo: https://github.com/Davincc77/klickdskill
 **Skill/doc revision:** 6.1
 **License:** CC0 1.0 Universal (Public Domain)
 **Spec:** [SPEC.md](./SPEC.md)
-**DOI:** [10.5281/zenodo.20313317](https://doi.org/10.5281/zenodo.20313317) — root DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
+**DOI:** [10.5281/zenodo.20302252](https://doi.org/10.5281/zenodo.20302252) — root DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
 
 > **BREAKING CHANGE NOTICE:** v3.0 is not backwards-compatible with v2.x. New envelope structure,
 > RFC 8785 JCS canonicalization, Argon2id default KDF, and structured `kdf`/`cipher` blocks.
@@ -812,6 +812,147 @@ Tu as un profil .klickd ? Colle-le ici et je reprends où tu t'es arrêté.
 *(72 chars, 1 sentence)*
 
 **Rationale:** Users with ADHD or dyslexia are disproportionately harmed by verbose onboarding messages. The `.klickd` file exists precisely to avoid this friction — the trigger should be a minimal, low-effort prompt, not a tutorial.
+
+---
+
+## 14ter. Agent Session Lifecycle — Automatic State Machine
+
+> **The soul must never require manual plumbing. The agent manages the full lifecycle automatically.**
+
+This section defines the normative session state machine every `.klickd`-compliant agent MUST implement. The goal: **zero friction after the very first load**. The user should never have to think about when to load or save their profile.
+
+---
+
+### States
+
+```
+┌─────────────────┐      file uploaded / pasted       ┌─────────────────────┐
+│  NO_PROFILE     │  ─────────────────────────────►  │  PROFILE_LOADED     │
+│                 │                                   │                     │
+│  Ask once:      │  ◄─────────────────────────────  │  Resume from        │
+│  create or load?│      user says "start fresh"      │  resume_trigger.    │
+└─────────────────┘                                   │  Inject context.    │
+                                                      └──────────┬──────────┘
+                                                                 │ first user message
+                                                                 ▼
+                                                      ┌─────────────────────┐
+                                                      │  SESSION_ACTIVE     │
+                                                      │                     │
+                                                      │  Normal chat.       │
+                                                      │  Track changes.     │
+                                                      │  Auto-save on end.  │
+                                                      └─────────────────────┘
+```
+
+---
+
+### State: `NO_PROFILE`
+
+**When:** The agent starts and no `.klickd` context is present in the session.
+
+**Agent behaviour — MUST:**
+1. On the very first user message, output **one** of these (detect language from message):
+   - EN: `Do you have a .klickd profile? Upload or paste it — or I'll create one for you at the end of this session.`
+   - FR: `Tu as un profil .klickd ? Upload ou colle-le — sinon je t'en crée un automatiquement en fin de session.`
+   - DE: `Hast du ein .klickd-Profil? Lade es hoch oder füge es ein — sonst erstelle ich dir am Sitzungsende eines.`
+   - LB: `Hues du e .klickd-Profil? Lued et héich oder klëbs et an — soss erstellen ech dir eent um Enn vun der Sessioun.`
+2. **Max 1 sentence. Max 120 chars. No fallback educational content.**
+3. If user provides a file → transition to `PROFILE_LOADED`.
+4. If user ignores or says no → transition to `SESSION_ACTIVE` immediately, **never ask again**.
+5. At session end in this state → auto-generate a new `.klickd` file from the session (see §14ter.3).
+
+---
+
+### State: `PROFILE_LOADED`
+
+**When:** A `.klickd` file has been decrypted and its payload is in context.
+
+**Agent behaviour — MUST:**
+1. Output `context.resume_trigger` verbatim as the first line of the response.
+2. Apply `companion_identity` (name, persona, teaching_mode) immediately — do not introduce yourself with a default persona.
+3. Apply `personality`, `user_preferences`, `knowledge.struggles`, `error_patterns` silently — no need to narrate what was loaded.
+4. Transition to `SESSION_ACTIVE` after outputting the resume signal.
+5. **Never ask the user to re-upload or re-paste their file** — it is loaded.
+
+**Agent behaviour — MUST NOT:**
+- Say "I've loaded your profile" or narrate the load. Just resume.
+- Ask for the passphrase again after a successful decrypt.
+- Re-inject the `onboarding_trigger` prompt — the file is already loaded.
+
+---
+
+### State: `SESSION_ACTIVE`
+
+**When:** The session is underway (with or without a loaded profile).
+
+**Agent behaviour — MUST:**
+1. Operate normally.
+2. Track these changes silently during the session:
+   - New `memory` entries (key decisions, milestones, corrections)
+   - Updates to `knowledge.mastered`, `knowledge.struggles`
+   - Changes to `context.current_state`
+   - `mood` and `last_session_feeling` inferred from conversation tone
+3. At end of session (user says goodbye / closes / session timeout signal), trigger `AUTO_SAVE` (see §14ter.3).
+
+**Session end signals (agent MUST recognise):**
+```
+"bye" / "à bientôt" / "tschüss" / "äddi"
+"save my progress" / "sauvegarde"
+"end session" / "fin de session"
+inactivity > 5 turns with no response
+explicit "export my .klickd"
+```
+
+---
+
+### §14ter.3 — AUTO_SAVE Protocol
+
+At every session end, the agent MUST:
+
+1. **Build the updated payload** — merge session changes into the loaded payload (or build from scratch if `NO_PROFILE`):
+   - Update `context.current_state` to a 1-sentence summary of where the session ended
+   - Update `context.resume_trigger` (10–30 words, exact re-entry point)
+   - Append new `memory` entries (max 5 per session — curated, not a full log)
+   - Update `knowledge.mastered` and `knowledge.struggles` if changed
+   - Set `mood` and `last_session_feeling` from final conversation tone
+   - Bump `created_at` to current UTC
+
+2. **Encrypt** using Argon2id + AES-256-GCM with the same passphrase as loaded (or prompt for one if `NO_PROFILE`).
+
+3. **Deliver the file** to the user with this exact message (localised):
+   - EN: `Session saved. Download your updated .klickd file to keep your progress.`
+   - FR: `Session sauvegardée. Télécharge ton fichier .klickd mis à jour pour garder ta progression.`
+   - DE: `Sitzung gespeichert. Lade deine aktualisierte .klickd-Datei herunter.`
+   - LB: `Sessioun gespäichert. Lued deng aktualiséiert .klickd-Fichier erof.`
+
+4. **MUST NOT** upload the file anywhere — deliver only as a local download. Zero server.
+
+5. If the user declines the save → respect it silently. Never ask twice.
+
+---
+
+### §14ter.4 — Passphrase handling across states
+
+| State | Passphrase needed? | When? |
+|---|---|---|
+| `NO_PROFILE` | Only at `AUTO_SAVE` | After session, before generating the new file |
+| `PROFILE_LOADED` | Already known | Reuse from load — never ask again mid-session |
+| `SESSION_ACTIVE` (no profile) | Only at `AUTO_SAVE` | Prompt once at end |
+
+**MUST NOT** store the passphrase in memory, logs, or any field of the `.klickd` file. Zero it after key derivation.
+
+---
+
+### §14ter.5 — State machine summary table
+
+| State | Trigger | Agent output | Next state |
+|---|---|---|---|
+| `NO_PROFILE` | First user message | 1-sentence profile prompt (≤120 chars) | `PROFILE_LOADED` or `SESSION_ACTIVE` |
+| `NO_PROFILE` | File uploaded/pasted | Decrypt → resume_trigger | `PROFILE_LOADED` |
+| `NO_PROFILE` | User ignores/declines | Proceed normally | `SESSION_ACTIVE` |
+| `PROFILE_LOADED` | Always | Output resume_trigger verbatim, apply context silently | `SESSION_ACTIVE` |
+| `SESSION_ACTIVE` | Session end signal | AUTO_SAVE → deliver .klickd | `NO_PROFILE` (next session) |
+| `SESSION_ACTIVE` | "export my .klickd" | AUTO_SAVE immediately | Stay in `SESSION_ACTIVE` |
 
 ---
 
