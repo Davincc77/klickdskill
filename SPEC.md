@@ -1,9 +1,9 @@
 # .klickd — Technical Specification
 
-**Version:** 3.4.2  
+**Version:** 3.4.1  
 **License:** CC0 1.0 Universal (Public Domain)  
 **Maintainer:** Klickd / Luxlearn (Luxembourg)  
-**Status:** Production — v3.4.2 (2026-05-20)
+**Status:** Production — v3.4.1 (2026-05-20)
 
 ---
 
@@ -394,6 +394,7 @@ The `klickd_version` field governs format compatibility. It uses **MAJOR.MINOR**
 | `2.5` | Stable | `user_preferences` rename, RFC 3339 timestamp pin, Threat Model, Validation Requirements block |
 | `3.2` | Stable | `numerical_results`, `interruption_point`, `resume_trigger`, `struggles`, `vocabulary_used`, `mode`, `archived_sessions`, `language_switch_detected`, `subject_change_detected`, `injection_target` |
 | `3.3` | Stable | `injection_resistance_level`, `companion_identity`, JSON Injection Guard, `occupational_competencies`, data_type annotations, extended enums, `interruption_points` array, `key_numerical_results` in `archived_sessions` |
+| `3.5` | Planned | `recovery` object (hint + BIP39 phrase_hash), mandatory passphrase warning UI (§31), `session_metadata`, `preferred_model` |
 | `3.4` | Current | 26 new fields: LaTeX in `numerical_results`, `learning_velocity`, `teaching_mode` array, UX emotional fields (§27: `mood`, `last_session_feeling`, `milestones`, `preferred_session_length`, `preferred_explanation_style`, `language_switching_preference`, `peer_comparison_preference`), advanced memory (§28: `learning_goal`, `error_patterns`, `compression_policy`, `known_disabilities`, `memory_decay`, `shared_context`, `data_integrity`), `topics_covered`, `vocabulary_enrichment`, `interruption_reason`, `response_hint`, `_benchmark`, reserved fields `session_metadata` / `preferred_model`; **§28.8 Soul Handoff Transmission Rules**: guaranteed fields, mandatory semi-structured format, compression_policy interaction, Agent B required behaviour |
 
 Agents receiving a v1 file should reject it with a clear error unless they implement a v1→v2 migration path.
@@ -1384,6 +1385,171 @@ If user_message requests known_disabilities disclosure:
 
 ---
 
+## §31 — Passphrase Security & Account Recovery (v3.5)
+
+> ⚠️ **AVERTISSEMENT CRITIQUE — À AFFICHER OBLIGATOIREMENT À LA CRÉATION**
+>
+> **Ta passphrase est la seule clé de tes données.**
+> Il n'existe aucun serveur, aucun tiers, aucune procédure de récupération capable de déchiffrer ton fichier `.klickd` sans elle.
+> Si tu l'oublies, tes données sont **définitivement inaccessibles**.
+> Personne — ni Klickd, ni aucun agent — ne peut te la redonner.
+>
+> **Conserve-la hors ligne, en lieu sûr.** Gestionnaire de mots de passe, papier dans un endroit sécurisé, ou les deux.
+
+---
+
+### §31.1 — Philosophie
+
+Le chiffrement `.klickd` est **zero-knowledge by construction** : la passphrase dérive via Argon2id (v3.x) ou PBKDF2 (v2.x) la `contentKey` qui protège l'intégralité du payload. Aucune copie de la clé n'est transmise à un serveur. Il n'existe donc **aucun mécanisme de reset traditionnel**.
+
+Ce n'est pas un bug — c'est la garantie de confidentialité. La contrepartie est que la responsabilité de la passphrase appartient entièrement à l'utilisateur.
+
+---
+
+### §31.2 — `recovery` object (normative, v3.5)
+
+Champ optionnel de niveau racine. Permet à l'utilisateur de configurer deux mécanismes de récupération complémentaires : un **hint mémoriel** et une **recovery phrase** générée à la création.
+
+```json
+"recovery": {
+  "hint": "Nom de mon premier animal de compagnie + année de naissance",
+  "phrase_hash": "argon2id$v=19$m=65536,t=3,p=4$<salt_b64>$<hash_b64>",
+  "phrase_version": 1,
+  "created_at": "2026-05-20T21:00:00Z"
+}
+```
+
+| Champ | Type | Requis | Description |
+|---|---|---|---|
+| `hint` | string | Non | Indice mémoriel en clair. Jamais la passphrase elle-même. Max 120 caractères. Stocké non chiffré dans l'enveloppe pour être lisible sans décryptage. |
+| `phrase_hash` | string | Non | Hash Argon2id de la recovery phrase (12 mots BIP39). Permet de vérifier la recovery phrase sans la stocker en clair. |
+| `phrase_version` | integer | Non | Version du schéma de génération de la recovery phrase. Actuel : `1`. |
+| `created_at` | string (RFC 3339) | Non | Horodatage de création de l'entrée recovery. |
+
+---
+
+### §31.3 — Recovery phrase (12 mots BIP39)
+
+La recovery phrase est une séquence de **12 mots** tirés de la liste BIP39 (2048 mots), générée via CSPRNG au moment de la création du fichier `.klickd`.
+
+**Propriétés :**
+- Entropie : 128 bits (12 mots × log2(2048) ≈ 132 bits)
+- Suffisant contre la brute-force GPU avec la dérivation Argon2id
+- Format mémorisable et copiable
+- Présentée **une seule fois** à la création — l'utilisateur DOIT la sauvegarder
+
+**Flux de création (normative) :**
+
+```
+1. Générer 12 mots BIP39 via CSPRNG
+2. Afficher la recovery phrase à l'utilisateur — UNE SEULE FOIS
+3. Afficher l'avertissement §31.4 obligatoirement
+4. Calculer : phrase_hash = Argon2id(recovery_phrase_as_utf8, random_salt)
+5. Stocker phrase_hash dans recovery.phrase_hash (enveloppe non chiffrée)
+6. NE PAS stocker la recovery phrase elle-même — ni dans le fichier, ni en mémoire
+```
+
+**Flux de récupération (normative) :**
+
+```
+1. L'utilisateur saisit les 12 mots
+2. Vérifier : Argon2id(input) === recovery.phrase_hash
+3. Si match → proposer de définir une nouvelle passphrase
+4. Dériver une nouvelle contentKey depuis la nouvelle passphrase
+5. Re-chiffrer le payload avec la nouvelle clé → nouveau fichier .klickd
+6. Invalider l'ancienne recovery phrase (incrémenter phrase_version)
+```
+
+---
+
+### §31.4 — Avertissement utilisateur obligatoire (normative)
+
+Toute implémentation générant un fichier `.klickd` **DOIT** afficher le bloc suivant au moment de la création, avant que l'utilisateur puisse continuer :
+
+---
+
+**FR :**
+> 🔐 **Conserve ta recovery phrase en lieu sûr.**
+> Ces 12 mots sont le seul moyen de récupérer l'accès à ton profil si tu oublies ton mot de passe.
+> **Personne d'autre ne peut te les redonner** — ni Klickd, ni aucun service.
+> Note-les maintenant, hors ligne.
+
+**EN :**
+> 🔐 **Store your recovery phrase somewhere safe.**
+> These 12 words are the only way to regain access if you forget your password.
+> **No one else can retrieve them** — not Klickd, not any service.
+> Write them down now, offline.
+
+**DE :**
+> 🔐 **Bewahre deine Recovery-Phrase sicher auf.**
+> Diese 12 Wörter sind der einzige Weg, um Zugriff zu erhalten, falls du dein Passwort vergisst.
+> **Niemand kann sie dir geben** — weder Klickd noch irgendein Dienst.
+> Notiere sie jetzt, offline.
+
+**LB :**
+> 🔐 **Späicher deng Recovery-Phrase sécher.**
+> Dës 12 Wierder sinn déi eenzeg Méiglechkeet, fir nees Zougang ze kréien, wann s du däi Passwuert vergessen hues.
+> **Keen aneren kann se dir ginn** — net Klickd, net en anere Service.
+> Schreif se elo op, offline.
+
+---
+
+L'implémentation DOIT inclure une checkbox de confirmation du type :
+> ☐ *J'ai sauvegardé mes 12 mots de récupération en lieu sûr.*
+
+L'utilisateur ne peut pas continuer sans cocher cette case.
+
+---
+
+### §31.5 — `hint` — règles de contenu (normative)
+
+Le hint est stocké **en clair** dans l'enveloppe (hors du ciphertext). Il est lisible sans décryptage. L'implémentation DOIT :
+
+- **INTERDIRE** que le hint contienne la passphrase elle-même ou un sous-ensemble direct de celle-ci
+- **AVERTIR** si le hint ressemble trop à la passphrase (similarité cosinus > 0.8 sur les tokens)
+- **LIMITER** le hint à 120 caractères maximum
+- **AFFICHER** le hint à l'écran de saisie de la passphrase, sous la forme : *"Indice : [hint]"*
+
+**Bon hint :** `"Rue de mon enfance + prénom de ma grand-mère"`
+**Mauvais hint (interdit) :** `"MonMotDePasse2024!"`
+
+---
+
+### §31.6 — Cas sans recovery configurée
+
+Si `recovery` est absent du fichier et que l'utilisateur a oublié sa passphrase : **il n'existe aucune issue**. Le fichier est chiffré avec une clé dérivée de la passphrase perdue. Les données sont inaccessibles de façon définitive.
+
+L'implémentation DEVRAIT afficher un message clair dans ce cas :
+
+> *"Aucune recovery phrase n'est configurée pour ce profil. Sans ta passphrase d'origine, tes données ne peuvent pas être récupérées."*
+
+L'implémentation NE DOIT PAS promettre ou suggérer qu'une récupération est possible côté serveur.
+
+---
+
+### §31.7 — RGPD / GDPR — droit à l'oubli
+
+La recovery phrase hashée (`phrase_hash`) est une donnée dérivée de la volonté de l'utilisateur. Elle est stockée dans l'enveloppe non chiffrée du `.klickd`. Dans le cadre du droit à l'effacement (RGPD Art. 17) :
+
+- L'utilisateur peut supprimer `recovery` de l'enveloppe à tout moment via l'interface Klickd
+- La suppression de `recovery.phrase_hash` invalide définitivement la recovery phrase
+- Cette action est irréversible et DOIT être confirmée par l'utilisateur
+
+---
+
+### §31.8 — Statut
+
+| Champ | Statut v3.4 | Statut v3.5 |
+|---|---|---|
+| `recovery.hint` | Non implémenté | Optionnel normative |
+| `recovery.phrase_hash` | Non implémenté | Optionnel normative |
+| Avertissement §31.4 | Non requis | **OBLIGATOIRE** |
+| Checkbox confirmation §31.4 | Non requis | **OBLIGATOIRE** |
+
+**Status actuel (v3.4.2) :** §31 est pré-spécifié et documenté. L'implémentation dans les générateurs de fichiers `.klickd` est prévue pour v3.5. Les lecteurs v3.4 DOIVENT ignorer le champ `recovery` s'il est présent (forward compatibility).
+
+---
+
 ## §30 — Reserved Fields (v3.5 roadmap)
 
 The following fields are documented as reserved. They MUST NOT be implemented in v3.4-compliant readers. They are listed here to signal intent, prevent namespace collision, and allow advance planning by implementors.
@@ -1423,6 +1589,24 @@ Intended to provide a routing hint for the platform to select a preferred AI mod
 ---
 
 ## Changelog
+
+### v3.4.3 — 2026-05-20
+**Source:** Product decision — account recovery design
+
+**Added:**
+- §31 Passphrase Security & Account Recovery (pre-spec for v3.5)
+  - §31.1 Philosophie zero-knowledge — aucun reset côté serveur possible par design
+  - §31.2 `recovery` object : `hint` (clair, max 120 chars), `phrase_hash` (Argon2id BIP39), `phrase_version`, `created_at`
+  - §31.3 Recovery phrase 12 mots BIP39 — 128 bits d'entropie, affichée une seule fois, flux création + récupération normative
+  - §31.4 Avertissement utilisateur OBLIGATOIRE en FR/EN/DE/LB + checkbox de confirmation (bloqueante)
+  - §31.5 Règles de contenu `hint` — interdit de contenir la passphrase, limite 120 chars
+  - §31.6 Cas sans recovery — message clair : données inaccessibles définitivement
+  - §31.7 RGPD Art. 17 — suppression `recovery` via interface, action irréversible confirmée
+  - §31.8 Tableau de statut v3.4 / v3.5
+- Règle de forward compatibility : lecteurs v3.4 DOIVENT ignorer `recovery` si présent
+- Table des versions : ajout entrée v3.5 (planned)
+
+---
 
 ### v3.4.2 — 2026-05-20
 **Source:** Benchmark v3.4.1 — Lot 55 adversarial findings
