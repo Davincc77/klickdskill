@@ -2,18 +2,38 @@
 
 > *When it all .klickd*
 
-[![.klickd version](https://img.shields.io/badge/.klickd-v3.5-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
+[![.klickd version](https://img.shields.io/badge/.klickd-v3.5.1-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 [![License: CC0](https://img.shields.io/badge/License-CC0%201.0-lightgrey?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20320480.svg)](https://doi.org/10.5281/zenodo.20320480)
 
-A portable, AI-provider-agnostic context file format that carries a user's conversation history, expertise state, and session continuity across AI models — with zero server involvement. Drop a `.klickd` file into any compatible AI client to resume exactly where you left off, regardless of whether the previous session was on GPT-4o, Claude, Gemini, or Llama.
+A portable, AI-provider-agnostic context file format that carries a learner's conversation history, expertise state, and session continuity across AI models — with zero server involvement. Drop a `.klickd` file into any compatible AI client to resume exactly where you left off, regardless of whether the previous session was on GPT-4o, Claude, Gemini, or Llama.
+
+**One file. Any model. No account. No server.**
+
+---
+
+## Why `.klickd`?
+
+Every major AI memory system — Mem0, PAM, Letta, OpenMemory — requires a running server, an API key, or cloud infrastructure. Your memory lives in their database, not in your hands.
+
+`.klickd` is different: it is a self-contained, encrypted file. The server never sees your context. No runtime. No Docker. No account. You own your memory.
+
+| | .klickd | Mem0 / OpenMemory | PAM | Letta | MeMo | agentmemory |
+|---|---|---|---|---|---|---|
+| Zero server process | ✅ | ❌ (Docker + Qdrant) | ❌ (SDK + transport) | ❌ (runtime) | ❌ (model infra) | ❌ (Node port 3113) |
+| Client-side encryption | ✅ AES-256-GCM + Argon2id | ❌ server-side | ❌ | ❌ | ❌ | ❌ |
+| No API key required | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Portable file (drag-and-drop) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Pedagogical schema | ✅ (curriculum, mastery, CEFR) | ❌ | ❌ | ❌ | ❌ | ❌ |
+| DOI-referenced benchmark | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| GDPR / Luxembourg jurisdiction | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 ---
 
 ## Try it
 
-- [Playground](https://klickd.app/playground) — test interactif en ligne
-- [klickdskill page](https://klickd.app/klickdskill) — documentation live
+- [Playground](https://klickd.app/playground) — live interactive test
+- [klickdskill page](https://klickd.app/klickdskill) — full documentation
 
 ---
 
@@ -21,8 +41,8 @@ A portable, AI-provider-agnostic context file format that carries a user's conve
 
 ```json
 {
-  "klickd_version": "3.4.2",
-  "created_at": "2026-05-19T21:00:00Z",
+  "klickd_version": "3.5.1",
+  "created_at": "2026-05-21T00:00:00Z",
   "encrypted": false,
   "domain": "education",
   "user_preferences": "You are continuing a session with a learner working on calculus. Resume as if you have been here from the start."
@@ -49,21 +69,17 @@ npm install @klickd/core
 
 ## Examples
 
-Five canonical example files covering the full range of use cases:
-
 | File | Description |
 |---|---|
-| [`examples/student_fr.klickd`](examples/student_fr.klickd) | French high-school student, maths, socratic mode |
-| [`examples/professional_en.klickd`](examples/professional_en.klickd) | Mid-level developer upskilling into ML, certification goal |
+| [`examples/student_fr.klickd`](examples/student_fr.klickd) | French high-school student, maths, Socratic mode |
+| [`examples/professional_en.klickd`](examples/professional_en.klickd) | Mid-level developer upskilling into ML |
 | [`examples/family_plan.klickd`](examples/family_plan.klickd) | Child profile with ADHD support and shared family context |
-| [`examples/minimal.klickd`](examples/minimal.klickd) | Cold start — 5 fields only, valid v3.4 |
-| [`examples/full_v34.klickd`](examples/full_v34.klickd) | Full reference file — all v3.4 fields populated |
+| [`examples/minimal.klickd`](examples/minimal.klickd) | Cold start — 5 fields only, valid v3.5 |
+| [`examples/full_v34.klickd`](examples/full_v34.klickd) | Full reference file — all fields populated |
 
 ---
 
 ## Integrations
-
-Provider-specific guides for injecting `.klickd` context:
 
 | Provider | Guide |
 |---|---|
@@ -77,10 +93,7 @@ Provider-specific guides for injecting `.klickd` context:
 
 ## JSON Schema
 
-Validate `.klickd` files against the official Draft 7 schema:
-
 ```bash
-# Python
 pip install jsonschema
 python -c "
 import json, jsonschema
@@ -91,30 +104,30 @@ print('Valid.')
 "
 ```
 
-Schema file: [`schema/klickd-v3.4.schema.json`](schema/klickd-v3.4.schema.json)  
-`$id`: `https://klickd.app/schema/v3.5.json`
+Schema: [`schema/klickd-v3.4.schema.json`](schema/klickd-v3.4.schema.json) — `$id`: `https://klickd.app/schema/v3.5.json`
 
 ---
 
-## Benchmark Results
+## Benchmark Results (v3.5 LLM-judge)
 
-v3.5 LLM-judge scorer — lots 89, 91, 94:
+Scorer: `qwen/qwen3-32b` via Groq — grid /10: Continuity /3 + Pedagogical Precision /3 + Adaptation /2 + Language /2.  
+Full methodology and raw data: [DOI 10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480)
 
-| Lot | Subject group | Δ v3.4 scorer | Δ v3.5 scorer |
-|---|---|---|---|
-| 89 | Modern languages (DE / EN / Arabic) | -1.0 | **+17.8** |
-| 91 | Arts / Music / Literature | — | **+10.8** |
-| 94 | Law (constitutional / international) | — | **+10.8** |
+| Sequence | Scope | Δ (WITH vs WITHOUT .klickd) |
+|---|---|---|
+| Seq 1 — 23 subjects, 115 profiles | Core pedagogy | **+13.9 pts avg** (min +12.8, max +19.2) |
+| Seq 2 — §31 recovery, 4 profiles | Migration continuity | +9.5 (with recovery phrase) |
+| Seq 3 — Soul Handoff, 10 profiles | Cross-model identity | **+14.0 pts** (IC ±7.2) |
 
-The v3.5 scorer uses `llama-3.3-70b-versatile` as LLM-judge (/10 grid: Continuity /3 + Pedagogical Precision /3 + Adaptation /2 + Language /2). Key fix: language is evaluated against the student profile, not the question language.
+---
 
-The Soul Handoff scenario measures how well a new AI model resumes a session originally started on a different model, using only the `.klickd` file as context bridge.
+## Prior Art
+
+`.klickd` is positioned relative to the following systems in the related work section of the [Zenodo preprint](https://doi.org/10.5281/zenodo.20320480): Mem0 (Singh & Yadav, 2026), PAM (Ravindran, arXiv:2605.11032), Letta/MemGPT, Cortex (Kindly Robotics, 2026), ate/.mv2, Opal (arXiv:2604.02522), MeMo (Zeng et al., arXiv:2605.15156), and agentmemory (rohitg00, ~15K stars). To our knowledge, no existing format combines zero-process portability, client-side AES-256-GCM + Argon2id encryption, a structured pedagogical schema, and a DOI-referenced reproducible benchmark.
 
 ---
 
 ## Cite This Work
-
-If you use `.klickd` in academic or research work, please cite:
 
 ```bibtex
 @misc{klickd2026,
@@ -126,31 +139,28 @@ If you use `.klickd` in academic or research work, please cite:
 }
 ```
 
-DOI: [10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480) — [Zenodo record v3.5](https://zenodo.org/records/20320480) **
-
 ---
 
 ## Badge
-
-Add to your README if your project supports `.klickd v3.4`:
 
 ```markdown
 [![.klickd compatible](https://img.shields.io/badge/.klickd-v3.5%20compatible-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 ```
 
-See [`docs/badge.md`](docs/badge.md) for all badge variants (certified, experimental).
+See [`docs/badge.md`](docs/badge.md) for all variants.
 
 ---
 
 ## Full Specification
 
-[`SPEC.md`](SPEC.md) — version 3.4.2 (production)
-
-Covers: encryption (AES-256-GCM), all field references, teaching modes, Soul Handoff, JSON Injection Guard, benchmark namespace, memory decay, shared context, and versioning policy.
+[`SPEC.md`](SPEC.md) — covers encryption (AES-256-GCM), all field references, teaching modes, Soul Handoff, JSON Injection Guard, benchmark namespace, memory decay, shared context, and versioning policy.
 
 ---
 
 ## License
 
-[CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) — Public Domain.  
-No permission required. No vendor lock-in.
+[CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) — Public Domain. No permission required. No vendor lock-in.
+
+---
+
+*Made in Luxembourg · GDPR-native · klickd.app*
