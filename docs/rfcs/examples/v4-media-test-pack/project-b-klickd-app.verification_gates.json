@@ -1,0 +1,197 @@
+{
+  "_comment": "NON-NORMATIVE / DRAFT fixture for Project B (klickd.app marketing video). Targets RFC-002 v1 (v4-A) + v2 draft (v4-B). Project B is consumer-facing in the EU (parents, students); gates skew stricter than Project A on identity, named-person, and medical/educational claims. No secrets. This file does NOT validate against any current schema.",
+  "_project": "B — klickd.app learning app marketing video",
+  "_status": "DRAFT — fixture prep only; no render authorised",
+  "klickd_version": "4.0",
+  "verification_gates": {
+    "version": 1,
+    "user_default": "silent",
+    "gates": [
+      {
+        "id": "project-b-public-post",
+        "action_class": "public_post",
+        "level": "require-owner",
+        "reason": "Publishing a film about a children's learning product requires Vince's explicit approval — no one-click confirm."
+      },
+      {
+        "id": "project-b-named-person",
+        "action_class": "factual_claim_about_person",
+        "level": "block",
+        "reason": "No real child, no real teacher, no real parent appears. Synthetic silhouettes only."
+      },
+      {
+        "id": "project-b-claim-with-date",
+        "action_class": "factual_claim_with_date",
+        "level": "confirm",
+        "reason": "Hosting / availability / 'made in Luxembourg' style claims must be grounded before they appear in a frame."
+      },
+      {
+        "id": "project-b-identity-assertion",
+        "action_class": "identity_assertion",
+        "level": "block",
+        "reason": "No voice cloning. No child or teacher voice may be sampled or mimicked, real or stylised."
+      },
+      {
+        "id": "project-b-medical-advice",
+        "action_class": "medical_advice",
+        "level": "block",
+        "reason": "Kai is a learning companion, not a clinician. Any frame that could be read as medical advice must stop."
+      },
+      {
+        "id": "project-b-casual-media",
+        "action_class": "casual_media_generation",
+        "level": "silent",
+        "reason": "Storyboard sketches and mood frames are creative play; do not interrupt."
+      }
+    ]
+  },
+  "claim_sources": {
+    "prefer": ["user_supplied", "tool:web_search", "tool:internal_kb"],
+    "forbid": ["tool:unverified_scrape"],
+    "require_citation_for": [
+      "factual_claim_about_person",
+      "factual_claim_with_date",
+      "public_post",
+      "medical_advice"
+    ],
+    "records": [
+      {
+        "id": "src-eu-hosting",
+        "source": "tool:internal_kb",
+        "source_query": "klickd.app hosting region",
+        "source_url": "PLACEHOLDER_INTERNAL_KB_URL",
+        "checked_at": "PLACEHOLDER_ISO8601",
+        "claim_status": "assumed",
+        "summary": "EU-hosting claim — to be re-checked against the live hosting contract before render."
+      },
+      {
+        "id": "src-luxembourg-registration",
+        "source": "tool:web_search",
+        "source_query": "klickd luxembourg company registry",
+        "source_url": "PLACEHOLDER_PUBLIC_REGISTRY_URL",
+        "checked_at": "PLACEHOLDER_ISO8601",
+        "claim_status": "assumed",
+        "summary": "'Made in Luxembourg' claim — to be re-checked against the public company registry before render."
+      },
+      {
+        "id": "src-proof-mode-feature",
+        "source": "tool:internal_kb",
+        "source_query": "Proof Mode availability",
+        "source_url": "PLACEHOLDER_INTERNAL_KB_URL",
+        "checked_at": "PLACEHOLDER_ISO8601",
+        "claim_status": "assumed",
+        "summary": "Proof Mode is shown on screen — its public availability and naming must be confirmed before render."
+      },
+      {
+        "id": "src-language-coverage",
+        "source": "tool:internal_kb",
+        "source_query": "klickd.app supported languages",
+        "source_url": "PLACEHOLDER_INTERNAL_KB_URL",
+        "checked_at": "PLACEHOLDER_ISO8601",
+        "claim_status": "assumed",
+        "summary": "Four language flags (en, fr, de, lb) — coverage and quality per language must be confirmed before render."
+      }
+    ]
+  },
+  "human_veto_policy": {
+    "applies_to": [
+      "public_post",
+      "identity_assertion",
+      "medical_advice",
+      "consent_change"
+    ],
+    "second_party": null,
+    "min_level": "require-owner",
+    "rationale": "Children-facing brand work requires explicit human approval for anything published, any identity-shaped artefact, and any claim that could be read as medical."
+  },
+  "risk_thresholds": {
+    "public_reach": "high",
+    "financial_amount_eur_max_silent": 0,
+    "financial_amount_eur_max_confirm": 0,
+    "irreversibility": "high_triggers_confirm"
+  },
+  "preflight_checks": [
+    { "id": "date_freshness", "applies_to": ["factual_claim_with_date", "public_post"] },
+    { "id": "media_consent", "applies_to": ["public_post", "casual_media_generation"] },
+    { "id": "recipient_identity", "applies_to": ["external_message_send"] }
+  ],
+  "contract_tests": [
+    {
+      "id": "no-real-child-voice",
+      "applies_to": ["public_post", "casual_media_generation", "identity_assertion"],
+      "kind": "absent",
+      "params": { "subject": "real_child_voice_sample" }
+    },
+    {
+      "id": "no-real-school-logo",
+      "applies_to": ["public_post", "casual_media_generation"],
+      "kind": "absent",
+      "params": { "subject": "real_school_or_institution_logo" }
+    },
+    {
+      "id": "eu-hosting-claim-grounded",
+      "applies_to": ["public_post", "factual_claim_with_date"],
+      "kind": "grounded",
+      "params": { "claim": "EU-hosted", "min_status": "inspected" }
+    },
+    {
+      "id": "luxembourg-claim-grounded",
+      "applies_to": ["public_post", "factual_claim_with_date"],
+      "kind": "grounded",
+      "params": { "claim": "Made in Luxembourg", "min_status": "inspected" }
+    },
+    {
+      "id": "proof-mode-feature-live",
+      "applies_to": ["public_post"],
+      "kind": "grounded",
+      "params": { "claim": "Proof Mode is a real, live feature", "min_status": "inspected" }
+    },
+    {
+      "id": "media-likeness-consent",
+      "applies_to": ["public_post", "casual_media_generation"],
+      "kind": "consent_present",
+      "params": { "subject": "named_person", "media_profile_ref": "none" }
+    }
+  ],
+  "success_criteria": [
+    {
+      "action_class": "public_post",
+      "criteria": [
+        "All factual_claim_with_date items have claim_status in ['executed', 'inspected']",
+        "No real child or teacher likeness appears in any media_profile entry",
+        "Every bound contract_test passes",
+        "The only outbound URL in the closing card is https://klickd.app",
+        "All four language narrator slots, if used, have matching consent and synthetic producer"
+      ]
+    }
+  ],
+  "reversibility": {
+    "default": "reversible",
+    "by_action_class": {
+      "public_post": "costly_to_reverse",
+      "identity_assertion": "irreversible",
+      "consent_change": "costly_to_reverse",
+      "medical_advice": "irreversible"
+    }
+  },
+  "blast_radius": {
+    "default": "local",
+    "by_action_class": {
+      "public_post": "public",
+      "identity_assertion": "public",
+      "medical_advice": "public",
+      "casual_media_generation": "local"
+    }
+  },
+  "error_journal": [
+    {
+      "id": "ej-2026-05-22-b01",
+      "occurred_at": "2026-05-22T00:00:00Z",
+      "action_class": "public_post",
+      "summary": "Test pack drafted before any render. No incident — entry seeds the journal so the children-facing posture is causally linked to the rule set.",
+      "lesson": "Project B renders must pass all contract tests AND demonstrate no real child/teacher likeness before public_post can be authorised.",
+      "raised_gate": "project-b-public-post",
+      "rule_created": { "kind": "gate", "id": "project-b-public-post" }
+    }
+  ]
+}

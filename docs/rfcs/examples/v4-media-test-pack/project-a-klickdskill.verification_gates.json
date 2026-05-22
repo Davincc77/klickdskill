@@ -1,0 +1,169 @@
+{
+  "_comment": "NON-NORMATIVE / DRAFT fixture for Project A (.klickd / klickdskill marketing video). Targets RFC-002 v1 (v4-A) + v2 draft (v4-B). All claim source URLs are illustrative public registries; no secrets. This file does NOT validate against any current schema.",
+  "_project": "A — .klickd / klickdskill developer marketing video",
+  "_status": "DRAFT — fixture prep only; no render authorised",
+  "klickd_version": "4.0",
+  "verification_gates": {
+    "version": 1,
+    "user_default": "silent",
+    "gates": [
+      {
+        "id": "project-a-public-post",
+        "action_class": "public_post",
+        "level": "require-owner",
+        "reason": "Publishing a marketing film for the .klickd format requires Vince's explicit approval, not a one-click confirm."
+      },
+      {
+        "id": "project-a-named-person",
+        "action_class": "factual_claim_about_person",
+        "level": "block",
+        "reason": "Project A uses synthetic, abstract silhouettes only. Any named or recognisable real person stops the render."
+      },
+      {
+        "id": "project-a-version-claim",
+        "action_class": "factual_claim_with_date",
+        "level": "confirm",
+        "reason": "Version numbers / DOIs in the closing card must be grounded against PyPI / npm / Zenodo before the cut is approved."
+      },
+      {
+        "id": "project-a-casual-media",
+        "action_class": "casual_media_generation",
+        "level": "silent",
+        "reason": "Drafts and storyboard sketches are creative play; do not interrupt the producer for those."
+      },
+      {
+        "id": "project-a-identity-assertion",
+        "action_class": "identity_assertion",
+        "level": "block",
+        "reason": "No voice cloning, no narrator that resembles a real Klickd contributor. Synthetic narrator only."
+      }
+    ]
+  },
+  "claim_sources": {
+    "prefer": ["tool:pypi", "tool:npm", "tool:zenodo", "tool:github", "user_supplied"],
+    "forbid": ["tool:unverified_scrape"],
+    "require_citation_for": [
+      "factual_claim_about_person",
+      "factual_claim_with_date",
+      "public_post"
+    ],
+    "records": [
+      {
+        "id": "src-pypi-klickd",
+        "source": "tool:pypi",
+        "source_query": "klickd",
+        "source_url": "https://pypi.org/pypi/klickd/json",
+        "checked_at": "PLACEHOLDER_ISO8601",
+        "claim_status": "assumed",
+        "summary": "Latest published klickd version on PyPI — to be re-checked at render time."
+      },
+      {
+        "id": "src-npm-klickd-core",
+        "source": "tool:npm",
+        "source_query": "@klickd/core",
+        "source_url": "https://registry.npmjs.org/@klickd/core",
+        "checked_at": "PLACEHOLDER_ISO8601",
+        "claim_status": "assumed",
+        "summary": "Latest published @klickd/core version on npm — to be re-checked at render time."
+      },
+      {
+        "id": "src-zenodo-doi",
+        "source": "tool:zenodo",
+        "source_query": "klickd",
+        "source_url": "https://zenodo.org/",
+        "checked_at": "PLACEHOLDER_ISO8601",
+        "claim_status": "assumed",
+        "summary": "Zenodo DOI for the .klickd release — to be re-checked at render time."
+      },
+      {
+        "id": "src-github-repo",
+        "source": "tool:github",
+        "source_query": "Davincc77/klickdskill",
+        "source_url": "https://github.com/Davincc77/klickdskill",
+        "checked_at": "PLACEHOLDER_ISO8601",
+        "claim_status": "assumed",
+        "summary": "Public repo for klickdskill — to confirm name and visibility at render time."
+      }
+    ]
+  },
+  "human_veto_policy": {
+    "applies_to": ["public_post", "identity_assertion", "consent_change"],
+    "second_party": null,
+    "min_level": "require-owner",
+    "rationale": "Project A is brand-facing; only Vince approves publication and any identity-shaped artefact."
+  },
+  "risk_thresholds": {
+    "public_reach": "high",
+    "financial_amount_eur_max_silent": 0,
+    "financial_amount_eur_max_confirm": 0,
+    "irreversibility": "high_triggers_confirm"
+  },
+  "preflight_checks": [
+    { "id": "date_freshness", "applies_to": ["factual_claim_with_date", "public_post"] },
+    { "id": "media_consent", "applies_to": ["public_post", "casual_media_generation"] }
+  ],
+  "contract_tests": [
+    {
+      "id": "pypi-version-fresh",
+      "applies_to": ["public_post", "factual_claim_with_date"],
+      "kind": "freshness",
+      "params": { "max_age_hours": 24, "source": "tool:pypi", "package": "klickd" }
+    },
+    {
+      "id": "npm-version-fresh",
+      "applies_to": ["public_post", "factual_claim_with_date"],
+      "kind": "freshness",
+      "params": { "max_age_hours": 24, "source": "tool:npm", "package": "@klickd/core" }
+    },
+    {
+      "id": "zenodo-doi-resolves",
+      "applies_to": ["public_post", "factual_claim_with_date"],
+      "kind": "resolves",
+      "params": { "source": "tool:zenodo", "doi": "PLACEHOLDER_DOI" }
+    },
+    {
+      "id": "no-named-person",
+      "applies_to": ["public_post", "casual_media_generation", "factual_claim_about_person"],
+      "kind": "absent",
+      "params": { "subject": "named_real_person" }
+    }
+  ],
+  "success_criteria": [
+    {
+      "action_class": "public_post",
+      "criteria": [
+        "All factual_claim_with_date items have claim_status in ['executed', 'inspected']",
+        "No named real person appears in any media_profile entry",
+        "Every bound contract_test passes",
+        "Outbound URLs in the closing card are limited to the project's declared CTA set"
+      ]
+    }
+  ],
+  "reversibility": {
+    "default": "reversible",
+    "by_action_class": {
+      "public_post": "costly_to_reverse",
+      "identity_assertion": "irreversible",
+      "consent_change": "costly_to_reverse"
+    }
+  },
+  "blast_radius": {
+    "default": "local",
+    "by_action_class": {
+      "public_post": "public",
+      "identity_assertion": "public",
+      "casual_media_generation": "local"
+    }
+  },
+  "error_journal": [
+    {
+      "id": "ej-2026-05-22-a01",
+      "occurred_at": "2026-05-22T00:00:00Z",
+      "action_class": "public_post",
+      "summary": "Test pack drafted before any render. No incident — entry seeds the journal so subsequent renders inherit the rule context.",
+      "lesson": "Project A renders must pass all four contract tests and the no-named-person check before public_post can be authorised.",
+      "raised_gate": "project-a-public-post",
+      "rule_created": { "kind": "gate", "id": "project-a-public-post" }
+    }
+  ]
+}

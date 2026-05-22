@@ -29,6 +29,14 @@ Files follow `RFC-NNN-short-slug.md` with zero-padded sequential numbers (`RFC-0
 | 002 | [`verification_gates` + `human_veto`](./RFC-002-verification-gates.md) | `.klickd v4-A` (v1) · `v4-B` (v2 draft) | Draft (v2) |
 | 003 | [Context Cost Benchmark](../../benchmarks/context_cost/RFC.md) | `.klickd v4` (research / benchmark track) | Draft |
 
+## Test packs
+
+Non-normative test packs exercise RFC fields against concrete (synthetic) scenarios before any normative wording or schema lands. They are draft-only and clearly marked.
+
+| Pack | Targets | Status |
+|---|---|---|
+| [v4 Media Test Pack](./v4-media-test-pack.md) (Projects A `.klickd/klickdskill` + B `klickd.app`) | RFC-001, RFC-002 | Draft — fixtures only, no render |
+
 ## How to write one
 
 1. Copy the structure of an existing RFC.
