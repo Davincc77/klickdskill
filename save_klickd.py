@@ -334,7 +334,7 @@ def save_klickd(
         "params": {"m": argon2_m, "t": argon2_t, "p": argon2_p},
     }
     cipher_block = {
-        "name": "aes-256-gcm",
+        "name": "AES-256-GCM",
         "iv":   base64.b64encode(iv).decode("ascii"),
     }
 

@@ -188,10 +188,10 @@
       "test_method": "unit — load: checks independently; save: _validate_payload rejects before encryption"
     },
     {
-      "id": "adv-13-cipher-name-uppercase",
-      "description": "cipher.name='AES-256-GCM' (uppercase) — must be lowercase 'aes-256-gcm'",
+      "id": "adv-13-cipher-name-mixed-case",
+      "description": "cipher.name='Aes-256-Gcm' (mixed case) — must be canonical 'AES-256-GCM' (or legacy lowercase 'aes-256-gcm')",
       "attack_vector": "Cipher Downgrade / Case Attack",
-      "malicious_goal": "Confuse cipher name check via case variation",
+      "malicious_goal": "Confuse cipher name check via case variation other than canonical or legacy",
       "passphrase": "adversarial-test-passphrase-ok",
       "envelope": {
         "klickd_version": "3.0",
@@ -208,12 +208,12 @@
           }
         },
         "cipher": {
-          "name": "AES-256-GCM",
+          "name": "Aes-256-Gcm",
           "iv": "aGE/HnSBV/iHBqNb"
         },
         "ciphertext": "77ooPQxSrvLhZwpmLK2+EdQ9PfvZxJmh4szQRexWWtqdBrIXVO/bww+4ufweR0JMmcETlpndY+0NFEnntI2pykpEr1ELGG+Z6kNHnWBureBHc54="
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT (cipher.name must be 'aes-256-gcm')"
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT (cipher.name must be 'AES-256-GCM' canonical or 'aes-256-gcm' legacy)"
     },
     {
       "id": "adv-14-kdf-name-poison",

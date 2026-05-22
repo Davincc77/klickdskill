@@ -44,7 +44,7 @@ def encrypt_payload(payload: dict, passphrase: str, domain: str, m=65536, t=3, p
     key    = derive_key(passphrase, salt, m, t, p)
     ts     = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     kdf    = {"name": "argon2id", "params": {"m": m, "t": t, "p": p}, "salt": b64(salt)}
-    cipher = {"name": "aes-256-gcm", "iv": b64(iv)}
+    cipher = {"name": "AES-256-GCM", "iv": b64(iv)}
     envelope = {
         "klickd_version": "3.0",
         "encrypted":      True,

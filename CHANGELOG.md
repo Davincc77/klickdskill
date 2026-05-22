@@ -7,6 +7,29 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## v3.5.1 — 2026-05-22 — P0 conformance fixes
+
+ATLAS-audit P0 alignment across schemas, libs, vectors, and docs.
+
+### cipher.name casing — canonical = `"AES-256-GCM"` (uppercase)
+
+- **Canonical**: `cipher.name` MUST be `"AES-256-GCM"` (matches `schema/klickd-v3.4.schema.json` enum and `schemas/klickd-envelope-v3.schema.json` const, npm package type, and SPEC.md normative pseudocode).
+- **Legacy compat**: readers MUST accept `"aes-256-gcm"` (lowercase) with a deprecation warning. Old vectors keep loading.
+- **Producers**: `save_klickd.py`, `scripts/generate_v30_vectors.py`, `scripts/generate_advanced_vectors.py` now emit the canonical uppercase form.
+- **Test vectors**: `tests/vectors_v30.json` and `tests/vectors_v31_advanced.json` regenerated. Adversarial `adv-13` flipped from "reject uppercase" to "reject mixed-case `Aes-256-Gcm`".
+
+### `user_preferences` canonical type = `string`
+
+- Canonical type aligned with SPEC.md §22.6, `schema/klickd-v3.4.schema.json`, examples, and `load_klickd.py`: **string**, max 32,768 bytes UTF-8.
+- `schemas/klickd-payload-v3.schema.json`, `packages/@klickd/core/src/types.ts`, `packages/pypi/klickd/src/klickd/_types.py` updated to accept `string | object` (canonical = string; object retained for backward compatibility with pre-v3.4 files).
+- `load_klickd.build_system_prompt()` now JSON-serialises dict-form `user_preferences` before prompt injection.
+
+### Schema directory disambiguation
+
+- Added `SCHEMA_INDEX.md` (root) and `schema/README.md`, `schemas/README.md` distinguishing the **unified** vs **split** v3 schema directories.
+
+---
+
 ## v3.4.2-patch1 — 2026-05-20
 
 ### Bug fix — `load_klickd.py` v3.3
