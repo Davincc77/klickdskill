@@ -1,0 +1,36 @@
+{
+  "_comment": "NON-NORMATIVE benchmark fixture for RFC-003 follow-up. Structural expectations for the optional edge-case scenarios under fixtures/edge_cases/. These are NOT consumed by the v1 dry-run runner; they are scored by tests/test_edge_cases.py and by a future runner iteration. No schema, no normative status.",
+  "fixture_version": "1",
+  "scenarios": {
+    "migration_version_break": {
+      "fixture_path": "../edge_cases/migration_version_break/context.json",
+      "expected_report_path": "../edge_cases/migration_version_break/expected_migration_report.json",
+      "structural_checks": [
+        { "id": "mvb-source-version-old", "rule": "context.klickd_version starts with '3.'" },
+        { "id": "mvb-no-handoff-block", "rule": "context has no 'handoff' field at the v4-draft path" },
+        { "id": "mvb-decisions-preserved", "rule": "expected report preserved_fields includes 'context.decisions_locked'" },
+        { "id": "mvb-no-data-loss", "rule": "expected report has data_loss == false" },
+        { "id": "mvb-warns-for-missing-v4-fields", "rule": "expected report warnings include code 'missing_field.handoff' and 'missing_field.verification_artifacts'" }
+      ]
+    },
+    "tool_call_failure_recovery": {
+      "fixture_path": "../edge_cases/tool_call_failure_recovery/scenario.json",
+      "artifact_path": "../edge_cases/tool_call_failure_recovery/verification_artifact.log",
+      "structural_checks": [
+        { "id": "tcfr-failed-first-call", "rule": "turns[1].result.status == 'error' AND turns[1].result.error_code == 'transient_error_500'" },
+        { "id": "tcfr-artifact-pointer", "rule": "turns[1].result.artifact_path points to a file that exists and contains 'tool_call.result'" },
+        { "id": "tcfr-forbids-blind-retry", "rule": "turns[2].forbidden_behaviors includes 'silent_blind_retry'" },
+        { "id": "tcfr-forbids-fabrication", "rule": "turns[2].forbidden_behaviors includes 'fabricate_task_list_without_tool_result'" }
+      ]
+    },
+    "multi_session_handoff": {
+      "fixture_path": "../edge_cases/multi_session_handoff/sessions.json",
+      "structural_checks": [
+        { "id": "msh-three-sessions", "rule": "sessions array length == 3" },
+        { "id": "msh-resume-empty-decisions", "rule": "last session has decisions_made.length == 0 (it is the resume session)" },
+        { "id": "msh-minimum-context-nonempty", "rule": "expected_resume_minimum_context.length >= 4" },
+        { "id": "msh-forbids-reexplain", "rule": "forbidden_resume_behaviors includes 'ask_lea_to_re_explain_project'" }
+      ]
+    }
+  }
+}

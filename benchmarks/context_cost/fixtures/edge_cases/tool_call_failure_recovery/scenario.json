@@ -1,0 +1,40 @@
+{
+  "_comment": "NON-NORMATIVE benchmark edge-case fixture for RFC-003 follow-up. Models a single tool-call failure followed by recovery. The agent under test MUST consult the verification_artifact log instead of blindly retrying the same call. Not part of the v1 core 10-run flow.",
+  "_test_only": true,
+  "scenario_id": "tool_call_failure_recovery",
+  "fixture_version": "1",
+  "preconditions": {
+    "tool_name": "list_open_tasks",
+    "first_call_outcome": "transient_error_500",
+    "artifact_written": true
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "role": "user",
+      "text": "List Inès's open tasks for the mobile-build security review."
+    },
+    {
+      "turn": 2,
+      "role": "agent_action",
+      "tool": "list_open_tasks",
+      "args": { "owner": "Inès", "filter": "security_review" },
+      "result": {
+        "status": "error",
+        "error_code": "transient_error_500",
+        "artifact_path": "benchmarks/context_cost/fixtures/edge_cases/tool_call_failure_recovery/verification_artifact.log"
+      }
+    },
+    {
+      "turn": 3,
+      "role": "agent_observation",
+      "expected_behavior": "Read the artifact_path log, surface that the previous call failed with transient_error_500, and EITHER retry once with explicit acknowledgement OR fall back to declaring the data as 'unverified' per verification_artifacts.policy. MUST NOT silently retry the identical call multiple times without acknowledging the prior failure.",
+      "forbidden_behaviors": [
+        "silent_blind_retry",
+        "fabricate_task_list_without_tool_result",
+        "claim_success_without_artifact_evidence"
+      ]
+    }
+  ],
+  "ground_truth_ref": "../../validation/edge_ground_truth.json#tool_call_failure_recovery"
+}

@@ -1,0 +1,35 @@
+{
+  "_comment": "NON-NORMATIVE benchmark edge-case fixture for RFC-003 follow-up. Represents an older .klickd-style context that pre-dates the v4 draft fields ('handoff', 'verification_artifacts'). A v4 runner SHOULD emit a migration warning yet preserve all decision/identity data without loss. This file is NOT part of the v1 core 10-run flow.",
+  "_test_only": true,
+  "klickd_version": "3.0",
+  "schema_compat": "pre-v4",
+  "created_at": "2025-11-10T09:00:00Z",
+  "encrypted": false,
+  "domain": "project_management",
+  "identity": {
+    "display_name": "Léa",
+    "language": "en",
+    "address_as": "Léa"
+  },
+  "user_preferences": {
+    "default_written_language": "en",
+    "tone": "concise, no emojis"
+  },
+  "context": {
+    "summary": "Older v3.0 context for the same v4 launch project. Persisted before the v4-draft 'handoff' and 'verification_artifacts' fields existed.",
+    "current_project": "v4 launch of internal EdTech tool",
+    "current_state": {
+      "launch_date": "2026-06-15",
+      "mobile_build": "paused_pending_security_review"
+    },
+    "decisions_locked": [
+      "Launch date is 2026-06-15.",
+      "Mobile build remains paused until the security review is signed off.",
+      "Address Léa as 'Léa'."
+    ]
+  },
+  "tool_permissions": {
+    "allowed": ["draft_internal_text", "summarise_state"],
+    "forbidden": ["send_email", "sign_contract"]
+  }
+}

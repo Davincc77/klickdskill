@@ -1,0 +1,13 @@
+# RFC-003 edge-case artifact (non-normative benchmark fixture)
+#
+# Demonstrates the artifact-tee record left by a failed tool call. A v4-aware
+# agent SHOULD read this artifact (or its run.json verification_artifacts[]
+# entry) before deciding to retry — see RFC-002 §8b.8 and RFC-003 §1.2.
+#
+# ---- begin sample ----
+
+2026-05-22T14:10:00Z INFO  -   -  -                    tool_call.start    -    tool=list_open_tasks args={"owner":"Inès","filter":"security_review"}
+2026-05-22T14:10:00Z FAIL  -   -  -                    tool_call.result   fail status=error error_code=transient_error_500 detail="upstream task service 5xx"
+2026-05-22T14:10:00Z INFO  -   -  -                    artifact.written   -    path=benchmarks/context_cost/fixtures/edge_cases/tool_call_failure_recovery/verification_artifact.log
+
+# ---- end sample ----
