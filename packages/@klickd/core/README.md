@@ -4,6 +4,8 @@ Official JavaScript/TypeScript library for reading and writing `.klickd` portabl
 
 **One soul. Any model. Any body.**
 
+Official page for the open `.klickd` format → **[klickd.app/klickdskill](https://klickd.app/klickdskill)**
+
 [![npm version](https://img.shields.io/npm/v/@klickd/core)](https://www.npmjs.com/package/@klickd/core)
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20320480.svg)](https://doi.org/10.5281/zenodo.20320480)
@@ -105,6 +107,7 @@ const payload = await loadKlickd(fileBytes, {
 
 ## Links
 
+- Format page: [klickd.app/klickdskill](https://klickd.app/klickdskill)
 - Specification: [SPEC.md](https://github.com/Davincc77/klickdskill/blob/main/SPEC.md)
 - Repository: [github.com/Davincc77/klickdskill](https://github.com/Davincc77/klickdskill)
 - DOI: [10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480) (v3.5) · concept DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)

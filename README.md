@@ -6,6 +6,8 @@
 [![License: CC0](https://img.shields.io/badge/License-CC0%201.0-lightgrey?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20320480.svg)](https://doi.org/10.5281/zenodo.20320480)
 
+**Official page for the open `.klickd` format → [klickd.app/klickdskill](https://klickd.app/klickdskill)**
+
 ---
 
 Your AI forgets you. Every. Single. Session.
