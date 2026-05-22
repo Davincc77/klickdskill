@@ -267,10 +267,15 @@ async function decodeKlickdEnvelope(envelope, passphrase) {
     }
     kdfParams = envelope.kdf.params;
 
-    // cipher validation — Grok Audit 3 / A2: align case with Python ('aes-256-gcm' lowercase)
+    // cipher validation — canonical = 'AES-256-GCM' (uppercase) per SPEC v3.5 + schema.
+    // Accept legacy 'aes-256-gcm' (lowercase) with console deprecation notice.
     const cipherName = envelope.cipher.name;
-    if (typeof cipherName !== 'string' || cipherName !== 'aes-256-gcm') {
-      KlickdFormatError(`cipher.name must be 'aes-256-gcm', got ${JSON.stringify(cipherName)}`);
+    if (cipherName === 'aes-256-gcm') {
+      console.warn(
+        "KLICKD_W_DEPRECATED: cipher.name='aes-256-gcm' (lowercase) is legacy; canonical is 'AES-256-GCM'."
+      );
+    } else if (cipherName !== 'AES-256-GCM') {
+      KlickdFormatError(`cipher.name must be 'AES-256-GCM' (canonical) or 'aes-256-gcm' (legacy), got ${JSON.stringify(cipherName)}`);
     }
     if (!('iv' in envelope.cipher)) KlickdFormatError("missing required field 'cipher.iv'");
     ivBuf = b64DecodeStrict(envelope.cipher.iv, 'cipher.iv');

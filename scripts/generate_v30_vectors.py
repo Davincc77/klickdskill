@@ -58,7 +58,7 @@ def encrypt_v3(
         "salt":   b64(salt),
     }
     cipher_block = {
-        "name": "aes-256-gcm",
+        "name": "AES-256-GCM",
         "iv":   b64(iv),
     }
 

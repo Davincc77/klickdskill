@@ -25,7 +25,7 @@ Grok Audit 2 fixes (2026-05-18):
   P1       — §18ter ethics enforcement: locked_actions validated as hard constraints
   P1       — §18 whitehat scan hook at load time
   P1       — §18 growth validation: level<=5, memory_refs>=3 for level 5
-  P2       — cipher.name validated as 'aes-256-gcm' (v3.0 path)
+  P2       — cipher.name canonical = 'AES-256-GCM' (uppercase); legacy 'aes-256-gcm' accepted with DeprecationWarning
   P2       — kdf.name validated: only 'argon2id' or 'pbkdf2-sha256' accepted
   P2       — agent_instructions and user_preferences checked independently (not 'or' fallback)
 """
@@ -184,7 +184,13 @@ def build_system_prompt(klickd_payload: dict, base_system_prompt: str) -> str:
 
     # Auto-audit A3: check both fields independently; prefer user_preferences,
     # append agent_instructions if different and both present.
-    prefs = klickd_payload.get("user_preferences", "") or ""
+    # Canonical type for user_preferences is str (SPEC §22.6). Legacy dict form
+    # is JSON-serialised for prompt injection (back-compat with pre-v3.4 files).
+    prefs_raw = klickd_payload.get("user_preferences", "") or ""
+    if isinstance(prefs_raw, dict):
+        prefs = json.dumps(prefs_raw, ensure_ascii=False, sort_keys=True)
+    else:
+        prefs = prefs_raw
     instr = klickd_payload.get("agent_instructions", "") or ""
     # Merge: if both non-empty and different, combine them (user_preferences first)
     if prefs and instr and prefs != instr:
@@ -409,10 +415,20 @@ def load_klickd(filepath: str, passphrase: str, memory_dir: str = "~/.klickd/mem
             if block not in envelope:
                 raise KlickdFormatError(f"KLICKD_E_FORMAT: v3.0 requires {block!r} block")
         # P2 — validate cipher.name explicitly (Grok Audit 2)
+        # Canonical = 'AES-256-GCM' (uppercase) per SPEC v3.5 §15/§16 + schema enum.
+        # Accept legacy lowercase 'aes-256-gcm' (vectors generated < v3.5.1) with deprecation warning.
         cipher_name = envelope["cipher"].get("name")
-        if cipher_name != "aes-256-gcm":
+        if cipher_name == "aes-256-gcm":
+            warnings.warn(
+                "KLICKD_W_DEPRECATED: cipher.name='aes-256-gcm' (lowercase) is legacy; "
+                "canonical is 'AES-256-GCM'. Re-encode to upgrade.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        elif cipher_name != "AES-256-GCM":
             raise KlickdFormatError(
-                f"KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm', got {cipher_name!r}"
+                f"KLICKD_E_FORMAT: cipher.name must be 'AES-256-GCM' (canonical) "
+                f"or 'aes-256-gcm' (legacy), got {cipher_name!r}"
             )
         # P2 — validate kdf.name explicitly (Grok Audit 2)
         kdf_name = envelope["kdf"].get("name")

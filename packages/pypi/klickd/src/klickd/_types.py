@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, Literal, Optional
+from typing import Any, List, Literal, Optional, Union
 from typing_extensions import TypedDict, Required
 
 
@@ -78,7 +78,9 @@ class KlickdPayload(TypedDict, total=False):
     domain_schema_version: Required[str]
     identity: KlickdIdentity
     agent_instructions: str
-    user_preferences: dict
+    # Canonical type = str (SPEC.md §22.6, max 32,768 bytes UTF-8).
+    # dict retained for backward compatibility with pre-v3.4 files.
+    user_preferences: Union[str, dict]
     context: KlickdContext
     knowledge: KlickdKnowledge
     memory: List[KlickdMemoryEntry]

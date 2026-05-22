@@ -114,7 +114,7 @@
         },
         "ciphertext": "iQ4bfVufEugSu3fEZz2DbMAg4CVWDq0hKmtD6LPNAVE/xEmYIE6SYb5db8+XYhtsOOYnI/K4253ixbADsQlkFWjIHoXdCamOtg=="
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm' (validated before decryption)",
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'AES-256-GCM' canonical or 'aes-256-gcm' legacy (validated before decryption)",
       "expected_error_code": "KLICKD_E_FORMAT"
     },
     {
@@ -238,7 +238,7 @@
         },
         "ciphertext": "dGVzdGN0MTIzNDU2Nzg5MDEyMzQ1Njc4"
       },
-      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'aes-256-gcm' (got 'chacha20-poly1305')",
+      "expected_behavior": "KlickdFormatError — KLICKD_E_FORMAT: cipher.name must be 'AES-256-GCM' (got 'chacha20-poly1305')",
       "expected_error_code": "KLICKD_E_FORMAT"
     },
     {

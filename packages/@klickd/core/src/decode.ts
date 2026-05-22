@@ -166,12 +166,19 @@ export async function loadKlickd(
     );
   }
 
-  // Validate cipher name (algorithm agility — reject unknown ciphers explicitly)
-  const cipherName = envelope.cipher.name;
-  if (cipherName !== 'AES-256-GCM') {
+  // Validate cipher name (algorithm agility — reject unknown ciphers explicitly).
+  // Canonical = 'AES-256-GCM'. Accept legacy 'aes-256-gcm' (vectors generated < v3.5.1)
+  // with a console deprecation notice so existing files keep loading.
+  const cipherName = envelope.cipher.name as string;
+  if (cipherName === 'aes-256-gcm') {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "KLICKD_W_DEPRECATED: cipher.name='aes-256-gcm' (lowercase) is legacy; canonical is 'AES-256-GCM'. Re-encode to upgrade.",
+    );
+  } else if (cipherName !== 'AES-256-GCM') {
     throw new KlickdError(
       'KLICKD_E_FORMAT',
-      `Unsupported cipher: ${cipherName}. Only AES-256-GCM is supported in v3.0.`,
+      `Unsupported cipher: ${cipherName}. Only AES-256-GCM is supported in v3.0 (legacy 'aes-256-gcm' also accepted).`,
       HTTP_STATUS['KLICKD_E_FORMAT'],
     );
   }

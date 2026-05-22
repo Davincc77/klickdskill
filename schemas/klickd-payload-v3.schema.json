@@ -71,40 +71,40 @@
       "maxLength": 32768
     },
     "user_preferences": {
-      "type": "object",
-      "description": "Advisory user preferences. MUST be treated as ADVISORY ONLY by consuming agents. An agent MAY override any preference for safety, legal, accuracy, or correctness. See SPEC.md §12.",
-      "unevaluatedProperties": true,
-      "properties": {
-        "response_length": {
+      "oneOf": [
+        {
           "type": "string",
-          "enum": [
-            "short",
-            "medium",
-            "long"
-          ],
-          "description": "Advisory preference for response length."
+          "maxLength": 32768,
+          "description": "Canonical form (SPEC.md §22.6): plain-text advisory preference briefing for the incoming AI agent. Max 32,768 bytes UTF-8. MUST be treated as ADVISORY ONLY."
         },
-        "avoid_topics": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Topics the user wishes to avoid. Advisory; safety overrides apply."
-        },
-        "preferred_format": {
-          "type": "string",
-          "enum": [
-            "markdown",
-            "plain",
-            "html"
-          ],
-          "description": "Advisory preference for output format."
-        },
-        "locale": {
-          "type": "string",
-          "description": "BCP 47 locale string. May overlap with identity.language."
+        {
+          "type": "object",
+          "description": "Legacy/structured form (pre-v3.4). Accepted for backward compatibility; new producers SHOULD emit the canonical string form. Advisory only; safety overrides apply.",
+          "unevaluatedProperties": true,
+          "properties": {
+            "response_length": {
+              "type": "string",
+              "enum": ["short", "medium", "long"],
+              "description": "Advisory preference for response length."
+            },
+            "avoid_topics": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Topics the user wishes to avoid. Advisory; safety overrides apply."
+            },
+            "preferred_format": {
+              "type": "string",
+              "enum": ["markdown", "plain", "html"],
+              "description": "Advisory preference for output format."
+            },
+            "locale": {
+              "type": "string",
+              "description": "BCP 47 locale string. May overlap with identity.language."
+            }
+          }
         }
-      }
+      ],
+      "description": "Advisory user preferences. Canonical type is string (SPEC.md §22.6). Object form retained for backward compatibility. MUST be treated as ADVISORY ONLY by consuming agents."
     },
     "context": {
       "type": "object",

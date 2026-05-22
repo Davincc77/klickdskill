@@ -24,13 +24,13 @@
             "t": 3,
             "p": 1
           },
-          "salt": "L4fNmdKLwGPQxjrB806dPw=="
+          "salt": "N4HhZhslghM8O3JpPKdm+g=="
         },
         "cipher": {
-          "name": "aes-256-gcm",
-          "iv": "6C6OVt7aYBatYbx6"
+          "name": "AES-256-GCM",
+          "iv": "DXYwSpxU3/r9WRAd"
         },
-        "ciphertext": "uepjL/vWwKded+wRL3JL291fpXVLwSJ0OJdT6zMKx17VdT5uppCC9chcGfDXfGmCrfaOonBImkYts14jKccyJeddvosJQ8uU13/YsQ=="
+        "ciphertext": "rf7xdIeHstfL3+6q9toLMir5R+rYhD/itVtBm9AHNrx7TRy8mZHqj5bV8MvpAfogV4gBAsBidQ0+UuKFoMoY3Rw3nWcLKDeke101kw=="
       },
       "expected_display_name": "Alice",
       "expected_behavior": "decrypt_success"
@@ -51,13 +51,13 @@
             "t": 3,
             "p": 1
           },
-          "salt": "Tasi5ofHTvKxh8qWI/Co8A=="
+          "salt": "AbhaheR39V9hSJIlH48xpg=="
         },
         "cipher": {
-          "name": "aes-256-gcm",
-          "iv": "ehAtBo02UkPr0hQy"
+          "name": "AES-256-GCM",
+          "iv": "CPXN9w6s6iaESKev"
         },
-        "ciphertext": "EEuJTEjhsmEMa1gdhpTGhZ7hyJjwkq36ZY2kVFGsnKAB8uzkLRVmdhf1zZLwkFuM7nAIJ/5akhusAB/I53EFNsYCu8YmZlB7O+f3KJwfLs/HhGors5Tfk1AZ0Z+JtTN7h05/Azi8FaSrPLo/SCvmPyAjJIXzjXqZc8igvB0PKpwYjeup"
+        "ciphertext": "XXd258ytPon3EUUZwDO0qDoDqrefxsylQf/TtiWg4ST/TAitgnjsut7B5xaKpGLEboh3zYz/0W4ZT2bDZEff0GvugidrKYDPN7SqDL7Lpj6LcWgrSmfH+dEZFJetIA27rw8WWYM3x/z7gFRGMWDwfBtSDoQrhDQgu3lCVmDZxNoA3Ws1"
       },
       "expected_display_name": "Léa Müller",
       "expected_behavior": "decrypt_success"
@@ -78,13 +78,13 @@
             "t": 3,
             "p": 1
           },
-          "salt": "ENHhUlOCV3xzczcrQY37iw=="
+          "salt": "lnTxhtf1Um1WzKr6oN2b+A=="
         },
         "cipher": {
-          "name": "aes-256-gcm",
-          "iv": "fPj+zgrWBHYG2RrX"
+          "name": "AES-256-GCM",
+          "iv": "+HiRQxqjcEqVxHby"
         },
-        "ciphertext": "i7/4ovTwEbZNxJwbq7o9yWEkSx2zhrAqH6uJYl+2RamkaAH9lgJsw2+DaZJRLLa1THgfqr0RizhO+j6L7mkLScYgu3anrDCW8ZcKlA=="
+        "ciphertext": "9Vi5gtZZvDsrYD3pcN2xYshcgN77SR5CfGh+P8PTmrystvb9dqJDXUbTqknlkjDA4+LZfE18a4N/hneOefyiRy6sWlA5K0LCOXnDdg=="
       },
       "expected_behavior": "KlickdAuthError — KLICKD_E_AUTH (tampered ciphertext)"
     },
@@ -104,13 +104,13 @@
             "t": 3,
             "p": 1
           },
-          "salt": "L4fNmdKLwGPQxjrB806dPw=="
+          "salt": "N4HhZhslghM8O3JpPKdm+g=="
         },
         "cipher": {
-          "name": "aes-256-gcm",
-          "iv": "6C6OVt7aYBatYbx6"
+          "name": "AES-256-GCM",
+          "iv": "DXYwSpxU3/r9WRAd"
         },
-        "ciphertext": "uepjL/vWwKded+wRL3JL291fpXVLwSJ0OJdT6zMKx17VdT5uppCC9chcGfDXfGmCrfaOonBImkYts14jKccyJeddvosJQ8uU13/YsQ=="
+        "ciphertext": "rf7xdIeHstfL3+6q9toLMir5R+rYhD/itVtBm9AHNrx7TRy8mZHqj5bV8MvpAfogV4gBAsBidQ0+UuKFoMoY3Rw3nWcLKDeke101kw=="
       },
       "expected_behavior": "KlickdAuthError — KLICKD_E_AUTH (wrong passphrase)"
     },
@@ -130,13 +130,13 @@
             "t": 3,
             "p": 1
           },
-          "salt": "vnfAi8ESlDacGXWjJ2upZg=="
+          "salt": "Y0O1HBZioZ7e8ch4dHfk6g=="
         },
         "cipher": {
-          "name": "aes-256-gcm",
-          "iv": "x6kw1NA1srE1ESFy"
+          "name": "AES-256-GCM",
+          "iv": "hACHyh7bzPXNwYVl"
         },
-        "ciphertext": "Pniia42wXJ8UukyZond5UwwhNvUV2HwwXT4E/SrT9PuBcV4k1cV5IS2Ii9Y4JWmPicOnL1c8BLN6tnFGOyDemd+AbPCl3hbPs0XqM/YEog=="
+        "ciphertext": "Lemjntsc/SoKxC4s8xBdla7dgZPjT2BnRebQYZkcUU7whXPkPAQ2ljdYPKO6FLpL2gitTBTmqs0flzr27R5ILSVzuB+wcbV7iTmWVdGvWg=="
       },
       "expected_behavior": "KlickdWeakPassphraseError — KLICKD_E_WEAK_PASS (passphrase < 8 chars)"
     },
@@ -156,13 +156,13 @@
             "t": 3,
             "p": 1
           },
-          "salt": "9Ur2MITnMW32+Tg7Y2yPtA=="
+          "salt": "Ge72xIDaBrMXXLr8ybYfBA=="
         },
         "cipher": {
-          "name": "aes-256-gcm",
-          "iv": "qJ2MtwC9JMfaEfQb"
+          "name": "AES-256-GCM",
+          "iv": "Fk6rXUyewGYIIji2"
         },
-        "ciphertext": "4ABMmCrxIyOGM5fPwgWpWWLn21h67feWIHDpOOOQBmxp2sJ/SUhRsZGAL84wcpw6XcVfG9/Mivb1zgzn2W9lDQIAofPxQppQ"
+        "ciphertext": "pzbEY9ckiIuHMIOuYsHZm/3WKgpdX+QJfmFeRJOGxzh8FtA4uPNaAcj3S6i+Lr5laQbKdFxqgHi4h3eESL0g5WU34CIRByfP"
       },
       "expected_display_name": "Bob",
       "expected_behavior": "UserWarning emitted + decrypt_success (passphrase 8 chars: >= min, < 12 recommended)"

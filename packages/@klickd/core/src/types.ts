@@ -91,7 +91,12 @@ export interface KlickdPayload {
   domain_schema_version: string;
   identity?: KlickdIdentity;
   agent_instructions?: string;
-  user_preferences?: Record<string, unknown>;
+  /**
+   * Advisory user-preference briefing. Canonical type = string (SPEC.md §22.6,
+   * max 32,768 bytes UTF-8). Object form retained for backward compatibility
+   * with pre-v3.4 files; new producers SHOULD emit the string form.
+   */
+  user_preferences?: string | Record<string, unknown>;
   context?: KlickdContext;
   knowledge?: KlickdKnowledge;
   memory?: KlickdMemoryEntry[];
