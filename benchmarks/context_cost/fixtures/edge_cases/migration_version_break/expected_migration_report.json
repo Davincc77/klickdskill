@@ -1,0 +1,28 @@
+{
+  "_comment": "NON-NORMATIVE benchmark fixture. Expected shape of a migration report a v4-aware runner SHOULD produce when loading the adjacent context.json. No data loss is permitted; only additive defaults for v4-only fields. Not consumed by the v1 dry-run runner.",
+  "scenario_id": "migration_version_break",
+  "source_version": "3.0",
+  "target_version": "4.0-draft",
+  "result": "migrated_with_warnings",
+  "data_loss": false,
+  "warnings": [
+    {
+      "code": "missing_field.handoff",
+      "severity": "warn",
+      "remediation": "default_added: handoff.minimum_context_for_new_model derived from decisions_locked"
+    },
+    {
+      "code": "missing_field.verification_artifacts",
+      "severity": "warn",
+      "remediation": "default_added: verification_artifacts.policy=default_assumed_unless_user_grounded, records=[]"
+    }
+  ],
+  "preserved_fields": [
+    "identity.display_name",
+    "identity.address_as",
+    "context.current_state.launch_date",
+    "context.current_state.mobile_build",
+    "context.decisions_locked",
+    "tool_permissions.forbidden"
+  ]
+}

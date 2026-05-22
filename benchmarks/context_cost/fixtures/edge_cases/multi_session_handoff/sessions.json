@@ -1,0 +1,48 @@
+{
+  "_comment": "NON-NORMATIVE benchmark edge-case fixture for RFC-003 follow-up. Models state spread across three planning sessions on different days. A v4-aware agent picking up session_c MUST preserve decisions/notes from sessions a + b without asking Léa to re-explain. Not part of the v1 core 10-run flow.",
+  "_test_only": true,
+  "scenario_id": "multi_session_handoff",
+  "fixture_version": "1",
+  "sessions": [
+    {
+      "session_id": "session_a",
+      "started_at": "2026-05-18T09:00:00Z",
+      "model": "fixture-mock-A",
+      "decisions_made": [
+        "Mobile build paused pending security review (owner: Inès).",
+        "Karim picks up payments edge cases for web build."
+      ],
+      "handoff_notes": "Security review timeline still unclear; revisit Wednesday."
+    },
+    {
+      "session_id": "session_b",
+      "started_at": "2026-05-20T09:00:00Z",
+      "model": "fixture-mock-B",
+      "decisions_made": [
+        "Onboarding flow v3 owned by Sofia, due 2026-06-05.",
+        "Analytics vendor decision deferred to Léa, no contract signed."
+      ],
+      "handoff_notes": "Léa to talk to designer Friday; do not commit to vendor pricing."
+    },
+    {
+      "session_id": "session_c",
+      "started_at": "2026-05-22T13:00:00Z",
+      "model": "fixture-mock-A",
+      "decisions_made": [],
+      "handoff_notes": "Resume here. Must preserve every decision and handoff_note from session_a and session_b."
+    }
+  ],
+  "expected_resume_minimum_context": [
+    "Mobile build paused pending security review (owner: Inès)",
+    "Karim on payments edge cases (web build)",
+    "Sofia owns onboarding flow v3, due 2026-06-05",
+    "Analytics vendor decision deferred, no contract signed",
+    "Address as Léa"
+  ],
+  "forbidden_resume_behaviors": [
+    "ask_lea_to_re_explain_project",
+    "drop_decisions_from_prior_sessions",
+    "merge_sessions_into_single_summary_that_loses_owners_or_dates"
+  ],
+  "ground_truth_ref": "../../validation/edge_ground_truth.json#multi_session_handoff"
+}

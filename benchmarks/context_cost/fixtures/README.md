@@ -29,10 +29,25 @@ fixtures/
 ├── baseline/
 │   └── system_prompt.txt                  # long-form prose, cold-start mode
 ├── validation/
-│   └── ground_truth.json                  # constraints, forbiddens, scoring hooks
-└── verification_artifacts/
-    └── sample_test.log                    # artifact-tee demo (pass+fail)
+│   ├── ground_truth.json                  # constraints, forbiddens, scoring hooks
+│   └── edge_ground_truth.json             # structural checks for optional edge cases
+├── verification_artifacts/
+│   └── sample_test.log                    # artifact-tee demo (pass+fail)
+└── edge_cases/                            # OPTIONAL follow-up scenarios (not v1 core)
+    ├── README.md
+    ├── migration_version_break/
+    ├── tool_call_failure_recovery/
+    └── multi_session_handoff/
 ```
+
+## Optional edge-case scenarios
+
+`edge_cases/` holds three follow-up scenarios surfaced during review of the
+v1 fixtures (migration/version-break, tool-call failure recovery,
+multi-session handoff). They are **not** part of the v1 core 10-run flow,
+are **not** consumed by `runner.py`, and are validated lightly by
+[`../tests/test_edge_cases.py`](../tests/test_edge_cases.py). See
+[`edge_cases/README.md`](./edge_cases/README.md) for details.
 
 ## Conditions covered
 

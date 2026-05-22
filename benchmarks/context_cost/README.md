@@ -56,6 +56,25 @@ A future PR will add the actual model-calling runner; this dry-run gives
 contributors something reproducible to wire CI / local checks against in the
 meantime.
 
+## Optional follow-up edge-case scenarios
+
+A small set of **non-normative** edge-case fixtures lives under
+[`fixtures/edge_cases/`](./fixtures/edge_cases/). They are NOT part of the v1
+core 10-run flow and are NOT consumed by `runner.py` today — the next runner
+iteration will exercise them. The current cases are:
+
+- `migration_version_break/` — loading a pre-v4 context with a v4-aware runner.
+  Migration MUST warn but MUST NOT drop decision data.
+- `tool_call_failure_recovery/` — a tool fails once; the agent MUST consult the
+  artifact-tee log instead of blindly retrying or fabricating output.
+- `multi_session_handoff/` — decisions spread across three sessions. The
+  resuming model MUST preserve every prior decision and handoff note.
+
+Structural expectations live in
+[`fixtures/validation/edge_ground_truth.json`](./fixtures/validation/edge_ground_truth.json)
+and are spot-checked by
+[`tests/test_edge_cases.py`](./tests/test_edge_cases.py).
+
 ## Don't make the agent re-run the test suite to find the failure
 
 The benchmark treats **re-running an expensive command to recover lost output** as a first-class context-waste source (see [`RFC.md` §1.1](./RFC.md#11-sources-of-repeated-context--computation-waste-v1-catalogue)). Concretely:
