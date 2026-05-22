@@ -1,9 +1,9 @@
 # .klickd — Technical Specification
 
-**Version:** 3.4.1  
+**Version:** 3.5.1  
 **License:** CC0 1.0 Universal (Public Domain)  
 **Maintainer:** Klickd / Luxlearn (Luxembourg)  
-**Status:** Production — v3.4.1 (2026-05-20)
+**Status:** Production — v3.5.1 (2026-05-22)
 
 ---
 

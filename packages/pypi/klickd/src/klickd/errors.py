@@ -9,6 +9,7 @@ class KlickdErrorCode(str, Enum):
     VERSION = "KLICKD_E_VERSION"    # Unsupported klickd_version major
     FORMAT = "KLICKD_E_FORMAT"      # Malformed envelope JSON / missing fields
     KDF = "KLICKD_E_KDF"            # Unknown/unsupported KDF
+    CIPHER = "KLICKD_E_CIPHER"      # Unknown/unsupported cipher
     WEAK_PASS = "KLICKD_E_WEAK_PASS"  # Passphrase < 8 characters
     SCHEMA = "KLICKD_E_SCHEMA"      # Missing payload_schema_version
 
@@ -18,6 +19,7 @@ HTTP_STATUS: dict[KlickdErrorCode, int] = {
     KlickdErrorCode.VERSION: 400,
     KlickdErrorCode.FORMAT: 400,
     KlickdErrorCode.KDF: 400,
+    KlickdErrorCode.CIPHER: 400,
     KlickdErrorCode.WEAK_PASS: 422,
     KlickdErrorCode.SCHEMA: 400,
 }

@@ -36,7 +36,7 @@ class TestRoundtrip:
 
         # Verify the envelope structure
         envelope = json.loads(envelope_bytes)
-        assert envelope["klickd_version"] == "3.0.0"
+        assert envelope["klickd_version"] == "3.0"
         assert envelope["encrypted"] is True
         assert envelope["domain"] == "education"
         assert envelope["kdf"]["name"] == "argon2id"
@@ -121,6 +121,48 @@ class TestRoundtrip:
         assert json.loads(e1)["kdf"]["salt"] != json.loads(e2)["kdf"]["salt"]
         assert json.loads(e1)["cipher"]["iv"] != json.loads(e2)["cipher"]["iv"]
         assert json.loads(e1)["ciphertext"] != json.loads(e2)["ciphertext"]
+
+    def test_cipher_lowercase_legacy_compat(self):
+        """Legacy cipher.name='aes-256-gcm' (lowercase) round-trips with a DeprecationWarning."""
+        import warnings
+
+        envelope_bytes = save_klickd(TEST_PAYLOAD, PASSPHRASE)
+        envelope = json.loads(envelope_bytes)
+        envelope["cipher"]["name"] = "aes-256-gcm"
+        mutated = json.dumps(envelope).encode("utf-8")
+
+        # AAD recomputation will fail on cipher.name change → AUTH error, but the
+        # deprecation warning must still fire first.
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            with pytest.raises(KlickdError) as exc_info:
+                load_klickd(mutated, passphrase=PASSPHRASE)
+            assert exc_info.value.code == KlickdErrorCode.AUTH
+            assert any(
+                issubclass(warning.category, DeprecationWarning)
+                and "KLICKD_W_DEPRECATED" in str(warning.message)
+                for warning in w
+            )
+
+    def test_cipher_unknown_rejected(self):
+        """Unknown cipher.name is rejected with KLICKD_E_CIPHER."""
+        envelope_bytes = save_klickd(TEST_PAYLOAD, PASSPHRASE)
+        envelope = json.loads(envelope_bytes)
+        envelope["cipher"]["name"] = "ChaCha20-Poly1305"
+        mutated = json.dumps(envelope).encode("utf-8")
+        with pytest.raises(KlickdError) as exc_info:
+            load_klickd(mutated, passphrase=PASSPHRASE)
+        assert exc_info.value.code == KlickdErrorCode.CIPHER
+
+    def test_user_preferences_string_or_dict(self):
+        """user_preferences accepts both string (canonical) and dict (legacy)."""
+        payload_str = dict(TEST_PAYLOAD, user_preferences="Prefers concise replies.")
+        out_str = load_klickd(save_klickd(payload_str, PASSPHRASE), passphrase=PASSPHRASE)
+        assert out_str["user_preferences"] == "Prefers concise replies."
+
+        payload_dict = dict(TEST_PAYLOAD, user_preferences={"tone": "concise"})
+        out_dict = load_klickd(save_klickd(payload_dict, PASSPHRASE), passphrase=PASSPHRASE)
+        assert out_dict["user_preferences"] == {"tone": "concise"}
 
     def test_custom_argon2id_params(self):
         """Custom Argon2id params are stored in the envelope and round-trip correctly."""

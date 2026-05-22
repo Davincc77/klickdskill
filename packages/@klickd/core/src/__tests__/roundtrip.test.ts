@@ -86,6 +86,18 @@ describe('saveKlickd / loadKlickd roundtrip', () => {
     });
   });
 
+  it('accepts user_preferences as string (canonical) and object (legacy)', async () => {
+    const stringPayload: KlickdPayload = { ...TEST_PAYLOAD, user_preferences: 'concise replies' };
+    const e1 = await saveKlickd(stringPayload, { passphrase: PASSPHRASE });
+    const r1 = await loadKlickd(e1, { passphrase: PASSPHRASE });
+    expect(r1.user_preferences).toBe('concise replies');
+
+    const objectPayload: KlickdPayload = { ...TEST_PAYLOAD, user_preferences: { tone: 'concise' } };
+    const e2 = await saveKlickd(objectPayload, { passphrase: PASSPHRASE });
+    const r2 = await loadKlickd(e2, { passphrase: PASSPHRASE });
+    expect(r2.user_preferences).toEqual({ tone: 'concise' });
+  });
+
   it('KlickdError has correct httpStatus', () => {
     const err = new KlickdError('KLICKD_E_AUTH', 'test', 401);
     expect(err.httpStatus).toBe(401);

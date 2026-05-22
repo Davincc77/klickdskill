@@ -1,6 +1,6 @@
 ---
-name: klickdskill-v341
-version: 3.4.2
+name: klickdskill-v351
+version: 3.5.1
 description: Load a user's portable AI context from a .klickd encrypted file. One soul. Any model. Any body. — Decrypts client-side using AES-256-GCM + Argon2id (v3.0) or PBKDF2 (v2.x legacy), writes fields to /.memory/, and injects agent_instructions into the system prompt as untrusted user context.
 tools:
   - name: load_klickd

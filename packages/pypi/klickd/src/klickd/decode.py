@@ -8,6 +8,8 @@ import hashlib
 import json
 from typing import Any
 
+import warnings
+
 import jcs
 from argon2.low_level import hash_secret_raw, Type
 from cryptography.exceptions import InvalidTag
@@ -140,6 +142,24 @@ def load_klickd(
 
     else:
         raise KlickdError(KlickdErrorCode.KDF, f"Unknown KDF: '{kdf_name}'.")
+
+    # Validate cipher name (algorithm agility — reject unknown ciphers explicitly).
+    # Canonical = 'AES-256-GCM'. Accept legacy 'aes-256-gcm' (vectors generated < v3.5.1)
+    # with a deprecation warning.
+    cipher_name = envelope["cipher"].get("name", "")
+    if cipher_name == "aes-256-gcm":
+        warnings.warn(
+            "KLICKD_W_DEPRECATED: cipher.name='aes-256-gcm' (lowercase) is legacy; "
+            "canonical is 'AES-256-GCM'. Re-encode to upgrade.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    elif cipher_name != "AES-256-GCM":
+        raise KlickdError(
+            KlickdErrorCode.CIPHER,
+            f"Unsupported cipher: {cipher_name}. Only AES-256-GCM is supported in v3.0 "
+            f"(legacy 'aes-256-gcm' also accepted).",
+        )
 
     # Decode ciphertext (ciphertext || 16-byte GCM tag, per AESGCM convention)
     try:
