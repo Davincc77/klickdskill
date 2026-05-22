@@ -1,0 +1,88 @@
+{
+  "_comment": "NON-NORMATIVE / DRAFT fixture for Project A (.klickd / klickdskill marketing video). Targets RFC-001 v1 (.klickd v4). Synthetic only: no real-person likeness, no real licence, no real hashes, no production URIs. All hash/DOI/licence values are placeholders. This file does NOT validate against any current schema in schema/ or schemas/.",
+  "_project": "A — .klickd / klickdskill developer marketing video",
+  "_status": "DRAFT — fixture prep only; no render authorised",
+  "klickd_version": "4.0",
+  "media_profile": {
+    "version": 1,
+    "entries": [
+      {
+        "id": "voice-narrator-en",
+        "modality": "voice",
+        "label": "Synthetic English narrator (calm, technical)",
+        "language": "en",
+        "uri": "./media/voice/synthetic-narrator-en.wav",
+        "media_type": "audio/wav",
+        "byte_size": 0,
+        "duration_ms": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": {
+          "kind": "model",
+          "name": "synthetic-narrator-en",
+          "device": "PLACEHOLDER_TTS_MODEL"
+        },
+        "consent": {
+          "purposes": ["tts_synthesis"],
+          "expires_at": "2027-05-22T00:00:00Z",
+          "revocable": true
+        },
+        "x_synthetic": true,
+        "x_notes": "Synthetic narrator — no real human voice was sampled. RFC-001 §5 currently lists producer.kind values 'human' and 'model'; this fixture uses 'model' with a synthetic-narrator name. See v4-media-test-pack.md §9 open question 2."
+      },
+      {
+        "id": "style-abstract-silhouette",
+        "modality": "image",
+        "label": "Abstract geometric silhouette (non-photoreal) used between model logos",
+        "uri": "./media/image/abstract-silhouette.png",
+        "media_type": "image/png",
+        "byte_size": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "model", "name": "synthetic-style-ref" },
+        "consent": {
+          "purposes": ["style_reference"],
+          "expires_at": "2027-05-22T00:00:00Z",
+          "revocable": true
+        },
+        "x_synthetic": true,
+        "x_notes": "Geometric / abstract only. MUST NOT be replaced with a photoreal subject without re-approval."
+      },
+      {
+        "id": "diagram-identity-knowledge-ethics-media",
+        "modality": "image",
+        "label": "Diagram morph: identity → knowledge → ethics → media context",
+        "uri": "./media/image/diagram-morph.png",
+        "media_type": "image/png",
+        "byte_size": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "human", "device": "PLACEHOLDER_AUTHORING_TOOL" },
+        "consent": {
+          "purposes": ["style_reference", "document_template"],
+          "revocable": true
+        },
+        "x_notes": "Built from public RFC text; no proprietary diagram source."
+      },
+      {
+        "id": "closing-card-ctas",
+        "modality": "document",
+        "label": "Closing-card layout (CTAs: GitHub, PyPI, npm, Zenodo) + licence line",
+        "uri": "./media/document/closing-card.svg",
+        "media_type": "image/svg+xml",
+        "byte_size": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "human", "device": "PLACEHOLDER_AUTHORING_TOOL" },
+        "consent": {
+          "purposes": ["document_template"],
+          "revocable": true
+        },
+        "x_licence": "PLACEHOLDER_LICENCE_CC0_OR_OTHER",
+        "x_cta_urls": [
+          "https://github.com/Davincc77/klickdskill",
+          "https://pypi.org/project/klickd/",
+          "https://www.npmjs.com/package/@klickd/core",
+          "https://zenodo.org/"
+        ],
+        "x_notes": "x_cta_urls lists the ONLY outbound URLs allowed for Project A. PLACEHOLDER_* values must be replaced before any render."
+      }
+    ]
+  }
+}

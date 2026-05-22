@@ -1,0 +1,163 @@
+{
+  "_comment": "NON-NORMATIVE / DRAFT fixture for Project B (klickd.app marketing video). Targets RFC-001 v1 (.klickd v4). Synthetic only: no real child voice, no real face or school logo. Per-language voice slots exercise RFC-001 V-005 (unique ids) and per-entry consent. Hashes / licences are placeholders. This file does NOT validate against any current schema in schema/ or schemas/.",
+  "_project": "B — klickd.app learning app marketing video",
+  "_status": "DRAFT — fixture prep only; no render authorised",
+  "klickd_version": "4.0",
+  "media_profile": {
+    "version": 1,
+    "entries": [
+      {
+        "id": "voice-narrator-en-lu",
+        "modality": "voice",
+        "label": "Synthetic narrator (en-LU, warm, parent-trustworthy)",
+        "language": "en",
+        "uri": "./media/voice/synthetic-narrator-en-LU.wav",
+        "media_type": "audio/wav",
+        "byte_size": 0,
+        "duration_ms": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "model", "name": "synthetic-narrator-en-LU" },
+        "consent": {
+          "purposes": ["tts_synthesis"],
+          "expires_at": "2027-05-22T00:00:00Z",
+          "revocable": true
+        },
+        "x_synthetic": true
+      },
+      {
+        "id": "voice-narrator-fr-lu",
+        "modality": "voice",
+        "label": "Synthetic narrator (fr-LU)",
+        "language": "fr",
+        "uri": "./media/voice/synthetic-narrator-fr-LU.wav",
+        "media_type": "audio/wav",
+        "byte_size": 0,
+        "duration_ms": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "model", "name": "synthetic-narrator-fr-LU" },
+        "consent": {
+          "purposes": ["tts_synthesis"],
+          "expires_at": "2027-05-22T00:00:00Z",
+          "revocable": true
+        },
+        "x_synthetic": true
+      },
+      {
+        "id": "voice-narrator-de-lu",
+        "modality": "voice",
+        "label": "Synthetic narrator (de-LU)",
+        "language": "de",
+        "uri": "./media/voice/synthetic-narrator-de-LU.wav",
+        "media_type": "audio/wav",
+        "byte_size": 0,
+        "duration_ms": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "model", "name": "synthetic-narrator-de-LU" },
+        "consent": {
+          "purposes": ["tts_synthesis"],
+          "expires_at": "2027-05-22T00:00:00Z",
+          "revocable": true
+        },
+        "x_synthetic": true
+      },
+      {
+        "id": "voice-narrator-lb-lu",
+        "modality": "voice",
+        "label": "Synthetic narrator (lb-LU, Luxembourgish)",
+        "language": "lb",
+        "uri": "./media/voice/synthetic-narrator-lb-LU.wav",
+        "media_type": "audio/wav",
+        "byte_size": 0,
+        "duration_ms": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "model", "name": "synthetic-narrator-lb-LU" },
+        "consent": {
+          "purposes": ["tts_synthesis"],
+          "expires_at": "2027-05-22T00:00:00Z",
+          "revocable": true
+        },
+        "x_synthetic": true
+      },
+      {
+        "id": "ambient-hum-synthetic",
+        "modality": "voice",
+        "label": "Synthetic humming bed (NOT a real child voice)",
+        "language": "und",
+        "uri": "./media/voice/synthetic-hum.wav",
+        "media_type": "audio/wav",
+        "byte_size": 0,
+        "duration_ms": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "model", "name": "synthetic-hum-bed" },
+        "consent": {
+          "purposes": ["tts_synthesis"],
+          "expires_at": "2027-05-22T00:00:00Z",
+          "revocable": true
+        },
+        "x_synthetic": true,
+        "x_notes": "Humming bed MUST remain synthetic. Substituting any real child voice requires a new approval and a new consent chain."
+      },
+      {
+        "id": "style-student-silhouette",
+        "modality": "image",
+        "label": "Stylised geometric student silhouette (non-photoreal, no face)",
+        "uri": "./media/image/student-silhouette.png",
+        "media_type": "image/png",
+        "byte_size": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "model", "name": "synthetic-style-ref" },
+        "consent": { "purposes": ["style_reference"], "revocable": true },
+        "x_synthetic": true
+      },
+      {
+        "id": "style-kai-companion",
+        "modality": "image",
+        "label": "Glowing Kai companion (abstract orb, non-anthropomorphic)",
+        "uri": "./media/image/kai-companion.png",
+        "media_type": "image/png",
+        "byte_size": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "model", "name": "synthetic-style-ref" },
+        "consent": { "purposes": ["style_reference"], "revocable": true },
+        "x_synthetic": true
+      },
+      {
+        "id": "ui-mock-proof-mode-phone",
+        "modality": "image",
+        "label": "Stylised mockup of a parent's phone showing Proof Mode session log (NOT a real screen capture)",
+        "uri": "./media/image/proof-mode-phone-mock.png",
+        "media_type": "image/png",
+        "byte_size": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "human", "device": "PLACEHOLDER_AUTHORING_TOOL" },
+        "consent": { "purposes": ["document_template"], "revocable": true },
+        "x_notes": "MUST be a stylised mock. Any real klickd.app screen capture requires a separate approval."
+      },
+      {
+        "id": "map-europe-luxembourg",
+        "modality": "image",
+        "label": "Europe map with Luxembourg highlighted, four language captions",
+        "uri": "./media/image/europe-luxembourg.png",
+        "media_type": "image/png",
+        "byte_size": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "human", "device": "PLACEHOLDER_AUTHORING_TOOL" },
+        "consent": { "purposes": ["style_reference"], "revocable": true }
+      },
+      {
+        "id": "closing-card-klickd-app",
+        "modality": "document",
+        "label": "Closing card: klickd.app CTA + four language flags + parent-consent line",
+        "uri": "./media/document/closing-card-app.svg",
+        "media_type": "image/svg+xml",
+        "byte_size": 0,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "human", "device": "PLACEHOLDER_AUTHORING_TOOL" },
+        "consent": { "purposes": ["document_template"], "revocable": true },
+        "x_licence": "PLACEHOLDER_LICENCE",
+        "x_cta_urls": ["https://klickd.app"],
+        "x_notes": "x_cta_urls lists the ONLY outbound URL allowed for Project B. PLACEHOLDER_* values must be replaced before any render."
+      }
+    ]
+  }
+}
