@@ -1,0 +1,100 @@
+{
+  "_comment": "NON-NORMATIVE benchmark fixture for RFC-003. Cleartext .klickd-style context for the 'klickd' condition of the Context Cost Benchmark. Does NOT validate against schema/ or schemas/. Synthetic persona — contains no real PII. Loaded by the future runner via the canonical <UserContext> block (SPEC.md §12).",
+  "_test_only": true,
+  "_test_passphrase_if_encrypted": "benchmark-public-test-passphrase",
+  "_test_passphrase_note": "Public, non-secret. For benchmark fixtures only. MUST NOT be used for any real .klickd file.",
+  "klickd_version": "4.0-draft",
+  "created_at": "2026-05-22T12:00:00Z",
+  "encrypted": false,
+  "domain": "project_management",
+  "identity": {
+    "display_name": "Léa",
+    "language": "en",
+    "secondary_language": "fr",
+    "communication_style": "tutoiement_in_voice_vouvoiement_in_writing",
+    "address_as": "Léa",
+    "timezone": "Europe/Luxembourg"
+  },
+  "user_preferences": {
+    "default_written_language": "en",
+    "default_spoken_language": "fr",
+    "tone": "concise, no emojis, no flattery",
+    "response_format": "short bullets unless I ask for prose",
+    "never_address_as": ["user", "Madame", "Mrs"]
+  },
+  "context": {
+    "summary": "Léa is the solo PM on a 5-person EdTech team in Luxembourg, preparing the v4 launch of an internal tool. She frequently resumes a planning conversation on a fresh AI model after lunch and wants the new session to be useful immediately.",
+    "current_project": "v4 launch of internal EdTech tool",
+    "current_state": {
+      "launch_date": "2026-06-15",
+      "checklist_status": {
+        "marketing_copy": "green",
+        "onboarding_flow": "yellow",
+        "mobile_build": "red_paused_pending_security_review",
+        "web_build": "green",
+        "analytics_vendor": "open_decision"
+      },
+      "team": [
+        { "name": "Karim", "role": "engineer", "open_tasks": 7, "focus": "web build, payments edge cases" },
+        { "name": "Inès", "role": "engineer", "open_tasks": 11, "focus": "mobile build (paused), security review prep" },
+        { "name": "Tom", "role": "engineer", "open_tasks": 4, "focus": "infra, CI" },
+        { "name": "Sofia", "role": "designer", "open_tasks": 5, "focus": "onboarding flow v3" }
+      ],
+      "blockers": [
+        "Mobile build paused: waiting on external security review (owner: Inès)",
+        "Analytics vendor decision deferred to Léa, no contract signed yet"
+      ]
+    },
+    "decisions_locked": [
+      "Launch date is 2026-06-15. Do not propose moving it unless Léa asks explicitly in the current turn.",
+      "Mobile build remains paused until the security review is signed off.",
+      "No vendor contract gets signed without Léa's explicit OK in the current turn.",
+      "Default written language is English; voice / in-person is French.",
+      "Address Léa as 'Léa'. Never 'user', 'Madame', 'Mrs'."
+    ],
+    "handoff": {
+      "resume_trigger": "Mid-day resume on a fresh model. Agent must restore PM context without asking Léa to re-explain the project.",
+      "minimum_context_for_new_model": [
+        "Launch date 2026-06-15",
+        "Mobile build paused pending security review",
+        "Team of 4: Karim, Inès, Tom (eng), Sofia (design)",
+        "No external messages, no vendor commits without explicit OK",
+        "Address as Léa, write in English"
+      ]
+    }
+  },
+  "tool_permissions": {
+    "allowed": [
+      "draft_internal_text",
+      "summarise_state",
+      "answer_planning_question",
+      "propose_next_action"
+    ],
+    "forbidden": [
+      "send_email",
+      "send_chat_message",
+      "post_to_public_channel",
+      "modify_calendar",
+      "edit_shared_doc",
+      "sign_contract",
+      "commit_budget",
+      "promise_feature_not_in_decisions_locked"
+    ],
+    "confirm_required": [
+      "move_launch_date",
+      "unpause_mobile_build",
+      "select_analytics_vendor"
+    ]
+  },
+  "verification_artifacts": {
+    "_note": "v4 draft, non-normative. The agent SHOULD treat any claim about external state (vendor pricing, security-review status, dates) as needing a verification artifact before being asserted as fact. For this benchmark, every such claim MUST be marked as 'assumed' rather than 'verified' unless the user supplies a source in the same turn.",
+    "policy": "default_assumed_unless_user_grounded",
+    "records": []
+  },
+  "ethics": {
+    "locked_actions_no_override": [
+      "No external messages on Léa's behalf without explicit per-turn approval.",
+      "No financial commitment without explicit per-turn approval."
+    ]
+  }
+}
