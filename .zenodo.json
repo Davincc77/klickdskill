@@ -1,0 +1,60 @@
+{
+  "title": ".klickd — An Open Encrypted File Format for Portable AI User Context",
+  "version": "3.5.1",
+  "upload_type": "software",
+  "description": "<p><strong>.klickd</strong> is an open, encrypted file format for portable AI user context. A single JSON document travels with the user across AI models and sessions. The payload is encrypted client-side with <strong>AES-256-GCM</strong> and <strong>Argon2id</strong> key derivation (m=65536, t=3, p=4). No server is required.</p><p>This deposit contains the reference specification (SPEC.md), reference implementations (Python and TypeScript), JSON Schemas (Draft 2020-12), cross-implementation test vectors, and a benchmark evaluation framework.</p>",
+  "creators": [
+    {
+      "name": "C., Vince",
+      "affiliation": "Klickd / Luxlearn, Luxembourg"
+    }
+  ],
+  "access_right": "open",
+  "license": "CC0-1.0",
+  "keywords": [
+    "portable AI memory",
+    "AI context",
+    "Argon2id",
+    "AES-256-GCM",
+    "klickd",
+    ".klickd",
+    "LLM",
+    "privacy",
+    "GDPR",
+    "client-side encryption",
+    "educational technology",
+    "JSON Schema",
+    "interoperability",
+    "agent memory",
+    "soul handoff"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Davincc77/klickdskill",
+      "relation": "isSupplementTo",
+      "scheme": "url",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://www.npmjs.com/package/@klickd/core",
+      "relation": "isIdenticalTo",
+      "scheme": "url",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://pypi.org/project/klickd/",
+      "relation": "isIdenticalTo",
+      "scheme": "url",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "10.5281/zenodo.20262530",
+      "relation": "isVersionOf",
+      "scheme": "doi",
+      "resource_type": "software"
+    }
+  ],
+  "communities": [],
+  "language": "eng",
+  "notes": "Draft metadata for future Zenodo deposits. Communities intentionally left empty until known."
+}

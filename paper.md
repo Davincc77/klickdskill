@@ -10,7 +10,6 @@ tags:
   - GDPR
 authors:
   - name: Vincenzo Cirilli
-    orcid: 0000-0000-0000-0000
     affiliation: 1
 affiliations:
   - name: Klickd / Luxlearn, Luxembourg
@@ -33,7 +32,7 @@ Existing approaches are insufficient. `context.json` [@contextjson2025] lacks en
 
 A `.klickd` file is a UTF-8 JSON document. The outer envelope contains routing metadata in plaintext; the inner payload is encrypted. The payload contains five top-level objects: `identity`, `context`, `knowledge`, `session_history`, and `agent_instructions`. The `agent_instructions` field is the primary handoff mechanism — a plain-text string injected verbatim at the start of the receiving agent's system prompt.
 
-Version 3.4.2 introduces 26 new payload fields covering UX/emotional modes (`ux_emotional_mode`, `compression_policy`, `teaching_mode`), accessibility (`known_disabilities`, `latex_rendering`), learning analytics (`learning_goal`, `error_patterns`), and two normative rules: §29c Privacy Guards (re-identification prohibition across agent transitions) and §14bis.1 (on_new_agent event limited to 120 characters).
+Version 3.4.2 introduced 26 new payload fields covering UX/emotional modes (`ux_emotional_mode`, `compression_policy`, `teaching_mode`), accessibility (`known_disabilities`, `latex_rendering`), learning analytics (`learning_goal`, `error_patterns`), and two normative rules: §29c Privacy Guards (re-identification prohibition across agent transitions) and §14bis.1 (on_new_agent event limited to 120 characters). The current release (v3.5.1, DOI [10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480)) consolidates ATLAS conformance fixes — canonical `cipher.name = "AES-256-GCM"`, `user_preferences` typed as `string`, and a unified schema index distinguishing envelope vs. payload schemas.
 
 # Encryption
 
