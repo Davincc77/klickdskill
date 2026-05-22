@@ -1,5 +1,5 @@
 {
-  "_comment": "NON-NORMATIVE example payload fragment for RFC-002 v2 draft (.klickd v4-B). Adds claim grounding (claim_status, claim_sources.records[]), contract_tests, success_criteria, reversibility, blast_radius, and error_journal[].rule_created on top of the v1 core. This file is a sketch and does not validate against any current schema in schema/ or schemas/. v4-A readers MUST ignore the v2-only fields and resolve gates per v1.",
+  "_comment": "NON-NORMATIVE example payload fragment for RFC-002 v2 draft (.klickd v4-B). Adds claim grounding (claim_status, claim_sources.records[]), contract_tests, success_criteria, reversibility, blast_radius, error_journal[].rule_created, and verification_artifacts[] on top of the v1 core. This file is a sketch and does not validate against any current schema in schema/ or schemas/. v4-A readers MUST ignore the v2-only fields and resolve gates per v1.",
   "klickd_version": "4.0",
   "verification_gates": {
     "version": 1,
@@ -170,5 +170,27 @@
     { "id": "date_freshness", "applies_to": ["factual_claim_with_date", "public_post"] },
     { "id": "recipient_identity", "applies_to": ["external_message_send"] },
     { "id": "media_consent", "applies_to": ["public_post"] }
+  ],
+  "verification_artifacts": [
+    {
+      "id": "va-pypi-2026-05-22-01",
+      "command": "curl -s https://pypi.org/pypi/klickd/json",
+      "artifact_path": ".klickd/artifacts/pypi-klickd.json",
+      "status": "ok",
+      "query_hint": "jq -r '.info.version' .klickd/artifacts/pypi-klickd.json",
+      "checked_at": "2026-05-22T09:14:05Z",
+      "retention": "24h",
+      "scope": ["contract_test:pypi-version-fresh", "claim_source:src-2026-05-22-01"]
+    },
+    {
+      "id": "va-pytest-2026-05-22-02",
+      "command": "pytest -q tests/",
+      "artifact_path": ".test-output/2026-05-22/pytest.txt",
+      "status": "failed",
+      "query_hint": "grep -E 'FAILED|ERROR' .test-output/2026-05-22/pytest.txt",
+      "checked_at": "2026-05-22T09:18:11Z",
+      "retention": "session",
+      "scope": ["success_criterion:public_post"]
+    }
   ]
 }
