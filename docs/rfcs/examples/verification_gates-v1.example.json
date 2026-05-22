@@ -1,0 +1,66 @@
+{
+  "_comment": "NON-NORMATIVE example payload fragment for RFC-002 (.klickd v4-A Draft). This file is a sketch and does not validate against any current schema in schema/ or schemas/.",
+  "klickd_version": "4.0",
+  "verification_gates": {
+    "version": 1,
+    "user_default": "silent",
+    "gates": [
+      {
+        "id": "casual-media",
+        "action_class": "casual_media_generation",
+        "level": "silent",
+        "reason": "Creative drafts must not be interrupted."
+      },
+      {
+        "id": "public-post-default",
+        "action_class": "public_post",
+        "level": "confirm",
+        "reason": "One-click check before anything goes public."
+      },
+      {
+        "id": "claim-public-figure",
+        "action_class": "factual_claim_about_person",
+        "level": "block",
+        "reason": "Hallucinations about named people happened twice — see error_journal."
+      },
+      {
+        "id": "financial-transfer",
+        "action_class": "financial_action",
+        "level": "require-owner",
+        "reason": "No agent may move money without an out-of-band human check."
+      }
+    ]
+  },
+  "claim_sources": {
+    "prefer": ["user_supplied", "tool:web_search", "tool:internal_kb"],
+    "forbid": ["tool:unverified_scrape"],
+    "require_citation_for": ["factual_claim_about_person", "factual_claim_with_date"]
+  },
+  "human_veto_policy": {
+    "applies_to": ["public_post", "financial_action", "legal_action"],
+    "second_party": null,
+    "min_level": "require-owner",
+    "rationale": "These categories may not act without me explicitly approving."
+  },
+  "error_journal": [
+    {
+      "id": "ej-2026-04-12-01",
+      "occurred_at": "2026-04-12T10:32:00Z",
+      "action_class": "factual_claim_with_date",
+      "summary": "Agent posted a release year of 2024 for a product released in 2023.",
+      "lesson": "Always re-check public dates against at least one source before public_post.",
+      "raised_gate": "claim-public-figure"
+    }
+  ],
+  "risk_thresholds": {
+    "public_reach": "medium",
+    "financial_amount_eur_max_silent": 0,
+    "financial_amount_eur_max_confirm": 50,
+    "irreversibility": "high_triggers_confirm"
+  },
+  "preflight_checks": [
+    { "id": "date_freshness", "applies_to": ["factual_claim_with_date", "public_post"] },
+    { "id": "recipient_identity", "applies_to": ["external_message_send"] },
+    { "id": "media_consent", "applies_to": ["public_post"] }
+  ]
+}

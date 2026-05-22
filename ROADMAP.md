@@ -58,6 +58,7 @@ This is a living document. Items are aspirational, not committed.
 ## v4.0 (medium-term)
 
 - [ ] `media_profile` v1 — portable, encrypted media context (voice / image / document / embedding). Draft RFC: [`docs/rfcs/RFC-001-media-profile-v1.md`](./docs/rfcs/RFC-001-media-profile-v1.md)
+- [ ] `verification_gates` + `human_veto` v1 (v4-A) — UX-first guardrails for agent actions (silent / warn / confirm / block / require-owner). Draft RFC: [`docs/rfcs/RFC-002-verification-gates.md`](./docs/rfcs/RFC-002-verification-gates.md)
 - [ ] WASM-native Argon2id everywhere (JS parity with Python — eliminate the CI skip)
 - [ ] Counter-based IV scheme for high-volume producers (birthday bound protection)
 - [ ] Domain schema registry: formal versioned schemas for `education`, `work`, `finance`, `legal`, `robotics`
