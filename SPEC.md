@@ -11,11 +11,29 @@
 
 `.klickd` is an open file format for portable AI context. It enables a user's conversational history, preferences, expertise state, and project continuity to travel with them across AI models and sessions — without any server involvement.
 
+### Current status — v3.5.1 (2026-05-22)
+
+The current and recommended wire format is **`klickd_version: "3.x"`** with the **envelope-v3** layout:
+
+- **Key derivation:** **Argon2id** (default: m=65536, t=3, p=4)
+- **Symmetric encryption:** **AES-256-GCM** with a 12-byte random IV
+- **AAD:** RFC 8785 JCS-canonicalised envelope fields (`klickd_version`, `kdf`, `cipher`, `domain`, `created_at`, `encrypted`)
+- **Schemas:** Draft 2020-12 — see [`SCHEMA_INDEX.md`](./SCHEMA_INDEX.md) for the envelope vs. payload split
+- **Reference implementations:** Python [`klickd`](https://pypi.org/project/klickd/) and TypeScript [`@klickd/core`](https://www.npmjs.com/package/@klickd/core), both at release `3.5.1`
+
+The legacy **envelope-v2** layout (`klickd_version: "2.x"`, PBKDF2-SHA256, 4-field AAD) is documented in this specification as **legacy / migration only**. Producers SHOULD emit envelope-v3 going forward; readers MUST continue to accept envelope-v2 files written by older clients (see [§Migration Notes (v2.0 / v2.4 → v2.5)](#migration-notes-v20--v24--v25) and [§Migration Notes (v2.x → v3)](#migration-notes-v2x--v3)).
+
+> **Wire version vs. release version.** `klickd_version` is the **wire / envelope** version of a single `.klickd` file (`"2.5"`, `"3.0"`, …). The reference SDKs (`klickd` on PyPI, `@klickd/core` on npm) and this specification share a *release* version (currently `3.5.1`) that tracks documentation and implementation revisions independently. A v3.5.1 SDK may still produce envelope-v3 files marked `klickd_version: "3.0"`; this is intentional.
+
+### Format history (high level)
+
 **v1** addressed AI memory in the educational domain: learner profiles, competency tracking, session continuity between Klickd/Kai sessions.
 
 **v2** generalises the format to all domains and solves a universal problem: when a user switches AI models (GPT → Claude → Gemini → Llama), the new model starts from zero. With `.klickd v2`, context follows the user, not the model.
 
 **v2.5** is a non-breaking patch over v2.0/v2.4. It renames four fields for clarity (`created_at`, `kdf_salt`, `ciphertext`, `user_preferences`), pins timestamp format to RFC 3339 UTC, adds a Threat Model section, introduces normative Validation Requirements, clarifies AAD field ordering, wire format encoding, and versioning policy. Files conforming to v2.0 or v2.4 are backward-compatible with v2.5 readers via the migration notes below.
+
+**v3.x** (envelope-v3) replaces PBKDF2 with Argon2id, introduces structured `kdf`/`cipher` envelope blocks, a 6-field JCS-canonicalised AAD, the normative `memory[]` array, the `ethics` and `personality` blocks, and the §28.8 Soul Handoff rules. v3.4.x adds the §27/§28 learner-experience and advanced-memory fields. v3.5 adds §31 passphrase recovery (BIP39 + Argon2id phrase hash). v3.5.1 lands the ATLAS conformance fixes (canonical `cipher.name = "AES-256-GCM"`, `user_preferences` typed as `string`, schema index).
 
 ---
 
@@ -25,7 +43,7 @@
 |---|---|
 | **Zero server** | The file is generated and encrypted entirely client-side, using the Web Crypto API (AES-256-GCM). No data transits through any server at any point. |
 | **Portable** | Compatible with any AI model or agent: GPT-4, Claude, Gemini, Mistral, Llama, or any custom agent that can read a JSON payload and inject a system prompt. |
-| **Privacy-first** | The user owns the file. The encryption key is derived from a user-supplied passphrase using PBKDF2. No third party can decrypt the file without that passphrase. |
+| **Privacy-first** | The user owns the file. The encryption key is derived from a user-supplied passphrase — using **Argon2id** in envelope-v3 (current) or PBKDF2-SHA256 in legacy envelope-v2. No third party can decrypt the file without that passphrase. |
 | **Open standard** | CC0. No vendor lock-in. No SDK required. Any agent can implement support using a plain JSON parser and a standard AES-256-GCM implementation. |
 
 ---
@@ -69,6 +87,26 @@ v2.5 renames four fields. The renames are **backward-compatible within the v2 MA
 **Migration procedure for file generators:** emit the new field names starting with v2.5. Do not emit both old and new names simultaneously; if backward compatibility with pre-v2.5 readers is required, emit the old names and set `klickd_version` to `"2.4"`.
 
 **Migration procedure for file readers:** when reading a file whose `klickd_version` is `"2.0"` or `"2.4"`, treat `generated_at` as `created_at`, `salt` as `kdf_salt`, `payload` as `ciphertext`, and `agent_instructions` as `user_preferences`.
+
+---
+
+## Migration Notes (v2.x → v3)
+
+Envelope-v3 (`klickd_version: "3.x"`) is the current wire format. The envelope-v2 examples earlier in this document remain valid as **legacy / read-only** inputs and are preserved here for migration purposes.
+
+| Concern | Envelope-v2 (legacy) | Envelope-v3 (current) |
+|---|---|---|
+| Wire version | `klickd_version: "2.0" \| "2.4" \| "2.5"` | `klickd_version: "3.0" \| "3.1" \| … \| "3.5"` |
+| KDF | PBKDF2-SHA256, 600k iterations, salt in `kdf_salt` | **Argon2id** in a structured `kdf` block (`{ "id": "argon2id", "m": 65536, "t": 3, "p": 4, "salt": "<base64>" }`) |
+| Cipher | `"encryption": "AES-256-GCM"` flat field | Structured `cipher` block (`{ "name": "AES-256-GCM", "iv": "<base64>", "tag_len": 16 }`); `cipher.name` MUST be `"AES-256-GCM"` (uppercase). Readers MUST also accept lowercase `"aes-256-gcm"` from older v3 producers with a deprecation warning |
+| AAD | 4 fields (`klickd_version`, `encrypted`, `domain`, `created_at`), lexicographic | 6 fields (`klickd_version`, `kdf`, `cipher`, `domain`, `created_at`, `encrypted`), RFC 8785 JCS-canonicalised |
+| `user_preferences` | string only | canonical **string** (max 32 KiB UTF-8); object form retained for backward compatibility with pre-v3.4 files |
+
+**Producer guidance:** new clients SHOULD emit envelope-v3 only. There is no requirement to keep emitting envelope-v2 once your reader user base is on v3.
+
+**Reader guidance:** v3 readers MUST continue to accept envelope-v2 files. The reference implementations auto-detect the wire format by inspecting `klickd_version`'s MAJOR component.
+
+See `SCHEMA_INDEX.md` for the formal JSON Schemas covering both envelopes.
 
 ---
 
@@ -154,7 +192,7 @@ v2.5 renames four fields. The renames are **backward-compatible within the v2 MA
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `klickd_version` | string | Yes | Version of the .klickd format. MAJOR.MINOR format. Current value: `"2.5"`. |
+| `klickd_version` | string | Yes | Wire / envelope version of the `.klickd` format. MAJOR.MINOR format. Current envelope-v3 wire values produced by reference SDKs: `"3.0"` … `"3.5"`. Legacy envelope-v2 wire values (`"2.0"` / `"2.4"` / `"2.5"`) are accepted under the migration rules below. The SDK *release* version (e.g. `3.5.1`) is separate from this field. |
 | `created_at` | string (RFC 3339) | Yes | Timestamp of file creation, in UTC, Z suffix, no fractional seconds. Example: `2026-05-18T14:23:00Z`. Implementations MUST reject files where `created_at` does not match this format. *(Formerly `generated_at` in ≤ v2.4.)* |
 | `encrypted` | boolean | Yes | Whether the payload is AES-256-GCM encrypted. If `false`, all fields are inline in plaintext (not recommended for personal data). |
 | `encryption` | string | Conditional | Encryption algorithm identifier. Required when `encrypted: true`. Value must be `"AES-256-GCM"`. |
@@ -394,8 +432,10 @@ The `klickd_version` field governs format compatibility. It uses **MAJOR.MINOR**
 | `2.5` | Stable | `user_preferences` rename, RFC 3339 timestamp pin, Threat Model, Validation Requirements block |
 | `3.2` | Stable | `numerical_results`, `interruption_point`, `resume_trigger`, `struggles`, `vocabulary_used`, `mode`, `archived_sessions`, `language_switch_detected`, `subject_change_detected`, `injection_target` |
 | `3.3` | Stable | `injection_resistance_level`, `companion_identity`, JSON Injection Guard, `occupational_competencies`, data_type annotations, extended enums, `interruption_points` array, `key_numerical_results` in `archived_sessions` |
-| `3.5` | Planned | `recovery` object (hint + BIP39 phrase_hash), mandatory passphrase warning UI (§31), `session_metadata`, `preferred_model` |
-| `3.4` | Current | 26 new fields: LaTeX in `numerical_results`, `learning_velocity`, `teaching_mode` array, UX emotional fields (§27: `mood`, `last_session_feeling`, `milestones`, `preferred_session_length`, `preferred_explanation_style`, `language_switching_preference`, `peer_comparison_preference`), advanced memory (§28: `learning_goal`, `error_patterns`, `compression_policy`, `known_disabilities`, `memory_decay`, `shared_context`, `data_integrity`), `topics_covered`, `vocabulary_enrichment`, `interruption_reason`, `response_hint`, `_benchmark`, reserved fields `session_metadata` / `preferred_model`; **§28.8 Soul Handoff Transmission Rules**: guaranteed fields, mandatory semi-structured format, compression_policy interaction, Agent B required behaviour |
+| `3.4` | Stable | 26 new fields: LaTeX in `numerical_results`, `learning_velocity`, `teaching_mode` array, UX emotional fields (§27: `mood`, `last_session_feeling`, `milestones`, `preferred_session_length`, `preferred_explanation_style`, `language_switching_preference`, `peer_comparison_preference`), advanced memory (§28: `learning_goal`, `error_patterns`, `compression_policy`, `known_disabilities`, `memory_decay`, `shared_context`, `data_integrity`), `topics_covered`, `vocabulary_enrichment`, `interruption_reason`, `response_hint`, `_benchmark`, reserved fields `session_metadata` / `preferred_model`; **§28.8 Soul Handoff Transmission Rules**: guaranteed fields, mandatory semi-structured format, compression_policy interaction, Agent B required behaviour |
+| `3.5` | Stable | `recovery` object (hint + BIP39 phrase_hash), mandatory passphrase warning UI (§31), `session_metadata`, `preferred_model` |
+| `3.5.1` | **Current** | ATLAS conformance fixes: canonical `cipher.name = "AES-256-GCM"` (uppercase), `user_preferences` canonical type `string` (max 32 KiB UTF-8; object form retained for backward compatibility), schema directory disambiguation via `SCHEMA_INDEX.md`. SDK packages: `klickd 3.5.1` (PyPI), `@klickd/core@3.5.1` (npm). |
+| `4.x` | Draft / RFC | `media_profile` and related fields — see [`docs/rfcs/RFC-001-media-profile-v1.md`](./docs/rfcs/RFC-001-media-profile-v1.md). No normative adoption yet. |
 
 Agents receiving a v1 file should reject it with a clear error unless they implement a v1→v2 migration path.
 

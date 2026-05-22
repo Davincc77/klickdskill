@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use .klickd in your research, please cite it as below."
+title: ".klickd — An Open Encrypted File Format for Portable AI User Context"
+abstract: >-
+  .klickd is an open, encrypted file format for portable AI user context.
+  A .klickd file is a single JSON document that travels with the user across
+  AI models and sessions. The payload is encrypted client-side with
+  AES-256-GCM and Argon2id key derivation. No server is required.
+type: software
+authors:
+  - family-names: "C."
+    given-names: "Vince"
+    affiliation: "Klickd / Luxlearn, Luxembourg"
+repository-code: "https://github.com/Davincc77/klickdskill"
+url: "https://klickd.app"
+license: CC0-1.0
+version: "3.5.1"
+date-released: "2026-05-22"
+doi: "10.5281/zenodo.20320480"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.20320480"
+    description: "Version-specific DOI for v3.5"
+  - type: doi
+    value: "10.5281/zenodo.20262530"
+    description: "Concept DOI (all versions)"
+keywords:
+  - portable-ai-memory
+  - ai-context
+  - argon2id
+  - aes-256-gcm
+  - klickd
+  - llm
+  - privacy
+  - gdpr
+  - educational-technology

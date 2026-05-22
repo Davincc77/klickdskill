@@ -1,0 +1,36 @@
+{
+  "_comment": "NON-NORMATIVE example payload fragment for RFC-001 (.klickd v4 Draft). This file is a sketch and does not validate against any current schema in schema/ or schemas/. Hash values are placeholders.",
+  "klickd_version": "4.0",
+  "media_profile": {
+    "version": 1,
+    "entries": [
+      {
+        "id": "voice-primary",
+        "modality": "voice",
+        "label": "Primary voice sample (calm, neutral, fr-LU)",
+        "language": "fr",
+        "uri": "./media/voice/primary.wav",
+        "media_type": "audio/wav",
+        "byte_size": 384210,
+        "duration_ms": 12000,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "producer": { "kind": "human", "device": "iPhone 15, Voice Memos" },
+        "consent": {
+          "purposes": ["tts_synthesis", "voice_clone_personal"],
+          "expires_at": "2027-05-22T00:00:00Z",
+          "revocable": true
+        }
+      },
+      {
+        "id": "style-sketch",
+        "modality": "image",
+        "label": "Hand-drawn diagram style",
+        "uri": "cas://blake3:PLACEHOLDER_BASE64_HASH",
+        "media_type": "image/png",
+        "byte_size": 8120,
+        "hash": { "algo": "blake3", "value": "PLACEHOLDER_BASE64_HASH" },
+        "consent": { "purposes": ["style_reference"], "revocable": true }
+      }
+    ]
+  }
+}
