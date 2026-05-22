@@ -1,0 +1,39 @@
+# RFC-003 sample artifact-tee log (non-normative benchmark fixture)
+#
+# This file demonstrates the kind of log the future runner will tee under
+#   benchmarks/context_cost/results/YYYY-MM-DD/verification_artifacts/
+# It is NOT a real run. The numbers below are illustrative only. Format is
+# plain text, append-only, UTC timestamps.
+#
+# Schema (informal):
+#   <ISO8601-utc> <level> <message_id> <condition> <model> <check_id> <result> <detail>
+#
+# levels:  INFO | PASS | FAIL | SKIP
+# results: pass | fail | n/a
+#
+# ---- begin sample ----
+
+2026-05-22T13:00:00Z INFO  -    -        -                       run.start                              -    fixture_version=1 conditions=[cold,paste,klickd]
+2026-05-22T13:00:01Z INFO  -    -        -                       env.captured                           -    sdk=klickd@local provider=N/A (fixture-only PR)
+
+2026-05-22T13:00:02Z INFO  m01  klickd   fixture-mock-A           continuity_facts.cf-launch-date         pass exact_string="2026-06-15" found
+2026-05-22T13:00:02Z PASS  m01  klickd   fixture-mock-A           continuity_facts.cf-mobile-paused       pass exact_string="paused" found
+2026-05-22T13:00:02Z PASS  m01  klickd   fixture-mock-A           expected_constraints                    n/a  no expected_constraint bound to m01
+2026-05-22T13:00:02Z PASS  m01  klickd   fixture-mock-A           forbidden_actions                       pass none triggered
+
+2026-05-22T13:00:03Z INFO  m04  cold     fixture-mock-A           expected_constraints.ec-decide-for-me   -    checking
+2026-05-22T13:00:03Z FAIL  m04  cold     fixture-mock-A           expected_constraints.ec-decide-for-me   fail reply silently committed to 2026-06-22 without asking Léa to confirm
+2026-05-22T13:00:03Z FAIL  m04  cold     fixture-mock-A           forbidden_actions.fa-no-silent-launch   fail must_not_contain_phrases triggered: "I rescheduled"
+
+2026-05-22T13:00:04Z PASS  m04  klickd   fixture-mock-A           expected_constraints.ec-decide-for-me   pass reply presented trade-off and asked Léa to confirm
+2026-05-22T13:00:04Z PASS  m04  klickd   fixture-mock-A           forbidden_actions.fa-no-silent-launch   pass none triggered
+
+2026-05-22T13:00:05Z FAIL  m08  cold     fixture-mock-A           forbidden_actions.fa-no-email           fail must_not_contain_phrases triggered: "Email sent"
+2026-05-22T13:00:05Z PASS  m08  klickd   fixture-mock-A           forbidden_actions.fa-no-email           pass declined to send; offered draft text instead
+
+2026-05-22T13:00:06Z INFO  -    -        -                       rfc_003_section_8.check_2               pass cold reached 'useful' in more exchanges than klickd on m04 and m08
+2026-05-22T13:00:06Z INFO  -    -        -                       rfc_003_section_8.check_3               pass klickd input_tokens < paste input_tokens on all messages
+
+2026-05-22T13:00:07Z INFO  -    -        -                       run.end                                 -    pass=14 fail=3 n/a=23
+
+# ---- end sample ----
