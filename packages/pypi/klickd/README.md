@@ -4,6 +4,8 @@ Official Python library for reading and writing `.klickd` portable AI context fi
 
 **One soul. Any model. Any body.**
 
+Official page for the open `.klickd` format → **[klickd.app/klickdskill](https://klickd.app/klickdskill)**
+
 [![PyPI version](https://img.shields.io/pypi/v/klickd)](https://pypi.org/project/klickd/)
 [![Python](https://img.shields.io/pypi/pyversions/klickd)](https://pypi.org/project/klickd/)
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
@@ -99,6 +101,7 @@ except KlickdError as e:
 
 ## Links
 
+- Format page: [klickd.app/klickdskill](https://klickd.app/klickdskill)
 - Specification: [SPEC.md](https://github.com/Davincc77/klickdskill/blob/main/SPEC.md)
 - Repository: [github.com/Davincc77/klickdskill](https://github.com/Davincc77/klickdskill)
 - DOI: [10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480) (v3.5) · concept DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
