@@ -8,6 +8,8 @@
 
 ---
 
+> **Related — work in progress:** [RFC-003 — Context Cost Benchmark](./context_cost/RFC.md) (Draft) defines a complementary, *cost*-oriented benchmark that measures the token / latency / friction cost of re-supplying context, with and without `.klickd`. This README documents the existing *quality* benchmark.
+
 ## What This Benchmark Is
 
 This benchmark empirically measures the value of the `.klickd` format as a portable, encrypted AI memory layer. The core question:

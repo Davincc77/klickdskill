@@ -27,6 +27,7 @@ Files follow `RFC-NNN-short-slug.md` with zero-padded sequential numbers (`RFC-0
 |---|---|---|---|
 | 001 | [`media_profile` v1](./RFC-001-media-profile-v1.md) | `.klickd v4` | Draft |
 | 002 | [`verification_gates` + `human_veto`](./RFC-002-verification-gates.md) | `.klickd v4-A` (v1) · `v4-B` (v2 draft) | Draft (v2) |
+| 003 | [Context Cost Benchmark](../../benchmarks/context_cost/RFC.md) | `.klickd v4` (research / benchmark track) | Draft |
 
 ## How to write one
 
