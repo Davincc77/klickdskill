@@ -1,0 +1,174 @@
+{
+  "_comment": "NON-NORMATIVE example payload fragment for RFC-002 v2 draft (.klickd v4-B). Adds claim grounding (claim_status, claim_sources.records[]), contract_tests, success_criteria, reversibility, blast_radius, and error_journal[].rule_created on top of the v1 core. This file is a sketch and does not validate against any current schema in schema/ or schemas/. v4-A readers MUST ignore the v2-only fields and resolve gates per v1.",
+  "klickd_version": "4.0",
+  "verification_gates": {
+    "version": 1,
+    "user_default": "silent",
+    "gates": [
+      {
+        "id": "casual-media",
+        "action_class": "casual_media_generation",
+        "level": "silent",
+        "reason": "Creative drafts must not be interrupted."
+      },
+      {
+        "id": "public-post-default",
+        "action_class": "public_post",
+        "level": "confirm",
+        "reason": "One-click check before anything goes public — may auto-lower to silent if all bound contract_tests pass."
+      },
+      {
+        "id": "claim-public-figure",
+        "action_class": "factual_claim_about_person",
+        "level": "block",
+        "reason": "Hallucinations about named people happened twice — see error_journal."
+      },
+      {
+        "id": "financial-transfer",
+        "action_class": "financial_action",
+        "level": "require-owner",
+        "reason": "No agent may move money without an out-of-band human check."
+      }
+    ]
+  },
+  "claim_sources": {
+    "prefer": ["user_supplied", "tool:pypi", "tool:zenodo", "tool:web_search", "tool:internal_kb"],
+    "forbid": ["tool:unverified_scrape"],
+    "require_citation_for": ["factual_claim_about_person", "factual_claim_with_date"],
+    "records": [
+      {
+        "id": "src-2026-05-22-01",
+        "source": "tool:pypi",
+        "source_query": "klickd",
+        "source_url": "https://pypi.org/pypi/klickd/json",
+        "checked_at": "2026-05-22T09:14:02Z",
+        "claim_status": "executed",
+        "summary": "Latest published version of `klickd` on PyPI is 3.5.1."
+      },
+      {
+        "id": "src-2026-05-22-02",
+        "source": "tool:zenodo",
+        "source_query": "10.5281/zenodo.0000000",
+        "source_url": "https://zenodo.org/records/0000000",
+        "checked_at": "2026-05-22T09:14:05Z",
+        "claim_status": "inspected",
+        "summary": "DOI resolves to the v3.4.2 record (placeholder DOI in this example)."
+      },
+      {
+        "id": "src-2026-05-22-03",
+        "source": "agent_inference",
+        "claim_status": "assumed",
+        "summary": "Agent guessed a related package name without grounding — gate must not let this go silent."
+      }
+    ]
+  },
+  "contract_tests": [
+    {
+      "id": "pypi-version-fresh",
+      "applies_to": ["public_post", "factual_claim_with_date"],
+      "kind": "freshness",
+      "params": {
+        "max_age_hours": 24,
+        "source": "tool:pypi",
+        "package": "klickd"
+      }
+    },
+    {
+      "id": "zenodo-doi-resolves",
+      "applies_to": ["factual_claim_with_date", "public_post"],
+      "kind": "resolves",
+      "params": {
+        "source": "tool:zenodo",
+        "doi": "10.5281/zenodo.0000000"
+      }
+    },
+    {
+      "id": "media-likeness-consent",
+      "applies_to": ["public_post", "casual_media_generation"],
+      "kind": "consent_present",
+      "params": {
+        "subject": "named_person",
+        "media_profile_ref": "self"
+      }
+    }
+  ],
+  "success_criteria": [
+    {
+      "action_class": "public_post",
+      "criteria": [
+        "All factual_claim_with_date items have claim_status in ['executed', 'inspected']",
+        "No named person appears without a matching media_profile.consent entry",
+        "Every bound contract_test passes"
+      ]
+    },
+    {
+      "action_class": "factual_claim_about_person",
+      "criteria": [
+        "At least one claim_sources.records[] entry has claim_status='executed' or 'inspected'",
+        "Source URL is non-empty and was checked within the last 24h"
+      ]
+    }
+  ],
+  "reversibility": {
+    "default": "reversible",
+    "by_action_class": {
+      "public_post": "costly_to_reverse",
+      "external_message_send": "costly_to_reverse",
+      "financial_action": "irreversible",
+      "consent_change": "costly_to_reverse",
+      "casual_media_generation": "reversible"
+    }
+  },
+  "blast_radius": {
+    "default": "local",
+    "by_action_class": {
+      "public_post": "public",
+      "external_message_send": "external_party",
+      "financial_action": "external_party",
+      "casual_media_generation": "local"
+    }
+  },
+  "human_veto_policy": {
+    "applies_to": ["public_post", "financial_action", "legal_action"],
+    "second_party": null,
+    "min_level": "require-owner",
+    "rationale": "These categories may not act without me explicitly approving — v2 lowering rules MUST NOT cross this floor."
+  },
+  "error_journal": [
+    {
+      "id": "ej-2026-04-12-01",
+      "occurred_at": "2026-04-12T10:32:00Z",
+      "action_class": "factual_claim_with_date",
+      "summary": "Agent posted a release year of 2024 for a product released in 2023.",
+      "lesson": "Always re-check public dates against at least one source before public_post.",
+      "raised_gate": "claim-public-figure",
+      "rule_created": {
+        "kind": "contract_test",
+        "id": "pypi-version-fresh"
+      }
+    },
+    {
+      "id": "ej-2026-05-01-01",
+      "occurred_at": "2026-05-01T15:08:00Z",
+      "action_class": "public_post",
+      "summary": "Agent cited a DOI that no longer resolved after a Zenodo record was withdrawn.",
+      "lesson": "DOIs must be re-resolved at post time, not trusted from memory.",
+      "raised_gate": null,
+      "rule_created": {
+        "kind": "contract_test",
+        "id": "zenodo-doi-resolves"
+      }
+    }
+  ],
+  "risk_thresholds": {
+    "public_reach": "medium",
+    "financial_amount_eur_max_silent": 0,
+    "financial_amount_eur_max_confirm": 50,
+    "irreversibility": "high_triggers_confirm"
+  },
+  "preflight_checks": [
+    { "id": "date_freshness", "applies_to": ["factual_claim_with_date", "public_post"] },
+    { "id": "recipient_identity", "applies_to": ["external_message_send"] },
+    { "id": "media_consent", "applies_to": ["public_post"] }
+  ]
+}
