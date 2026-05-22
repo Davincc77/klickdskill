@@ -63,16 +63,17 @@ The design principle is **UX-first, invisible by default**:
 - `success_criteria`: declarative statements of what "this action succeeded" means for a class — used by the agent to self-check before surfacing a result.
 - `reversibility` and `blast_radius`: two coarse axes (`reversible | costly_to_reverse | irreversible`; `local | external_party | public`) that feed gate resolution without introducing new gate levels.
 - `error_journal[].rule_created`: a structured pointer to the gate or contract test an entry caused to exist, so the journal is causally linked to the rule set instead of being free-text only.
+- `verification_artifacts[]`: declarative records of *outputs already produced* by expensive verification commands (test suites, builds, web fetches, DOI resolutions). Lets a contract test be answered by reading a persisted artifact instead of re-running the command — see §8b.9.
 
 ## 3. Forward compatibility
 
 This RFC targets `klickd_version: "4.0"` (shared envelope bump with RFC-001). Until v4 is normatively published in `SPEC.md`:
 
-- v3.x **readers MUST IGNORE** `verification_gates`, `claim_sources`, `human_veto_policy`, `error_journal`, `risk_thresholds`, `preflight_checks`, `contract_tests`, `success_criteria`, `reversibility`, `blast_radius` if they appear in a v3.x payload.
+- v3.x **readers MUST IGNORE** `verification_gates`, `claim_sources`, `human_veto_policy`, `error_journal`, `risk_thresholds`, `preflight_checks`, `contract_tests`, `success_criteria`, `reversibility`, `blast_radius`, `verification_artifacts` if they appear in a v3.x payload.
 - v3.x **writers MUST NOT emit** these fields.
 - v4 **readers MUST be able to read v3.x files** by treating all of these fields as absent (not `null`, not `{}`).
 - A v4-A reader that encounters a v4 file without `verification_gates` MUST behave as if a permissive default profile were present (see §5.1) — i.e. **absence MUST NOT trigger blocking behaviour**.
-- A v4-A reader that encounters v4-B fields (`contract_tests`, `success_criteria`, `reversibility`, `blast_radius`, `claim_status`, extended `claim_sources.*` fields, `error_journal[].rule_created`) MUST ignore them and fall back to v1 gate resolution. Treating "I don't understand this v2 field" as a block is forbidden — silent ignore is the only conforming behaviour.
+- A v4-A reader that encounters v4-B fields (`contract_tests`, `success_criteria`, `reversibility`, `blast_radius`, `claim_status`, extended `claim_sources.*` fields, `error_journal[].rule_created`, `verification_artifacts`) MUST ignore them and fall back to v1 gate resolution. Treating "I don't understand this v2 field" as a block is forbidden — silent ignore is the only conforming behaviour.
 
 ## 4. Decisions already resolved
 
@@ -428,7 +429,88 @@ These illustrate v2 end-to-end without changing any v1 UX.
 - **Zenodo DOI in a citation.** Agent wants to cite a DOI. Bound contract test: `zenodo-doi-resolves`. If the DOI does not resolve, `claim_status` stays `assumed`, the test fails, and the gate auto-raises one step (`confirm` → `block`). The user sees a stop with a specific reason, not a generic "are you sure?".
 - **Media likeness with consent.** RFC-001's `media_profile` carries consent. v2's `media-likeness-consent` contract test reads that profile. If consent is present, the `block` on `factual_claim_about_person` may lower for the named-self case but not for third parties (the `(irreversible-ish, public)` floor from §8b.5 prevents collapse to `silent`).
 
-### 8b.8 What v2 explicitly does NOT add
+### 8b.8 `verification_artifacts[]` — don't make the agent re-run the test suite to recover the failure
+
+> Inspired by the developer-experience observation: when an agent runs an expensive verification command (`pytest`, a large build, a remote fetch, a DOI resolution) and the output is lost or truncated, the cheapest-looking next step is *re-run the command* — which burns minutes, money, and rate-limit budget to recover information that already existed once. The same pathology shows up across handoffs: a downstream agent in a Soul Handoff has no memory that the upstream agent already paid for the answer.
+
+v2 adds `verification_artifacts[]` as a small, declarative record of *outputs already produced* by verification commands. A contract test (§8b.3) MAY be answered by reading a referenced artifact instead of executing the underlying check again. A `success_criteria` (§8b.4) MAY name the artifact whose presence/status it requires.
+
+`verification_artifacts[]` is **a pointer ledger, not a payload sink.** The artifact bytes live on disk (typically under a deterministic path such as `.test-output/`, `.klickd/artifacts/`, or a benchmark `results/` directory). The payload only carries the metadata needed to *find* and *trust* the artifact.
+
+#### Schema (illustrative — non-normative)
+
+```json
+{
+  "verification_artifacts": [
+    {
+      "id": "va-pytest-2026-05-22-01",
+      "command": "pytest -q tests/",
+      "artifact_path": ".test-output/2026-05-22/pytest.txt",
+      "status": "failed",
+      "query_hint": "grep -E 'FAILED|ERROR' .test-output/2026-05-22/pytest.txt",
+      "checked_at": "2026-05-22T09:14:02Z",
+      "retention": "session",
+      "scope": ["contract_test:pypi-version-fresh", "success_criterion:public_post"]
+    },
+    {
+      "id": "va-pypi-2026-05-22-02",
+      "command": "curl -s https://pypi.org/pypi/klickd/json",
+      "artifact_path": ".klickd/artifacts/pypi-klickd.json",
+      "status": "ok",
+      "query_hint": "jq -r '.info.version' .klickd/artifacts/pypi-klickd.json",
+      "checked_at": "2026-05-22T09:14:05Z",
+      "retention": "24h",
+      "scope": ["contract_test:pypi-version-fresh", "claim_source:src-2026-05-22-01"]
+    }
+  ]
+}
+```
+
+#### Fields
+
+| Field | Required | Meaning |
+|---|---|---|
+| `id` | yes | Stable identifier within this payload. |
+| `command` | yes | The exact command (or short description, if non-shell) that produced the artifact. Free-form string; not executed by readers. |
+| `artifact_path` | yes | Path (repo-relative or absolute) where the artifact is persisted. Readers SHOULD treat absence of the file as if the artifact had `retention: "expired"`. |
+| `status` | yes | `ok` · `failed` · `partial` · `expired` · `unknown`. Mirrors a coarse outcome so a contract test can decide without parsing. |
+| `query_hint` | no | A short snippet (grep / jq / xpath / SQL) the agent SHOULD prefer over re-reading the full artifact. Recovers the specific failure or value cheaply. |
+| `checked_at` | yes | ISO-8601 UTC timestamp of when the command produced the artifact. |
+| `retention` | no | Coarse lifetime hint: `session` · `24h` · `7d` · `permanent`. Readers MAY treat anything older than the hint as `expired`. Default: `session`. |
+| `scope` | no | List of typed pointers (`contract_test:<id>`, `claim_source:<id>`, `success_criterion:<action_class>`, `gate:<id>`) saying which rules this artifact is allowed to answer. Absent = applies to anything that asks for the same `command`. |
+
+#### Gate / contract interaction
+
+- A `contract_test` whose `scope` is referenced by a `verification_artifacts[]` entry with `status: "ok"` and a `checked_at` within its `params.max_age_hours` (or the artifact's `retention`) MAY be considered passing without re-executing.
+- A `contract_test` similarly scoped to an artifact with `status: "failed"` MUST be considered failing — the v2 ±1 raising rule (§8b.3) applies, and the agent SHOULD surface the `query_hint` rather than re-running the command to "find the failure".
+- An expired or missing artifact (`status: "expired"` or file absent past `retention`) leaves the contract test in its prior state: re-run is allowed, but the agent SHOULD persist a fresh artifact when it does.
+- `verification_artifacts[]` MUST NOT lower a gate past the `human_veto_policy` floor or the §8b.5 `(irreversible, public)` floor. It only collapses the *re-execution* step, not the *user-veto* step.
+
+#### Mapping to `claim_sources` and `contract_tests`
+
+| Relationship | How it's expressed |
+|---|---|
+| Artifact backs a recorded claim source | `verification_artifacts[].scope` contains `claim_source:<id>` matching a `claim_sources.records[].id`. The artifact is the durable evidence for `claim_status: "executed"`. |
+| Artifact answers a contract test | `verification_artifacts[].scope` contains `contract_test:<id>`. The reader MAY skip executing that contract's `kind` when a fresh `ok` artifact is present. |
+| Artifact satisfies a success criterion | `verification_artifacts[].scope` contains `success_criterion:<action_class>`. The reader checks the artifact's `status` instead of recomputing the criterion. |
+| Artifact triggered a gate raise | `error_journal[].rule_created` MAY point at a `gate` or `contract_test`; the failing artifact's `id` is the human-readable smoking gun. |
+
+#### Reader rules (non-normative)
+
+1. **Do not re-execute when an artifact answers the question.** If a contract test's bound artifact is `ok` and within retention, the reader SHOULD use it. Re-execution is a fallback, not a default.
+2. **Prefer `query_hint` over re-reading.** When the artifact is large (test logs, HTML dumps), the `query_hint` is the cheap path to the specific value or failure. Re-reading the full artifact is allowed; rerunning the command to "see the output again" is the anti-pattern this section exists to discourage.
+3. **Persist what you paid for.** When an agent runs a command on the gate's behalf, it SHOULD append a `verification_artifacts[]` entry so a downstream reader (the next agent in a Soul Handoff, the user's audit pass, the next session of the same agent) does not pay again.
+4. **No code through artifacts.** `command` and `query_hint` are *records*, not executable directives. Readers MUST NOT execute them automatically; they are for human / agent inspection. (Same discipline as `contract_tests[].kind` — names, not code.)
+5. **Honour retention.** A producer that writes `retention: "session"` is asserting that the artifact must not be trusted across sessions. Readers that ignore retention MUST NOT auto-lower gates from such artifacts.
+
+#### What this does NOT add
+
+- **No new gate levels.** Same five.
+- **No new UX surface.** A passing artifact silently keeps a gate at `silent`; a failing artifact raises by one step exactly as a failing contract test does today.
+- **No mandatory artifact format.** Plain text, JSON, JUnit XML, a screenshot — readers only consume `status`, `checked_at`, and (optionally) `query_hint`.
+- **No payload bloat.** Bytes stay on disk; the payload carries pointers.
+
+### 8b.9 What v2 explicitly does NOT add
 
 - **No new gate levels.** The enum stays at five.
 - **No new user-facing UX.** v2 either lowers a `confirm` to `silent` (good — user sees less) or raises it to `block` (which already exists in v1).
@@ -452,7 +534,7 @@ This RFC does not require any change to v3.x SDKs. Tickets that would land along
    - G-005 — Unknown `x_*` action classes preserved round-trip.
    - G-006 — Absence of `verification_gates` MUST NOT block (default permissive — §3).
 7. **v4-B additions (additive over v4-A):**
-   - klickd-py and `@klickd/core`: round-trip `contract_tests`, `success_criteria`, `reversibility`, `blast_radius`, `claim_sources.records[]`, `error_journal[].rule_created` verbatim. No validation in v4-A.
+   - klickd-py and `@klickd/core`: round-trip `contract_tests`, `success_criteria`, `reversibility`, `blast_radius`, `claim_sources.records[]`, `error_journal[].rule_created`, `verification_artifacts[]` verbatim. No validation in v4-A.
    - SDK helper `resolveGateV2(actionClass, context, contractResults)` that applies the §8b.3 ±1 lowering / raising rule and the §8b.5 floor.
    - Conformance tests:
      - G-101 — v4-A reader silently ignores all v4-B fields and resolves gates per v1.
@@ -460,6 +542,7 @@ This RFC does not require any change to v3.x SDKs. Tickets that would land along
      - G-103 — When any bound contract test fails, the gate raises by one step, capped at `block` (never auto-`require-owner`).
      - G-104 — `(irreversible, public)` actions never resolve to `silent` regardless of contract outcomes.
      - G-105 — `error_journal[].rule_created` referencing a removed rule surfaces in audit.
+     - G-106 — A contract test whose `scope` is referenced by a fresh `verification_artifacts[]` entry with `status: "ok"` and a `checked_at` within retention MUST be considered passing without re-execution. A `status: "failed"` artifact MUST raise the gate by one step (capped at `block`) and the agent SHOULD surface the artifact's `query_hint` instead of re-running the command. `verification_artifacts[]` MUST NOT lower past a `human_veto_policy` floor or the §8b.5 `(irreversible, public)` floor.
 
 ## 10. Open questions
 

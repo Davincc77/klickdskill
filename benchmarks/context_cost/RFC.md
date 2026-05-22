@@ -21,6 +21,40 @@ Where the existing benchmark in [`benchmarks/`](../README.md) measures *pedagogi
 
 The two benchmarks are complementary. RFC-003 is the cheaper, more mechanical one — and the one most directly tied to user-visible cost.
 
+### 1.1 Sources of repeated context / computation waste (v1 catalogue)
+
+The benchmark exists because real agent sessions repeatedly pay for information they already had. v1 considers the following waste sources in scope for measurement; new sources MAY be added in follow-up PRs as long as they are observable without modifying the `.klickd` envelope.
+
+1. **Re-introducing the user.** A new session does not know who the user is, what they know, or how they want to be addressed. Measured by `cold` vs. `klickd` `input_tokens` and `exchanges_to_useful`.
+2. **Re-pasting prior conversation.** The brute-force baseline (`paste` condition). Always works, always expensive; the most honest upper bound on context cost.
+3. **Rerunning expensive commands to recover lost output.** When an agent loses or truncates the output of a costly verification command (test suites, large builds, remote fetches, DOI resolutions), the cheapest-looking next step is *re-execute*. This burns minutes, money, and rate-limit budget to recover information that already existed once. The benchmark MUST count this as waste even when the command itself succeeds — the cost is the *repetition*, not the failure. Maps directly to RFC-002 §8b.8 `verification_artifacts[]`.
+4. **Re-deriving facts the prior session already grounded.** A claim that was `executed` (RFC-002 §8b.1) in the prior session is downgraded to `assumed` in the resume session because the provenance was not carried across. The benchmark approximates this via `condition_overhead_tokens` plus a rubric tag.
+5. **Re-stating preferences after a vendor / model switch.** Tone, language, formatting conventions, accessibility needs. Same scenario, different vendor — does the user pay to re-explain?
+
+This catalogue is descriptive, not exhaustive. The benchmark's job is to *measure* these costs in `cold` vs. `paste` vs. `klickd`, not to enumerate every possible waste mode.
+
+### 1.2 Artifact-tee rule (normative for benchmark runs only)
+
+Commands run by the benchmark runner that produce expensive output (anything intended to be inspected, asserted against, or referenced later) MUST tee their stdout / stderr into a deterministic artifact path. The required path shape is:
+
+```
+.test-output/<scenario-id>/<command-slug>.<ext>
+```
+
+or, for outputs produced as part of a dated run:
+
+```
+benchmarks/context_cost/results/YYYY-MM-DD[-N]/artifacts/<scenario-id>/<command-slug>.<ext>
+```
+
+The runner MUST:
+
+- Write the artifact **before** parsing it (so a parse failure does not destroy the bytes).
+- Record a pointer to the artifact in `run.json` under each affected run (suggested key: `verification_artifacts[]`, mirroring the RFC-002 §8b.8 shape — `id`, `command`, `artifact_path`, `status`, `query_hint`, `checked_at`, `retention`, `scope`).
+- NOT re-execute a command solely to "see the output again" within the same run. If a downstream step needs the output, it MUST read the artifact (or use the `query_hint`).
+
+This rule is normative only inside the RFC-003 benchmark runner. It does not impose any requirement on `.klickd` readers / writers in general — that scope belongs to RFC-002 §8b.8.
+
 ## 2. Comparison
 
 | Axis | Existing `benchmarks/` | RFC-003 `benchmarks/context_cost/` |
@@ -92,6 +126,8 @@ For each (scenario × condition × model × run) tuple, the runner records:
 - `exchanges_to_useful` — number of additional user turns required, by rubric, before the answer becomes useful (0 when the first response is already useful).
 - `condition_overhead_tokens` — for the `paste` and `klickd` conditions, the number of *additional* input tokens vs. the `cold` baseline of the same scenario.
 - `klickd_payload_bytes` — size of the injected `.klickd` payload (decrypted, canonicalised), reported only for the `klickd` condition.
+- `commands_executed` — count of expensive verification commands actually invoked by the runner during this run. Counts re-executions; the lower bound for "no waste" is the number of *distinct* commands required by the scenario.
+- `commands_reused_from_artifact` — count of times the runner answered a verification question by reading a previously-teed artifact (per §1.2) instead of re-executing. Higher is better; this is the direct signal that the artifact-tee rule is doing work.
 
 All numbers are reported per-run and aggregated as `min / median / max` over N runs (target N = 3 for v1).
 
@@ -106,7 +142,8 @@ benchmarks/context_cost/results/YYYY-MM-DD/
   ├── run.json         # machine-readable: scenarios, conditions, models, raw metrics
   ├── summary.md       # human-readable: per-scenario tables, aggregate medians
   ├── env.json         # SDK version, provider SDK versions, model IDs, sampling params
-  └── prompts/         # exact prompts sent, per condition, for auditability
+  ├── prompts/         # exact prompts sent, per condition, for auditability
+  └── artifacts/       # teed stdout/stderr of expensive verification commands (§1.2)
 ```
 
 `YYYY-MM-DD` is the UTC date of the run. Multiple runs on the same day MUST not overwrite each other; the runner appends a suffix (`-2`, `-3`, …) when the directory already exists.
@@ -121,6 +158,7 @@ RFC-003 v1 considers the benchmark **methodologically valid** (independent of th
 2. The `cold` condition reaches "useful" in strictly *more* exchanges than the `klickd` condition on at least one scenario, on at least one model — otherwise the scenarios are too easy and MUST be revised.
 3. The `klickd` condition's `input_tokens` is *smaller* than the `paste` condition's `input_tokens` on every scenario × model pair — otherwise the `.klickd` payload is not earning its place vs. raw paste, and either the payload is over-stuffed or the scenario is mis-designed.
 4. Every prompt sent during the run is captured under `prompts/` and is regeneratable from `run.json` + `env.json`.
+5. Every expensive verification command invoked during the run is teed to an artifact path under `.test-output/` or the run's `artifacts/` directory per §1.2, and `commands_executed - commands_reused_from_artifact` is no larger than the number of *distinct* commands the scenario requires. A run that re-executes a command it already teed within the same run is reported but flagged `methodology: invalid`.
 
 A run that does not meet (1)–(4) is reported but flagged `methodology: invalid` in `run.json`.
 
