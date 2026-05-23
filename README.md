@@ -142,6 +142,21 @@ Full analysis: [Zenodo preprint](https://doi.org/10.5281/zenodo.20320480)
 
 ---
 
+## Long context vs portable state
+
+`.klickd` is **not** a replacement for long-context models or context-window extension — and it is not in competition with the GPU / runtime infrastructure that makes those windows possible. The two address different layers of the same problem:
+
+- **Longer context helps the model fit more.** GPU and runtime infrastructure (extended windows, KV-cache offload, streaming attention) expand what a single inference call can process.
+- **Portable state helps the system repeat less.** `.klickd` reduces what the model has to repeatedly process across sessions, vendors, and models, by carrying user-level state as a portable file.
+
+They are complementary. A larger window does not, on its own, retain who the user is between yesterday's GPT-4o session and tomorrow's Claude session — that is a state-persistence concern, not a capacity concern. Equally, a `.klickd` payload does not stretch a single call's working memory.
+
+For most real workloads the useful question is not "long context **or** portable state" but "long context **and** portable state": expand capacity at the runtime layer, and trim repetition at the state layer. RFC-003 (Context Cost Benchmark) is being designed to measure exactly this — see [§9.1 of the RFC](benchmarks/context_cost/RFC.md#91-relation-to-long-context-models-and-context-window-extension) for the non-normative framing.
+
+*Insight prompted by a [DEV.to discussion](https://dev.to/davincc77/ai-agents-dont-have-a-memory-problem-they-have-an-architecture-problem-3pl6) with VoltageGPU — see [`ACKNOWLEDGEMENTS.md`](ACKNOWLEDGEMENTS.md).*
+
+---
+
 ## Cite
 
 ```bibtex

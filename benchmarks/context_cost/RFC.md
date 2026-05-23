@@ -169,6 +169,21 @@ A run that does not meet (1)–(4) is reported but flagged `methodology: invalid
 - **Not a spec change.** RFC-003 introduces no payload field, no envelope field, and no behavioural rule on readers / writers.
 - **Not a paywall.** Scenarios, prompts, and `run.json` outputs MUST be reproducible by any external contributor with their own API keys, without access to private fixtures.
 
+### 9.1 Relation to long-context models and context-window extension
+
+RFC-003 is intentionally *not* a benchmark of context-window size, KV-cache offload, or any other GPU / runtime mechanism that expands what a single inference call can process. Those mechanisms address **capacity** (how much the model can fit in one call). RFC-003 addresses **repetition** (how much the user has to re-supply across calls, sessions, vendors).
+
+To keep the framing honest, follow-up PRs in this track MAY add a fourth, non-normative comparison condition alongside `cold` / `paste` / `klickd`:
+
+- `long_context` — the same prior session content as `paste`, but submitted to a model variant with an explicitly extended context window (where the provider exposes one). Measures whether raw capacity alone closes the gap.
+- `hybrid` — `.klickd` payload **plus** the extended-context variant. Measures whether portable state and long context compose, i.e. whether a smaller `.klickd` block at the start of a long window is strictly cheaper / more useful than either alone.
+
+If added, these conditions MUST follow the existing rules: same metrics (§6), same output tree (§7), same artifact-tee rule (§1.2), and no new payload field. The pass / fail criteria of §8 apply unchanged; in particular, `klickd_payload_bytes` is reported only for conditions that actually inject a `.klickd` payload (`klickd`, `hybrid`).
+
+The expected reading of such a four-condition table is *not* "which one wins" but "where do they compose": longer context helps the model fit more; portable state helps the system repeat less. The two are complementary, not substitutes. This sub-section is descriptive — it does not commit the v1 runner to implementing the additional conditions.
+
+*Framing prompted by a [DEV.to discussion](https://dev.to/davincc77/ai-agents-dont-have-a-memory-problem-they-have-an-architecture-problem-3pl6) with VoltageGPU; see [`ACKNOWLEDGEMENTS.md`](../../ACKNOWLEDGEMENTS.md) at the repository root.*
+
 ## 10. Next steps
 
 This RFC is intentionally docs-only. Concrete follow-ups, each in a separate PR:
