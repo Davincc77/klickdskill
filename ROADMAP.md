@@ -69,6 +69,13 @@ This is a living document. Items are aspirational, not committed.
 
 ## v4.0 (medium-term — GA target)
 
+> **Road to V4 GA — structured backlog:** [`docs/roadmap/ROAD-TO-V4-GA.md`](./docs/roadmap/ROAD-TO-V4-GA.md)
+>
+> The list below tracks the high-level GA items. The Road-to-V4-GA document breaks them
+> down into **P0 / P1 / P2** with explicit *Definition of Done* per item and governance
+> rules (small PRs, no publish without Vince, never break the soul, preserve unknown
+> fields, non-destructive migration). It does NOT introduce a calendar commitment.
+
 - [ ] `media_profile` v1 — portable, encrypted media context (voice / image / document / embedding). Draft RFC: [`docs/rfcs/RFC-001-media-profile-v1.md`](./docs/rfcs/RFC-001-media-profile-v1.md)
 - [ ] `verification_gates` + `human_veto` — UX-first guardrails for agent actions (silent / warn / confirm / block / require-owner). v1 targets v4-A; v2 (claim grounding + contract tests, additive, no new levels) targets v4-B. Draft RFC: [`docs/rfcs/RFC-002-verification-gates.md`](./docs/rfcs/RFC-002-verification-gates.md)
 - [ ] Context Cost Benchmark — reproducible measurement of "repeated context waste" with and without `.klickd` (research / benchmark track, no spec change). Draft RFC: [`benchmarks/context_cost/RFC.md`](./benchmarks/context_cost/RFC.md)
