@@ -12,7 +12,6 @@ jobs:
   publish-preview:
     name: Build, test, and publish preview to npm
     runs-on: ubuntu-latest
-    environment: npm
     permissions:
       contents: read
     defaults:
