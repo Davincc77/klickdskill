@@ -7,37 +7,106 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
-## v4.0.0-preview.1 (preview, NOT GA) — 2026-05-23 — preview vectors + CI
+## v4.0.0-preview.1 (preview, NOT GA) — 2026-05-23 — v4 preview track
 
-Preview-track additions only. No wire-format or crypto change. NOT released to
-npm / PyPI / Zenodo and NOT tagged.
+> **Status: PREVIEW / NON-NORMATIVE / NOT GA.**
+> Stable, recommended production format remains **v3.5.1** (unchanged).
+> This entry summarises the additive v4 preview track only. No git tag, no
+> GitHub release, and no npm / PyPI / Zenodo publication is associated with
+> this preview version. The wire envelope, crypto, and AAD construction are
+> unchanged: `klickd_version` stays at `"3.0"`; only the inner payload may
+> opt in via `payload_schema_version = "4.0.0-preview.1"`.
+
+### Specification
+
+- **SPEC §33 — `.klickd` v4 Preview** (non-normative, additive over v3.5.1).
+  Introduces the preview payload surface, the unknown-field preservation rule
+  (`must_preserve_fields`), the dual-reader contract (v3.x readers MUST ignore
+  preview fields; v4-preview readers MUST round-trip unknown fields), and the
+  preview deprecation/sunset policy.
+
+### Schemas (permissive)
+
+- `schemas/klickd-payload-v4-preview.schema.json` and
+  `schema/klickd-v4-preview.schema.json` — JSON Schema Draft 2020-12, deliberately
+  permissive (`additionalProperties: true`). No strict business validation, no
+  migration enforcement.
+
+### SDKs — round-trip preservation (additive)
+
+- Python (`packages/pypi/klickd`) and TypeScript (`packages/@klickd/core`) decode
+  paths preserve unknown / preview fields verbatim on read and re-emit them on
+  write. v3.x consumers are unaffected.
+- No new public API surface for v4 validation. No migration helpers. Preview
+  fields are opaque to the libraries.
 
 ### Test vectors
 
-- Added `tests/vectors_v40_preview.json` (7 positive vectors) exercising the v4
-  preview payload surface from SPEC §33: minimal payload, `media_profile`,
-  `verification_gates`, `claim_sources` + `verification_artifacts`, `migration`
-  report, `context_cost`, and unknown-field passthrough.
-- Wire envelope stays at `klickd_version="3.0"` (v3 envelope crypto/AAD). The
+- `tests/vectors_v40_preview.json` (7 positive vectors) exercising the v4
+  preview payload surface: minimal payload, `media_profile`,
+  `verification_gates`, `claim_sources` + `verification_artifacts`,
+  `migration` report, `context_cost`, and unknown-field passthrough.
+- Wire envelope stays at `klickd_version="3.0"` (v3 envelope crypto/AAD); the
   inner payload alone carries `payload_schema_version="4.0.0-preview.1"`.
-- Vectors are byte-stable: `scripts/generate_v40_preview_vectors.py` regenerates
-  the file deterministically from fixed salts/IVs.
+- Byte-stable regeneration via `scripts/generate_v40_preview_vectors.py`
+  (fixed salts/IVs).
+- `verify_vectors.py` and `verify_vectors.mjs` each gain a v4 preview suite
+  asserting decrypt success, `payload_schema_version` match, and deep-equality
+  of `must_preserve_fields` after round-trip. Existing v2.5 / v3.0 / negative /
+  adversarial suites are unchanged. The TS verifier skips gracefully when
+  `hash-wasm` is not installed.
 
-### Cross-impl verifiers
+### Benchmarks — Context Cost (RFC-003)
 
-- `verify_vectors.py` gains a v4 preview suite asserting decrypt success,
-  `payload_schema_version` match, and presence + deep-equality of
-  `must_preserve_fields` after decode. Existing v2.5 / v3.0 / negative /
-  adversarial suites are unchanged.
-- `verify_vectors.mjs` gains an equivalent suite. Skips gracefully when
-  `hash-wasm` is not installed (consistent with existing v3.0 behaviour).
+- `benchmarks/context_cost/` — fixtures-only benchmark scaffold for measuring
+  context-cost trade-offs of `.klickd` profiles vs raw prompts.
+- Local **dry-run** runner (`runner.py`) — no provider calls, no network, no
+  API keys. Produces deterministic local artefacts only.
+- Optional edge-case fixtures: migration, tool-failure, multi-session.
+- Status: Draft. Not yet wired to provider scoring.
 
-### Notes
+### Integrations — Hermes Agent POC
 
-- Preview track remains additive and permissive: no strict v4 business
-  validation, no migration enforcement. Unknown preview fields MUST be
-  preserved on decode.
+- `integrations/hermes/` — experimental POC scaffold demonstrating Hermes Agent
+  as a workflow runner with `.klickd` as portable state. **Local dry-run only**;
+  not a production integration. No live provider calls.
+
+### Design documents (drafts, non-normative)
+
+- **RFC-001** — `media_profile` (draft, v4-preview surface).
+- **RFC-002** — `verification_gates` + `human_veto`, plus `verification_artifacts`
+  / artifact-tee rule (v2 draft).
+- **RFC-003** — Context Cost Benchmark (draft, fixtures + dry-run runner).
+- **RFC-004** — Migration & Backward Compatibility (draft, docs-only).
+- All RFCs live under `docs/rfcs/` and are explicitly non-normative until
+  promoted by a future GA release.
+
+### Release artefacts (this PR)
+
+- `docs/releases/v4.0.0-preview.1.md` — release notes draft, suitable for a
+  future GitHub release / Zenodo deposit when (and only when) the project
+  decides to publish a preview build.
+- `docs/releases/CHECKLIST_v4_preview.md` — preview publication checklist
+  (tagging, `npm publish --tag preview`, PyPI prerelease, Zenodo
+  field-by-field validation).
+
+### Compatibility & guarantees
+
+- Preview track is **additive and permissive**: no strict v4 business
+  validation, no migration enforcement, no breaking change to v3.x.
+- Unknown preview fields MUST be preserved on decode (`must_preserve_fields`).
 - Existing invalid-envelope rejection rules continue to apply.
+- v3.5.1 remains the stable, current production format and the only version
+  carrying a published DOI, npm package, and PyPI distribution.
+
+### Not in this preview
+
+- No git tag (`v4.0.0-preview.1` is **not** tagged).
+- No GitHub release.
+- No npm publish (not even under `--tag preview`).
+- No PyPI prerelease upload.
+- No Zenodo deposit and no DOI minted for the preview.
+- No strict v4 validator or migration runner.
 
 ---
 

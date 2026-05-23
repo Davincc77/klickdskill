@@ -179,6 +179,9 @@ The current and recommended production format is **v3.5.1**. In parallel, the re
 
 The preview targets `v4.0.0-preview.1`. No SDK release, no npm / PyPI / Zenodo publication, and no git tag are associated with it. v3.x readers MUST ignore preview fields; v4-preview readers MUST preserve unknown fields verbatim.
 
+- Draft release notes: [`docs/releases/v4.0.0-preview.1.md`](docs/releases/v4.0.0-preview.1.md) — non-binding, prepared for a possible future preview release.
+- Publication checklist (not yet executed): [`docs/releases/CHECKLIST_v4_preview.md`](docs/releases/CHECKLIST_v4_preview.md).
+
 ---
 
 ## License
