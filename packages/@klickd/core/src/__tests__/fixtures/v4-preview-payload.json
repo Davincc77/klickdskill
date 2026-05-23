@@ -1,0 +1,55 @@
+{
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "1.0.0",
+  "preview": "v4.0.0-preview.1",
+  "profile_kind": "learner",
+  "media_profile": {
+    "modalities": ["text", "image", "audio"],
+    "generation_consent": "explicit",
+    "voice_profile": null
+  },
+  "identity": {
+    "name": "Preview Tester",
+    "language": "en",
+    "timezone": "Europe/Luxembourg"
+  },
+  "agent_instructions": "Treat unknown fields as additive and preserve them on round-trip.",
+  "user_preferences": "Continuing a calculus session. Resume as if you have been here from the start.",
+  "verification_gates": {
+    "factual_claim_about_person": "block",
+    "public_post": "confirm",
+    "casual_media_generation": "silent"
+  },
+  "claim_sources": {
+    "prefer": ["user_supplied", "tool:web_search"],
+    "require_citation_for": ["factual_claim_about_person"]
+  },
+  "verification_artifacts": [
+    {
+      "id": "00000000-0000-4000-a000-000000000010",
+      "kind": "citation",
+      "uri": "https://example.org/source",
+      "ts": "2026-05-23T00:00:00Z"
+    }
+  ],
+  "migration": {
+    "from_version": "3.5.1",
+    "to_version": "4.0.0-preview.1",
+    "notes": "Additive only; no field removals."
+  },
+  "context_cost": {
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "estimated_usd": 0.0
+  },
+  "memory": [
+    {
+      "id": "00000000-0000-4000-a000-000000000001",
+      "ts": "2026-05-23T00:00:00Z",
+      "role": "user",
+      "content": "Round-trip me.",
+      "modality": "text",
+      "tags": ["v4-preview"]
+    }
+  ]
+}

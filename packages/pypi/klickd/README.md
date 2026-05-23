@@ -62,6 +62,34 @@ payload = load_klickd(file_bytes, passphrase="my-passphrase", legacy=True)
 
 ---
 
+## `.klickd` v4 preview fields (additive, non-GA)
+
+This library currently targets the **v3** envelope and is **stable at v3.5.1**.
+The v4 preview track (`v4.0.0-preview.1`, NOT GA) introduces additive payload
+fields such as `profile_kind`, `media_profile`, `verification_gates`,
+`claim_sources`, `verification_artifacts`, `migration`, and `context_cost`.
+
+These fields are **preserved verbatim** on round-trip — `load_klickd` returns
+the raw decrypted JSON object and `save_klickd` re-encrypts it without
+filtering unknown keys. Strict v4 validation, migrations, and business-logic
+helpers are intentionally **not** implemented yet.
+
+```python
+v4_preview_payload = {
+    "payload_schema_version": "4.0.0-preview.1",
+    "domain_schema_version": "1.0.0",
+    "profile_kind": "learner",
+    "verification_gates": {"public_post": "confirm"},
+    # ... any additional v4 preview fields are preserved on save/load
+}
+recovered = load_klickd(save_klickd(v4_preview_payload, "passphrase"), passphrase="passphrase")
+assert recovered == v4_preview_payload
+```
+
+See `SPEC.md §33` and `examples/v4-preview/` for the preview-track details.
+
+---
+
 ## Cryptographic specification (v3.0)
 
 | Parameter     | Value                                   |
