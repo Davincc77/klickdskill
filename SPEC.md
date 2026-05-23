@@ -1890,6 +1890,8 @@ The preview commits to these principles. They will carry into the eventual norma
 5. **Human veto is sacred.** `human_veto_policy` overrides any lower gate. No automatic mechanism (contract tests, verification artifacts, claim grounding) may lower a gate past a `human_veto_policy` floor.
 6. **Pointer ledger, not a payload sink.** `verification_artifacts[]` and `media_profile` entries MUST carry references and hashes, not the bytes themselves (except below documented inline thresholds, where applicable).
 7. **Research track is separate.** `context_cost` and the Context Cost Benchmark are research/benchmark artifacts. No normative behaviour depends on them.
+8. **Pre-action gates, post-action journals.** `verification_gates`, `human_veto_policy`, `preflight_checks`, `claim_sources.prefer`, `risk_thresholds`, `contract_tests`, `success_criteria`, `reversibility`, and `blast_radius` are **pre-action** primitives: they MUST be resolved *before* the agent commits to a user-visible side effect. `error_journal[]`, `verification_artifacts[]`, and `claim_sources.records[]` are **post-action** primitives: they record what happened so a future agent can decide better. A v4-preview reader MUST NOT use a post-action primitive as the sole basis for skipping a pre-action gate. (See RFC-002 §4 #1, #6.)
+9. **State vs operating rules.** The preview carries two different kinds of payload: (a) *state* about the user and the work (identity, memory, growth, media_profile, profile_kind), and (b) *operating rules* the agent should follow (agent_instructions, ethics, verification_gates, human_veto_policy, claim_sources.prefer). Producers SHOULD keep the two conceptually distinct even though both live in the same payload: a reader MAY surface them differently, and a future RFC MAY formalise sub-profiles (project / role / handoff scope). Operating rules MUST NOT be silently rewritten by a migration (RFC-004).
 
 ### §33.5 Minimal preview example (illustrative only)
 
@@ -1956,6 +1958,20 @@ For clarity, the following are explicitly **out of scope** for `v4.0.0-preview.1
 - Strict envelope-v4 cryptography changes. The envelope contract from v3.x continues to apply to any preview file that happens to be encrypted.
 
 These items are deferred to subsequent preview iterations and the eventual normative v4 promotion.
+
+### §33.10 Privacy invariants & semantic stability (preview)
+
+This section restates, in one place, the privacy and stability invariants that already apply to a v4-preview file from `SECURITY.md`, the v3.x envelope contract, and the RFCs. It introduces no new normative behaviour; it exists so a v4-preview reader, writer, or auditor can find them without cross-referencing.
+
+1. **Zero-server by default.** A `.klickd` file is a self-contained artefact. Reading, writing, and migrating it MUST NOT require a network call (other than user-initiated `tool:*` calls explicitly named in `claim_sources.prefer`). A preview reader that silently uploads payload bytes to a remote service is non-conforming.
+2. **Client-side encryption.** When `encrypted: true`, the v3.x envelope contract (`kdf`, `cipher`, AAD over the six canonical envelope fields) continues to apply. The preview does not introduce a v4 envelope variant. Producers MUST NOT downgrade to a weaker KDF or cipher to accommodate preview fields.
+3. **A private `.klickd` file is not authoritative across independent parties.** A single party's profile carries that party's claims about themselves. A second party reading the file MUST treat its assertions as *self-reported*, not as ground truth about anyone else. This is the same boundary that applies in v3.x; the preview's new fields (`claim_sources`, `verification_artifacts`, `media_profile`) do not raise their evidentiary weight.
+4. **No raw secrets in examples or fixtures.** Examples in `SPEC.md`, `examples/`, `docs/rfcs/`, and `tests/` MUST NOT include real API keys, real passphrases for non-test files, real tokens, real personal contact information, or real third-party credentials. The string `"correct-horse-battery-staple"` is reserved as the canonical test passphrase across the repository and is not a recommendation for production use.
+5. **Compartmentalisation is per-file.** A `.klickd` file is the unit of compartmentalisation: one file per profile, project, or matter. A preview reader MUST NOT merge two files implicitly. Multi-file workflows (e.g. a learner profile + a separate work profile) are the user's choice, not the reader's.
+6. **Syntactic round-trip ≠ behavioural equivalence.** The conformance tests under [`tests/`](./tests/) (positive and negative vectors, round-trip preservation) verify *syntactic* stability: a profile written, decrypted, and re-encoded across implementations produces the same byte-significant payload. They do **not** prove *behavioural equivalence* across models, providers, or model versions — two providers reading the same `agent_instructions` may still respond differently. Producers SHOULD treat the format as a portable carrier of intent, not as a guarantee that downstream agent behaviour is identical. Future work on the Context Cost Benchmark (RFC-003) is the place where behavioural deltas are measured; the format itself remains a *state* contract, not a *behaviour* contract.
+7. **Provenance is preserved, not invented.** A v4-preview reader MUST NOT add a `claim_sources.records[]` entry, a `verification_artifacts[]` entry, or an `error_journal[]` entry on behalf of a tool that did not run, and MUST NOT backdate timestamps. When the truth is "this claim came from the user with no source", the conforming record is to leave `source` absent or to set `claim_status: "assumed"`, not to fabricate a citation.
+
+These invariants apply equally to the production v3.x line and the v4 preview track. The preview adds new *fields*; it does not relax existing privacy or stability rules.
 
 ---
 
