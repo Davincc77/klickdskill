@@ -29,6 +29,7 @@ Files follow `RFC-NNN-short-slug.md` with zero-padded sequential numbers (`RFC-0
 | 002 | [`verification_gates` + `human_veto`](./RFC-002-verification-gates.md) | `.klickd v4-A` (v1) · `v4-B` (v2 draft) | Draft (v2) |
 | 003 | [Context Cost Benchmark](../../benchmarks/context_cost/RFC.md) | `.klickd v4` (research / benchmark track) | Draft |
 | 004 | [Migration & Backward Compatibility](./RFC-004-migration-backward-compatibility.md) | `.klickd v4` (migration policy for `v2.5 → v3.x → v3.5.1 → v4`) | Draft |
+| 005 | *Claim-memory growth & deterministic compaction (planned — not yet drafted)* | `.klickd v4+` (post-preview) | Planned — placeholder in [`ROADMAP.md`](../../ROADMAP.md) |
 
 ## Test packs
 
