@@ -112,6 +112,8 @@ npm install @klickd/core
 | OpenRouter (multi-provider Soul Handoff) | [`docs/integrations/openrouter.md`](docs/integrations/openrouter.md) |
 | Any provider (generic pattern) | [`docs/integrations/generic.md`](docs/integrations/generic.md) |
 
+> **Experimental POC:** [`integrations/hermes/`](integrations/hermes/README.md) — Hermes Agent as workflow runner, `.klickd` as portable state layer. Local dry-run only; not a production integration.
+
 ---
 
 ## Schema validation

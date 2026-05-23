@@ -1,0 +1,58 @@
+# Hermes plugin manifest — .klickd context-cost POC.
+#
+# STATUS: experimental. Not a blessed Hermes plugin.
+# The exact Hermes plugin manifest schema is not pinned by this scaffold; if
+# your local Hermes expects a different shape, adapt the fields below. The
+# values are intentionally minimal and safe (no network, no secrets).
+
+name: klickd-context-cost
+version: 0.0.1-experimental
+description: >
+  POC plugin that lets a Hermes Agent drive the .klickd RFC-003 context-cost
+  dry-run benchmark. Hermes = workflow runner, .klickd = portable state layer.
+  No provider API calls. No paid resources. No publishing.
+
+# Authoring metadata only; not normative.
+author: klickd contributors
+license: CC0-1.0
+homepage: https://github.com/Davincc77/klickdskill
+
+# Where the companion skill lives, relative to this plugin folder when copied
+# into ~/.hermes/. The skill is what carries the Hermes-facing instructions.
+skill:
+  path: ../../skill/SKILL.md
+  name: klickd-context-cost
+
+# Python entry-point. Treat the module as experimental — hooks are sketched
+# with TODO markers where the local Hermes API surface is uncertain.
+entrypoint:
+  module: __init__
+  callable: register
+
+# Safety posture surfaced to the host. These are declarations, not
+# enforcement — the skill and the wrapper script both encode the same rules.
+capabilities:
+  network: false
+  filesystem:
+    read: ["benchmarks/context_cost/**"]
+    write: ["benchmarks/context_cost/results/**"]
+  provider_api_calls: false
+  paid_resources: false
+  secrets: false
+
+# Hooks the plugin would like to register, if/when the host exposes them.
+# These are advisory until the local Hermes plugin API is confirmed.
+hooks:
+  - name: on_skill_invoke
+    skill: klickd-context-cost
+    description: >
+      Guard rail before the skill runs the wrapper. Refuse if any of the hard
+      safety rules in skill/SKILL.md would be violated by the current session
+      (network access requested, secrets present in .klickd payload, etc.).
+    status: experimental
+  - name: on_skill_complete
+    skill: klickd-context-cost
+    description: >
+      Surface the generated artifact paths to the host so subsequent steps can
+      consult them instead of re-running the dry-run benchmark.
+    status: experimental
