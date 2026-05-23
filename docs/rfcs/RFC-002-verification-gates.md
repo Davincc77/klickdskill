@@ -5,15 +5,18 @@
 | **RFC** | 002 |
 | **Title** | `verification_gates` + `human_veto` — UX-first guardrails for agent actions |
 | **Target** | `.klickd v4-A` (v1 core) · `.klickd v4-B` (v2 claim grounding & contracts) |
-| **Status** | **Draft (v2)** |
+| **Status** | **Proposed (v1 core) · Draft (v2 additions)** |
 | **Author** | Vince C. (Klickd / Luxlearn, Luxembourg) |
 | **Created** | 2026-05-22 |
 | **Revised** | 2026-05-22 (v2 draft: claim grounding + contract tests, additive) |
+| **Promoted to Proposed** | 2026-05-23 (v1 core only; v2 §8b sections remain `Draft`) |
 | **Supersedes** | — |
 
 > **This RFC is non-normative.** It targets future `.klickd v4-A` and `v4-B` releases. No part of this document is binding on any current v3.x reader or writer. v3.x readers MUST ignore any `verification_gates`, `claim_sources`, `human_veto_policy`, `error_journal`, `risk_thresholds`, `preflight_checks`, `contract_tests`, `success_criteria`, `reversibility`, or `blast_radius` field they encounter — see [Forward compatibility](#forward-compatibility).
 >
 > **v2 additions are strictly additive over v1.** v2 introduces no new gate levels and no new UX surfaces. It refines *how* a gate decides — by grounding factual claims (`claim_status`, source provenance) and by attaching machine-checkable `contract_tests` and `success_criteria` to action classes — without changing the silent-by-default UX contract from v1 §4. A v4-A reader that does not understand v4-B fields MUST ignore them and behave exactly as the v1 resolution rules describe.
+>
+> **Status note (Proposed for v1; Draft for v2).** The v1 core — five gate levels, `human_veto_policy`, `claim_sources`, `error_journal`, `risk_thresholds`, `preflight_checks`, and the §4 decisions — is frozen for community review and prototype implementations. The v2 sections (§8b) — `claim_status`, `contract_tests`, `success_criteria`, `reversibility`, `blast_radius`, `verification_artifacts`, `error_journal[].rule_created` — remain `Draft` and MAY still change. Open questions (§10) remain open and do not block this promotion.
 
 ---
 

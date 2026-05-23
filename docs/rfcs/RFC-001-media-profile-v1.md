@@ -5,12 +5,15 @@
 | **RFC** | 001 |
 | **Title** | `media_profile` v1 — portable, encrypted, model-agnostic media context |
 | **Target** | `.klickd v4` (envelope-v4 / payload extension) |
-| **Status** | **Draft** |
+| **Status** | **Proposed** |
 | **Author** | Vince C. (Klickd / Luxlearn, Luxembourg) |
 | **Created** | 2026-05-22 |
+| **Promoted to Proposed** | 2026-05-23 |
 | **Supersedes** | — |
 
 > **This RFC is non-normative.** It targets a future `.klickd v4` release. No part of this document is binding on any current v3.x reader or writer. v3.x readers MUST ignore any `media_profile` field they encounter — see [Forward compatibility](#forward-compatibility).
+>
+> **Status note (Proposed).** The conceptual surface is frozen for community review and prototype implementations MAY rely on the §4 decisions and the §5 illustrative schema. The formal JSON Schema, error wiring, and SDK API land only at `Accepted` and `Implemented`. Open questions (§11) remain genuinely open and do not block this promotion.
 
 ---
 
