@@ -178,7 +178,7 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 - **P2-3 — RFC-005 (claim-memory growth & compaction)** — placeholder déjà dans `ROADMAP.md`, à promouvoir en Draft quand la pression empirique est documentée.
 - **P2-4 — High-security Argon2id preset** (m=131072 / t=4) opt-in, déjà esquissé v3.1.
 - **P2-5 — Multi-passphrase / key-wrapping** — fonctionnalité partage d’équipe (déjà listée v4.0 dans `ROADMAP.md`).
-- **P2-6 — Domain schemas formels** (`education`, `work`, `finance`, `legal`, `robotics`).
+- **P2-6 — Domain schemas formels** (`education`, `work`, `finance`, `legal`, `robotics`). Voir aussi le pattern B2B [`core.klickd` for organisations](../use-cases/CORE_KLICKD_B2B.md) — concept doc qui formalise un cas d’usage `core.klickd` (rules / gates / tone / evidence / approval) distinct du `user.klickd` (mémoire utilisateur). Non-normatif, futur RFC.
 - **P2-7 — Counter-based IV** pour hauts volumes (birthday bound).
 - **P2-8 — Memory search index** local et chiffré (BM25 / embedding, optionnel).
 
