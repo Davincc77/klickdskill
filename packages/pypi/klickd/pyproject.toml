@@ -27,6 +27,7 @@ dependencies = [
   "cryptography>=41.0",
   "argon2-cffi>=23.1",
   "jcs>=0.2",
+  "typing-extensions>=4.8",
 ]
 
 [project.urls]
