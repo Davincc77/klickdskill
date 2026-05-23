@@ -1,0 +1,63 @@
+name: Publish @klickd/core to npm (preview)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref (tag or branch) to build from, e.g. v4.0.0-preview.1 or main'
+        required: false
+        default: 'v4.0.0-preview.1'
+
+jobs:
+  publish-preview:
+    name: Build, test, and publish preview to npm
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/@klickd/core
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || 'v4.0.0-preview.1' }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify package version is a preview release
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "Package version: $PKG_VERSION"
+          case "$PKG_VERSION" in
+            *preview*|*alpha*|*beta*|*rc*)
+              echo "Pre-release version detected — OK to publish to preview dist-tag."
+              ;;
+            *)
+              echo "ERROR: package.json version '$PKG_VERSION' is not a pre-release (must contain preview/alpha/beta/rc). Refusing to publish."
+              exit 1
+              ;;
+          esac
+          if [ "$PKG_VERSION" != "4.0.0-preview.1" ]; then
+            echo "ERROR: expected version 4.0.0-preview.1, got $PKG_VERSION. Refusing to publish."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm with preview dist-tag
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --tag preview --access public
