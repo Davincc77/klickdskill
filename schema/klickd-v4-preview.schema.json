@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://klickd.app/schema/v4-preview/klickd.schema.json",
+  "title": "klickd v4 Preview — Unified (PERMISSIVE, NON-NORMATIVE)",
+  "description": "PREVIEW unified schema for .klickd v4, targeting v4.0.0-preview.1. This schema is INTENTIONALLY PERMISSIVE: it validates the top-level shape of a v4-preview file (envelope + optional preview hooks) without enforcing strict v4 semantics. additionalProperties is true so unknown fields round-trip verbatim. Use this for single-pass acceptance of draft v4 documents. For pre-/post-decrypt validation, see schemas/klickd-payload-v4-preview.schema.json. The normative production schemas remain schema/klickd-v3.4.schema.json (unified) and schemas/klickd-envelope-v3.schema.json + schemas/klickd-payload-v3.schema.json (split). See SPEC.md §33.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["klickd_version", "created_at", "encrypted"],
+  "properties": {
+    "klickd_version": {
+      "type": "string",
+      "description": "Wire / envelope version. PERMISSIVE in this preview — any MAJOR.MINOR string is accepted. Preview producers SHOULD emit '4.0' and pair it with a 'preview' field. v3.x producers MUST continue to emit '3.x' and MUST NOT emit a 'preview' field.",
+      "pattern": "^\\d+\\.\\d+(\\.[0-9A-Za-z-.]+)?$"
+    },
+    "preview": {
+      "type": "string",
+      "description": "Marks a file as belonging to a specific preview iteration. Recommended value for files written against this schema: 'v4.0.0-preview.1'. Absent in v3.x and in a future GA v4.0."
+    },
+    "created_at": {
+      "type": "string",
+      "description": "RFC 3339 UTC timestamp of file creation. Same contract as v3.x.",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "format": "date-time"
+    },
+    "encrypted": {
+      "type": "boolean",
+      "description": "Whether the payload is AES-256-GCM encrypted. Envelope cryptography is unchanged from v3.x in this preview."
+    },
+    "domain": {
+      "type": "string",
+      "description": "Semantic category of the context. Same surface as v3.x; custom strings remain permitted."
+    },
+    "profile_kind": {
+      "type": "string",
+      "description": "Top-level discriminator for the profile shape. Common values: 'learner', 'agent', 'team', 'robot'. Custom strings are permitted."
+    },
+    "ciphertext": {
+      "type": "string",
+      "description": "AES-256-GCM ciphertext when encrypted is true. Same contract as v3.x.",
+      "contentEncoding": "base64"
+    },
+    "iv": {
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "kdf_salt": {
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "kdf": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Structured KDF block as in envelope-v3. Unchanged in this preview."
+    },
+    "cipher": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Structured cipher block as in envelope-v3. Unchanged in this preview."
+    },
+    "media_profile": {
+      "description": "RFC-001 (preview hook). PERMISSIVE — see schemas/klickd-payload-v4-preview.schema.json.",
+      "type": ["object", "array", "null"],
+      "additionalProperties": true
+    },
+    "verification_gates": {
+      "description": "RFC-002 (preview hook). PERMISSIVE.",
+      "type": ["object", "array", "null"],
+      "additionalProperties": true
+    },
+    "human_veto_policy": {
+      "description": "RFC-002 (preview hook). PERMISSIVE.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "claim_sources": {
+      "description": "RFC-002 (preview hook). PERMISSIVE.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "verification_artifacts": {
+      "description": "RFC-002 §8b.8 (preview hook). PERMISSIVE — pointer ledger, not a payload sink.",
+      "type": ["array", "null"]
+    },
+    "migration": {
+      "description": "RFC-004 (preview hook). Audit-only in v4.0.0-preview.1.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "context_cost": {
+      "description": "Research/benchmark track (preview hook). No normative semantics.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    }
+  }
+}
