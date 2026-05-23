@@ -20,6 +20,7 @@
 - schémas permissifs (`additionalProperties: true`)
 - SDKs round-trip-preserving (`klickd==4.0.0a1`, `@klickd/core@4.0.0-preview.1` — preview, jamais `latest`)
 - RFC-001 / 002 / 003 / 004 en **Draft**
+- RFC-006 (`agent_core` / Agent Operating Context, première itération, future-work) en **Draft** — voir [`docs/rfcs/RFC-006-agent-core.md`](../rfcs/RFC-006-agent-core.md). **Hors P0 GA** : post-GA / showcase first-party `core.Kai.klickd`.
 - UX spec ([`docs/ux/V4-UX-SPEC.md`](../ux/V4-UX-SPEC.md))
 - vectors `vectors_v40_preview.json`
 - CI : `test-vectors`, `verify-npm-preview`
@@ -171,6 +172,17 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 - **DoD :** aucun champ legacy perdu ; rollback testé sur chaque entrée.
 - **Dépendances :** P0-5.
 
+#### P1-7 — RFC-006 (`agent_core`) profile + invariant no-PII (docs-only)
+
+- **Objet :** stabiliser la surface conceptuelle de `agent_core` ([RFC-006](../rfcs/RFC-006-agent-core.md)) **sans toucher** au schéma strict v4 ni aux SDKs : profil de champs, invariant *no-PII* (§6), invariant *one-file-one-role* (§4 #1), contrat d'injection slices (§7), provenance/versioning (§8), relations RFC-002 (gates : user wins on conflict) et RFC-003 (benchmark cross-provider).
+- **Livrables :** RFC-006 promue `Draft → Proposed`, exemple non-normatif `docs/rfcs/examples/agent_core-v1.example.json` aligné, ajout dans `SCHEMA_INDEX.md` d'une ligne *RFC-006 (sketch, no schema yet)*, note dans `docs/rfcs/README.md`.
+- **DoD :**
+  - RFC-006 explicite `MUST` / `SHOULD` / `MAY` (RFC 2119) sur l'invariant no-PII et la résolution de conflit `default_verification_gates` ↔ `verification_gates` ;
+  - aucun SDK, schéma, ou vector modifié ;
+  - aucune mention de `core.Kai.klickd` comme livrable shippable (uniquement showcase concept, voir P2) ;
+  - GA `v4.0.0` reste **non bloquée** par cet item — il n'entre pas dans la liste P0.
+- **Dépendances :** P0-1 (SPEC normative v4) en cours, RFC-002 (gates) en `Proposed` ou plus.
+
 ### 2.3 P2 — souhaitable / extension
 
 - **P2-1 — IANA MIME registration** (`application/vnd.klickd+json`) — déclenche un workflow externe, à découpler du tag GA.
@@ -181,6 +193,9 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 - **P2-6 — Domain schemas formels** (`education`, `work`, `finance`, `legal`, `robotics`).
 - **P2-7 — Counter-based IV** pour hauts volumes (birthday bound).
 - **P2-8 — Memory search index** local et chiffré (BM25 / embedding, optionnel).
+- **P2-9 — `agent_core` schéma strict + SDK surface (post-GA).** Une fois [RFC-006](../rfcs/RFC-006-agent-core.md) en `Accepted`, ajouter un schéma strict `klickd-agent-core-v1.schema.json`, des hooks SDK (Python + JS) pour lire/écrire/valider `agent_core`, et le check fail-closed *no-PII* du §6 RFC-006 (`KLICKD_E_AGENT_CORE_MIXED` / `KLICKD_E_AGENT_CORE_PII`). Hors P0 GA — démarre uniquement après tag `v4.0.0`.
+- **P2-10 — Showcase first-party `core.Kai.klickd`.** Publier un fichier `core.Kai.klickd` réel (versionné via `agent_core.version`, provenance Klickd), démonstration de portabilité cross-provider d'un *agent core* (vs profil utilisateur). Lié à `klickd.app` (intégration), mais le fichier vit dans le repo (`examples/v4/agent_core/`) pour reproductibilité. **Aucune publication npm/PyPI/Zenodo associée.** Dépend de P2-9.
+- **P2-11 — Benchmark cross-provider `agent_core` (extension RFC-003).** Étendre le Context Cost Benchmark pour mesurer la dérive de comportement d'un même `core.Kai.klickd` entre providers (consistance posture pédagogique, refus, langue). Recherche, non normatif.
 
 ---
 
@@ -215,6 +230,7 @@ L’ordre suivant minimise le re-travail :
 8. **RFC-003 exécution (P1-3)** et **démo Hermes (P1-4)** — chantier adoption / preuve.
 9. **Viewer de référence (P1-5)** — peut démarrer en parallèle dès que P0-2 est figé.
 10. **GA decision gate** — Vince déclenche tag + publish + Zenodo manuellement.
+11. **Post-GA (P2 future-work).** Promotion `RFC-006` → `Proposed` / `Accepted`, puis schéma strict `agent_core` (P2-9), showcase `core.Kai.klickd` (P2-10), extension benchmark cross-provider (P2-11). **Aucun de ces items ne bloque ni ne précède le tag `v4.0.0`.**
 
 ---
 
