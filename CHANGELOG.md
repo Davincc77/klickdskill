@@ -7,6 +7,40 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## v4.0.0-preview.1 (preview, NOT GA) — 2026-05-23 — preview vectors + CI
+
+Preview-track additions only. No wire-format or crypto change. NOT released to
+npm / PyPI / Zenodo and NOT tagged.
+
+### Test vectors
+
+- Added `tests/vectors_v40_preview.json` (7 positive vectors) exercising the v4
+  preview payload surface from SPEC §33: minimal payload, `media_profile`,
+  `verification_gates`, `claim_sources` + `verification_artifacts`, `migration`
+  report, `context_cost`, and unknown-field passthrough.
+- Wire envelope stays at `klickd_version="3.0"` (v3 envelope crypto/AAD). The
+  inner payload alone carries `payload_schema_version="4.0.0-preview.1"`.
+- Vectors are byte-stable: `scripts/generate_v40_preview_vectors.py` regenerates
+  the file deterministically from fixed salts/IVs.
+
+### Cross-impl verifiers
+
+- `verify_vectors.py` gains a v4 preview suite asserting decrypt success,
+  `payload_schema_version` match, and presence + deep-equality of
+  `must_preserve_fields` after decode. Existing v2.5 / v3.0 / negative /
+  adversarial suites are unchanged.
+- `verify_vectors.mjs` gains an equivalent suite. Skips gracefully when
+  `hash-wasm` is not installed (consistent with existing v3.0 behaviour).
+
+### Notes
+
+- Preview track remains additive and permissive: no strict v4 business
+  validation, no migration enforcement. Unknown preview fields MUST be
+  preserved on decode.
+- Existing invalid-envelope rejection rules continue to apply.
+
+---
+
 ## v3.5.1 — 2026-05-22 — P0 conformance fixes
 
 ATLAS-audit P0 alignment across schemas, libs, vectors, and docs.
