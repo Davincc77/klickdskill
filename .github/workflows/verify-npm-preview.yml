@@ -1,0 +1,45 @@
+name: Verify @klickd/core npm preview
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify-preview:
+    name: Verify public npm registry state for @klickd/core
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify @klickd/core@4.0.0-preview.1 is published
+        run: |
+          PUBLISHED_VERSION=$(npm view @klickd/core@4.0.0-preview.1 version)
+          echo "Published version: $PUBLISHED_VERSION"
+          if [ "$PUBLISHED_VERSION" != "4.0.0-preview.1" ]; then
+            echo "ERROR: expected 4.0.0-preview.1, got '$PUBLISHED_VERSION'"
+            exit 1
+          fi
+
+      - name: Verify dist-tags (latest=3.5.1, preview=4.0.0-preview.1)
+        run: |
+          DIST_TAGS_JSON=$(npm view @klickd/core dist-tags --json)
+          echo "dist-tags: $DIST_TAGS_JSON"
+          LATEST=$(node -e "console.log(JSON.parse(process.argv[1]).latest || '')" "$DIST_TAGS_JSON")
+          PREVIEW=$(node -e "console.log(JSON.parse(process.argv[1]).preview || '')" "$DIST_TAGS_JSON")
+          echo "latest=$LATEST"
+          echo "preview=$PREVIEW"
+          if [ "$LATEST" != "3.5.1" ]; then
+            echo "ERROR: expected dist-tag latest=3.5.1, got '$LATEST'"
+            exit 1
+          fi
+          if [ "$PREVIEW" != "4.0.0-preview.1" ]; then
+            echo "ERROR: expected dist-tag preview=4.0.0-preview.1, got '$PREVIEW'"
+            exit 1
+          fi
+          echo "npm preview state verified."
