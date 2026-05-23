@@ -196,6 +196,19 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 - **P2-9 — `agent_core` schéma strict + SDK surface (post-GA).** Une fois [RFC-006](../rfcs/RFC-006-agent-core.md) en `Accepted`, ajouter un schéma strict `klickd-agent-core-v1.schema.json`, des hooks SDK (Python + JS) pour lire/écrire/valider `agent_core`, et le check fail-closed *no-PII* du §6 RFC-006 (`KLICKD_E_AGENT_CORE_MIXED` / `KLICKD_E_AGENT_CORE_PII`). Hors P0 GA — démarre uniquement après tag `v4.0.0`.
 - **P2-10 — Showcase first-party `core.Kai.klickd`.** Publier un fichier `core.Kai.klickd` réel (versionné via `agent_core.version`, provenance Klickd), démonstration de portabilité cross-provider d'un *agent core* (vs profil utilisateur). Lié à `klickd.app` (intégration), mais le fichier vit dans le repo (`examples/v4/agent_core/`) pour reproductibilité. **Aucune publication npm/PyPI/Zenodo associée.** Dépend de P2-9.
 - **P2-11 — Benchmark cross-provider `agent_core` (extension RFC-003).** Étendre le Context Cost Benchmark pour mesurer la dérive de comportement d'un même `core.Kai.klickd` entre providers (consistance posture pédagogique, refus, langue). Recherche, non normatif.
+- **P2-12 — Use case « creator core.klickd » (B2C / créateur).** Piste produit
+  forward-looking décrite dans [`docs/use-cases/CREATOR-CORE-KLICKD.md`](../use-cases/CREATOR-CORE-KLICKD.md) :
+  utiliser `.klickd` comme **contexte créatif réutilisable** pour la
+  génération média (Reels, TikTok, Shorts, micro-leçons, clips produit).
+  Distingue trois portées (`user.klickd` privé, `creator core.klickd`
+  réutilisable, `project.klickd`/`media_profile` campagne). S'appuie sur
+  v4 (`media_profile`, `verification_gates`, AI disclosure, C2PA). **Aucun
+  nouveau champ normé**, **aucun engagement de livraison**, **post-V4 GA**.
+  Pourra déclencher une **RFC-007 `creator_profile` v1** si la pression
+  empirique se confirme. Indépendant de P2-9/P2-10/P2-11 (`agent_core` /
+  `core.Kai.klickd`) : un *agent core* (RFC-006) capture la posture d'un
+  agent IA, tandis qu'un *creator core* capture l'identité créative d'un
+  humain producteur de média.
 
 ---
 
