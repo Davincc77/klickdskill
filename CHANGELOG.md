@@ -11,11 +11,28 @@ Versions follow: `envelope_version (skill_revision)`.
 
 > **Status: PREVIEW / NON-NORMATIVE / NOT GA.**
 > Stable, recommended production format remains **v3.5.1** (unchanged).
-> This entry summarises the additive v4 preview track only. No git tag, no
-> GitHub release, and no npm / PyPI / Zenodo publication is associated with
-> this preview version. The wire envelope, crypto, and AAD construction are
-> unchanged: `klickd_version` stays at `"3.0"`; only the inner payload may
-> opt in via `payload_schema_version = "4.0.0-preview.1"`.
+> This entry summarises the additive v4 preview track. The wire envelope,
+> crypto, and AAD construction are unchanged: `klickd_version` stays at
+> `"3.0"`; only the inner payload may opt in via
+> `payload_schema_version = "4.0.0-preview.1"`.
+
+### Distribution version mapping
+
+A single preview milestone is shipped across two registries with registry-native
+prerelease syntax:
+
+| Channel  | Identifier               | Notes                                                   |
+| -------- | ------------------------ | ------------------------------------------------------- |
+| git tag  | `v4.0.0-preview.1`       | annotated, GitHub Release marked **Pre-release**        |
+| npm      | `@klickd/core@4.0.0-preview.1` | published under the `preview` dist-tag, NOT `latest` |
+| PyPI     | `klickd==4.0.0a1`        | PEP 440 pre-release; `pip install klickd` resolves to **3.5.1** |
+| Zenodo   | *(deferred)*             | no DOI minted for the preview; pending field-by-field validation |
+
+`pip install klickd` continues to resolve to **3.5.1** because PEP 440 excludes
+pre-releases by default. Opt in explicitly with `pip install --pre klickd` or
+`pip install klickd==4.0.0a1`. Likewise `npm install @klickd/core` continues to
+resolve to **3.5.1**; the preview must be requested with
+`@klickd/core@preview` or `@klickd/core@4.0.0-preview.1`.
 
 ### Specification
 
@@ -101,11 +118,8 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ### Not in this preview
 
-- No git tag (`v4.0.0-preview.1` is **not** tagged).
-- No GitHub release.
-- No npm publish (not even under `--tag preview`).
-- No PyPI prerelease upload.
-- No Zenodo deposit and no DOI minted for the preview.
+- No Zenodo deposit and no DOI minted for the preview (deferred pending
+  field-by-field validation; concept DOI `10.5281/zenodo.20262530` is unchanged).
 - No strict v4 validator or migration runner.
 
 ---

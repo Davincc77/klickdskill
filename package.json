@@ -1,6 +1,6 @@
 {
   "name": "klickdskill",
-  "version": "3.5.1",
+  "version": "4.0.0-preview.1",
   "private": true,
   "description": "Reference implementation and test suite for the .klickd portable AI context format",
   "type": "module",

@@ -43,10 +43,31 @@ jobs:
           PKG_VERSION=$(python -c "import tomllib,sys; print(tomllib.loads(open('pyproject.toml','rb').read().decode())['project']['version'])")
           TAG_REF="${{ github.event.release.tag_name || github.ref_name }}"
           TAG_VERSION="${TAG_REF#v}"
-          echo "Package version: $PKG_VERSION"
-          echo "Tag version:     $TAG_VERSION"
-          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
-            echo "Version mismatch between pyproject.toml ($PKG_VERSION) and tag ($TAG_VERSION)"
+          # Map SemVer prerelease tags (e.g. "4.0.0-preview.1") to PEP 440
+          # equivalents (e.g. "4.0.0a1") so the GitHub tag and the PyPI package
+          # version can be consistent without forcing identical strings.
+          # Supported mappings:
+          #   X.Y.Z-preview.N  -> X.Y.ZaN
+          #   X.Y.Z-alpha.N    -> X.Y.ZaN
+          #   X.Y.Z-beta.N     -> X.Y.ZbN
+          #   X.Y.Z-rc.N       -> X.Y.ZrcN
+          EXPECTED_VERSION="$TAG_VERSION"
+          case "$TAG_VERSION" in
+            *-preview.*|*-alpha.*)
+              EXPECTED_VERSION="$(echo "$TAG_VERSION" | sed -E 's/-(preview|alpha)\.([0-9]+)$/a\2/')"
+              ;;
+            *-beta.*)
+              EXPECTED_VERSION="$(echo "$TAG_VERSION" | sed -E 's/-beta\.([0-9]+)$/b\1/')"
+              ;;
+            *-rc.*)
+              EXPECTED_VERSION="$(echo "$TAG_VERSION" | sed -E 's/-rc\.([0-9]+)$/rc\1/')"
+              ;;
+          esac
+          echo "Package version:  $PKG_VERSION"
+          echo "Tag version:      $TAG_VERSION"
+          echo "Expected (PEP440): $EXPECTED_VERSION"
+          if [ "$PKG_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "Version mismatch between pyproject.toml ($PKG_VERSION) and tag-derived version ($EXPECTED_VERSION)"
             exit 1
           fi
 
