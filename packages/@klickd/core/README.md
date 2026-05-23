@@ -78,6 +78,40 @@ const payload = await loadKlickd(fileBytes, {
 
 ---
 
+## `.klickd` v4 preview fields (additive, non-GA)
+
+This library currently targets the **v3** envelope and is **stable at v3.5.1**.
+The v4 preview track (`v4.0.0-preview.1`, NOT GA) introduces additive payload
+fields such as `profile_kind`, `media_profile`, `verification_gates`,
+`claim_sources`, `verification_artifacts`, `migration`, and `context_cost`.
+
+These fields are **preserved verbatim** on round-trip — `loadKlickd` returns
+the raw decrypted JSON object and `saveKlickd` re-encrypts it without
+filtering unknown keys. The `KlickdPayload` type carries an open
+`[key: string]: unknown` index signature so v4 preview fields type-check as
+additive properties. Strict v4 validation, migrations, and business-logic
+helpers are intentionally **not** implemented yet.
+
+```typescript
+const v4PreviewPayload: KlickdPayload = {
+  payload_schema_version: '4.0.0-preview.1',
+  domain_schema_version: '1.0.0',
+  profile_kind: 'learner',
+  verification_gates: { public_post: 'confirm' },
+  // ... any additional v4 preview fields are preserved on save/load
+};
+
+const recovered = await loadKlickd(
+  await saveKlickd(v4PreviewPayload, { passphrase: 'my-passphrase' }),
+  { passphrase: 'my-passphrase' },
+);
+// recovered deep-equals v4PreviewPayload
+```
+
+See `SPEC.md §33` and `examples/v4-preview/` for preview-track details.
+
+---
+
 ## Cryptographic specification (v3.0)
 
 | Parameter     | Value                                   |
