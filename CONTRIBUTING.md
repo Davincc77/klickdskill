@@ -54,10 +54,16 @@ Format your competency file following `registry/competencies/mathematics.json` a
 
 ```bash
 pip install cryptography argon2-cffi
-python verify_vectors.py          # must be 32/32
+python verify_vectors.py          # must be 59/59 (positive + negative + adversarial + v4 preview)
 
-node verify_vectors.mjs           # must be 17/17 (Argon2 skip is expected)
+node verify_vectors.mjs           # 42/42 with hash-wasm installed; without hash-wasm, v3.0 + v4.0-preview vectors are skipped
 ```
+
+The v4.0.0-preview.1 vectors (`tests/vectors_v40_preview.json`) exercise the
+additive preview-track payload surface (SPEC §33). The wire envelope stays at
+`klickd_version="3.0"` — only the inner payload uses
+`payload_schema_version="4.0.0-preview.1"`. Verifiers check decrypt + field
+preservation, not strict v4 business semantics.
 
 4. Submit a PR with a clear description of what changed and why
 

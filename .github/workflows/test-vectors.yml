@@ -8,7 +8,7 @@ on:
 
 jobs:
   python:
-    name: Python — v2.5 + v3.0 (49 vectors + 17 adversarial)
+    name: Python — v2.5 + v3.0 + v4.0-preview (cross-impl vectors + adversarial)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,11 +17,17 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: pip install cryptography argon2-cffi
-      - name: Run all suites (v2.5 + v3.0 + adversarial)
+      - name: Run all suites (v2.5 + v3.0 + adversarial + v4.0-preview)
         run: python3 verify_vectors.py
+      - name: Run klickd Python package tests (incl. v4 preview round-trip)
+        working-directory: packages/pypi/klickd
+        run: |
+          pip install -e .
+          pip install pytest
+          python -m pytest tests/ -q
 
   javascript:
-    name: JavaScript — v2.5 + v3.0 via hash-wasm Argon2id
+    name: JavaScript — v2.5 + v3.0 + v4.0-preview via hash-wasm Argon2id
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +36,7 @@ jobs:
           node-version: '20'
       - name: Install dependencies (hash-wasm + canonicalize)
         run: npm install
-      - name: Run all suites (v2.5 + v3.0 via hash-wasm)
+      - name: Run all suites (v2.5 + v3.0 + v4.0-preview via hash-wasm)
         run: node verify_vectors.mjs
 
   core-package:

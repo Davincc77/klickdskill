@@ -458,12 +458,96 @@ async function runSuite(vectorsPath, label) {
   return { passed, failed, skipped, results };
 }
 
+// ── v4 preview suite — additive payload preservation (NOT GA) ────────────────
+// Wire envelope crypto stays at v3.0; only the inner payload exercises v4
+// preview fields (payload_schema_version="4.0.0-preview.1"). Verifier asserts
+// decrypt success, payload_schema_version match, and presence + equality of
+// must_preserve_fields. Unknown preview fields MUST round-trip on decode.
+async function runV40PreviewSuite(vectorsPath, label) {
+  if (!existsSync(vectorsPath)) {
+    console.log(`\n[SKIP] ${label} — file not found: ${vectorsPath}`);
+    return { passed: 0, failed: 0, skipped: 0 };
+  }
+  const data = JSON.parse(readFileSync(vectorsPath, 'utf8'));
+  let passed = 0, failed = 0, skipped = 0;
+  console.log(
+    `\n── ${label} — spec ${data.spec_version} (envelope ${data.envelope_version ?? '3.0'}) ──────────────────────────`,
+  );
+
+  function deepEqual(a, b) {
+    if (a === b) return true;
+    if (a === null || b === null) return a === b;
+    if (typeof a !== typeof b) return false;
+    if (typeof a !== 'object') return a === b;
+    if (Array.isArray(a) !== Array.isArray(b)) return false;
+    if (Array.isArray(a)) {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) if (!deepEqual(a[i], b[i])) return false;
+      return true;
+    }
+    const ak = Object.keys(a), bk = Object.keys(b);
+    if (ak.length !== bk.length) return false;
+    for (const k of ak) if (!deepEqual(a[k], b[k])) return false;
+    return true;
+  }
+
+  for (const v of data.vectors) {
+    const vid = v.id;
+    const expectedPsv = v.expected_payload_schema_version ?? '4.0.0-preview.1';
+    const mustPreserve = v.must_preserve_fields ?? [];
+    const expectedPayload = v.expected_payload ?? {};
+
+    try {
+      const payload = await decodeKlickdEnvelope(v.envelope, v.passphrase);
+
+      if (payload.payload_schema_version !== expectedPsv) {
+        console.log(
+          `  FAIL ${vid}: payload_schema_version mismatch ` +
+          `(expected ${JSON.stringify(expectedPsv)}, got ${JSON.stringify(payload.payload_schema_version)})`,
+        );
+        failed++;
+        continue;
+      }
+
+      const missing = mustPreserve.filter(k => !(k in payload));
+      if (missing.length > 0) {
+        console.log(`  FAIL ${vid}: missing preserved fields ${JSON.stringify(missing)}`);
+        failed++;
+        continue;
+      }
+
+      const mismatched = mustPreserve.filter(
+        k => k in expectedPayload && !deepEqual(payload[k], expectedPayload[k]),
+      );
+      if (mismatched.length > 0) {
+        console.log(`  FAIL ${vid}: preserved fields mutated on decode: ${JSON.stringify(mismatched)}`);
+        failed++;
+        continue;
+      }
+
+      console.log(`  PASS ${vid}: payload_schema_version=${payload.payload_schema_version} preserved=${JSON.stringify(mustPreserve)}`);
+      passed++;
+    } catch (e) {
+      const errMsg = e.message ?? String(e);
+      if (errMsg.includes('KLICKD_E_SKIP_ARGON2')) {
+        console.log(`  SKIP ${vid}: Argon2id unavailable (install hash-wasm)`);
+        skipped++;
+        continue;
+      }
+      console.log(`  FAIL ${vid}: unexpected error: ${errMsg.slice(0, 200)}`);
+      failed++;
+    }
+  }
+
+  return { passed, failed, skipped };
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 let totalPassed = 0, totalFailed = 0, totalSkipped = 0;
 
 const hashWasmAvail = argon2id !== null;
-console.log(`.klickd multi-version cross-impl JS test runner (v2.5 + v3.0)`);
-console.log(`hash-wasm (Argon2id): ${hashWasmAvail ? 'available ✓' : 'NOT installed — v3.0 vectors will be skipped'}`);
+console.log(`.klickd multi-version cross-impl JS test runner (v2.5 + v3.0 + v4.0-preview)`);
+console.log(`hash-wasm (Argon2id): ${hashWasmAvail ? 'available ✓' : 'NOT installed — v3.0 + v4.0-preview vectors will be skipped'}`);
 
 const suites = [
   { path: 'tests/vectors_v25.json',          label: 'POSITIVE vectors — v2.5' },
@@ -474,6 +558,17 @@ const suites = [
 
 for (const { path, label } of suites) {
   const { passed, failed, skipped } = await runSuite(join(__dir, path), label);
+  totalPassed  += passed;
+  totalFailed  += failed;
+  totalSkipped += skipped;
+}
+
+// v4 preview suite (additive, NOT GA)
+{
+  const { passed, failed, skipped } = await runV40PreviewSuite(
+    join(__dir, 'tests/vectors_v40_preview.json'),
+    'v4.0.0-preview.1 vectors — preview (NOT GA)',
+  );
   totalPassed  += passed;
   totalFailed  += failed;
   totalSkipped += skipped;

@@ -229,6 +229,95 @@ adv_p, adv_f = run_adversarial_suite()
 total_passed += adv_p
 total_failed += adv_f
 
+
+# ── v4 preview suite — additive payload preservation (NOT GA) ────────────────
+def run_v40_preview_suite() -> tuple[int, int]:
+    """
+    Verify v4.0.0-preview.1 vectors.
+
+    Preview track is additive/permissive:
+      • Wire envelope crypto stays at v3.0 (decoded by load_klickd unchanged).
+      • Inner payload carries payload_schema_version='4.0.0-preview.1'.
+      • Verifier asserts decrypt success, payload_schema_version match,
+        and that must_preserve_fields are present after decode.
+      • Unknown preview fields MUST be preserved on decode (additive policy).
+    """
+    v4_file = VECTORS_DIR / "vectors_v40_preview.json"
+    if not v4_file.exists():
+        print("\n[SKIP] v4.0.0-preview.1 suite — file not found")
+        return 0, 0
+
+    with open(v4_file) as f:
+        data = json.load(f)
+
+    print(f"\n── v4.0.0-preview.1 vectors — spec {data['spec_version']} "
+          f"(envelope {data.get('envelope_version', '3.0')}) ──────────────────────────")
+    passed = failed = 0
+
+    for v in data["vectors"]:
+        vid = v["id"]
+        pp = v["passphrase"]
+        expected_psv = v.get("expected_payload_schema_version", "4.0.0-preview.1")
+        must_preserve = v.get("must_preserve_fields", [])
+        expected_payload = v.get("expected_payload", {})
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".klickd", delete=False) as tmp:
+            json.dump(v["envelope"], tmp)
+            tmppath = tmp.name
+
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                result = load_klickd(tmppath, pp)
+
+            # 1) payload_schema_version must match
+            actual_psv = result.get("payload_schema_version")
+            if actual_psv != expected_psv:
+                print(f"  FAIL {vid}: payload_schema_version mismatch "
+                      f"(expected {expected_psv!r}, got {actual_psv!r})")
+                failed += 1
+                continue
+
+            # 2) must_preserve fields must be present after decode
+            missing = [k for k in must_preserve if k not in result]
+            if missing:
+                print(f"  FAIL {vid}: missing preserved fields {missing!r}")
+                failed += 1
+                continue
+
+            # 3) Field values must match expected payload (deep-equal on the keys
+            #    listed in must_preserve — covers nested structures like
+            #    media_profile, claim_sources, verification_artifacts, etc.).
+            mismatched = [
+                k for k in must_preserve
+                if k in expected_payload and result.get(k) != expected_payload[k]
+            ]
+            if mismatched:
+                print(f"  FAIL {vid}: preserved fields mutated on decode: {mismatched!r}")
+                failed += 1
+                continue
+
+            print(f"  PASS {vid}: payload_schema_version={actual_psv} "
+                  f"preserved={must_preserve}")
+            passed += 1
+
+        except tuple(ERROR_MAP.values()) as e:
+            print(f"  FAIL {vid}: unexpected {type(e).__name__}: {e}")
+            failed += 1
+        except Exception as e:
+            print(f"  FAIL {vid}: {type(e).__name__}: {e}")
+            failed += 1
+        finally:
+            os.unlink(tmppath)
+
+    return passed, failed
+
+
+v4_p, v4_f = run_v40_preview_suite()
+total_passed += v4_p
+total_failed += v4_f
+
+
 total = total_passed + total_failed
 print(f"\n{'='*50}")
 print(f"TOTAL: {total_passed}/{total} passed  ({total_failed} failed)")

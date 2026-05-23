@@ -1,0 +1,364 @@
+{
+  "description": ".klickd v4.0.0-preview.1 positive test vectors (preview track)",
+  "spec_version": "4.0.0-preview.1",
+  "envelope_version": "3.0",
+  "notes": [
+    "Preview track — additive, permissive. NOT GA.",
+    "Wire envelope crypto/version remains v3.0 (AAD = JCS over cipher, created_at, domain, encrypted, kdf, klickd_version).",
+    "Inner payload carries payload_schema_version='4.0.0-preview.1'.",
+    "Verifiers MUST check decrypt success and preservation of v4 preview fields, NOT strict business validation.",
+    "Unknown preview fields MUST be preserved on decode (additive policy)."
+  ],
+  "vectors": [
+    {
+      "id": "v4.0-preview-minimal",
+      "description": "Minimal v4.0.0-preview.1 payload — only mandatory + identity, no preview features.",
+      "passphrase": "correct-horse-battery-staple",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-23T00:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "AAECAwQFBgcICQoLDA0ODw=="
+        },
+        "cipher": {
+          "name": "AES-256-GCM",
+          "iv": "AAECAwQFBgcICQoL"
+        },
+        "ciphertext": "NPLxZBH0ID/Tzr829nytas+WTTvCvvzaf5tH1/i7xDg7VXFcT9bhAWsOBWMC7OQqYCITH0eeKHLxxkZP1kioOdkX0iia8oRGAevKpsL4roHTAP/M+vWZ13Zl8oGq04687weT0TXjARfwt5O0JV/Akj2Ur2z4CPQc4xRe8obMArJe81WCQrBOn4nJEYpGUIW4w0cGymXKETaiZhiID6JXCY6B1l7IM9i1miJy4rnWf7bQ1azF8iQ7En85r00Rk2mUL/uC0BQAXRCEIdwa0piyxfSTcqwU44zm3NxqXHwZhg052QJl5xOkiPZH5/HZXRioJuH6fMVpyJ1s0pISCAJoNqHhRgOgy83g7vl6v9qFNPGbn7cyyw7hW2WkbJ7+H1pZ+90mxIn7edB4uULEEChMy74rJ8YFRcdwJyGRXeZGUa9H3zKgFXyhPEwjq+35R+m5pjS9MxjgMP5aj+uWjHjtcyvRJ3lpngQDsc/S/WCh4UlBbtA="
+      },
+      "expected_payload": {
+        "payload_schema_version": "4.0.0-preview.1",
+        "domain_schema_version": "1.0.0",
+        "preview": "v4.0.0-preview.1",
+        "profile_kind": "learner",
+        "identity": {
+          "name": "Preview Tester",
+          "language": "en",
+          "timezone": "Europe/Luxembourg"
+        },
+        "agent_instructions": "Treat unknown fields as additive and preserve them on round-trip.",
+        "user_preferences": "Continuing a calculus session."
+      },
+      "expected_payload_schema_version": "4.0.0-preview.1",
+      "must_preserve_fields": [
+        "payload_schema_version",
+        "preview",
+        "identity",
+        "profile_kind"
+      ],
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v4.0-preview-media-profile",
+      "description": "Payload with media_profile (modalities, generation_consent, voice_profile).",
+      "passphrase": "correct-horse-battery-staple",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-23T00:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "AQIDBAUGBwgJCgsMDQ4PEA=="
+        },
+        "cipher": {
+          "name": "AES-256-GCM",
+          "iv": "BwgJCgsMDQ4PEBES"
+        },
+        "ciphertext": "bCzxLNEsA3y2n0j6X2BNLPycyrI1ZVkBjqa1CdeVRwybQQ/cl6wsUC2aXH6D8lB+ariLPWO4vTTdr/JFs4Cg06QLwH1schZO/ttKHJ4yBKDLME/wLbr9YwYwuC79MTvtyoCjw6TSdwrFphz97Ml3jWNFNrDButpomF8gmWUkVNZqSAM/1BEtnQf+5I+2uK44jHsRNgUfW6tNEkLdRutRY9ZeIpxS2EPxu4pjzLC1j4wntdr9IMIBxXpRkUFR6pMfWeraYgDbDChJZFjyKUoAn+MUsvwMKLmfw2CaVVk2XZcZLTf8RV1XR0PYZqlUw7L65ztE245trA85x6vTGAHB9I3eNFALb0w5sJQBJl46A7Us+wnIvqfAkkZaXupyuOvAh/3IoQ9Xsp1o7ApERVWVboDlnjCU4ek2gup3jrmhNwazG/giyQ1NL4C5P76PeYEXJSDVRuYlz60qdcBW1UJ4Z0L/12eArNIGpf0laQLemocpOKlDku6I7uAL0aJuof0mGkClwdfK1yYaq7fm1nrR9xPfIdWO80MuH+QN102PMPAAb9HERfzR0fbvivUJ3I5yYaQUCv1BK0LJJPj/8OGqyrRYEd1GXt7+dupTCpISk71NqrrRUAJna3VA+NZx/ZI7"
+      },
+      "expected_payload": {
+        "payload_schema_version": "4.0.0-preview.1",
+        "domain_schema_version": "1.0.0",
+        "preview": "v4.0.0-preview.1",
+        "profile_kind": "learner",
+        "identity": {
+          "name": "Preview Tester",
+          "language": "en",
+          "timezone": "Europe/Luxembourg"
+        },
+        "agent_instructions": "Treat unknown fields as additive and preserve them on round-trip.",
+        "user_preferences": "Continuing a calculus session.",
+        "media_profile": {
+          "modalities": [
+            "text",
+            "image",
+            "audio"
+          ],
+          "generation_consent": "explicit",
+          "voice_profile": null
+        }
+      },
+      "expected_payload_schema_version": "4.0.0-preview.1",
+      "must_preserve_fields": [
+        "media_profile"
+      ],
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v4.0-preview-verification-gates",
+      "description": "Payload with verification_gates declaring block/confirm/silent actions.",
+      "passphrase": "correct-horse-battery-staple",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-23T00:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "AgMEBQYHCAkKCwwNDg8QEQ=="
+        },
+        "cipher": {
+          "name": "AES-256-GCM",
+          "iv": "Dg8QERITFBUWFxgZ"
+        },
+        "ciphertext": "/z0YszhpiLC797eg9tZDzAXkR+u33lLdKhOrVYoPdf3LKG9gYRYF/VVfdtZRY4ZZ+n2F4y0jtwQ5eHans44DBZYmQFp3sFMGTSBAuzPvkAXC8anxAycoyvBpIgvmaoHyDxTk5guyMlWNwRuov2knnat0hXGpESe4Oq6YHcVthxrancxqbKK4nRUqrCPC7PFnEl3xKHKu1djkUJl4IpnvE3vgBBaccyiKHkb2Pc3f3Yho4kdga2TmIBCwSSvwksspyWZRNmG7VYu9m46O8f+ZPCYR4PyFDldhQrgDLWWw347NSAx8gLAUYb9ubZaHahO8c4FSR9NBY3qcfedhPSJQf1uGtRVvGyikFJ203U7Wp5QjmdrfFsRwHYwxHI73xav/qEaGrkr83w22//lllcNiTjSeSQ1so2/Lhvglx3JEgVP70vA7kZdou3lCYmeR23ntEKVCPKRo+R644OaFL0CdzrEMW2KIr1Kb+wjO2y11C/mKvPxhTJuifpWdqu8HP0qmM0o3K3Ikydw/4bXseq7tS5sXdKMsDp0ivdotnDFKwNAqzckctHsEeL3YtabKRdxLIzHYmgjfIRYo6dq9IuhFo/Xd9HEJmxoRDcagvjhMwcnDTqryfdVFTWRpiENcBGSs5l1LhGqcY1+wkg=="
+      },
+      "expected_payload": {
+        "payload_schema_version": "4.0.0-preview.1",
+        "domain_schema_version": "1.0.0",
+        "preview": "v4.0.0-preview.1",
+        "profile_kind": "learner",
+        "identity": {
+          "name": "Preview Tester",
+          "language": "en",
+          "timezone": "Europe/Luxembourg"
+        },
+        "agent_instructions": "Treat unknown fields as additive and preserve them on round-trip.",
+        "user_preferences": "Continuing a calculus session.",
+        "verification_gates": {
+          "factual_claim_about_person": "block",
+          "public_post": "confirm",
+          "casual_media_generation": "silent"
+        }
+      },
+      "expected_payload_schema_version": "4.0.0-preview.1",
+      "must_preserve_fields": [
+        "verification_gates"
+      ],
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v4.0-preview-claim-sources-and-artifacts",
+      "description": "Payload with claim_sources prefs and one verification_artifacts entry.",
+      "passphrase": "correct-horse-battery-staple",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-23T00:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "AwQFBgcICQoLDA0ODxAREg=="
+        },
+        "cipher": {
+          "name": "AES-256-GCM",
+          "iv": "FRYXGBkaGxwdHh8g"
+        },
+        "ciphertext": "N0lD5agpCX3bN5YIDFnaumE+KJ4lJQpAP1gama8/ZqbYEollIAegOg0JzlRD6dDyeR0sAw/yAM3rDxAP2KhJY7/z+lntaPXtCImNRZA34WY+Eg+yB7R7grinVABmTHki2nisB+GqSNLUjFinySHSIeNwM4MzhIqpDCK0sdXSfLqfsjEFfeNPyVuGA/yCUzXcCpQ4PHUK3muyEluxthPZSj5RZyAIxDAaNan/xkoWLka29XEtwjrh3Kb7SdXQZX5p6B+U7IoGxq5EpjX6h0eKyLPaXvnBv6qlxltDzxr8qUbEkhR6yeJkZd9dR/wU+NnG6/i/z1KMZQXjdqmDJSjIeRv3zKIgR8dmU2VYoKhApJUXIK+vS2l51P3GxukybNE2wvN8c+ZF8vaNJApyWC5AC02rbF7P2XFtaafv7tqCyKIGmF33y3jZqslHMMiirQa/xPUyVhDlnHB6z91jWlJJWvX5VEJUsQl+Sutg96EihaNQws8Ke4IwZqXxsyIJCfy8ce0Npr/QnKtqfOsd5LhKr6uQvOy10690j6OtdB5kf7p6fHKoLAle6rZdF++ldJsll9RiTLVBraf0KJwjr4ltbLYcHKuguZfncPuQ6dtCd8G4oCHH2vCmx/P0EWTeC/u2l6xED7X2mNA7ZgvNb2K1BZFRfwj31DYDhiZ2wF4zSijIWjPglmmD/6ZnTPRXVP7dPbA/0hRFSVspVKgGNezqU599PdSKniAwF9ZqaxjzTZuYcotUi1+tc2KRvdaqA++wSefutmmU6m3/kJLfvHbnJFLL9gp18VcVfig+MflSOKfZOqn5J6+VGK7nDI248iqsQtUqmIXOIcndA4akP2cshEc/"
+      },
+      "expected_payload": {
+        "payload_schema_version": "4.0.0-preview.1",
+        "domain_schema_version": "1.0.0",
+        "preview": "v4.0.0-preview.1",
+        "profile_kind": "learner",
+        "identity": {
+          "name": "Preview Tester",
+          "language": "en",
+          "timezone": "Europe/Luxembourg"
+        },
+        "agent_instructions": "Treat unknown fields as additive and preserve them on round-trip.",
+        "user_preferences": "Continuing a calculus session.",
+        "claim_sources": {
+          "prefer": [
+            "user_supplied",
+            "tool:web_search"
+          ],
+          "require_citation_for": [
+            "factual_claim_about_person"
+          ]
+        },
+        "verification_artifacts": [
+          {
+            "id": "00000000-0000-4000-a000-000000000010",
+            "kind": "citation",
+            "uri": "https://example.org/source",
+            "ts": "2026-05-23T00:00:00Z"
+          }
+        ]
+      },
+      "expected_payload_schema_version": "4.0.0-preview.1",
+      "must_preserve_fields": [
+        "claim_sources",
+        "verification_artifacts"
+      ],
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v4.0-preview-migration-report",
+      "description": "Payload with migration block (3.5.1 -> 4.0.0-preview.1).",
+      "passphrase": "correct-horse-battery-staple",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-23T00:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "BAUGBwgJCgsMDQ4PEBESEw=="
+        },
+        "cipher": {
+          "name": "AES-256-GCM",
+          "iv": "HB0eHyAhIiMkJSYn"
+        },
+        "ciphertext": "+IHNkrMvXGSZswnaC49BDxCBmxSi2rz0d+p1YxLuB+atcVNQTemMfDiW6Iu2dwwsidFmwJEcXtoNGcc2KBfqAqUq5pyZqFlC3Ud4ASFD3F+zS+0/TEHdKd3LM9vFzaTGTX0NAs41YSC8p+taqywWA8kFUVubin9BeODuC2jIiOScXkG/uElWG28alksBXq9WMUfpmDoVN2O9KBljV/EwehJisroT6hT2yNHFjhuKqIz6gXgoLs92X4ZrjV15opzlC9JhwdvaYDPrGKdKSa/lcpeD8roJLmu4nwEovnWQDAjo3ZKyyl5aXAPwbjcjaKugxAzUIghBxMHrDbJ/kCq27595IBkriIK+UJ3jqf+CubXccWSruw8fK1d3xiR9W5dcOMtn6WyRxxM7rPut/f3/48MbEhzHYVwJxUe4He2YFIaOoGfdOcDmUcaSUPkQ55f2Mxt3lQH/PIDkvNX2DnMundyLw21EHbCLNsq4Aa5L04cGHHs4Ew1PfXTgmBoijeN7PGFac4bfHp+/SZnbVBR+M0agkgGZXgZZZJPTFJ1AZj6fRK1GevpbZIxHngTwTOjlMS/QDo6heKTv9XQDiqqlZPVfmeZpdFdcxmTP45w7xSoWxEmD4hSWh7OeSj00B5wxtJV/"
+      },
+      "expected_payload": {
+        "payload_schema_version": "4.0.0-preview.1",
+        "domain_schema_version": "1.0.0",
+        "preview": "v4.0.0-preview.1",
+        "profile_kind": "learner",
+        "identity": {
+          "name": "Preview Tester",
+          "language": "en",
+          "timezone": "Europe/Luxembourg"
+        },
+        "agent_instructions": "Treat unknown fields as additive and preserve them on round-trip.",
+        "user_preferences": "Continuing a calculus session.",
+        "migration": {
+          "from_version": "3.5.1",
+          "to_version": "4.0.0-preview.1",
+          "notes": "Additive only; no field removals."
+        }
+      },
+      "expected_payload_schema_version": "4.0.0-preview.1",
+      "must_preserve_fields": [
+        "migration"
+      ],
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v4.0-preview-context-cost",
+      "description": "Payload with context_cost block (tokens_in/out + estimated_usd).",
+      "passphrase": "correct-horse-battery-staple",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-23T00:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "BQYHCAkKCwwNDg8QERITFA=="
+        },
+        "cipher": {
+          "name": "AES-256-GCM",
+          "iv": "IyQlJicoKSorLC0u"
+        },
+        "ciphertext": "R16tQEX4eTyEAq7+L/3RhMhWSYTRlUNnIw2GZq5O6QQqVuDKRFvo0A73ATfBKubzFCDs7c37Md93PEmLEWYaNC+e6XIoFXiwWS75r+rGQBB0i2/uV4gea6VosLrJcUR0jp2D/O4AATK7Fd9j6p8SRTYlhiOmeaTbbpDr7YeTdSfC1xGsr+FcGd/zkUmc+e1ZGiKAnS69E+GcT3lOUGxoeSO29zC7/bYcnqpb4wemnet3pFzsswh1XjqexAyrpcMkLeEad9WpQoQy/oFzCjVUZZ5jf5dHlCAaT24IKcAyNlC6MEdqON+qUtmybK9u7OU6zMUqGj11c1VhQXhwCvGwMGm4/bRCOJONx9xwSSHfLXSdqgFu+2dAVpqNKeq6sq3zJ0MTEscQRCqOuTnNaJz5qt4JOAFVJf7AERxaQ3haevXbtEWFGn8XpI0PRnVrH1uBEde2GOjVP5TOMt9e/Ifw7gBgDigy8z7LnclAThCnu1Xdns0tmWZUFZHCpjtjnHYklOzwNfLzYiVPVgFUad3L3GlDxTzMjqIziqhCUa6CIaE//rhxzmeyxGZDOmqj4XD/+YXWujTz2MZP5uE="
+      },
+      "expected_payload": {
+        "payload_schema_version": "4.0.0-preview.1",
+        "domain_schema_version": "1.0.0",
+        "preview": "v4.0.0-preview.1",
+        "profile_kind": "learner",
+        "identity": {
+          "name": "Preview Tester",
+          "language": "en",
+          "timezone": "Europe/Luxembourg"
+        },
+        "agent_instructions": "Treat unknown fields as additive and preserve them on round-trip.",
+        "user_preferences": "Continuing a calculus session.",
+        "context_cost": {
+          "tokens_in": 1234,
+          "tokens_out": 567,
+          "estimated_usd": 0.01
+        }
+      },
+      "expected_payload_schema_version": "4.0.0-preview.1",
+      "must_preserve_fields": [
+        "context_cost"
+      ],
+      "expected_behavior": "decrypt_success"
+    },
+    {
+      "id": "v4.0-preview-unknown-field-passthrough",
+      "description": "Permissive: unknown v4 preview field is preserved on decode (additive policy).",
+      "passphrase": "correct-horse-battery-staple",
+      "envelope": {
+        "klickd_version": "3.0",
+        "encrypted": true,
+        "domain": "education",
+        "created_at": "2026-05-23T00:00:00Z",
+        "kdf": {
+          "name": "argon2id",
+          "params": {
+            "m": 65536,
+            "t": 3,
+            "p": 1
+          },
+          "salt": "BgcICQoLDA0ODxAREhMUFQ=="
+        },
+        "cipher": {
+          "name": "AES-256-GCM",
+          "iv": "KissLS4vMDEyMzQ1"
+        },
+        "ciphertext": "pBLsWZJBC6jFGXIr+qm0pxMaf24L8xOPDyxlnPd13gNptO9n/DbhBZoc9Nv7YH337awZnBCDYbHiLTBgUAxZuwvhSM51k1XfokxtjCSalIGAISjQB48jv8cPKlow0UX+d0Nu/7XjU1B9BEskLaFZPcaAkcZJJMHuKvQe00BAaNuHJkdInitERcFyGcnU88GGcTdVmQLRRaVQ77yargDYO6jSsb68anV8XdEZ21qVmhJynKlTyxi1Dra+jl9qLtW+u+CyKTYBFDHjJwnAmhAokSx+P1lH9+Sc4QagfDgkEdwKSN5goXxhLFPPu/17xrWb8TsdXirTh3naO7axjkSV0eof8fomxqfwurYNRSd1juup09d1V+LicyZ7vrzmbPfOu+O8OI3k/LyIiut3E8POllCaoF7kyqgoyHH/biNe3SzSL8s9UZNrcDwSwQqg7LPr0YLff93ZW7goPjbACiDisZkgbAY/hfqefS03wxCxCSQbPKIIIpIdGLZQ/kLPbfA4pj8WT2q6s/ZExCalzdzvlCc3jPCqbUNmiDuaYP5jIG+d81W4SkIXFdxMK00fUJC17GFiKcX5dZIGATvbzyFfl+JNlH/xgD/2Cvu3oO+PqvA6Io5ZqGBAjzpa7pyLF3aPPzTvyIQ0+YyWCQNOg9VK"
+      },
+      "expected_payload": {
+        "payload_schema_version": "4.0.0-preview.1",
+        "domain_schema_version": "1.0.0",
+        "preview": "v4.0.0-preview.1",
+        "profile_kind": "learner",
+        "identity": {
+          "name": "Preview Tester",
+          "language": "en",
+          "timezone": "Europe/Luxembourg"
+        },
+        "agent_instructions": "Treat unknown fields as additive and preserve them on round-trip.",
+        "user_preferences": "Continuing a calculus session.",
+        "x_experimental_preview_field": {
+          "note": "Permissive: decoders preserve unknown fields on the v4 preview track.",
+          "marker": 42
+        }
+      },
+      "expected_payload_schema_version": "4.0.0-preview.1",
+      "must_preserve_fields": [
+        "x_experimental_preview_field"
+      ],
+      "expected_behavior": "decrypt_success"
+    }
+  ]
+}
