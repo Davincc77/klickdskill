@@ -18,7 +18,7 @@ from ._types import (
     KlickdKnowledge,
 )
 
-__version__ = "3.5.1"
+__version__ = "4.0.0a1"
 __all__ = [
     "load_klickd",
     "save_klickd",
