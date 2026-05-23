@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://klickd.app/schemas/v4-preview/klickd-payload.schema.json",
+  "title": "klickd Payload v4 Preview (PERMISSIVE, NON-NORMATIVE)",
+  "description": "PREVIEW schema for the .klickd v4 inner payload, targeting v4.0.0-preview.1. This schema is INTENTIONALLY PERMISSIVE: it accepts and preserves draft v4 structures (media_profile, verification_gates, human_veto_policy, claim_sources, verification_artifacts, migration, context_cost, profile_kind) without performing strict validation. additionalProperties is true at every level so that unknown fields round-trip verbatim. This schema MUST NOT be used to reject a file that is otherwise a valid v3.5.1 file. The normative schemas remain klickd-envelope-v3.schema.json and klickd-payload-v3.schema.json. See SPEC.md §33 and docs/rfcs/ for the design source.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "preview": {
+      "type": "string",
+      "description": "Marks a file as belonging to a specific preview iteration. Recommended value for files written against this schema: 'v4.0.0-preview.1'. Absent in v3.x files."
+    },
+    "payload_schema_version": {
+      "type": "string",
+      "description": "Payload schema version. PERMISSIVE in this preview: any string is accepted. A future strict v4 schema MAY pin this to a concrete value."
+    },
+    "domain_schema_version": {
+      "type": "string",
+      "description": "Domain-specific schema version (e.g. 'education-1.2'). PERMISSIVE in this preview."
+    },
+    "profile_kind": {
+      "type": "string",
+      "description": "Top-level discriminator for the profile shape. Common values: 'learner', 'agent', 'team', 'robot'. v3.x is implicitly 'learner'; the preview makes this explicit and extensible. Custom strings are permitted."
+    },
+    "media_profile": {
+      "description": "RFC-001: portable, hash-referenced media context. Bytes live outside the .klickd file by default; the payload carries metadata, hashes, and (optionally) inline base64 below a documented threshold. PERMISSIVE: structure is not enforced here.",
+      "type": ["object", "array", "null"],
+      "additionalProperties": true
+    },
+    "verification_gates": {
+      "description": "RFC-002 v1: user's preferred friction profile, mapping action class to gate level (silent / warn / confirm / block / require-owner). PERMISSIVE: not enforced here.",
+      "type": ["object", "array", "null"],
+      "additionalProperties": true
+    },
+    "human_veto_policy": {
+      "description": "RFC-002 v1: standing rules about when a human MUST be in the loop, regardless of agent confidence. Overrides any lower gate. PERMISSIVE: not enforced here.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "claim_sources": {
+      "description": "RFC-002 v1 + v2-additive: declarative preferences for where to ground factual claims, and records of what was actually used. PERMISSIVE: not enforced here.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "verification_artifacts": {
+      "description": "RFC-002 §8b.8: pointer ledger of outputs already produced by expensive verification commands (test suites, builds, web fetches, DOI resolutions). MUST be a pointer ledger, not a payload sink. PERMISSIVE: structure is not enforced here.",
+      "type": ["array", "null"]
+    },
+    "error_journal": {
+      "description": "RFC-002 v1: append-only lessons learned that should influence future gate evaluation. PERMISSIVE: not enforced here.",
+      "type": ["array", "null"]
+    },
+    "risk_thresholds": {
+      "description": "RFC-002 v1: numeric / categorical knobs (e.g. public_reach, financial_amount_eur_max_silent). PERMISSIVE.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "preflight_checks": {
+      "description": "RFC-002 v1: small, named checks an agent SHOULD run before acting on certain classes. PERMISSIVE.",
+      "type": ["array", "null"]
+    },
+    "contract_tests": {
+      "description": "RFC-002 v2-additive: machine-checkable contract tests bound to action classes. PERMISSIVE.",
+      "type": ["array", "null"]
+    },
+    "success_criteria": {
+      "description": "RFC-002 v2-additive: declarative success criteria per action class. PERMISSIVE.",
+      "type": ["object", "array", "null"],
+      "additionalProperties": true
+    },
+    "reversibility": {
+      "description": "RFC-002 v2-additive: declared reversibility for action classes. PERMISSIVE.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "blast_radius": {
+      "description": "RFC-002 v2-additive: declared blast radius for action classes. PERMISSIVE.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "migration": {
+      "description": "RFC-004: optional migration metadata block. Audit-only in this preview — no migration tooling ships with v4.0.0-preview.1. PERMISSIVE.",
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "properties": {
+        "source_version": {"type": "string"},
+        "migrated_at": {"type": "string"},
+        "migration_report_ref": {"type": "string"},
+        "backup_ref": {"type": "string"}
+      }
+    },
+    "context_cost": {
+      "description": "Research/benchmark track (benchmarks/context_cost/RFC.md): optional fields recording measured 'repeated context waste' for this profile. No normative semantics depend on this field. PERMISSIVE.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    }
+  }
+}

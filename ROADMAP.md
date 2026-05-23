@@ -55,7 +55,18 @@ This is a living document. Items are aspirational, not committed.
 
 ---
 
-## v4.0 (medium-term)
+## v4.0-preview.1 (preview track — NON-NORMATIVE, NOT GA)
+
+> `.klickd v4 preview` is **not a new standard separate from `.klickd`**. It is the next **preview track** inside the `.klickd` standard family, running in parallel to the production v3.5.1 line. No SDK release, no npm/PyPI/Zenodo publication, and no git tag are associated with this preview.
+
+- [x] SPEC.md §33 — non-normative v4 Preview section (additive over v3.5.1, RFC-backed)
+- [x] Permissive preview schemas: [`schemas/klickd-payload-v4-preview.schema.json`](./schemas/klickd-payload-v4-preview.schema.json) and [`schema/klickd-v4-preview.schema.json`](./schema/klickd-v4-preview.schema.json) (`additionalProperties: true`, top-level hooks for `media_profile` / `verification_gates` / `human_veto_policy` / `claim_sources` / `verification_artifacts` / `migration` / `context_cost` / `profile_kind`)
+- [x] Forward/backward compatibility contract documented (v3.x readers ignore preview fields; v4-preview readers preserve unknown fields verbatim)
+- [ ] Strict v4 JSON Schema validation (deferred to a later preview iteration)
+- [ ] Reference implementations of `verification_gates` / `human_veto_policy` resolution in `@klickd/core` and `klickd` SDKs (deferred — SDKs remain at `3.5.1`)
+- [ ] Migration tooling per RFC-004 (deferred — preview ships no migrator)
+
+## v4.0 (medium-term — GA target)
 
 - [ ] `media_profile` v1 — portable, encrypted media context (voice / image / document / embedding). Draft RFC: [`docs/rfcs/RFC-001-media-profile-v1.md`](./docs/rfcs/RFC-001-media-profile-v1.md)
 - [ ] `verification_gates` + `human_veto` — UX-first guardrails for agent actions (silent / warn / confirm / block / require-owner). v1 targets v4-A; v2 (claim grounding + contract tests, additive, no new levels) targets v4-B. Draft RFC: [`docs/rfcs/RFC-002-verification-gates.md`](./docs/rfcs/RFC-002-verification-gates.md)

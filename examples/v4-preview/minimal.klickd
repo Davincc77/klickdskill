@@ -1,0 +1,22 @@
+{
+  "klickd_version": "4.0",
+  "preview": "v4.0.0-preview.1",
+  "created_at": "2026-05-23T00:00:00Z",
+  "encrypted": false,
+  "domain": "education",
+  "profile_kind": "learner",
+  "user_preferences": "Continuing a calculus session. Resume as if you have been here from the start.",
+  "verification_gates": {
+    "factual_claim_about_person": "block",
+    "public_post": "confirm",
+    "casual_media_generation": "silent"
+  },
+  "human_veto_policy": {
+    "applies_to": ["public_post", "consent_change", "identity_assertion"],
+    "second_party": null
+  },
+  "claim_sources": {
+    "prefer": ["user_supplied", "tool:web_search"],
+    "require_citation_for": ["factual_claim_about_person"]
+  }
+}

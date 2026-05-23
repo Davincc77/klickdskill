@@ -168,6 +168,17 @@ Full analysis: [Zenodo preprint](https://doi.org/10.5281/zenodo.20320480)
 
 [`SPEC.md`](SPEC.md) — encryption (AES-256-GCM), all field references, teaching modes, Soul Handoff, JSON Injection Guard, benchmark namespace, memory decay, shared context, versioning policy.
 
+### Looking ahead — `.klickd v4` preview (non-normative, not GA)
+
+The current and recommended production format is **v3.5.1**. In parallel, the repository hosts a **preview track** for the next iteration of the same `.klickd` standard family:
+
+- Spec: [`SPEC.md` §33 — `.klickd` v4 Preview](SPEC.md) (non-normative, additive over v3.5.1)
+- Permissive schemas: [`schemas/klickd-payload-v4-preview.schema.json`](schemas/klickd-payload-v4-preview.schema.json), [`schema/klickd-v4-preview.schema.json`](schema/klickd-v4-preview.schema.json)
+- Design source: RFCs under [`docs/rfcs/`](docs/rfcs/) (`media_profile`, `verification_gates` + `human_veto`, migration & backward compatibility) and the [Context Cost Benchmark](benchmarks/context_cost/RFC.md)
+- Minimal example: [`examples/v4-preview/minimal.klickd`](examples/v4-preview/minimal.klickd)
+
+The preview targets `v4.0.0-preview.1`. No SDK release, no npm / PyPI / Zenodo publication, and no git tag are associated with it. v3.x readers MUST ignore preview fields; v4-preview readers MUST preserve unknown fields verbatim.
+
 ---
 
 ## License

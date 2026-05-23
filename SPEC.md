@@ -1827,6 +1827,138 @@ Agent profiles carry the same encryption requirements as learner profiles (§7, 
 
 ---
 
+## §33 — `.klickd` v4 Preview (Non-Normative)
+
+> **Status: PREVIEW — `v4.0.0-preview.1`. NON-NORMATIVE. NOT GA.**
+>
+> This section describes the **next preview track** of the `.klickd` standard family. `.klickd v4 preview` is **not a separate standard** from `.klickd` — it is the same standard, on a forward-looking preview track that runs in parallel to the current production `v3.5.1` line. The production wire version remains **`klickd_version: "3.x"`** and the schemas under [`schema/`](./schema/) and [`schemas/`](./schemas/) (split envelope + payload v3) remain the only normative schemas.
+>
+> Nothing in §33 binds any current SDK, reader, writer, or schema. The published Python (`klickd` on PyPI) and TypeScript (`@klickd/core` on npm) SDKs at release `3.5.1` do **not** ship v4 functionality. No npm / PyPI / Zenodo release is associated with this preview. No git tag is associated with this preview. v3.x readers MUST IGNORE every field listed below if they encounter it in any file. v4-preview-aware readers MUST preserve unknown fields verbatim (see §33.7 Forward & Backward Compatibility).
+
+### §33.1 Why a preview track
+
+The `.klickd` format has shipped four normative lines (v1 → v2 → v2.5 → v3.x), and a fifth — v3.5.1 — is in production today. Several active design threads are too large to land as point releases on the v3 line:
+
+1. **`media_profile`** — first-class, hash-referenced media context (voice / image / document / embedding) so a user's multimodal context travels across providers.
+2. **`verification_gates` + `human_veto`** — UX-first agent guardrails (`silent` / `warn` / `confirm` / `block` / `require-owner`) that carry the user's *preferred friction profile* across agents.
+3. **`claim_sources` + `verification_artifacts`** — declarative grounding for factual claims and a pointer ledger of expensive verification outputs (test runs, web fetches, DOI resolutions) so the next agent does not re-run what the previous one already paid for.
+4. **Migration & backward compatibility** — a lossless, opt-in, auditable migration pipeline from `v2.5 → v3.x → v3.5.1 → v4` under the guiding principle **"Never break the soul."**
+5. **Context Cost Benchmark** — a reproducible measurement track for the user-visible cost of repeated re-explanation, with and without `.klickd`.
+
+These threads are tracked under [`docs/rfcs/`](./docs/rfcs/) and [`benchmarks/context_cost/`](./benchmarks/context_cost/). The preview track exists so the design can be tried, written against, and benchmarked **without** destabilising the production v3 line.
+
+### §33.2 Status & Scope
+
+| Item | Status |
+|------|--------|
+| Spec section | **Preview, non-normative** — additive only over v3.5.1. |
+| Wire version | Files claiming `klickd_version: "4.0"` are PREVIEW. Production producers MUST continue to emit `"3.x"`. |
+| Preview marker | Preview files SHOULD include `preview: "v4.0.0-preview.1"` at the top level so a reader can distinguish preview from a future GA v4.0. |
+| Strict validation | **Not in scope for the preview.** The preview schemas are intentionally permissive (`additionalProperties: true`). Strict v4 validation is deferred to a future PR. |
+| Migrations | **Not in scope for the preview.** No reader or writer is required to migrate v3.x files to v4 preview. Migration policy (RFC-004) is documented but not implemented. |
+| SDK versions | **Unchanged.** Python `klickd` and TypeScript `@klickd/core` remain at `3.5.1`. No SDK v4 release exists. |
+| Releases | No npm / PyPI / Zenodo / DOI release. No git tag. |
+
+### §33.3 Preview field surface (informative)
+
+The fields below are introduced by the preview track. Each is **OPTIONAL**, **additive**, and **MUST be silently ignored by v3.x readers**. v4-preview readers MUST preserve unknown fields verbatim (round-trip stability is a forward-compatibility requirement).
+
+| Field | RFC | One-line purpose |
+|-------|-----|------------------|
+| `preview` | §33 | Marks a file as belonging to a specific preview iteration (e.g. `"v4.0.0-preview.1"`). |
+| `profile_kind` | §33 | Top-level discriminator for the profile shape (e.g. `"learner"`, `"agent"`, `"team"`, `"robot"`). v3.x is implicitly `"learner"`; the preview makes it explicit and extensible. |
+| `media_profile` | [RFC-001](./docs/rfcs/RFC-001-media-profile-v1.md) | Portable, hash-referenced media context (`voice` / `image` / `document` / `embedding`). Bytes live outside the file by default. |
+| `verification_gates` | [RFC-002](./docs/rfcs/RFC-002-verification-gates.md) | User's preferred friction profile, per action class. Levels: `silent` / `warn` / `confirm` / `block` / `require-owner`. |
+| `human_veto_policy` | [RFC-002](./docs/rfcs/RFC-002-verification-gates.md) | Standing rules about when a human MUST be in the loop regardless of agent confidence. Overrides any lower gate. |
+| `claim_sources` | [RFC-002](./docs/rfcs/RFC-002-verification-gates.md) | Where the agent SHOULD ground factual claims and a record of what was actually used (v2 additive: `records[]`, `claim_status`). |
+| `verification_artifacts` | [RFC-002 §8b.8](./docs/rfcs/RFC-002-verification-gates.md) | Pointer ledger of outputs already produced by expensive verification commands (test suites, builds, web fetches). Not a payload sink. |
+| `error_journal` | [RFC-002](./docs/rfcs/RFC-002-verification-gates.md) | Append-only lessons learned that should influence future gate evaluation. |
+| `risk_thresholds`, `preflight_checks`, `contract_tests`, `success_criteria`, `reversibility`, `blast_radius` | [RFC-002](./docs/rfcs/RFC-002-verification-gates.md) | Supporting fields for verification gates (v1 + v2-additive). |
+| `migration` | [RFC-004](./docs/rfcs/RFC-004-migration-backward-compatibility.md) | Optional migration metadata block (`source_version`, `migrated_at`, `migration_report_ref`, `backup_ref`). Audit-only. |
+| `context_cost` | [benchmarks/context_cost/RFC.md](./benchmarks/context_cost/RFC.md) | Optional research/benchmark fields recording the measured "repeated context waste" associated with this profile. Research track — no spec semantics depend on its presence. |
+
+For the full semantics of each field, see the linked RFC. The preview spec does **not** restate normative behaviour; the RFCs are the canonical design source until a field is promoted into the normative SPEC body in a future PR.
+
+### §33.4 Preview design principles
+
+The preview commits to these principles. They will carry into the eventual normative v4 promotion:
+
+1. **Additive over v3.5.1.** No v3.x field is removed, renamed, or repurposed in the preview. A v3.5.1 file is a valid v4-preview file by simply adding `preview` and (optionally) `profile_kind`.
+2. **Never break the soul.** Migration (when implemented) MUST be lossless, reversible, opt-in, and auditable. When in doubt, preserve the original and refuse to write, not invent a value. (See RFC-004.)
+3. **Preserve unknown fields.** Round-trip stability is a hard requirement. A v4-preview reader that does not understand a field MUST carry it through verbatim, not strip it.
+4. **UX-first guardrails, invisible by default.** Verification gates MUST NOT push agents toward compliance-form UX for ordinary creative work. Confirmation is the exception, not the default. (See RFC-002.)
+5. **Human veto is sacred.** `human_veto_policy` overrides any lower gate. No automatic mechanism (contract tests, verification artifacts, claim grounding) may lower a gate past a `human_veto_policy` floor.
+6. **Pointer ledger, not a payload sink.** `verification_artifacts[]` and `media_profile` entries MUST carry references and hashes, not the bytes themselves (except below documented inline thresholds, where applicable).
+7. **Research track is separate.** `context_cost` and the Context Cost Benchmark are research/benchmark artifacts. No normative behaviour depends on them.
+
+### §33.5 Minimal preview example (illustrative only)
+
+```json
+{
+  "klickd_version": "4.0",
+  "preview": "v4.0.0-preview.1",
+  "created_at": "2026-05-23T00:00:00Z",
+  "encrypted": false,
+  "domain": "education",
+  "profile_kind": "learner",
+  "user_preferences": "Continuing a calculus session. Resume as if you have been here from the start.",
+  "verification_gates": {
+    "factual_claim_about_person": "block",
+    "public_post": "confirm",
+    "casual_media_generation": "silent"
+  },
+  "human_veto_policy": {
+    "applies_to": ["public_post", "consent_change", "identity_assertion"],
+    "second_party": null
+  },
+  "claim_sources": {
+    "prefer": ["user_supplied", "tool:web_search"],
+    "require_citation_for": ["factual_claim_about_person"]
+  }
+}
+```
+
+This file is **not** a normative v4 example — strict validation does not exist yet. The example is illustrative of the preview surface only.
+
+### §33.6 Context Cost Benchmark (research track)
+
+The Context Cost Benchmark is tracked under [`benchmarks/context_cost/`](./benchmarks/context_cost/) (see [RFC](./benchmarks/context_cost/RFC.md)). It measures the user-visible cost of repeated re-explanation across sessions and providers, with and without `.klickd`. The benchmark is reproducible and additive — running it does not require a v4-preview-aware reader. A profile MAY surface its own measured cost in the optional `context_cost` block; no spec semantics depend on this field.
+
+### §33.7 Forward & Backward Compatibility
+
+The compatibility contract for the preview is:
+
+- **v3.x readers MUST IGNORE** every §33 preview field they encounter. This is consistent with §6 (unknown-field forward compatibility) and with the explicit ignore rules in RFC-001 §3, RFC-002 §3, and RFC-004.
+- **v3.x writers MUST NOT emit** any §33 preview field, and MUST NOT emit `klickd_version: "4.0"`.
+- **v4-preview readers MUST preserve unknown fields verbatim** when round-tripping. A preview reader that strips an unrecognised field is non-conforming.
+- **v4-preview readers MUST be able to read v3.x files** without modification. A v3.5.1 file is a valid input to a v4-preview reader; the reader treats absent §33 fields as absent (not defaulted).
+- **No automatic migration.** Reading an older file does not migrate it. Migration is a separate, user-initiated action governed by RFC-004 (not implemented in this preview).
+- **Preview ≠ GA.** A future normative v4 release MAY change field names, structures, or semantics relative to this preview. Producers relying on `v4.0.0-preview.1` MUST be prepared to round-trip into a stricter v4 GA shape later, ideally via the migration pipeline of RFC-004.
+
+### §33.8 Schemas
+
+A **permissive** preview JSON Schema is shipped under:
+
+- [`schemas/klickd-payload-v4-preview.schema.json`](./schemas/klickd-payload-v4-preview.schema.json) — payload-level preview schema (split form).
+- [`schema/klickd-v4-preview.schema.json`](./schema/klickd-v4-preview.schema.json) — unified preview schema (single-file form).
+
+These schemas use `additionalProperties: true` and only declare top-level hooks for the preview fields. Their purpose is to **accept and preserve** draft v4 structures, **not** to perform strict validation. They MUST NOT be used to reject a file that is otherwise a valid v3.5.1 file. See [`SCHEMA_INDEX.md`](./SCHEMA_INDEX.md) for how the preview schemas sit alongside the normative v3 schemas.
+
+### §33.9 What is NOT in this preview
+
+For clarity, the following are explicitly **out of scope** for `v4.0.0-preview.1` and any PR that lands the §33 surface:
+
+- Strict v4 JSON Schema validation.
+- Any migration tooling, `migration_report` writer, or backup mechanism.
+- SDK version bumps (Python or TypeScript). The shipped SDKs remain at `3.5.1`.
+- Any npm, PyPI, Zenodo, or DOI release.
+- Any git tag, GitHub release, or changelog entry on the v3 line.
+- Strict envelope-v4 cryptography changes. The envelope contract from v3.x continues to apply to any preview file that happens to be encrypted.
+
+These items are deferred to subsequent preview iterations and the eventual normative v4 promotion.
+
+---
+
 ## License
 
 This specification is released under **CC0 1.0 Universal (Creative Commons Public Domain Dedication)**.  
