@@ -62,6 +62,7 @@ This is a living document. Items are aspirational, not committed.
 - [x] SPEC.md §33 — non-normative v4 Preview section (additive over v3.5.1, RFC-backed)
 - [x] Permissive preview schemas: [`schemas/klickd-payload-v4-preview.schema.json`](./schemas/klickd-payload-v4-preview.schema.json) and [`schema/klickd-v4-preview.schema.json`](./schema/klickd-v4-preview.schema.json) (`additionalProperties: true`, top-level hooks for `media_profile` / `verification_gates` / `human_veto_policy` / `claim_sources` / `verification_artifacts` / `migration` / `context_cost` / `profile_kind`)
 - [x] Forward/backward compatibility contract documented (v3.x readers ignore preview fields; v4-preview readers preserve unknown fields verbatim)
+- [x] UX / Product spec for v4 interfaces (viewer / decryptor / validator / migrator / agent handoff) — non-normative, docs-only: [`docs/ux/V4-UX-SPEC.md`](./docs/ux/V4-UX-SPEC.md)
 - [ ] Strict v4 JSON Schema validation (deferred to a later preview iteration)
 - [ ] Reference implementations of `verification_gates` / `human_veto_policy` resolution in `@klickd/core` and `klickd` SDKs (deferred — SDKs remain at `3.5.1`)
 - [ ] Migration tooling per RFC-004 (deferred — preview ships no migrator)
