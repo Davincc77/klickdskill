@@ -37,6 +37,7 @@ Files follow `RFC-NNN-short-slug.md` with zero-padded sequential numbers (`RFC-0
 | Doc | Purpose | Status |
 |---|---|---|
 | [v4 UX / Product Spec](../ux/V4-UX-SPEC.md) | UX intent for future v4 clients (viewer / decryptor / validator / migrator / agent handoff). Docs-only, no spec/schema/SDK change. | Draft |
+| [`core.klickd` B2B use-case](../use-cases/CORE_KLICKD_B2B.md) | Concept doc — organisations / agents carry a portable `core.klickd` (rules, gates, tone, evidence, approvals) distinct from a user's `user.klickd`. Non-normative, future RFC candidate. | Draft (concept) |
 
 ## Test packs
 
