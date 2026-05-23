@@ -7,6 +7,55 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## Unreleased — docs-only — RFC promotions toward v4 GA
+
+> **Status: DOCS-ONLY / NON-NORMATIVE.** No SDK, schema, or vector change.
+> No publish (npm / PyPI / Zenodo), no tag, no announcement.
+> Production-recommended format remains **v3.5.1**. Preview track remains
+> **v4.0.0-preview.1**.
+
+### 2026-05-23 — RFC-001 / RFC-002 (v1 core) / RFC-004 promoted `Draft → Proposed`
+
+- **RFC-001 (`media_profile` v1)** — promoted to `Proposed`. Freezes the §4
+  decisions, the §5 illustrative schema, the §6 V-001…V-012 validation
+  checklist, and the §9 error codes for community review and prototype
+  implementations. Open questions (§11) remain open and do not block the
+  promotion.
+- **RFC-002 (`verification_gates` + `human_veto`)** — v1 core promoted to
+  `Proposed` (five gate levels, `human_veto_policy`, `claim_sources`,
+  `error_journal`, `risk_thresholds`, `preflight_checks`, §4 decisions, §6
+  level semantics, §9 G-001…G-006 conformance intent). v2 §8b additions
+  (`claim_status`, `contract_tests`, `success_criteria`, `reversibility`,
+  `blast_radius`, `verification_artifacts`, `error_journal[].rule_created`)
+  remain `Draft` and may still iterate.
+- **RFC-004 (Migration & Backward Compatibility — "Never break the soul")**
+  — promoted to `Proposed`. Freezes the §3 sub-principles, the §4 decisions,
+  the §5.4 staged pipeline (`v2.5 → v3.x → v3.5.1 → v4`), the §6
+  reader-vs-writer matrix, the §7 legacy / unknown / `x_*` rules, and the
+  §8 rollback model. Open decisions (§12) remain open and do not block the
+  promotion.
+- **RFC-003 (Context Cost Benchmark)** — unchanged, stays `Draft` pending
+  benchmark execution (Road-to-V4-GA item P1-3).
+- **RFC-006 (`agent_core`)** — unchanged, stays `Draft` (post-GA / future
+  work, Road-to-V4-GA item P1-7).
+
+This promotion is the recommended next step from
+[`docs/roadmap/ROAD-TO-V4-GA.md`](docs/roadmap/ROAD-TO-V4-GA.md) §5: it freezes
+the conceptual surface **before** the strict v4 JSON Schema (P0-2) and
+normative SPEC v4 (P0-1) work begins, avoiding a schema-first / RFC-after
+divergence.
+
+**What does NOT change:**
+- No schema files touched (`schema/`, `schemas/`).
+- No SDK code touched (`packages/pypi/klickd`, `packages/@klickd/core`).
+- No test vectors touched.
+- No envelope, AAD, KDF, or crypto change.
+- v3.5.1 remains the production-recommended format.
+- v4.0.0-preview.1 remains the only preview release, with the same
+  `additionalProperties: true` permissive schemas.
+
+---
+
 ## v4.0.0-preview.1 (preview, NOT GA) — 2026-05-23 — v4 preview track
 
 > **Status: PREVIEW / NON-NORMATIVE / NOT GA.**

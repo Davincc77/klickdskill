@@ -25,12 +25,14 @@ Files follow `RFC-NNN-short-slug.md` with zero-padded sequential numbers (`RFC-0
 
 | # | Title | Target | Status |
 |---|---|---|---|
-| 001 | [`media_profile` v1](./RFC-001-media-profile-v1.md) | `.klickd v4` | Draft |
-| 002 | [`verification_gates` + `human_veto`](./RFC-002-verification-gates.md) | `.klickd v4-A` (v1) · `v4-B` (v2 draft) | Draft (v2) |
+| 001 | [`media_profile` v1](./RFC-001-media-profile-v1.md) | `.klickd v4` | **Proposed** (2026-05-23) |
+| 002 | [`verification_gates` + `human_veto`](./RFC-002-verification-gates.md) | `.klickd v4-A` (v1) · `v4-B` (v2 draft) | **Proposed** (v1 core, 2026-05-23) · Draft (v2 §8b additions) |
 | 003 | [Context Cost Benchmark](../../benchmarks/context_cost/RFC.md) | `.klickd v4` (research / benchmark track) | Draft |
-| 004 | [Migration & Backward Compatibility](./RFC-004-migration-backward-compatibility.md) | `.klickd v4` (migration policy for `v2.5 → v3.x → v3.5.1 → v4`) | Draft |
+| 004 | [Migration & Backward Compatibility](./RFC-004-migration-backward-compatibility.md) | `.klickd v4` (migration policy for `v2.5 → v3.x → v3.5.1 → v4`) | **Proposed** (2026-05-23) |
 | 005 | *Claim-memory growth & deterministic compaction (planned — not yet drafted)* | `.klickd v4+` (post-preview) | Planned — placeholder in [`ROADMAP.md`](../../ROADMAP.md) |
 | 006 | [`agent_core` / Agent Operating Context](./RFC-006-agent-core.md) | `.klickd v4+` (post-GA; first-party showcase `core.Kai.klickd`) | Draft |
+
+> RFC-001, RFC-002 (v1 core), and RFC-004 were promoted from `Draft` to `Proposed` on 2026-05-23 (docs-only). This freezes the conceptual surface for community review and for the v4 GA schema / SDK work tracked in [`docs/roadmap/ROAD-TO-V4-GA.md`](../roadmap/ROAD-TO-V4-GA.md). No SDK, schema, or vector changes are part of this promotion. RFC-003 stays `Draft` pending the benchmark execution (P1-3). RFC-002 §8b additions (v2 — claim grounding, contract tests, verification artifacts) stay `Draft` and may still iterate without affecting the v1 Proposed surface.
 
 ## Companion docs (non-normative)
 

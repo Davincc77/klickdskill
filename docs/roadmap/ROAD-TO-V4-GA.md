@@ -19,7 +19,7 @@
 - SPEC §33 (preview, non-normative)
 - schémas permissifs (`additionalProperties: true`)
 - SDKs round-trip-preserving (`klickd==4.0.0a1`, `@klickd/core@4.0.0-preview.1` — preview, jamais `latest`)
-- RFC-001 / 002 / 003 / 004 en **Draft**
+- RFC-001 / 002 (v1 core) / 004 en **Proposed** (promues 2026-05-23, docs-only). RFC-003 et RFC-002 §8b (v2 additions) restent **Draft**.
 - RFC-006 (`agent_core` / Agent Operating Context, première itération, future-work) en **Draft** — voir [`docs/rfcs/RFC-006-agent-core.md`](../rfcs/RFC-006-agent-core.md). **Hors P0 GA** : post-GA / showcase first-party `core.Kai.klickd`.
 - UX spec ([`docs/ux/V4-UX-SPEC.md`](../ux/V4-UX-SPEC.md))
 - vectors `vectors_v40_preview.json`
@@ -249,14 +249,19 @@ L’ordre suivant minimise le re-travail :
 
 ## 5. Prochaine PR recommandée
 
-Après cette PR docs-only, la suite raisonnable est :
+> **Statut 2026-05-23 :** la PR « rfc(v4): promote RFC-001 / RFC-002 / RFC-004 from Draft to Proposed » a été ouverte et est docs-only (aucun SDK, schéma, vector touché). Elle gèle la surface conceptuelle de RFC-001 (`media_profile`), RFC-002 v1 core (gates / `human_veto_policy`), et RFC-004 (migration / never-break-the-soul). RFC-002 §8b (v2 additions) et RFC-003 (benchmark) restent `Draft` et n'entrent **pas** dans cette promotion.
 
-> **PR « rfc(v4): promote RFC-001 / RFC-002 / RFC-004 from Draft to Proposed ».**
-
-Justification : geler la surface conceptuelle avant d’écrire le schéma strict
+Justification : geler la surface conceptuelle avant d'écrire le schéma strict
 évite un effet « schema-first, RFC-after » où la sémantique devient implicite
 dans le code. Cette PR reste docs-only et low-risk : elle ne touche aucun SDK,
 aucun schéma, aucun vector. Elle prépare P0-1.
+
+La prochaine étape attendue, après merge de cette promotion, est :
+
+> **PR « spec(v4): begin promoting §33 preview wording toward normative (P0-1) ».**
+
+Cette PR suivante ne déclenche toujours aucun publish (npm / PyPI / Zenodo), aucun tag,
+aucune annonce externe. Elle reste docs-first conformément à la règle §3.10.
 
 ---
 
