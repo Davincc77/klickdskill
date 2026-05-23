@@ -31,6 +31,12 @@ Files follow `RFC-NNN-short-slug.md` with zero-padded sequential numbers (`RFC-0
 | 004 | [Migration & Backward Compatibility](./RFC-004-migration-backward-compatibility.md) | `.klickd v4` (migration policy for `v2.5 → v3.x → v3.5.1 → v4`) | Draft |
 | 005 | *Claim-memory growth & deterministic compaction (planned — not yet drafted)* | `.klickd v4+` (post-preview) | Planned — placeholder in [`ROADMAP.md`](../../ROADMAP.md) |
 
+## Companion docs (non-normative)
+
+| Doc | Purpose | Status |
+|---|---|---|
+| [v4 UX / Product Spec](../ux/V4-UX-SPEC.md) | UX intent for future v4 clients (viewer / decryptor / validator / migrator / agent handoff). Docs-only, no spec/schema/SDK change. | Draft |
+
 ## Test packs
 
 Non-normative test packs exercise RFC fields against concrete (synthetic) scenarios before any normative wording or schema lands. They are draft-only and clearly marked.
