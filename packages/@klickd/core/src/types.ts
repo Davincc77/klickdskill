@@ -100,8 +100,92 @@ export interface KlickdPayload {
   context?: KlickdContext;
   knowledge?: KlickdKnowledge;
   memory?: KlickdMemoryEntry[];
+  // v4 additive surface (preview + GA). Strict shape on v1-frozen fields.
+  profile_kind?: string;
+  preview?: string;
+  onboarding_trigger?: string;
+  media_profile?: KlickdMediaProfileV1 | Record<string, unknown> | null;
+  verification_gates?: KlickdVerificationGatesV1 | Record<string, KlickdGateLevel> | null;
+  human_veto_policy?: KlickdHumanVetoPolicy | null;
+  claim_sources?: KlickdClaimSources | null;
+  migration?: KlickdMigrationV1 | null;
+  risk_thresholds?: Record<string, unknown> | null;
+  preflight_checks?: unknown[] | null;
+  error_journal?: unknown[] | null;
+  verification_artifacts?: unknown[] | null;
+  contract_tests?: unknown[] | null;
+  success_criteria?: unknown;
+  reversibility?: Record<string, unknown> | null;
+  blast_radius?: Record<string, unknown> | null;
+  context_cost?: Record<string, unknown> | null;
+  gaming_profile?: Record<string, unknown> | null;
+  deprecated_fields?: Array<Record<string, unknown>> | null;
   /** Domain extension fields */
   [key: string]: unknown;
+}
+
+// v4 additive structured shapes — parity with packages/pypi/klickd/src/klickd/_types.py.
+
+export type KlickdMediaModality = 'voice' | 'image' | 'document' | 'embedding';
+
+export interface KlickdMediaProfileEntryHash {
+  algo: 'blake3';
+  value: string;
+}
+
+export interface KlickdMediaProfileEntry {
+  id: string;
+  modality: KlickdMediaModality;
+  hash: KlickdMediaProfileEntryHash;
+  label?: string;
+  language?: string;
+  uri?: string;
+  media_type?: string;
+  byte_size?: number;
+  duration_ms?: number;
+  bytes_b64?: string;
+  producer?: Record<string, unknown>;
+  consent?: Record<string, unknown>;
+}
+
+export interface KlickdMediaProfileV1 {
+  version: 1;
+  entries: KlickdMediaProfileEntry[];
+}
+
+export type KlickdGateLevel = 'silent' | 'warn' | 'confirm' | 'block' | 'require-owner';
+
+export interface KlickdGateEntry {
+  action_class: string;
+  level: KlickdGateLevel;
+  id?: string;
+  reason?: string;
+}
+
+export interface KlickdVerificationGatesV1 {
+  version: 1;
+  gates: KlickdGateEntry[];
+  user_default?: KlickdGateLevel;
+}
+
+export interface KlickdHumanVetoPolicy {
+  applies_to?: string[];
+  second_party?: string | null;
+  min_level?: KlickdGateLevel;
+  rationale?: string;
+}
+
+export interface KlickdClaimSources {
+  prefer?: string[];
+  require_citation_for?: string[];
+  records?: Array<Record<string, unknown>>;
+}
+
+export interface KlickdMigrationV1 {
+  source_version?: string;
+  migrated_at?: string;
+  migration_report_ref?: string;
+  backup_ref?: string;
 }
 
 export interface LoadKlickdOptions {
