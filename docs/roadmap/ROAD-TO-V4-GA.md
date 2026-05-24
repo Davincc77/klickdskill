@@ -335,14 +335,14 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 - **Objet :** mode d'onboarding trigger générant un **QR code** (ou deeplink local `klickd://load?...`) pour le provisioning d'un `.klickd` sur un nouvel agent / nouvel appareil. Inspiré du Secret Key 1Password.
 - **Pourquoi UX :** geste « scanner pour transférer mon identité IA » est immédiatement compréhensible. Couvre le cross-device sans introduire de compte.
 - **Risque architecture :** une URL temporaire de téléchargement réintroduit une dépendance serveur — *contradiction directe* avec la claim « zero-server pour les fichiers `.klickd` ».
-- **Décision :** **P1 conditionnel → P2 si revue architecture zero-server bloque.** À trancher entre :
-  - (a) **QR embarque le fichier complet** (taille ≤ 3 KB compressé) — zero-server, contrainte taille forte ;
-  - (b) **deeplink local** (`klickd://load?token=...`) sans réseau, repose sur intent OS et fichier déjà transféré par canal hors-bande ;
-  - (c) **abandon V4** si aucune variante zero-server n'est viable — repousser post-GA.
-- **Livrables :** note d'architecture dans [`docs/ux/V4-UX-SPEC.md`](../ux/V4-UX-SPEC.md), décision tranchée par RFC dédiée.
-- **DoD :** la décision ne casse pas la claim zero-server ; aucune URL temporaire serveur n'est introduite tacitement.
-- **Garde-fou anti-pattern :** A3 (couplage cloud masqué).
-- **Dépendances :** P0-1, revue architecture explicite par Vince.
+- **Décision (2026-05-24, validation mainteneur — cf. [`docs/ux/V4-ONBOARDING-QR-DEEPLINK.md`](../ux/V4-ONBOARDING-QR-DEEPLINK.md)) :** **P1 conditionnel → P2 si revue architecture zero-server bloque.** Le QR / deeplink est **un déclencheur d'UI d'import/reprise**, jamais un transport. Il ne véhicule **ni** contenu `.klickd` brut, **ni** passphrase, **ni** token durable, **ni** lien public permanent. Flux zero-server préférés :
+  - (a) **schéma URI custom** `klickd://import` qui ouvre l'UI d'import standard (R4-P0-1) ; l'utilisateur sélectionne ensuite son fichier local et saisit sa passphrase ;
+  - (b) **page launcher HTTPS sans état** `https://klickd.app/import-klickd` qui détecte le client installé ou rend l'UI d'import en PWA / WASM (déchiffrement entièrement côté agent utilisateur) ;
+  - (c) **URL serveur temporaire** — *future conditionnelle uniquement*, jamais V4 P0, soumise à RFC dédiée et aux contraintes C1–C7 listées dans [`docs/ux/V4-ONBOARDING-QR-DEEPLINK.md`](../ux/V4-ONBOARDING-QR-DEEPLINK.md) §3 (fichier chiffré uniquement, TTL court, usage unique, pas de passphrase ni payload brut, consentement explicite, pas d'identifiant durable).
+- **Livrables :** [`docs/ux/V4-ONBOARDING-QR-DEEPLINK.md`](../ux/V4-ONBOARDING-QR-DEEPLINK.md) (présent dépôt) ; toute variante serveur-temporaire requiert une RFC `Accepted` avant implémentation.
+- **DoD :** la décision ne casse pas la claim zero-server ; aucune URL temporaire serveur n'est introduite tacitement ; le QR / deeplink n'est jamais le transport du fichier ou de la passphrase ; P0 reste import local + reload verification (R4-P0-1).
+- **Garde-fou anti-pattern :** A3 (couplage cloud masqué). Tout PR qui smuggle du contenu, une passphrase ou un credential durable dans une URL est refusé en revue.
+- **Dépendances :** P0-1, revue architecture explicite par Vince (effectuée 2026-05-24).
 
 #### R4-P2-2 — `compression_policy.mode: "progressive"` (preview avant application)
 
