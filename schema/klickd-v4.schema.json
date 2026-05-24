@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://klickd.app/schema/v4/klickd.schema.json",
+  "title": "klickd v4 — Unified (Strict GA candidate, normative)",
+  "description": "Strict unified JSON Schema for a .klickd v4 document (envelope + optional inline payload). This schema is the GA strict equivalent of the permissive klickd-v4-preview.schema.json. It validates the envelope shape strictly (mirroring the v3 envelope contract — Argon2id + AES-256-GCM is unchanged in v4 per SPEC.md §33.10 #2) and, for unencrypted files, validates the inline payload against the strict v4 payload schema (klickd-payload-v4.schema.json). Top-level additionalProperties is TRUE to preserve unknown fields verbatim (SPEC.md §33.7 forward-compatibility invariant). Does NOT supersede the permissive preview schema (klickd-v4-preview.schema.json) — both coexist.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["klickd_version", "created_at", "encrypted"],
+  "properties": {
+    "klickd_version": {
+      "type": "string",
+      "description": "Wire / envelope version. Strict v4 GA producers SHOULD emit '4.0'. v3.x values are also accepted because the v3 envelope contract is unchanged (§33.10 #2) and a v3.x file remains readable by a v4 reader.",
+      "pattern": "^(3|4)\\.\\d+(\\.[0-9A-Za-z-.]+)?$"
+    },
+    "preview": {
+      "type": "string",
+      "description": "OPTIONAL preview marker. Absent on GA strict files. If present, this file was written against a preview iteration (e.g. 'v4.0.0-preview.1')."
+    },
+    "created_at": {
+      "type": "string",
+      "description": "RFC 3339 UTC timestamp of file creation. Z-suffix only, no fractional seconds (matches v3 envelope strict contract).",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+    },
+    "encrypted": {
+      "type": "boolean"
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Semantic category. Registered values follow v3 (education, work, finance, legal, creative, health, research, robotics, gaming, creator). Custom non-empty strings are permitted."
+    },
+    "profile_kind": {
+      "type": "string",
+      "description": "Top-level discriminator for the profile shape. Reserved canonical values: 'learner', 'agent', 'team', 'robot', 'creator'."
+    },
+    "domain_schema_version": {
+      "type": "string",
+      "pattern": "^([a-z][a-z0-9_-]*-\\d+\\.\\d+|\\d+\\.\\d+(\\.\\d+)?)$"
+    },
+    "kdf": {
+      "type": "object",
+      "description": "Structured KDF block — same contract as envelope-v3 §15.",
+      "required": ["name", "params", "salt"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string", "enum": ["argon2id", "pbkdf2-sha256"]},
+        "params": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["m", "t", "p"],
+              "additionalProperties": false,
+              "properties": {
+                "m": {"type": "integer", "minimum": 65536},
+                "t": {"type": "integer", "minimum": 1},
+                "p": {"type": "integer", "minimum": 1}
+              }
+            },
+            {
+              "type": "object",
+              "required": ["iterations"],
+              "additionalProperties": false,
+              "properties": {
+                "iterations": {"type": "integer", "minimum": 600000}
+              }
+            }
+          ]
+        },
+        "salt": {"type": "string"}
+      }
+    },
+    "cipher": {
+      "type": "object",
+      "description": "Structured cipher block — same contract as envelope-v3 §16. v4 does not introduce a new cipher.",
+      "required": ["name", "iv"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string", "const": "AES-256-GCM"},
+        "iv": {"type": "string"}
+      }
+    },
+    "ciphertext": {
+      "type": "string",
+      "description": "AES-256-GCM ciphertext (base64 padded). Required when encrypted=true."
+    },
+    "iv": {
+      "type": "string",
+      "description": "Legacy top-level IV mirror, retained for v3.0 round-trip parity. New producers SHOULD place IV inside the structured cipher block."
+    },
+    "kdf_salt": {
+      "type": "string",
+      "description": "Legacy top-level salt mirror, retained for v3.0 round-trip parity."
+    },
+    "payload_schema_version": {
+      "type": "string",
+      "description": "Payload schema version when the payload is inline (encrypted=false). Strict v4 GA value: '4.0'. Preview '4.0.0-preview.1' accepted for round-trip.",
+      "enum": ["4.0", "4.0.0-preview.1"]
+    },
+    "media_profile": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/media_profile"},
+    "verification_gates": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/verification_gates"},
+    "human_veto_policy": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/human_veto_policy"},
+    "claim_sources": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/claim_sources"},
+    "verification_artifacts": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/verification_artifacts"},
+    "contract_tests": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/contract_tests"},
+    "success_criteria": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/success_criteria"},
+    "reversibility": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/reversibility"},
+    "blast_radius": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/blast_radius"},
+    "risk_thresholds": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/risk_thresholds"},
+    "preflight_checks": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/preflight_checks"},
+    "error_journal": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/error_journal"},
+    "migration": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/migration"},
+    "context_cost": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/context_cost"},
+    "gaming_profile": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/gaming_profile"},
+    "deprecated_fields": {"$ref": "https://klickd.app/schemas/v4/klickd-payload.schema.json#/properties/deprecated_fields"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {"encrypted": {"const": true}},
+        "required": ["encrypted"]
+      },
+      "then": {
+        "required": ["kdf", "cipher", "ciphertext"],
+        "description": "Encrypted v4 file MUST carry kdf + cipher + ciphertext (envelope-v3 contract retained)."
+      }
+    }
+  ]
+}

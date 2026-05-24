@@ -106,6 +106,19 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
   - validation passe sur tous les vectors v4 stricts ;
   - les vectors preview restent acceptés via le schéma preview (deux schémas coexistent jusqu’au sunset).
 - **Dépendances :** P0-1.
+- **Statut (2026-05-24) :** **GA candidate landed (docs/schema only, no SDK/release).** Le PR P0-2 introduit
+  [`schemas/klickd-payload-v4.schema.json`](../../schemas/klickd-payload-v4.schema.json) et
+  [`schema/klickd-v4.schema.json`](../../schema/klickd-v4.schema.json) (strict sur les sections RFC-001 v1
+  `Accepted` et RFC-002 v1 core `Accepted` ; permissif sur les sections RFC-002 v2-additive et RFC-004 encore
+  en `Draft`). `additionalProperties: true` est conservé **au niveau racine** pour respecter le contrat de
+  préservation des champs inconnus de [SPEC.md §33.7](../../SPEC.md). Les 5 personas de
+  [`examples/v4/personas/`](../../examples/v4/personas/) et tous les `expected_payload` de
+  [`tests/vectors_v40_preview.json`](../../tests/vectors_v40_preview.json) valident contre le schéma strict.
+  Les schémas preview restent en place inchangés (coexistence, pas de remplacement). **Aucun bump de version
+  SDK, aucun tag, aucune release npm/PyPI/Zenodo.** Le runner local est
+  [`scripts/validate_v4_schemas.py`](../../scripts/validate_v4_schemas.py). Les vectors v4 *stricts*
+  (P0-6) restent à produire avant de pouvoir cocher la DoD complète ; à ce stade la DoD est validée sur le
+  corpus preview existant et les 5 personas.
 
 #### P0-3 — SDK Python `klickd` 4.0.0
 

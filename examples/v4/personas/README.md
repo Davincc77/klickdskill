@@ -123,10 +123,12 @@ forte sur les sections preview).
 - [x] Passphrase de test publique documentée (`klickd-example-only`), sans
       jamais figurer comme contenu chiffré.
 - [x] Validation contre le schéma preview permissif (cf. §5 ci-dessous).
-- [ ] Validation stricte v4 ([P0-2 / P0-6](../../../docs/roadmap/ROAD-TO-V4-GA.md)) :
-      **différée**. Le schéma strict v4 et les vectors stricts v4 n'existent
-      pas encore — la DoD complète sera atteignable une fois P0-2/P0-6 mergés,
-      conformément à l'ordre des dépendances inscrit dans ROAD-TO-V4-GA.
+- [x] Validation stricte v4 contre [`schemas/klickd-payload-v4.schema.json`](../../../schemas/klickd-payload-v4.schema.json)
+      (P0-2 GA candidate, livré séparément). Les 5 personas valident sans erreur —
+      voir [`scripts/validate_v4_schemas.py`](../../../scripts/validate_v4_schemas.py).
+- [ ] Validation contre les vectors v4 *stricts*
+      ([P0-6](../../../docs/roadmap/ROAD-TO-V4-GA.md)) :
+      **différée**. Les vectors v4 stricts n'existent pas encore — track P0-6.
 
 ### Reproduire la validation locale
 
