@@ -14,6 +14,41 @@ Versions follow: `envelope_version (skill_revision)`.
 > Production-recommended format remains **v3.5.1**. Preview track remains
 > **v4.0.0-preview.1**.
 
+### 2026-05-24 — RFC-001 / RFC-002 (v1 core) / RFC-004 promoted `Proposed → Accepted`
+
+- **RFC-001 (`media_profile` v1)** — promoted to `Accepted`. The §4 decisions,
+  the §5 illustrative schema, the §6 V-001…V-012 validation checklist, and the
+  §9 error codes are approved for inclusion in the next normative `SPEC.md`
+  revision. Open questions (§11) are preserved verbatim and do not block
+  acceptance.
+- **RFC-002 (`verification_gates` + `human_veto`)** — v1 core promoted to
+  `Accepted`: five gate levels (§6), `human_veto_policy`, `claim_sources`
+  (v1 fields only), `error_journal`, `risk_thresholds`, `preflight_checks`,
+  §4 decisions, §6 level semantics, and §9 G-001…G-006 conformance intent.
+  v2 §8b additions (`claim_status`, `contract_tests`, `success_criteria`,
+  `reversibility`, `blast_radius`, `verification_artifacts`,
+  `error_journal[].rule_created`, extended `claim_sources.records[]`) **stay
+  `Draft`** and may still iterate without affecting the v1 Accepted surface.
+- **RFC-004 (Migration & Backward Compatibility — "Never break the soul")**
+  — promoted to `Accepted`. The §3 sub-principles, §4 decisions, §5.4 staged
+  pipeline (`v2.5 → v3.x → v3.5.1 → v4`), §6 reader-vs-writer matrix, §7
+  legacy / unknown / `x_*` rules, and §8 rollback model are approved.
+  Reference migrator (T-401 / T-402), `migration_report` schema (T-405), and
+  rollback CLI (T-406) remain future work, gated on `Implemented`.
+- **Promotion gate.** Each RFC was assessed against
+  [`docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md`](docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md)
+  §3 C1–C16. The acceptance evidence table lives in the promotion PR body.
+- **What does NOT change.** No SPEC, schema, SDK, vector, envelope, AAD, KDF,
+  or crypto change. No npm / PyPI / Zenodo / IANA publish. No tag, no release,
+  no announcement. v3.5.1 remains the production-recommended format;
+  v4.0.0-preview.1 remains the only preview release with permissive schemas.
+- **What this unblocks.** The v4 GA P0 chantiers listed in
+  [`docs/roadmap/ROAD-TO-V4-GA.md`](docs/roadmap/ROAD-TO-V4-GA.md) §2.1 (P0-1
+  SPEC normative v4, P0-2 strict JSON Schema, P0-3 Python SDK, P0-4 JS/TS SDK,
+  P0-5 reference migrator, P0-6 strict vectors) may now begin against the
+  frozen v1 surface, per §4 step 3 ("SPEC normative v4") and §5 step 4
+  ("PR « spec(v4): begin promoting §33 preview wording toward normative »").
+
 ### 2026-05-24 — V4 RFC acceptance checklist (`Proposed → Accepted` gate)
 
 - **New governance doc** [`docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md`](docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md).

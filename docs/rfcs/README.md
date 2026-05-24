@@ -25,16 +25,16 @@ Files follow `RFC-NNN-short-slug.md` with zero-padded sequential numbers (`RFC-0
 
 | # | Title | Target | Status |
 |---|---|---|---|
-| 001 | [`media_profile` v1](./RFC-001-media-profile-v1.md) | `.klickd v4` | **Proposed** (2026-05-23) |
-| 002 | [`verification_gates` + `human_veto`](./RFC-002-verification-gates.md) | `.klickd v4-A` (v1) · `v4-B` (v2 draft) | **Proposed** (v1 core, 2026-05-23) · Draft (v2 §8b additions) |
+| 001 | [`media_profile` v1](./RFC-001-media-profile-v1.md) | `.klickd v4` | **Accepted** (2026-05-24) |
+| 002 | [`verification_gates` + `human_veto`](./RFC-002-verification-gates.md) | `.klickd v4-A` (v1) · `v4-B` (v2 draft) | **Accepted** (v1 core, 2026-05-24) · Draft (v2 §8b additions) |
 | 003 | [Context Cost Benchmark](../../benchmarks/context_cost/RFC.md) | `.klickd v4` (research / benchmark track) | Draft |
-| 004 | [Migration & Backward Compatibility](./RFC-004-migration-backward-compatibility.md) | `.klickd v4` (migration policy for `v2.5 → v3.x → v3.5.1 → v4`) | **Proposed** (2026-05-23) |
+| 004 | [Migration & Backward Compatibility](./RFC-004-migration-backward-compatibility.md) | `.klickd v4` (migration policy for `v2.5 → v3.x → v3.5.1 → v4`) | **Accepted** (2026-05-24) |
 | 005 | *Claim-memory growth & deterministic compaction (planned — not yet drafted)* | `.klickd v4+` (post-preview) | Planned — placeholder in [`ROADMAP.md`](../../ROADMAP.md) |
 | 006 | [`agent_core` / Agent Operating Context](./RFC-006-agent-core.md) | `.klickd v4+` (post-GA; first-party showcase `core.Kai.klickd`) | Draft |
 | 007 | [`usage_profile` & in-session skill routing](./RFC-007-usage-profile-skill-routing.md) | `.klickd v4+` (post-GA; first-run purpose selection + progressive disclosure + skill routing) | Draft |
 | 008 | [`core_update_watch` — domain core veille & update policy](./RFC-008-core-update-watch.md) | `.klickd v4+` (post-GA; core layer only — never touches user memory) | Draft (2026-05-24) |
 
-> RFC-001, RFC-002 (v1 core), and RFC-004 were promoted from `Draft` to `Proposed` on 2026-05-23 (docs-only). This freezes the conceptual surface for community review and for the v4 GA schema / SDK work tracked in [`docs/roadmap/ROAD-TO-V4-GA.md`](../roadmap/ROAD-TO-V4-GA.md). No SDK, schema, or vector changes are part of this promotion. RFC-003 stays `Draft` pending the benchmark execution (P1-3). RFC-002 §8b additions (v2 — claim grounding, contract tests, verification artifacts) stay `Draft` and may still iterate without affecting the v1 Proposed surface.
+> RFC-001, RFC-002 (v1 core), and RFC-004 were promoted from `Draft` to `Proposed` on 2026-05-23 (docs-only), and from `Proposed` to `Accepted` on 2026-05-24 (docs-only) per the [V4 Acceptance Checklist](./ACCEPTANCE_CHECKLIST_V4.md) §3. `Accepted` means "approved for inclusion in the next normative `SPEC.md` revision"; it triggers no SDK, schema, vector, npm / PyPI / Zenodo / IANA publish, and no tag. RFC-003 stays `Draft` pending the benchmark execution (P1-3). RFC-002 §8b additions (v2 — claim grounding, contract tests, verification artifacts) stay `Draft` and may still iterate without affecting the v1 Accepted surface. The v4 GA schema / SDK / vector work tracked in [`docs/roadmap/ROAD-TO-V4-GA.md`](../roadmap/ROAD-TO-V4-GA.md) (P0-1 SPEC normative, P0-2 strict schema, P0-3/4 SDKs, P0-5 migrator, P0-6 strict vectors) may now begin against the frozen v1 surface.
 
 > **Promotion gate.** Moving an RFC from `Proposed` to `Accepted` (and later to `Implemented`) follows the explicit checklist in [`ACCEPTANCE_CHECKLIST_V4.md`](./ACCEPTANCE_CHECKLIST_V4.md). The checklist is **docs-only** and **non-normative**: it does not change any schema, SDK, or vector, and triggers no publish. It exists so that any contributor can audit an RFC against deterministic criteria before opening a promotion PR.
 

@@ -19,7 +19,7 @@
 - SPEC §33 (preview, non-normative)
 - schémas permissifs (`additionalProperties: true`)
 - SDKs round-trip-preserving (`klickd==4.0.0a1`, `@klickd/core@4.0.0-preview.1` — preview, jamais `latest`)
-- RFC-001 / 002 (v1 core) / 004 en **Proposed** (promues 2026-05-23, docs-only). RFC-003 et RFC-002 §8b (v2 additions) restent **Draft**.
+- RFC-001 / 002 (v1 core) / 004 en **Accepted** (promues `Proposed` 2026-05-23, puis `Accepted` 2026-05-24, docs-only, via le [V4 Acceptance Checklist](../rfcs/ACCEPTANCE_CHECKLIST_V4.md) §3 C1–C16). RFC-003 et RFC-002 §8b (v2 additions) restent **Draft**.
 - RFC-006 (`agent_core` / Agent Operating Context, première itération, future-work) en **Draft** — voir [`docs/rfcs/RFC-006-agent-core.md`](../rfcs/RFC-006-agent-core.md). **Hors P0 GA** : post-GA / showcase first-party `core.Kai.klickd`.
 - UX spec ([`docs/ux/V4-UX-SPEC.md`](../ux/V4-UX-SPEC.md))
 - vectors `vectors_v40_preview.json`
@@ -264,21 +264,21 @@ L’ordre suivant minimise le re-travail :
 
 > **Statut 2026-05-24 :**
 >
-> - La PR #30 « rfc(v4): promote RFC-001 / RFC-002 / RFC-004 from Draft to Proposed » a été mergée le 2026-05-23 (docs-only, aucun SDK / schéma / vector touché).
-> - La PR suivante, également docs-only, introduit l'[**Acceptance Checklist V4**](../rfcs/ACCEPTANCE_CHECKLIST_V4.md) : critères explicites C1–C16 pour la promotion `Proposed → Accepted`, et I1–I9 pour `Accepted → Implemented`. Elle ne modifie aucun statut RFC. Elle ne touche aucun SDK, schéma, vector.
+> - La PR #30 « rfc(v4): promote RFC-001 / RFC-002 / RFC-004 from Draft to Proposed » a été mergée le 2026-05-23 (docs-only).
+> - La PR « docs(rfc): add V4 acceptance checklist » a introduit l'[**Acceptance Checklist V4**](../rfcs/ACCEPTANCE_CHECKLIST_V4.md) (critères C1–C16 pour `Proposed → Accepted`, I1–I9 pour `Accepted → Implemented`), docs-only.
+> - La PR courante « rfc(v4): promote RFC-001 / RFC-002 (v1 core) / RFC-004 from Proposed to Accepted » applique ce checklist aux trois RFCs cibles. Acceptance = docs-only, aucun SDK / schéma / vector / publish / tag.
 
-Justification : avant de promouvoir RFC-001 / RFC-002 (v1 core) / RFC-004 de
-`Proposed` à `Accepted` (préalable explicite de P0-1 — SPEC normative v4), il
-faut un gate déterministe. Sans ce gate, `Accepted` reste une décision implicite
-d'un seul mainteneur. Le checklist garde l'autorité de décision côté mainteneur
-mais rend l'évaluation auditable par n'importe quel contributeur.
+Justification : promouvoir RFC-001 / RFC-002 (v1 core) / RFC-004 de `Proposed`
+à `Accepted` est le préalable explicite de P0-1 (SPEC normative v4). Le
+checklist C1–C16 garde l'autorité de décision côté mainteneur mais rend
+l'évaluation auditable par n'importe quel contributeur.
 
-La séquence attendue, après merge de cette PR docs-only, est :
+La séquence après merge de la PR d'acceptance est :
 
-1. **PR « rfc(v4): promote RFC-001 from Proposed to Accepted »** — coche le checklist §3, sans modifier SDK / schéma / vector.
-2. **PR « rfc(v4): promote RFC-002 (v1 core) from Proposed to Accepted »** — idem.
-3. **PR « rfc(v4): promote RFC-004 from Proposed to Accepted »** — idem.
-4. **PR « spec(v4): begin promoting §33 preview wording toward normative (P0-1) »** — démarre la phase SPEC normative une fois les trois RFCs en `Accepted`.
+1. ~~**PR « rfc(v4): promote RFC-001 from Proposed to Accepted »**~~ — incluse dans la PR groupée d'acceptance (2026-05-24).
+2. ~~**PR « rfc(v4): promote RFC-002 (v1 core) from Proposed to Accepted »**~~ — idem.
+3. ~~**PR « rfc(v4): promote RFC-004 from Proposed to Accepted »**~~ — idem.
+4. **PR « spec(v4): begin promoting §33 preview wording toward normative (P0-1) »** — démarre la phase SPEC normative maintenant que les trois RFCs sont en `Accepted`.
 
 Aucune de ces PR ne déclenche un publish (npm / PyPI / Zenodo), un tag, ni une
 annonce externe. Elles restent docs-first conformément à la règle §3.10.
