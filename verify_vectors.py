@@ -318,6 +318,119 @@ total_passed += v4_p
 total_failed += v4_f
 
 
+# ── v4 GA strict suite — schema-validation cross-impl (P0-6) ─────────────────
+def _get_path(doc, dotted_path):
+    """Tiny JSON pointer-ish helper: 'a.b.0.c' navigates dicts and lists."""
+    cur = doc
+    for seg in dotted_path.split("."):
+        if isinstance(cur, list):
+            try:
+                cur = cur[int(seg)]
+            except (ValueError, IndexError):
+                return _MISSING
+        elif isinstance(cur, dict):
+            if seg not in cur:
+                return _MISSING
+            cur = cur[seg]
+        else:
+            return _MISSING
+    return cur
+
+
+_MISSING = object()
+
+
+def run_v40_ga_strict_suite() -> tuple[int, int]:
+    """
+    Verify v4.0 GA strict vectors (P0-6).
+
+    Each vector is a JSON document validated against either the strict payload
+    schema (schemas/klickd-payload-v4.schema.json) or the strict unified schema
+    (schema/klickd-v4.schema.json), plus a structural assertions block both
+    Python and JS implementations check identically.
+
+    Positive vectors MUST validate successfully and match all assertions.
+    Negative vectors MUST FAIL strict validation (jsonschema errors > 0).
+    """
+    pos_file = VECTORS_DIR / "vectors_v40_ga.json"
+    neg_file = VECTORS_DIR / "negative_vectors_v40_ga.json"
+    if not pos_file.exists() and not neg_file.exists():
+        print("\n[SKIP] v4.0 GA strict suite — vector files not found")
+        return 0, 0
+
+    try:
+        from jsonschema import Draft202012Validator, RefResolver
+    except ImportError:
+        print("\n[SKIP] v4.0 GA strict suite — jsonschema not installed (pip install jsonschema)")
+        return 0, 0
+
+    repo = Path(__file__).parent
+    payload_schema = json.loads((repo / "schemas" / "klickd-payload-v4.schema.json").read_text())
+    unified_schema = json.loads((repo / "schema" / "klickd-v4.schema.json").read_text())
+    store = {payload_schema["$id"]: payload_schema, unified_schema["$id"]: unified_schema}
+    resolver = RefResolver.from_schema(unified_schema, store=store)
+    payload_validator = Draft202012Validator(payload_schema)
+    unified_validator = Draft202012Validator(unified_schema, resolver=resolver)
+
+    passed = failed = 0
+
+    # Positive vectors
+    if pos_file.exists():
+        pos = json.loads(pos_file.read_text())
+        print(f"\n── v4.0 GA strict POSITIVE vectors — spec {pos['spec_version']} (P0-6) ──────────────────────────")
+        for v in pos["vectors"]:
+            vid = v["id"]
+            doc = v["document"]
+            behavior = v.get("expected_behavior", "schema_valid")
+            against = "unified" if "unified" in behavior else "payload"
+            validator = unified_validator if against == "unified" else payload_validator
+            errs = list(validator.iter_errors(doc))
+            if errs:
+                print(f"  FAIL {vid}: expected schema_valid, got {len(errs)} error(s); first: {errs[0].message[:160]}")
+                failed += 1
+                continue
+            # Structural assertions
+            mismatched = []
+            for path, expected in (v.get("assertions") or {}).items():
+                actual = _get_path(doc, path)
+                if path.endswith(".length"):
+                    base = _get_path(doc, path[: -len(".length")])
+                    actual = len(base) if isinstance(base, (list, str, dict)) else None
+                if actual != expected:
+                    mismatched.append((path, expected, actual))
+            if mismatched:
+                print(f"  FAIL {vid}: assertion mismatch {mismatched[:3]}")
+                failed += 1
+            else:
+                print(f"  PASS {vid}: strict {against} OK + {len(v.get('assertions') or {})} assertion(s)")
+                passed += 1
+
+    # Negative vectors
+    if neg_file.exists():
+        neg = json.loads(neg_file.read_text())
+        print(f"\n── v4.0 GA strict NEGATIVE vectors — spec {neg['spec_version']} (P0-6) ──────────────────────────")
+        for v in neg["vectors"]:
+            vid = v["id"]
+            doc = v["document"]
+            against = v.get("against", "payload")
+            validator = unified_validator if against == "unified" else payload_validator
+            errs = list(validator.iter_errors(doc))
+            reason = v.get("failure_reason", "?")
+            if errs:
+                print(f"  PASS {vid}: strict {against} rejected as expected ({reason}; {len(errs)} err)")
+                passed += 1
+            else:
+                print(f"  FAIL {vid}: expected rejection ({reason}), document validated OK")
+                failed += 1
+
+    return passed, failed
+
+
+v4ga_p, v4ga_f = run_v40_ga_strict_suite()
+total_passed += v4ga_p
+total_failed += v4ga_f
+
+
 total = total_passed + total_failed
 print(f"\n{'='*50}")
 print(f"TOTAL: {total_passed}/{total} passed  ({total_failed} failed)")

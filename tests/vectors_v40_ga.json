@@ -1,0 +1,300 @@
+{
+  "description": ".klickd v4.0 GA strict cross-impl test vectors (positive + negative). These vectors are STRUCTURAL: they exercise the strict v4 GA schema surface (verification_gates v1, human_veto_policy, claim_sources v1, media_profile v1, migration v1 frozen fields, unified envelope encrypted=true contract). They are run unencrypted (encrypted=false) so both the Python and the TypeScript cross-impl runners can validate them without invoking AES/Argon2. v4 encrypted-wire crypto is identical to v3 (SPEC §33.10 #2) and is already covered by vectors_v40_preview.json.",
+  "spec_version": "4.0",
+  "schema": {
+    "payload": "schemas/klickd-payload-v4.schema.json",
+    "unified": "schema/klickd-v4.schema.json"
+  },
+  "notes": [
+    "GA strict track — schemas/klickd-payload-v4.schema.json + schema/klickd-v4.schema.json.",
+    "Coexists with v4.0.0-preview.1 vectors (kept intact under vectors_v40_preview.json).",
+    "Each vector carries a 'document' (the .klickd JSON to validate) and an 'assertions' block describing what BOTH the Python and JS cross-impl runners MUST verify structurally.",
+    "Positive vectors MUST pass the strict v4 GA payload schema (and the unified schema when applicable).",
+    "Negative vectors MUST FAIL strict v4 GA validation for the documented reason. They illustrate the strict-vs-preview boundary."
+  ],
+  "vectors": [
+    {
+      "id": "v4.0-ga-persona-learner-fr",
+      "description": "Persona 1 — Élève de Terminale (FR/LU). Mirrors examples/v4/personas/01-eleve-terminale-fr.klickd. profile_kind=learner; verification_gates v1 structured form; human_veto_policy with applies_to + rationale.",
+      "expected_behavior": "schema_valid",
+      "document": {
+        "payload_schema_version": "4.0",
+        "domain_schema_version": "education-1.0",
+        "profile_kind": "learner",
+        "identity": {
+          "display_name": "Élève Exemple",
+          "language": "fr",
+          "timezone": "Europe/Luxembourg"
+        },
+        "verification_gates": {
+          "version": 1,
+          "user_default": "silent",
+          "gates": [
+            {"id": "exam-claim", "action_class": "factual_claim_with_date", "level": "confirm", "reason": "Dates examen — vérifier."},
+            {"id": "public-post", "action_class": "public_post", "level": "block", "reason": "Aucune publication publique."}
+          ]
+        },
+        "human_veto_policy": {
+          "applies_to": ["public_post", "identity_assertion"],
+          "second_party": null,
+          "min_level": "block",
+          "rationale": "Profil potentiellement mineur — rien ne sort sans validation."
+        },
+        "claim_sources": {
+          "prefer": ["user_supplied", "tool:web_search"],
+          "require_citation_for": ["factual_claim_with_date"]
+        },
+        "agent_instructions": "Mode socratique — ne jamais donner la réponse directement."
+      },
+      "assertions": {
+        "payload_schema_version": "4.0",
+        "profile_kind": "learner",
+        "verification_gates.version": 1,
+        "verification_gates.gates.length": 2,
+        "human_veto_policy.min_level": "block",
+        "claim_sources.prefer.0": "user_supplied"
+      }
+    },
+    {
+      "id": "v4.0-ga-persona-team-fr",
+      "description": "Persona 2 — Chef de projet PME (FR). profile_kind=team; verification_gates flat-map form; claim_sources strict v1 fields.",
+      "expected_behavior": "schema_valid",
+      "document": {
+        "payload_schema_version": "4.0",
+        "domain_schema_version": "work-1.0",
+        "profile_kind": "team",
+        "identity": {
+          "display_name": "Chef de Projet Exemple",
+          "language": "fr",
+          "timezone": "Europe/Paris"
+        },
+        "verification_gates": {
+          "factual_claim_with_date": "confirm",
+          "external_send": "require-owner",
+          "public_post": "block",
+          "schedule_change": "warn",
+          "internal_note": "silent"
+        },
+        "human_veto_policy": {
+          "applies_to": ["external_send", "public_post"],
+          "second_party": "co_lead",
+          "min_level": "require-owner",
+          "rationale": "Toute communication externe doit être validée."
+        },
+        "claim_sources": {
+          "prefer": ["tool:doi_resolver", "tool:web_search", "user_supplied"],
+          "require_citation_for": ["factual_claim_with_date", "regulation_reference"]
+        },
+        "agent_instructions": "Toujours proposer brouillon avant envoi externe."
+      },
+      "assertions": {
+        "payload_schema_version": "4.0",
+        "profile_kind": "team",
+        "verification_gates.external_send": "require-owner",
+        "human_veto_policy.second_party": "co_lead",
+        "claim_sources.require_citation_for.length": 2
+      }
+    },
+    {
+      "id": "v4.0-ga-persona-agent-en",
+      "description": "Persona 3 — Fullstack developer (EN). profile_kind=agent; media_profile v1 strict shape with one document entry (hash+blake3); migration block (RFC-004 v1 frozen fields).",
+      "expected_behavior": "schema_valid",
+      "document": {
+        "payload_schema_version": "4.0",
+        "domain_schema_version": "work-1.0",
+        "profile_kind": "agent",
+        "identity": {
+          "display_name": "Fullstack Dev Example",
+          "language": "en",
+          "timezone": "Europe/Luxembourg"
+        },
+        "verification_gates": {
+          "version": 1,
+          "user_default": "silent",
+          "gates": [
+            {"action_class": "code_push_to_main", "level": "require-owner", "reason": "Direct main pushes blocked."},
+            {"action_class": "factual_claim_with_date", "level": "confirm"}
+          ]
+        },
+        "human_veto_policy": {
+          "applies_to": ["code_push_to_main", "secret_rotation"],
+          "second_party": null,
+          "min_level": "require-owner",
+          "rationale": "Owner-only on push-to-main and secret rotation."
+        },
+        "claim_sources": {
+          "prefer": ["tool:web_search", "user_supplied"],
+          "require_citation_for": ["regulation_reference"]
+        },
+        "media_profile": {
+          "version": 1,
+          "entries": [
+            {
+              "id": "spec-snapshot-2026-05",
+              "modality": "document",
+              "label": "SPEC.md snapshot",
+              "language": "en",
+              "media_type": "text/markdown",
+              "byte_size": 119640,
+              "hash": {"algo": "blake3", "value": "b3:placeholder-ga-strict-document-hash"},
+              "consent": {"purposes": ["context"], "revocable": true}
+            }
+          ]
+        },
+        "migration": {
+          "source_version": "3.5.1",
+          "migrated_at": "2026-05-24T09:00:00Z",
+          "migration_report_ref": "migration-reports/abc.json",
+          "backup_ref": "backups/learner-2026-05-24.klickd"
+        },
+        "agent_instructions": "Owner-only on push-to-main."
+      },
+      "assertions": {
+        "payload_schema_version": "4.0",
+        "profile_kind": "agent",
+        "media_profile.version": 1,
+        "media_profile.entries.0.modality": "document",
+        "media_profile.entries.0.hash.algo": "blake3",
+        "migration.source_version": "3.5.1"
+      }
+    },
+    {
+      "id": "v4.0-ga-persona-creator-fr",
+      "description": "Persona 4 — Créateur média (FR). profile_kind=creator; media_profile v1 with image + voice entries; human_veto_policy on public_post.",
+      "expected_behavior": "schema_valid",
+      "document": {
+        "payload_schema_version": "4.0",
+        "domain_schema_version": "creator-1.0",
+        "profile_kind": "creator",
+        "identity": {
+          "display_name": "Créateur Exemple",
+          "language": "fr",
+          "timezone": "Europe/Luxembourg"
+        },
+        "verification_gates": {
+          "version": 1,
+          "user_default": "warn",
+          "gates": [
+            {"action_class": "public_post", "level": "require-owner", "reason": "Toute publication publique passe par l'auteur."},
+            {"action_class": "ai_generated_voice_publish", "level": "block", "reason": "Voix générée ne sort jamais sans validation."}
+          ]
+        },
+        "human_veto_policy": {
+          "applies_to": ["public_post", "ai_generated_voice_publish"],
+          "second_party": null,
+          "min_level": "require-owner",
+          "rationale": "Diffusion publique = veto humain obligatoire."
+        },
+        "claim_sources": {
+          "prefer": ["user_supplied"],
+          "require_citation_for": ["factual_claim_with_date"]
+        },
+        "media_profile": {
+          "version": 1,
+          "entries": [
+            {
+              "id": "thumb-2026-05-24",
+              "modality": "image",
+              "label": "Thumbnail draft",
+              "media_type": "image/png",
+              "byte_size": 4096,
+              "hash": {"algo": "blake3", "value": "b3:placeholder-ga-strict-image-hash"},
+              "consent": {"purposes": ["draft"], "revocable": true}
+            },
+            {
+              "id": "voice-sample-fr",
+              "modality": "voice",
+              "label": "French voice reference (sample)",
+              "language": "fr",
+              "media_type": "audio/wav",
+              "duration_ms": 12000,
+              "hash": {"algo": "blake3", "value": "b3:placeholder-ga-strict-voice-hash"},
+              "consent": {"purposes": ["voice_clone_reference"], "expires_at": "2027-05-24T00:00:00Z", "revocable": true}
+            }
+          ]
+        },
+        "agent_instructions": "Aucune voix générée ne sort sans validation explicite."
+      },
+      "assertions": {
+        "payload_schema_version": "4.0",
+        "profile_kind": "creator",
+        "media_profile.entries.length": 2,
+        "media_profile.entries.1.modality": "voice",
+        "human_veto_policy.applies_to.length": 2
+      }
+    },
+    {
+      "id": "v4.0-ga-persona-rpg-gamer-en",
+      "description": "Persona 5 — RPG gamer (EN). profile_kind=learner with gaming_profile permissive block; verification_gates structured; claim_sources with empty require_citation_for is also valid.",
+      "expected_behavior": "schema_valid",
+      "document": {
+        "payload_schema_version": "4.0",
+        "domain_schema_version": "gaming-1.0",
+        "profile_kind": "learner",
+        "identity": {
+          "display_name": "RPG Player Example",
+          "language": "en",
+          "timezone": "America/New_York"
+        },
+        "verification_gates": {
+          "version": 1,
+          "user_default": "silent",
+          "gates": [
+            {"action_class": "spoiler_share", "level": "confirm", "reason": "Avoid leaking story beats."},
+            {"action_class": "real_money_purchase", "level": "block", "reason": "No real-money purchase suggestions."}
+          ]
+        },
+        "human_veto_policy": {
+          "applies_to": ["real_money_purchase"],
+          "second_party": null,
+          "min_level": "block",
+          "rationale": "No real-money purchases proposed without explicit consent."
+        },
+        "claim_sources": {
+          "prefer": ["user_supplied"],
+          "require_citation_for": []
+        },
+        "gaming_profile": {
+          "preferred_genres": ["jrpg", "tactics"],
+          "spoiler_tolerance": "low",
+          "difficulty": "story"
+        },
+        "agent_instructions": "Never propose real-money purchases."
+      },
+      "assertions": {
+        "payload_schema_version": "4.0",
+        "profile_kind": "learner",
+        "gaming_profile.spoiler_tolerance": "low",
+        "verification_gates.gates.1.level": "block",
+        "claim_sources.require_citation_for.length": 0
+      }
+    },
+    {
+      "id": "v4.0-ga-unified-encrypted-envelope",
+      "description": "Unified-schema vector: encrypted=true envelope MUST carry kdf + cipher + ciphertext (envelope-v3 contract retained per SPEC §33.10 #2). Uses the v3-compatible envelope crypto.",
+      "expected_behavior": "schema_valid_unified",
+      "document": {
+        "klickd_version": "4.0",
+        "created_at": "2026-05-24T09:00:00Z",
+        "encrypted": true,
+        "domain": "education",
+        "kdf": {
+          "name": "argon2id",
+          "params": {"m": 65536, "t": 3, "p": 1},
+          "salt": "AAECAwQFBgcICQoLDA0ODw=="
+        },
+        "cipher": {
+          "name": "AES-256-GCM",
+          "iv": "AAECAwQFBgcICQoL"
+        },
+        "ciphertext": "AAECAwQFBgcICQoLDA0ODw=="
+      },
+      "assertions": {
+        "klickd_version": "4.0",
+        "encrypted": true,
+        "kdf.name": "argon2id",
+        "cipher.name": "AES-256-GCM"
+      }
+    }
+  ]
+}

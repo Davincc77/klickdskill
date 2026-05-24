@@ -1,0 +1,179 @@
+{
+  "description": ".klickd v4.0 GA strict NEGATIVE cross-impl test vectors. Each vector MUST FAIL strict v4 GA validation for the documented reason. Strict failures are detected either via JSON-Schema validation (Python: jsonschema; JS: structural rule check) or via structural assertions that match a documented rule. These vectors illustrate the strict-vs-preview boundary and pin down each rule in RFC-001 v1 / RFC-002 v1 / RFC-004 v1 frozen surface.",
+  "spec_version": "4.0",
+  "schema": {
+    "payload": "schemas/klickd-payload-v4.schema.json",
+    "unified": "schema/klickd-v4.schema.json"
+  },
+  "notes": [
+    "Each vector carries a 'document' that MUST fail the strict v4 GA schema for the documented reason.",
+    "'failure_reason' is a short tag both implementations check structurally (in addition to schema validation, where available).",
+    "'against' picks which schema applies: 'payload' (default) or 'unified'."
+  ],
+  "vectors": [
+    {
+      "id": "v4.0-ga-neg-invalid-gate-level",
+      "description": "verification_gates uses a level outside the v1 frozen 5-enum (silent|warn|confirm|block|require-owner). RFC-002 v1 §6.",
+      "against": "payload",
+      "failure_reason": "gate_level_not_in_enum",
+      "document": {
+        "payload_schema_version": "4.0",
+        "verification_gates": {
+          "version": 1,
+          "gates": [
+            {"action_class": "public_post", "level": "loud"}
+          ]
+        }
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-missing-payload-schema-version",
+      "description": "Strict v4 GA payload MUST declare payload_schema_version. Top-level required field missing.",
+      "against": "payload",
+      "failure_reason": "missing_required_payload_schema_version",
+      "document": {
+        "identity": {"display_name": "No Version"}
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-unsupported-payload-schema-version",
+      "description": "payload_schema_version must be one of {'4.0','4.0.0-preview.1'} (strict enum).",
+      "against": "payload",
+      "failure_reason": "payload_schema_version_not_in_enum",
+      "document": {
+        "payload_schema_version": "9.9"
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-media-entry-missing-hash",
+      "description": "media_profile v1 entry missing required 'hash' field (RFC-001 v1 §4 #3 — strict on v1 frozen fields id/modality/hash).",
+      "against": "payload",
+      "failure_reason": "media_entry_missing_hash",
+      "document": {
+        "payload_schema_version": "4.0",
+        "media_profile": {
+          "version": 1,
+          "entries": [
+            {"id": "x", "modality": "voice"}
+          ]
+        }
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-media-modality-not-in-v1-enum",
+      "description": "media_profile v1 entry uses an unfrozen modality ('video'). v1 closed enum is {voice,image,document,embedding} — custom modalities live under x_* namespaces (RFC-001 v1 §4 #3).",
+      "against": "payload",
+      "failure_reason": "media_modality_not_in_v1_enum",
+      "document": {
+        "payload_schema_version": "4.0",
+        "media_profile": {
+          "version": 1,
+          "entries": [
+            {
+              "id": "y",
+              "modality": "video",
+              "hash": {"algo": "blake3", "value": "b3:placeholder"}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-media-hash-algo-not-blake3",
+      "description": "media_profile v1 hash.algo MUST be 'blake3' (RFC-001 v1 §4 #2 — one hash, one algorithm).",
+      "against": "payload",
+      "failure_reason": "media_hash_algo_not_blake3",
+      "document": {
+        "payload_schema_version": "4.0",
+        "media_profile": {
+          "version": 1,
+          "entries": [
+            {
+              "id": "z",
+              "modality": "image",
+              "hash": {"algo": "sha256", "value": "deadbeef"}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-human-veto-min-level-invalid",
+      "description": "human_veto_policy.min_level MUST be a valid gate level. 'panic' is not in the v1 frozen enum.",
+      "against": "payload",
+      "failure_reason": "human_veto_min_level_not_in_enum",
+      "document": {
+        "payload_schema_version": "4.0",
+        "human_veto_policy": {
+          "applies_to": ["public_post"],
+          "second_party": null,
+          "min_level": "panic"
+        }
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-encrypted-missing-kdf-cipher-ciphertext",
+      "description": "Unified schema: encrypted=true MUST carry kdf + cipher + ciphertext (envelope-v3 contract preserved in v4 per §33.10 #2).",
+      "against": "unified",
+      "failure_reason": "encrypted_missing_envelope_fields",
+      "document": {
+        "klickd_version": "4.0",
+        "created_at": "2026-05-24T00:00:00Z",
+        "encrypted": true
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-unified-bad-klickd-version",
+      "description": "Unified schema: klickd_version must match ^(3|4)\\.\\d+(...)$. '5.0' is not yet a known wire version.",
+      "against": "unified",
+      "failure_reason": "klickd_version_unsupported_major",
+      "document": {
+        "klickd_version": "5.0",
+        "created_at": "2026-05-24T00:00:00Z",
+        "encrypted": false
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-migration-bad-timestamp",
+      "description": "migration.migrated_at MUST be RFC 3339 Z-suffix (matches v3 envelope strict contract). 'yesterday' is not a valid timestamp.",
+      "against": "payload",
+      "failure_reason": "migration_migrated_at_not_rfc3339_z",
+      "document": {
+        "payload_schema_version": "4.0",
+        "migration": {
+          "source_version": "3.5.1",
+          "migrated_at": "yesterday"
+        }
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-gate-entry-extra-field",
+      "description": "gateEntry uses additionalProperties:false. Adding an unknown field ('priority') MUST fail strict validation.",
+      "against": "payload",
+      "failure_reason": "gate_entry_additional_property",
+      "document": {
+        "payload_schema_version": "4.0",
+        "verification_gates": {
+          "version": 1,
+          "gates": [
+            {"action_class": "public_post", "level": "block", "priority": "high"}
+          ]
+        }
+      }
+    },
+    {
+      "id": "v4.0-ga-neg-human-veto-additional-property",
+      "description": "human_veto_policy is strict (additionalProperties:false). 'unsafe_qr_target' as a free-form key is rejected.",
+      "against": "payload",
+      "failure_reason": "human_veto_additional_property",
+      "document": {
+        "payload_schema_version": "4.0",
+        "human_veto_policy": {
+          "applies_to": ["public_post"],
+          "min_level": "require-owner",
+          "unsafe_qr_target": "https://example.com/x"
+        }
+      }
+    }
+  ]
+}

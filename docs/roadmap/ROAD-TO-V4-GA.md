@@ -159,12 +159,19 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 #### P0-6 — Vectors stricts + cross-impl
 
 - **Objet :** suite de vectors v4 *normative*, séparée de la suite preview, partagée Python ↔ JS, qui couvre toutes les sections v4 normées.
-- **Livrables :** `tests/vectors_v40.json`, `tests/roundtrip_v40.json`, `tests/negative_vectors_v40.json`, CI `test-vectors` étendu.
+- **Livrables :** `tests/vectors_v40_ga.json`, `tests/negative_vectors_v40_ga.json`, runners `verify_vectors.py` / `verify_vectors.mjs` étendus (suite `v4.0 GA strict` cross-impl).
 - **DoD :**
   - chaque MUST de SPEC v4 a au moins un vecteur positif et un vecteur négatif ;
   - exécutés par les deux SDKs sans divergence ;
   - les vectors preview ne disparaissent pas (preuve de continuité).
 - **Dépendances :** P0-2, P0-3, P0-4.
+- **Statut (2026-05-24) :** **PR candidate.** Livrés :
+  [`tests/vectors_v40_ga.json`](../../tests/vectors_v40_ga.json) (6 positifs : 5 personas + 1 enveloppe chiffrée unifiée) et
+  [`tests/negative_vectors_v40_ga.json`](../../tests/negative_vectors_v40_ga.json) (12 négatifs : `gate_level` hors énum, `payload_schema_version` manquant/inconnu, `media_profile` v1 sans `hash` / `modality` hors énum / `hash.algo ≠ blake3`,
+  `human_veto_policy.min_level` invalide, enveloppe `encrypted=true` sans `kdf`/`cipher`/`ciphertext`, `klickd_version` hors range, `migration.migrated_at` non RFC 3339 Z, `gateEntry` avec champ inconnu,
+  `human_veto_policy` avec champ inconnu). Les vectors preview ([`tests/vectors_v40_preview.json`](../../tests/vectors_v40_preview.json)) restent inchangés (continuité).
+  Cross-impl : Python (`verify_vectors.py` — validation `jsonschema` stricte + assertions) **et** JS (`verify_vectors.mjs` — checker structurel reflétant les règles strictes, pas de dépendance Ajv requise au root) passent à 0 divergence.
+  **Aucun bump de version, aucun release, aucun publish.**
 
 ### 2.2 P1 — bloquant adoption
 
