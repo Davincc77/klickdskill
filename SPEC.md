@@ -1922,6 +1922,12 @@ The preview commits to these principles. They will carry into the eventual norma
 
 This file is **not** a normative v4 example — strict validation does not exist yet. The example is illustrative of the preview surface only.
 
+> Voir aussi le dossier non-normatif [`examples/v4/personas/`](./examples/v4/personas/)
+> (R4-P0-3) : 5 profils d'exemple téléchargeables couvrant `education` (FR),
+> `work` (FR + EN), `creator` (preview `media.klickd`) et `gaming`
+> (preview `gaming.klickd` baseline). Validés contre le schéma permissif
+> v4-preview ; aucune donnée personnelle réelle, aucun secret.
+
 ### §33.6 Context Cost Benchmark (research track)
 
 The Context Cost Benchmark is tracked under [`benchmarks/context_cost/`](./benchmarks/context_cost/) (see [RFC](./benchmarks/context_cost/RFC.md)). It measures the user-visible cost of repeated re-explanation across sessions and providers, with and without `.klickd`. The benchmark is reproducible and additive — running it does not require a v4-preview-aware reader. A profile MAY surface its own measured cost in the optional `context_cost` block; no spec semantics depend on this field.
