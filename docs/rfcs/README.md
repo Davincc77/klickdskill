@@ -36,12 +36,15 @@ Files follow `RFC-NNN-short-slug.md` with zero-padded sequential numbers (`RFC-0
 
 > RFC-001, RFC-002 (v1 core), and RFC-004 were promoted from `Draft` to `Proposed` on 2026-05-23 (docs-only). This freezes the conceptual surface for community review and for the v4 GA schema / SDK work tracked in [`docs/roadmap/ROAD-TO-V4-GA.md`](../roadmap/ROAD-TO-V4-GA.md). No SDK, schema, or vector changes are part of this promotion. RFC-003 stays `Draft` pending the benchmark execution (P1-3). RFC-002 §8b additions (v2 — claim grounding, contract tests, verification artifacts) stay `Draft` and may still iterate without affecting the v1 Proposed surface.
 
+> **Promotion gate.** Moving an RFC from `Proposed` to `Accepted` (and later to `Implemented`) follows the explicit checklist in [`ACCEPTANCE_CHECKLIST_V4.md`](./ACCEPTANCE_CHECKLIST_V4.md). The checklist is **docs-only** and **non-normative**: it does not change any schema, SDK, or vector, and triggers no publish. It exists so that any contributor can audit an RFC against deterministic criteria before opening a promotion PR.
+
 ## Companion docs (non-normative)
 
 | Doc | Purpose | Status |
 |---|---|---|
 | [v4 UX / Product Spec](../ux/V4-UX-SPEC.md) | UX intent for future v4 clients (viewer / decryptor / validator / migrator / agent handoff). Docs-only, no spec/schema/SDK change. | Draft |
 | [`core.klickd` B2B use-case](../use-cases/CORE_KLICKD_B2B.md) | Concept doc — organisations / agents carry a portable `core.klickd` (rules, gates, tone, evidence, approvals) distinct from a user's `user.klickd`. Non-normative, future RFC candidate. | Draft (concept) |
+| [V4 Acceptance Checklist](./ACCEPTANCE_CHECKLIST_V4.md) | Governance checklist defining the explicit criteria to promote a v4 RFC from `Proposed` to `Accepted` (and later to `Implemented`). Docs-only, no normative wording. | Draft |
 
 ## Test packs
 

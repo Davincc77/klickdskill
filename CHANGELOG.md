@@ -14,6 +14,24 @@ Versions follow: `envelope_version (skill_revision)`.
 > Production-recommended format remains **v3.5.1**. Preview track remains
 > **v4.0.0-preview.1**.
 
+### 2026-05-24 — V4 RFC acceptance checklist (`Proposed → Accepted` gate)
+
+- **New governance doc** [`docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md`](docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md).
+  Defines the explicit, verifiable criteria (C1–C16) required to promote a
+  v4 RFC from `Proposed` to `Accepted`, and the criteria (I1–I9) required
+  to later mark it `Implemented`. Closes the gap between
+  [`docs/rfcs/README.md`](docs/rfcs/README.md) (which only stated what
+  `Accepted` *means*) and
+  [`docs/roadmap/ROAD-TO-V4-GA.md`](docs/roadmap/ROAD-TO-V4-GA.md) §2.1 P0-1
+  (which depends on RFC-001 / RFC-002 v1 core / RFC-004 reaching `Accepted`
+  before SPEC v4 normative work begins).
+- **[`docs/rfcs/README.md`](docs/rfcs/README.md)** — adds a "Promotion gate"
+  callout pointing at the new checklist, plus a Companion docs table row.
+- **No SPEC, schema, SDK, or vector touched.** RFC statuses are unchanged
+  (RFC-001 / RFC-002 v1 core / RFC-004 stay `Proposed`; RFC-003 / RFC-002
+  §8b v2 additions / RFC-006 stay `Draft`).
+- **No publish.** No npm / PyPI / Zenodo / IANA action, no tag, no release.
+
 ### 2026-05-23 — RFC-001 / RFC-002 (v1 core) / RFC-004 promoted `Draft → Proposed`
 
 - **RFC-001 (`media_profile` v1)** — promoted to `Proposed`. Freezes the §4

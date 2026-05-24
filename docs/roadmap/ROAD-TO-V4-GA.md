@@ -262,19 +262,26 @@ L’ordre suivant minimise le re-travail :
 
 ## 5. Prochaine PR recommandée
 
-> **Statut 2026-05-23 :** la PR « rfc(v4): promote RFC-001 / RFC-002 / RFC-004 from Draft to Proposed » a été ouverte et est docs-only (aucun SDK, schéma, vector touché). Elle gèle la surface conceptuelle de RFC-001 (`media_profile`), RFC-002 v1 core (gates / `human_veto_policy`), et RFC-004 (migration / never-break-the-soul). RFC-002 §8b (v2 additions) et RFC-003 (benchmark) restent `Draft` et n'entrent **pas** dans cette promotion.
+> **Statut 2026-05-24 :**
+>
+> - La PR #30 « rfc(v4): promote RFC-001 / RFC-002 / RFC-004 from Draft to Proposed » a été mergée le 2026-05-23 (docs-only, aucun SDK / schéma / vector touché).
+> - La PR suivante, également docs-only, introduit l'[**Acceptance Checklist V4**](../rfcs/ACCEPTANCE_CHECKLIST_V4.md) : critères explicites C1–C16 pour la promotion `Proposed → Accepted`, et I1–I9 pour `Accepted → Implemented`. Elle ne modifie aucun statut RFC. Elle ne touche aucun SDK, schéma, vector.
 
-Justification : geler la surface conceptuelle avant d'écrire le schéma strict
-évite un effet « schema-first, RFC-after » où la sémantique devient implicite
-dans le code. Cette PR reste docs-only et low-risk : elle ne touche aucun SDK,
-aucun schéma, aucun vector. Elle prépare P0-1.
+Justification : avant de promouvoir RFC-001 / RFC-002 (v1 core) / RFC-004 de
+`Proposed` à `Accepted` (préalable explicite de P0-1 — SPEC normative v4), il
+faut un gate déterministe. Sans ce gate, `Accepted` reste une décision implicite
+d'un seul mainteneur. Le checklist garde l'autorité de décision côté mainteneur
+mais rend l'évaluation auditable par n'importe quel contributeur.
 
-La prochaine étape attendue, après merge de cette promotion, est :
+La séquence attendue, après merge de cette PR docs-only, est :
 
-> **PR « spec(v4): begin promoting §33 preview wording toward normative (P0-1) ».**
+1. **PR « rfc(v4): promote RFC-001 from Proposed to Accepted »** — coche le checklist §3, sans modifier SDK / schéma / vector.
+2. **PR « rfc(v4): promote RFC-002 (v1 core) from Proposed to Accepted »** — idem.
+3. **PR « rfc(v4): promote RFC-004 from Proposed to Accepted »** — idem.
+4. **PR « spec(v4): begin promoting §33 preview wording toward normative (P0-1) »** — démarre la phase SPEC normative une fois les trois RFCs en `Accepted`.
 
-Cette PR suivante ne déclenche toujours aucun publish (npm / PyPI / Zenodo), aucun tag,
-aucune annonce externe. Elle reste docs-first conformément à la règle §3.10.
+Aucune de ces PR ne déclenche un publish (npm / PyPI / Zenodo), un tag, ni une
+annonce externe. Elles restent docs-first conformément à la règle §3.10.
 
 ---
 
