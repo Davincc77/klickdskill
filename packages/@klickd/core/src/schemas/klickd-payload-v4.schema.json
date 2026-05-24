@@ -1,0 +1,354 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://klickd.app/schemas/v4/klickd-payload.schema.json",
+  "title": "klickd Payload v4 (Strict GA candidate, normative)",
+  "description": "Strict JSON Schema for the .klickd v4 inner payload. This schema is the GA strict equivalent of the permissive klickd-payload-v4-preview.schema.json. Strict blocks correspond to RFC-001 (media_profile v1, Accepted) and RFC-002 v1 core (verification_gates, human_veto_policy, claim_sources v1, Accepted). Sections that remain Draft (RFC-002 v2-additive: contract_tests, success_criteria, reversibility, blast_radius, verification_artifacts, error_journal.rule_created; RFC-004 migration runtime) are accepted but left permissive so they can be tightened by a future strict schema bump without breaking GA writers. Top-level additionalProperties is TRUE to preserve unknown fields verbatim (SPEC.md §33.7 forward-compatibility invariant). Strict shape on frozen sub-objects uses additionalProperties: false locally. Does NOT supersede the permissive preview schema (klickd-payload-v4-preview.schema.json) — both coexist until the preview sunset announced separately.",
+  "type": "object",
+  "required": [
+    "payload_schema_version"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "payload_schema_version": {
+      "type": "string",
+      "description": "Payload schema version. For GA strict files, the canonical value is '4.0'. The preview value '4.0.0-preview.1' is also accepted so a preview file already in the wild round-trips against the strict schema without forcing a rewrite. A future strict bump (4.1, etc.) MAY tighten this enum.",
+      "enum": ["4.0", "4.0.0-preview.1"]
+    },
+    "domain_schema_version": {
+      "type": "string",
+      "description": "Domain-specific schema version. Two accepted forms: (a) v3-style '{domain}-{major}.{minor}' (e.g. 'education-1.2'); (b) bare semver-ish '{major}.{minor}(.{patch})?' for domain-agnostic profiles (e.g. '1.0.0').",
+      "pattern": "^([a-z][a-z0-9_-]*-\\d+\\.\\d+|\\d+\\.\\d+(\\.\\d+)?)$"
+    },
+    "preview": {
+      "type": "string",
+      "description": "OPTIONAL preview marker. Present only on files written against a preview iteration (e.g. 'v4.0.0-preview.1'). Absent on GA strict files."
+    },
+    "profile_kind": {
+      "type": "string",
+      "description": "Top-level discriminator for the profile shape. Reserved canonical values: 'learner', 'agent', 'team', 'robot', 'creator'. Custom strings are permitted (extension space). v3.x is implicitly 'learner'."
+    },
+    "injection_target": {
+      "type": "string",
+      "enum": ["system_prompt", "user_message", "both"],
+      "description": "Where to inject the .klickd context (carried over from v3.x §20.2)."
+    },
+    "identity": {
+      "type": "object",
+      "description": "Persistent user identity attributes. Carried over from v3 SPEC §8; same strictness as v3 payload schema. All sub-fields are OPTIONAL.",
+      "additionalProperties": true,
+      "properties": {
+        "name": {"type": "string", "maxLength": 256},
+        "display_name": {"type": "string", "maxLength": 256, "description": "v4 GA preferred user-facing alias. Either 'name' or 'display_name' may be used; producers SHOULD pick one."},
+        "language": {"type": "string", "description": "BCP 47 language tag."},
+        "timezone": {"type": "string", "description": "IANA time zone identifier."},
+        "communication_style": {"type": "string"}
+      }
+    },
+    "companion_identity": {
+      "type": "object",
+      "description": "Optional companion / co-agent persona. Same surface as v3.4 §27. Permissive.",
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "description": "Operational session state. Carried over from v3 SPEC §9. Permissive (unevaluatedProperties policy of v3 retained).",
+      "additionalProperties": true
+    },
+    "knowledge": {
+      "type": "object",
+      "description": "Structured knowledge state. Carried over from v3 SPEC §10. Permissive.",
+      "additionalProperties": true
+    },
+    "memory": {
+      "type": "array",
+      "maxItems": 1000,
+      "description": "Structured conversation/event log. Same v3 §11 constraints retained.",
+      "items": {"type": "object", "additionalProperties": true}
+    },
+    "learning_goal": {
+      "type": "object",
+      "description": "User's stated learning / delivery goal. Same surface as v3 §27. Permissive.",
+      "additionalProperties": true,
+      "properties": {
+        "type": {"type": "string"},
+        "deadline": {"type": "string"},
+        "stakes": {"type": "string", "enum": ["low", "medium", "high"]}
+      }
+    },
+    "user_preferences": {
+      "oneOf": [
+        {"type": "string", "maxLength": 32768},
+        {"type": "object", "additionalProperties": true}
+      ],
+      "description": "Canonical type is string (v3.5 §22.6). Object form retained for backward compatibility."
+    },
+    "agent_instructions": {
+      "type": "string",
+      "maxLength": 32768,
+      "description": "System-prompt injection string. Same v3 §7.2 contract."
+    },
+    "onboarding_trigger": {
+      "type": "string",
+      "description": "Optional onboarding trigger (v3.4 §29b). Common values: 'on_new_agent', 'manual'."
+    },
+    "ethics": {
+      "type": "object",
+      "description": "Ethical guard surface (v3.x). Permissive in this schema; safety / locked fields are governed by docs/spec/DEPRECATION_POLICY_V4.md §9.",
+      "additionalProperties": true
+    },
+    "media_profile": {
+      "description": "RFC-001 v1 (Accepted): portable, hash-referenced media context. Strict on the v1 frozen surface (versioned + entries[]); a permissive 'summary' form (preview-era) is also accepted for round-trip compatibility. New modalities / fields land via additive RFC bumps.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version", "entries"],
+          "properties": {
+            "version": {"type": "integer", "const": 1, "description": "media_profile schema version. v1 per RFC-001."},
+            "entries": {
+              "type": "array",
+              "maxItems": 256,
+              "items": {"$ref": "#/$defs/mediaProfileEntry"}
+            }
+          }
+        },
+        {
+          "type": "object",
+          "description": "Permissive summary form (preview-era). Strict producers SHOULD migrate to the versioned + entries[] form. Kept for round-trip parity with vectors_v40_preview.json.",
+          "additionalProperties": true,
+          "not": {"required": ["version", "entries"]}
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "verification_gates": {
+      "description": "RFC-002 v1 core (Accepted): user's preferred friction profile per action class. Two accepted shapes: (a) structured form (recommended) with version + gates[]; (b) flat map {action_class: level} for compactness (used by §33.5 minimal example and preview readers).",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version", "gates"],
+          "properties": {
+            "version": {"type": "integer", "const": 1},
+            "user_default": {"$ref": "#/$defs/gateLevel"},
+            "gates": {
+              "type": "array",
+              "maxItems": 256,
+              "items": {"$ref": "#/$defs/gateEntry"}
+            }
+          }
+        },
+        {
+          "type": "object",
+          "description": "Flat map form: {action_class: gate_level}. Each value MUST be one of the five canonical levels.",
+          "additionalProperties": {"$ref": "#/$defs/gateLevel"}
+        }
+      ]
+    },
+    "human_veto_policy": {
+      "description": "RFC-002 v1 (Accepted): standing rules about when a human MUST be in the loop. Overrides any lower gate.",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "applies_to": {
+          "type": "array",
+          "items": {"type": "string"},
+          "maxItems": 64,
+          "description": "List of action classes for which a human veto is required."
+        },
+        "second_party": {
+          "type": ["string", "null"],
+          "description": "Optional named second party who may unlock. null means owner-only."
+        },
+        "min_level": {
+          "$ref": "#/$defs/gateLevel",
+          "description": "Floor gate level. The policy MUST NOT resolve below this level for any action class in 'applies_to'. RFC-002 v1 §4 #6 — human veto is sacred."
+        },
+        "rationale": {"type": "string", "maxLength": 1024}
+      }
+    },
+    "claim_sources": {
+      "description": "RFC-002 v1 (Accepted) + v2-additive (Draft). Strict on v1 fields ('prefer', 'require_citation_for'); 'records' and extended fields remain permissive (v2 still Draft).",
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "properties": {
+        "prefer": {
+          "type": "array",
+          "items": {"type": "string"},
+          "maxItems": 64,
+          "description": "Ordered preference list. Each entry is a free-form source identifier; common values: 'user_supplied', 'tool:web_search', 'tool:doi_resolver'."
+        },
+        "require_citation_for": {
+          "type": "array",
+          "items": {"type": "string"},
+          "maxItems": 64
+        },
+        "records": {
+          "type": "array",
+          "description": "v2-additive (Draft). Permissive until promoted.",
+          "items": {"type": "object", "additionalProperties": true}
+        }
+      }
+    },
+    "risk_thresholds": {
+      "description": "RFC-002 v1 (Accepted): numeric / categorical knobs. Permissive on inner shape — extension space.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "preflight_checks": {
+      "description": "RFC-002 v1 (Accepted): small named checks to run before acting. Each entry is an object with at minimum 'name'.",
+      "type": ["array", "null"],
+      "items": {"type": ["object", "string"], "additionalProperties": true}
+    },
+    "error_journal": {
+      "description": "RFC-002 v1 (Accepted): append-only lessons learned. Permissive on entry shape ('rule_created' remains Draft in v2-additive).",
+      "type": ["array", "null"],
+      "items": {"type": "object", "additionalProperties": true}
+    },
+    "verification_artifacts": {
+      "description": "RFC-002 §8b.8 (Draft, v2-additive). Permissive: pointer ledger, not a payload sink. Accepted as null or array.",
+      "type": ["array", "null"],
+      "items": {"type": "object", "additionalProperties": true}
+    },
+    "contract_tests": {
+      "description": "RFC-002 v2-additive (Draft). Permissive.",
+      "type": ["array", "null"],
+      "items": {"type": "object", "additionalProperties": true}
+    },
+    "success_criteria": {
+      "description": "RFC-002 v2-additive (Draft). Permissive.",
+      "type": ["object", "array", "null"],
+      "additionalProperties": true
+    },
+    "reversibility": {
+      "description": "RFC-002 v2-additive (Draft). Permissive — typical shape is {action_class: enum<reversible|costly_to_reverse|irreversible|low|none|high>} but enums are not yet frozen.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "blast_radius": {
+      "description": "RFC-002 v2-additive (Draft). Permissive.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "migration": {
+      "description": "RFC-004 (Draft): optional migration metadata block. Audit-only — no migration tooling ships with the strict schema. Strict on v1 frozen fields; extension fields permitted.",
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "properties": {
+        "source_version": {"type": "string"},
+        "migrated_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "migration_report_ref": {"type": "string"},
+        "backup_ref": {"type": "string"}
+      }
+    },
+    "context_cost": {
+      "description": "Research/benchmark track (benchmarks/context_cost/RFC.md). No spec semantics depend on this field. Permissive.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "gaming_profile": {
+      "description": "R4-P1-4 gaming.klickd baseline (preview, registry-based). NOT a v4 MUST. Accepted as a registry-defined optional profile; permissive structure.",
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "deprecated_fields": {
+      "description": "OPTIONAL informational block defined by docs/spec/DEPRECATION_POLICY_V4.md §6. Lists fields the producer has emitted as 'deprecated' status. Readers that don't understand it MUST silently ignore (§33.7).",
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["name"],
+        "properties": {
+          "name": {"type": "string"},
+          "since": {"type": "string"},
+          "replacement": {"type": ["string", "null"]},
+          "removal_target": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "_example_metadata": {
+      "description": "Optional non-normative block used by repository examples (see examples/v4/personas/README.md). Carries 'persona', 'non_normative', 'contains_real_pii', 'contains_secrets', etc. A reader MUST NOT use this block as a trust signal.",
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "gateLevel": {
+      "type": "string",
+      "enum": ["silent", "warn", "confirm", "block", "require-owner"],
+      "description": "RFC-002 v1 §6 — fixed enum of five gate levels. No new levels are added in GA."
+    },
+    "gateEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_class", "level"],
+      "properties": {
+        "id": {"type": "string", "maxLength": 128},
+        "action_class": {"type": "string", "maxLength": 128},
+        "level": {"$ref": "#/$defs/gateLevel"},
+        "reason": {"type": "string", "maxLength": 1024}
+      }
+    },
+    "mediaProfileEntry": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "modality", "hash"],
+      "description": "RFC-001 v1 entry. Strict on v1 frozen fields (id, modality, hash). Additional metadata (consent, producer, etc.) is permitted as extension surface.",
+      "properties": {
+        "id": {"type": "string", "maxLength": 128},
+        "modality": {
+          "type": "string",
+          "enum": ["voice", "image", "document", "embedding"],
+          "description": "RFC-001 v1 §4 #3 — closed enum at v1. Custom modalities live under 'x_*' namespaces (outside this entry)."
+        },
+        "label": {"type": "string", "maxLength": 256},
+        "language": {"type": "string"},
+        "uri": {"type": "string", "description": "May be file://, https://, ipfs://, cas://<hash>, or a relative path. Reader chooses how to resolve."},
+        "media_type": {"type": "string"},
+        "byte_size": {"type": "integer", "minimum": 0},
+        "duration_ms": {"type": "integer", "minimum": 0},
+        "bytes_b64": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "description": "Inline base64 PERMITTED ONLY for entries ≤ 16 KiB total (RFC-001 v1 §4 #1). Strict enforcement of the 16 KiB cap is not expressible in JSON Schema and is enforced by reader-side logic."
+        },
+        "hash": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["algo", "value"],
+          "properties": {
+            "algo": {"type": "string", "const": "blake3", "description": "RFC-001 v1 §4 #2 — one hash, one algorithm: BLAKE3."},
+            "value": {"type": "string", "description": "Hash value, encoding per RFC-001 (base64 or hex-prefixed). Strict format enforcement is reader-side."}
+          }
+        },
+        "producer": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "kind": {"type": "string"},
+            "device": {"type": "string"}
+          }
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "RFC-001 v1 §4 #5 — consent is per-entry, not per-file.",
+          "properties": {
+            "purposes": {
+              "type": "array",
+              "items": {"type": "string"},
+              "maxItems": 64
+            },
+            "expires_at": {"type": "string"},
+            "revocable": {"type": "boolean"}
+          }
+        }
+      }
+    }
+  }
+}
