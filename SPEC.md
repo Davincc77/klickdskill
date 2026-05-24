@@ -2042,6 +2042,65 @@ alignment (i.e., adding the R4-P0-2-introduced codes to the SDKs as
 runtime identifiers) is deferred to R4-P0-3 (Python) / R4-P0-4
 (TypeScript) and is **not** in scope of this PR.
 
+### §33.13 Normative deprecation lifecycle contract — R4-P0-4 (`.klickd` v4 field lifecycle)
+
+While the field surface of §33 remains preview / non-normative, the
+**lifecycle of every v4 field** (introduction, deprecation, removal)
+and the **reader / writer obligations** around deprecated and
+removed fields are now constrained by a normative companion
+document:
+
+- [`docs/spec/DEPRECATION_POLICY_V4.md`](./docs/spec/DEPRECATION_POLICY_V4.md) — Normative (V4 P0).
+
+That document binds, in RFC 2119 language, the three lifecycle
+states `active` → `deprecated` → `removed`, the combined gate
+"**Vx+2 AND <10% reference-corpus usage**" governing the
+`active → deprecated` transition, the silent-read /
+verbatim-preservation obligation on readers (§4), the
+no-emit-in-newly-authored-files / preserve-on-round-trip
+obligation on writers (§5), the OPTIONAL informational
+`deprecated_fields[]` envelope block (§6), migration outcome
+classes (`replacement` / `information_preserving` /
+`information_lossy`, §7), the removed-fields registry (§8), the
+safety / locked fields exception (§9, including `ethics.locked_actions`,
+`decisions_locked[]`, the envelope cryptographic blocks, and
+`data_integrity.integrity_warning`), the interaction with the
+unknown-field preservation rule (§10), the v4+ semantic versioning
+interpretation (§11), the change proposal process (§12), the
+registry extension behaviour (§13, "registry first, schema second"),
+and the operative anti-pattern **A4** (schema inflation) guardrail
+gates (§14).
+
+R4-P0-4 is **docs-only** and does **not** modify the v3.x SDKs,
+introduce any new on-the-wire field that is required by a reader to
+function (the `deprecated_fields[]` envelope block is OPTIONAL and
+purely documentary), change any schema strictness, add any vector,
+bump any package version, create any Git tag, or trigger any
+npm / PyPI / Zenodo release or DOI. It does **not** relax or
+modify the §33.7 forward-compatibility contract or the §33.10
+privacy invariants — instead, it composes with both: the
+unknown-field preservation rule of §33.7 is reaffirmed in
+[`DEPRECATION_POLICY_V4.md` §10](./docs/spec/DEPRECATION_POLICY_V4.md)
+as unconditional regardless of lifecycle state.
+
+R4-P0-4 lands now because the §33 field-surface promotion
+(R4-P0-1) and the future strict v4 schema
+([P0-2](./docs/roadmap/ROAD-TO-V4-GA.md)) both depend on a
+credible exit path for v4 fields. Without R4-P0-4, every future
+field addition is unbounded growth and the **A4 (schema inflation)**
+anti-pattern ([ROAD-TO-V4-GA §2.3 A4](./docs/roadmap/ROAD-TO-V4-GA.md))
+re-emerges. SDK alignment (i.e., implementing the developer-visible
+deprecation log of `DEPRECATION_POLICY_V4.md` §4.2 in the SDKs as
+a runtime signal) is deferred to a later SDK track and is **not**
+in scope of this PR.
+
+When the §33 field surface is itself promoted to the normative
+SPEC body in a future PR, the removed-fields registry
+([`DEPRECATION_POLICY_V4.md` §8](./docs/spec/DEPRECATION_POLICY_V4.md))
+MUST be moved into the normative SPEC body in the same PR, and
+the cross-reference here MUST be updated to point at the new
+normative SPEC section.
+
 ---
 
 ## License
