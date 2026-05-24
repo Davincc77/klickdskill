@@ -335,9 +335,25 @@ For each domain row:
 
 | Framework | URL | Status | License |
 |---|---|---|---|
-| SFIA v9 | https://sfia-online.org/en/sfia-9 | stable | restricted (free for individuals; commercial use licensed) — `TO_VERIFY` |
+| SFIA v9 | https://sfia-online.org/en/sfia-9 | stable | restricted (free for individuals; commercial use licensed) — `TO_VERIFY` / `USER_ORG_RESPONSIBILITY` |
 | e-CF (EN 16234-1) | https://itprofessionalism.org/about-it-professionalism/competences/the-e-competence-framework/ | stable | `TO_VERIFY` |
 | ESCO — ICT occupations | https://esco.ec.europa.eu/ | stable | CC BY 4.0 — `TO_VERIFY` |
+
+> **SFIA governance rule (explicit).** SFIA MAY be **referenced** from a
+> `dev_profile` as an external framework — by skill code, version, and
+> URL — that a user, agent, or org can choose to consult, map against, or
+> formally adopt **at their own discretion and under their own SFIA
+> licence**. Klickd / `.klickd` artefacts **MUST NOT embed, copy,
+> redistribute, derive, or sell SFIA content as-is** (skill definitions,
+> level descriptors, framework tables, …) unless a proper SFIA licence
+> has been obtained by the publisher of that artefact. Until such a
+> licence is confirmed, the SFIA row stays `TO_VERIFY /
+> USER_ORG_RESPONSIBILITY`: the responsibility of holding a valid SFIA
+> licence sits with the **user / org** that integrates SFIA-derived
+> content into their `dev_profile`, not with Klickd. For
+> Klickd-published default `dev_profile` seeds, prefer **open / public**
+> frameworks (e.g. ESCO ICT, EU e-CF references via their public
+> publications) over SFIA-derived content. See §4 default-seed rule.
 
 ---
 
@@ -708,7 +724,7 @@ a claim of restriction, only an absence of confirmation.
 | **EQF** | European Commission | https://europa.eu/europass/en/european-qualifications-framework-eqf | EU qualification levels 1–8 | stable | open — `TO_VERIFY` per asset |
 | **ISCO-08** | ILO / OIT | https://www.ilo.org/public/english/bureau/stat/isco/isco08/ | International occupation classification | stable | open with attribution — `TO_VERIFY` |
 | **O\*NET** | US DoL / National Center for O\*NET Development | https://www.onetonline.org/ | US occupations + skills database | stable, frequently updated | public domain (US gov source) — `TO_VERIFY` |
-| **SFIA** | SFIA Foundation | https://sfia-online.org/ | IT skills (global) | stable | restricted (free for individuals; commercial licensing required) — `TO_VERIFY` |
+| **SFIA** | SFIA Foundation | https://sfia-online.org/ | IT skills (global) | stable | restricted (free for individuals; commercial licensing required) — `TO_VERIFY` / `USER_ORG_RESPONSIBILITY` (see §3.5 SFIA governance rule) |
 | **DigComp 2.2** | EU JRC | https://publications.jrc.ec.europa.eu/repository/handle/JRC128415 | Digital competence for citizens | stable | open EU reuse — `TO_VERIFY` |
 | **EntreComp** | EU JRC | https://joint-research-centre.ec.europa.eu/scientific-activities/entrecomp-entrepreneurship-competence-framework_en | Entrepreneurial competence | stable | open EU reuse — `TO_VERIFY` |
 | **GreenComp** | EU JRC | https://publications.jrc.ec.europa.eu/repository/handle/JRC128040 | Sustainability competence | stable | open EU reuse — `TO_VERIFY` |
@@ -731,6 +747,30 @@ a claim of restriction, only an absence of confirmation.
 > independently confirm the embedding terms (URL, version, license, per-row
 > attribution requirement, and any commercial-use limitation). Until then,
 > the safe pattern is **reference-by-ID-and-URL only**, never embed.
+
+> **Default-seed rule (open-first).** For any `domain_profile` that
+> Klickd itself **ships as a default seed** (i.e. published from this
+> repo, not authored by a third-party publisher), maintainers SHOULD
+> prefer frameworks whose row above is **open / public** (CC BY, EU
+> reuse, US gov public domain, open spec) over frameworks marked
+> `restricted` or `TO_VERIFY / USER_ORG_RESPONSIBILITY`. Restricted
+> frameworks (e.g. SFIA, CFA CBOK, ISO standards, CIPD, SHRM, HDI,
+> CanMEDS depending on terms) MAY be **listed as referenceable
+> alternatives** that a user, agent, or org can opt into under their own
+> licence — but they MUST NOT be the only path a seeded profile
+> provides, and their content MUST NOT be embedded into the seed.
+
+> **`USER_ORG_RESPONSIBILITY` marker (clarification).** A row tagged
+> `USER_ORG_RESPONSIBILITY` (in addition to `TO_VERIFY`) signals that
+> the framework has a known licence regime requiring an active
+> agreement for non-individual / commercial use, and that the burden
+> of holding that agreement falls on the **user / org** that chooses
+> to integrate the framework into their own `domain_profile` — not on
+> Klickd. Klickd's role is limited to providing the **reference
+> pointer** (ID, version, URL, status) so users can find the source of
+> truth. SFIA is the canonical example of this pattern today; the same
+> marker applies to any other framework whose terms forbid embedding
+> or commercial redistribution without a licence.
 
 ---
 
@@ -799,6 +839,7 @@ mirrors the prioritisation pattern used in
 | **Framework drift.** ESCO / O\*NET / DigComp / NICE all version their content. A profile referencing "ESCO 2611" without version is brittle. | Adoption | Future RFC SHOULD require `framework_version` + `framework_revision_date` per `competency_map[]` entry, and treat missing version as a lint warning. |
 | **Domain coverage bias.** The seed list over-indexes on EU + Anglophone frameworks. | Equity | Document explicitly acknowledges this; future P1 work should add cross-walks to non-EU frameworks (e.g. ILO ISCO is global, but national equivalents matter for compliance). |
 | **Embedded content via copy-paste.** A future contributor copies a framework's competency list into the catalog or into an example file, inheriting third-party licensing. | Legal | The catalog states the rule explicitly in §4 and §1.2: **reference by ID + URL only**, never embed. P2-D-3 lint should encode this. |
+| **Restricted-framework redistribution (e.g. SFIA).** A future contributor embeds SFIA (or any framework tagged `USER_ORG_RESPONSIBILITY`) skill definitions / level descriptors into a seed `dev_profile`, or ships them as part of a Klickd-published artefact without a SFIA licence. | Legal | §3.5 SFIA governance rule + §4 default-seed rule: Klickd / `.klickd` MUST NOT embed, copy, redistribute, derive, or sell SFIA content as-is unless a proper SFIA licence is obtained by the publisher. SFIA stays **reference-only** (ID + version + URL); the licence burden falls on the user / org that integrates SFIA-derived content. Default Klickd-shipped seeds prefer open frameworks (ESCO ICT, EU e-CF refs). |
 | **Surface creep into Klickd-branded taxonomy.** "Klickd Skills v1" gets minted as a rival to ESCO/SFIA. | Adoption | The catalog is a *router* to authoritative frameworks, not a competing one. Any future Klickd-internal vocabulary SHOULD be limited to *gluing* official references together, never replacing them. |
 | **Domain pack as backdoor for org rules.** A `<domain>_profile` ships with org-specific workflow / vendor names. | Portability | §1.2 prohibits this; org workflow lives in `core.<agent>.klickd`. P2-D-3 lint should reject vendor names in `<domain>_profile` `tool_policy`. |
 | **User-PII leakage.** A worked example accidentally embeds a real user or patient case. | Privacy | All examples in this document are framework references only; no fabricated nor real case data. RFC-006 §6 + CORE_KLICKD_B2B §2.1 invariants apply transitively. |
