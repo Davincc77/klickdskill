@@ -5,15 +5,16 @@
 | **RFC** | 001 |
 | **Title** | `media_profile` v1 — portable, encrypted, model-agnostic media context |
 | **Target** | `.klickd v4` (envelope-v4 / payload extension) |
-| **Status** | **Proposed** |
+| **Status** | **Accepted** |
 | **Author** | Vince C. (Klickd / Luxlearn, Luxembourg) |
 | **Created** | 2026-05-22 |
 | **Promoted to Proposed** | 2026-05-23 |
+| **Promoted to Accepted** | 2026-05-24 |
 | **Supersedes** | — |
 
 > **This RFC is non-normative.** It targets a future `.klickd v4` release. No part of this document is binding on any current v3.x reader or writer. v3.x readers MUST ignore any `media_profile` field they encounter — see [Forward compatibility](#forward-compatibility).
 >
-> **Status note (Proposed).** The conceptual surface is frozen for community review and prototype implementations MAY rely on the §4 decisions and the §5 illustrative schema. The formal JSON Schema, error wiring, and SDK API land only at `Accepted` and `Implemented`. Open questions (§11) remain genuinely open and do not block this promotion.
+> **Status note (Accepted).** The conceptual surface frozen at `Proposed` (the §4 decisions, the §5 illustrative schema, the §6 V-001…V-012 validation checklist, and the §9 error codes) is approved for inclusion in the next normative `SPEC.md` revision — see [`ACCEPTANCE_CHECKLIST_V4.md`](./ACCEPTANCE_CHECKLIST_V4.md) §3. Acceptance is **docs-only**: no SDK, schema, vector, or release is triggered. The formal JSON Schema, error wiring, and SDK API land only at `Implemented`. Open questions (§11) remain genuinely open and do not block acceptance.
 
 ---
 

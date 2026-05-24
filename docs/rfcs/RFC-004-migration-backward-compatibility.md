@@ -5,16 +5,17 @@
 | **RFC** | 004 |
 | **Title** | Migration & Backward Compatibility for older `.klickd` files |
 | **Target** | `.klickd v4` (migration policy applies retroactively to `v2.5 → v3.x → v3.5.1 → v4`) |
-| **Status** | **Proposed** |
+| **Status** | **Accepted** |
 | **Author** | Vince C. (Klickd / Luxlearn, Luxembourg) |
 | **Created** | 2026-05-22 |
 | **Revised** | 2026-05-22 |
 | **Promoted to Proposed** | 2026-05-23 |
+| **Promoted to Accepted** | 2026-05-24 |
 | **Supersedes** | — |
 
 > **This RFC is non-normative.** Nothing in this document binds any current SDK, schema, reader, or writer. It defines the *intended* migration model for older `.klickd` files at the moment a future v4 release lands. Until promoted into `SPEC.md` and the relevant schemas, the rules below MUST NOT be relied on for implementation.
 >
-> **Status note (Proposed).** The "Never break the soul" principle (§3), the staged pipeline (§5.4), the reader-vs-writer behaviour matrix (§6), the legacy/unknown/`x_*` handling (§7), and the rollback model (§8) are frozen for community review and for the reference migrator design work (T-401 / T-402). Open decisions (§12) remain open and do not block this promotion.
+> **Status note (Accepted).** The surface frozen at `Proposed` — the §3 "Never break the soul" sub-principles, the §4 decisions, the §5.4 staged pipeline (`v2.5 → v3.x → v3.5.1 → v4`), the §6 reader-vs-writer behaviour matrix, the §7 legacy / unknown / `x_*` handling rules, and the §8 rollback model — is approved for inclusion in the next normative `SPEC.md` revision per [`ACCEPTANCE_CHECKLIST_V4.md`](./ACCEPTANCE_CHECKLIST_V4.md) §3. Acceptance is **docs-only**: no SDK, schema, vector, or release is triggered. The reference migrator implementation (T-401 / T-402) and `migration_report` schema (T-405) remain future work for `Implemented`. Open decisions (§12) remain open and do not block acceptance.
 
 ---
 
