@@ -35,6 +35,26 @@ Principe directeur, hérité de RFC-004 : **« Never break the soul. »** Aucune
 étape ne doit dégrader, deviner, ou inventer un champ déjà écrit par un
 utilisateur en v2.5 / v3.x / v3.5.1 / v4-preview.
 
+### Corrections de périmètre V4 (validation maintainer 2026-05-24)
+
+Suite à la revue comparative UX/DX du 2026-05-24 (cf. intake détaillé dans
+[`V4-UX-DX-RESEARCH-NOTES.md`](./V4-UX-DX-RESEARCH-NOTES.md) §3) et la
+validation explicite du maintainer post-Acceptance Checklist V4 :
+
+1. **Continuité générique (media / project) = V4.** Les benchmarks et
+   évidence de continuité d'état génériques (références hash, `continuity_state`,
+   `next_action`) sont **dans le périmètre V4** via [RFC-001 `media_profile` v1](../rfcs/RFC-001-media-profile-v1.md)
+   — déjà `Accepted` — et l'extension `project.klickd` minimale (cf. §2.4
+   R4-P1-2).
+2. **Baseline NPC / gaming = V4 conditionnel.** Un profil `gaming.klickd`
+   baseline est dans le périmètre V4 **uniquement si optionnel et
+   registry-based** (cf. §2.4 R4-P1-4). Il ne doit pas alourdir
+   l'onboarding `user.klickd` ni devenir un MUST de la SPEC v4.
+3. **3D / spatial / CAD / printing = V5 track.** Tout rendu 3D, capture
+   spatiale, CAO, ou flux d'impression 3D est **hors périmètre V4** et
+   **ne bloque pas** le tag `v4.0.0`. Ces sujets restent en piste V5
+   (forward-looking) sans champ normé en v4.
+
 ---
 
 ## 1. Distinction preview vs GA
@@ -223,6 +243,152 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
   agent IA, tandis qu'un *creator core* capture l'identité créative d'un
   humain producteur de média.
 
+### 2.4 Backlog UX/DX-driven (intake recherche comparative — 2026-05-24)
+
+> **Source intake :** [`V4-UX-DX-RESEARCH-NOTES.md`](./V4-UX-DX-RESEARCH-NOTES.md)
+> (revue Mem0, Letta `.af`, Zep, LangGraph, AGENTS.md, Cursor, Obsidian,
+> Logseq, 1Password, Bitwarden, KeePassXC, ComfyUI workflow JSON,
+> 2026-05-24). Décisions actionnables uniquement — le rapport source
+> intégral n'est **pas** copié dans le repo.
+>
+> Les identifiants utilisent le préfixe `R4-` pour ne pas entrer en
+> collision avec les items P0/P1/P2 numérotés en §2.1–2.3. La priorité
+> P0/P1/P2 reste la dimension portante.
+
+#### R4-P0-1 — Wizard `user.klickd` 7 étapes avec rechargement de vérification
+
+- **Objet :** interface guidée (web component / page dédiée) qui génère un `user.klickd` valide **sans exposer le JSON brut**. Étape 6 = recharger le fichier dans le wizard avant de quitter — non-négociable.
+- **Pourquoi :** 1Password, Obsidian, Bitwarden convergent ; sans wizard avec rechargement, `.klickd` reste réservé aux développeurs et l'onboarding crée des fichiers non-réouvrables.
+- **Livrables :** spec UX dans [`docs/ux/V4-UX-SPEC.md`](../ux/V4-UX-SPEC.md), maquette des 7 écrans, contrat des erreurs aux étapes 4 (passphrase) et 6 (rechargement).
+- **DoD :** chaque étape a un seul choix dominant ; étape 6 produit un succès ou un message d'erreur orienté utilisateur (cf. R4-P0-2) ; aucun écran n'expose un payload JSON brut.
+- **Garde-fou anti-pattern :** A1 (mur JSON), A5 (spec-first sans exemples), A6 (erreurs non actionnables).
+- **Périmètre :** docs-only pour la spec UX. L'implémentation du wizard est tracée séparément côté `klickd.app` (hors-repo) et ne bloque pas le tag `v4.0.0` côté format — mais bloque l'adoption non-développeur.
+- **Dépendances :** P0-1 (SPEC normative v4), R4-P0-2 (messages d'erreur), R4-P0-3 (profils d'exemple).
+
+#### R4-P0-2 — Messages d'erreur `KLICKD_E_*` i18n orientés utilisateur
+
+- **Objet :** table `error_messages` mappant **chaque** code `KLICKD_E_*` à un message utilisateur + action recommandée, en FR/EN/DE/LB (langues officielles du projet).
+- **Pourquoi :** Bitwarden et KeePassXC : codes seuls inutilisables par non-développeurs. Couvre l'anti-pattern A6.
+- **Livrables :** `docs/errors/KLICKD_ERRORS.md` (table normative non-secrète), exemples par code, contrat de fallback (code anglais si la langue n'est pas couverte).
+- **DoD :** chaque code `KLICKD_E_*` documenté dans la spec a une ligne `code → message FR/EN/DE/LB → action`. Au moins une action ne renvoie **jamais** « contactez le support » (autonomie utilisateur).
+- **Garde-fou anti-pattern :** A6.
+- **Périmètre :** docs-only. Les SDKs Python/JS ne sont pas modifiés tant que P0-3/4 n'attaquent pas l'API publique de validation.
+- **Dépendances :** P0-1.
+
+#### R4-P0-3 — Profils d'exemple téléchargeables (5 personas)
+
+- **Objet :** 5 fichiers `.klickd` v4 valides + décryptables avec une **passphrase de test publique** (jamais un secret réel), couvrant : élève terminale (éducation, FR), chef de projet PME (work, FR), développeur full-stack (work, EN), créateur média (creator, preview `media.klickd`), joueur RPG (gaming, preview `gaming.klickd`).
+- **Pourquoi :** Letta `.af` montre que des exemples téléchargeables accélèrent l'adoption développeur. Sans fichier de référence, les tiers implémentent depuis la spec et divergent.
+- **Livrables :** dossier `examples/v4/personas/`, README expliquant la passphrase de test (réutiliser celle déjà utilisée par les fixtures non-secrets actuels — pas de nouveau secret), checklist de validation contre les vectors v4 stricts (P0-6).
+- **DoD :** chaque fichier passe la validation stricte v4 (P0-2/P0-6) sans warning ; chaque fichier round-trip via les SDKs (P0-3/P0-4) ; aucune donnée personnelle ni secret réel.
+- **Garde-fou anti-pattern :** A5 (spec-first sans exemples).
+- **Dépendances :** P0-2, P0-3, P0-4, P0-6.
+
+#### R4-P0-4 — Politique de dépréciation V4 formelle
+
+- **Objet :** document `docs/spec/DEPRECATION_POLICY_V4.md` définissant explicitement le cycle de vie d'un champ (`active` → `deprecated` → `removed`), la règle de marquage (`deprecated` après Vx+2 si <10 % d'usage observé sur les vectors / exemples / fixtures de référence), et la garantie de lecture silencieuse des champs `deprecated` par les readers v4.
+- **Pourquoi :** `.klickd` v3.2 → v3.4 a ajouté 26 champs sans politique de sortie. Sans politique de dépréciation, le schéma grossit indéfiniment et les agents hallucinent des champs.
+- **Livrables :** `DEPRECATION_POLICY_V4.md` (normatif post-P0-1), section dédiée dans la SPEC v4, ajout d'un bloc `deprecated_fields[]` au schéma envelope (informationnel, non-bloquant).
+- **DoD :** la politique distingue *deprecated dans la SPEC* (champ encore valide mais discouraged) et *removed* (champ supprimé du schéma) ; aucune suppression sans transition `deprecated` d'au moins une version mineure ; le `deprecated_fields[]` est purement documentaire, jamais utilisé pour rejeter.
+- **Garde-fou anti-pattern :** A4 (inflation schéma).
+- **Dépendances :** P0-1.
+
+#### R4-P1-1 — `media.klickd` minimal (alignement RFC-001)
+
+- **Objet :** confirmer le **noyau minimal** déjà spécifié par [RFC-001 `media_profile` v1](../rfcs/RFC-001-media-profile-v1.md) (`Accepted`) — `project_name`, `assets[]` (label, path / `cas://blake3:<h>`, hash, software, last_modified), `continuity_state`, `next_action` — et confirmer que le **rendu 3D / spatial / CAD / printing reste V5**, hors périmètre V4.
+- **Pourquoi :** ComfyUI workflow JSON valide qu'un format de continuité média peut tenir en 3 champs requis. La continuité générique (référence média + état) est V4 ; le rendu spatial est V5.
+- **Livrables :** note de cadrage dans RFC-001 ou dans la SPEC §33 (post-P0-1) confirmant la frontière V4 ↔ V5.
+- **DoD :** la SPEC v4 normative énonce que `media_profile` v1 (V4) ne couvre **pas** 3D/spatial/CAD/printing ; un test négatif vérifie que ces sections, si présentes, sont préservées verbatim mais non interprétées.
+- **Garde-fou anti-pattern :** A4 (inflation schéma).
+- **Dépendances :** P0-1, RFC-001 (`Accepted`).
+
+#### R4-P1-2 — `project.klickd` minimal + export AGENTS.md
+
+- **Objet :** profil `project.klickd` minimal (dev / repo) avec champ `agents_md_content` (string Markdown) **auto-généré** depuis `stack`, `repo_url`, `decisions_locked[]`, `next_milestone`, `tests_required[]`. Le wizard pose 5 questions et produit à la fois le `.klickd` chiffré ET un AGENTS.md prêt à committer.
+- **Pourquoi :** AGENTS.md est le standard de facto 2025-2026 (20+ outils). Un `project.klickd` qui exporte un AGENTS.md valide multiplie l'interopérabilité de `.klickd` dans les workflows dev.
+- **Livrables :** RFC dédiée (à ouvrir, statut `Draft`) ou extension de RFC-001 — décision dans la PR de spec.
+- **DoD :** le mapping `project.klickd` → AGENTS.md est déterministe ; l'AGENTS.md produit passe les linters connus (markdownlint) ; aucun secret n'entre dans l'AGENTS.md (R4-P0-2 : warning si tentative).
+- **Garde-fou anti-pattern :** A1 (mur JSON, l'AGENTS.md est l'interface humaine), A3 (couplage cloud — `project.klickd` reste local-first).
+- **Dépendances :** P0-1, R4-P0-3.
+
+#### R4-P1-3 — JSON Schema v4 publié à URL stable + validateur testable
+
+- **Objet :** publier `klickd-v4.schema.json` (cf. P0-2) à une **URL stable** (`schema.klickd.app` ou GitHub raw versionné) et fournir un **validateur web minimal** *zero-server* (tout client-side, comme le viewer P1-5).
+- **Pourquoi :** ComfyUI publie son schema et référence un repo RFC. Sans schema publié, les tiers divergent.
+- **Livrables :** redirect ou fichier statique à URL stable, validateur web (`demo/validator/`), CI qui valide `examples/v4/**` contre le schéma à chaque PR.
+- **DoD :** URL résolvable et stable post-tag v4.0.0 ; validateur fonctionne offline ; aucun upload / télémétrie.
+- **Garde-fou anti-pattern :** A3 (couplage cloud — le validateur doit fonctionner hors-ligne).
+- **Dépendances :** P0-2.
+
+#### R4-P1-4 — `gaming.klickd` baseline optionnelle (registry-based)
+
+- **Objet :** profil `gaming.klickd` baseline minimale — `character_name`, `game`, `continuity_state`, `next_session_trigger`, `npc_memory[]` — **uniquement** activable via le registre de domaines, jamais via l'onboarding `user.klickd` principal.
+- **Pourquoi :** la portabilité de contexte narratif NPC a une valeur réelle (cross-save gaming est verrouillé par les plateformes, mais le contexte narratif est platform-agnostic). Néanmoins, alourdir le path d'onboarding principal serait une régression UX.
+- **Livrables :** RFC dédiée (à ouvrir, statut `Draft`), exemple non-normatif dans `examples/v4/personas/` (cf. R4-P0-3), note dans la SPEC §33 (post-P0-1) clarifiant qu'un reader v4 **doit** ignorer en silence un payload `domain: gaming` s'il ne déclare pas la facette.
+- **DoD :** zéro impact sur l'onboarding `user.klickd` ; le profil est optionnel et registry-based ; aucun champ `gaming.*` n'est requis dans le schéma envelope v4.
+- **Garde-fou anti-pattern :** A1 (mur JSON), A4 (inflation schéma).
+- **Périmètre V4 confirmé :** baseline gaming est **V4 si et seulement si** optionnel + registry-based.
+- **Dépendances :** P0-1, R4-P0-4.
+
+#### R4-P1-5 / R4-P2-1 — QR / deeplink onboarding trigger (conditionnel)
+
+- **Objet :** mode d'onboarding trigger générant un **QR code** (ou deeplink local `klickd://load?...`) pour le provisioning d'un `.klickd` sur un nouvel agent / nouvel appareil. Inspiré du Secret Key 1Password.
+- **Pourquoi UX :** geste « scanner pour transférer mon identité IA » est immédiatement compréhensible. Couvre le cross-device sans introduire de compte.
+- **Risque architecture :** une URL temporaire de téléchargement réintroduit une dépendance serveur — *contradiction directe* avec la claim « zero-server pour les fichiers `.klickd` ».
+- **Décision :** **P1 conditionnel → P2 si revue architecture zero-server bloque.** À trancher entre :
+  - (a) **QR embarque le fichier complet** (taille ≤ 3 KB compressé) — zero-server, contrainte taille forte ;
+  - (b) **deeplink local** (`klickd://load?token=...`) sans réseau, repose sur intent OS et fichier déjà transféré par canal hors-bande ;
+  - (c) **abandon V4** si aucune variante zero-server n'est viable — repousser post-GA.
+- **Livrables :** note d'architecture dans [`docs/ux/V4-UX-SPEC.md`](../ux/V4-UX-SPEC.md), décision tranchée par RFC dédiée.
+- **DoD :** la décision ne casse pas la claim zero-server ; aucune URL temporaire serveur n'est introduite tacitement.
+- **Garde-fou anti-pattern :** A3 (couplage cloud masqué).
+- **Dépendances :** P0-1, revue architecture explicite par Vince.
+
+#### R4-P2-2 — `compression_policy.mode: "progressive"` (preview avant application)
+
+- **Objet :** nouveau mode de compression qui affiche à l'utilisateur « taille actuelle → taille après compression » et permet l'annulation avant écriture.
+- **Pourquoi :** LangGraph documente que les checkpoints créent « une croissance de stockage significative ». La compression silencieuse érode la confiance.
+- **Livrables :** extension non-bloquante de la `compression_policy` (post-P0-1), pas de champ requis ajouté.
+- **DoD :** `mode: "progressive"` est *opt-in* ; les modes existants restent inchangés.
+- **Garde-fou anti-pattern :** A2 (migration silencieuse).
+- **Dépendances :** P0-1.
+
+#### R4-P2-3 — `preferred_model` (réservé depuis v3.4) → routing hint normalisé V4
+
+- **Objet :** finaliser la sémantique de `preferred_model` : **hint, pas obligation**, un reader peut l'ignorer mais **doit** logger l'override.
+- **Pourquoi :** champ réservé depuis v3.4 sans contrat — les intégrateurs divergent.
+- **Livrables :** ajout dans la SPEC §33 normative (post-P0-1) d'une règle 2119 (MAY pour le respect, SHOULD pour le log).
+- **DoD :** zéro changement breaking ; la SPEC v4 normative cadre l'intent.
+- **Dépendances :** P0-1.
+
+#### R4-P2-4 — UI dédiée `shared_context` (Plan Famille)
+
+- **Objet :** interface dédiée pour configurer `visible_to_members` et `private_fields` sans éditer le JSON brut.
+- **Pourquoi :** champ avancé v3.4 avec implications RGPD ; sans UI, les parents exposent des données sensibles (mood, struggles) par accident.
+- **Livrables :** spec UX dans [`docs/ux/V4-UX-SPEC.md`](../ux/V4-UX-SPEC.md). Implémentation tracée hors-repo côté `klickd.app`.
+- **DoD :** zéro champ JSON n'est exposé directement ; le default est *private*.
+- **Garde-fou anti-pattern :** A1 (mur JSON).
+- **Dépendances :** P0-1, R4-P0-1 (wizard pattern).
+
+#### R4-P2-5 — IANA MIME `application/vnd.klickd+json`
+
+- **Objet :** doublon volontaire de P2-1 (déjà tracé). Reste P2, post-tag GA, processus administratif externe.
+- **Statut :** noté pour cohérence de la table ; voir P2-1 pour le tracking canonique.
+
+#### R4-Anti-Patterns — liste opposable
+
+Tout PR v4+ (RFC, spec, schéma, SDK, exemple) **doit** justifier, si la
+question se pose, en quoi elle n'introduit aucun des anti-patterns
+suivants. Liste détaillée et exemples concrets dans
+[`V4-UX-DX-RESEARCH-NOTES.md`](./V4-UX-DX-RESEARCH-NOTES.md) §2.
+
+- **A1 — Mur JSON.** Pas de payload brut affiché à l'utilisateur final.
+- **A2 — Migration silencieuse.** Toute migration émet un `migration_report` (RFC-004) ET un message utilisateur orienté action.
+- **A3 — Couplage cloud masqué.** Pas de dépendance serveur tacite ; toute intégration sync requiert consentement explicite et changement de claim.
+- **A4 — Inflation schéma.** Pas d'ajout de champ sans politique de dépréciation associée (R4-P0-4).
+- **A5 — Spec-first sans exemples.** Toute RFC `Accepted` ou section SPEC normative est accompagnée d'au moins un exemple complet et valide.
+- **A6 — Erreurs non actionnables.** Tout nouveau code `KLICKD_E_*` est accompagné d'un message utilisateur + action (R4-P0-2).
+
 ---
 
 ## 3. Gouvernance & règles d’exécution
@@ -266,7 +432,8 @@ L’ordre suivant minimise le re-travail :
 >
 > - La PR #30 « rfc(v4): promote RFC-001 / RFC-002 / RFC-004 from Draft to Proposed » a été mergée le 2026-05-23 (docs-only).
 > - La PR « docs(rfc): add V4 acceptance checklist » a introduit l'[**Acceptance Checklist V4**](../rfcs/ACCEPTANCE_CHECKLIST_V4.md) (critères C1–C16 pour `Proposed → Accepted`, I1–I9 pour `Accepted → Implemented`), docs-only.
-> - La PR courante « rfc(v4): promote RFC-001 / RFC-002 (v1 core) / RFC-004 from Proposed to Accepted » applique ce checklist aux trois RFCs cibles. Acceptance = docs-only, aucun SDK / schéma / vector / publish / tag.
+> - La PR « rfc(v4): promote RFC-001 / RFC-002 (v1 core) / RFC-004 from Proposed to Accepted » (#35) a été mergée le 2026-05-24 (SHA `891e7581`). Acceptance = docs-only, aucun SDK / schéma / vector / publish / tag.
+> - La PR courante (docs-only) inscrit le **backlog UX/DX-driven** §2.4 et l'intake [`V4-UX-DX-RESEARCH-NOTES.md`](./V4-UX-DX-RESEARCH-NOTES.md). Aucune modification SPEC / schéma / SDK / vector / publish.
 
 Justification : promouvoir RFC-001 / RFC-002 (v1 core) / RFC-004 de `Proposed`
 à `Accepted` est le préalable explicite de P0-1 (SPEC normative v4). Le
@@ -278,7 +445,9 @@ La séquence après merge de la PR d'acceptance est :
 1. ~~**PR « rfc(v4): promote RFC-001 from Proposed to Accepted »**~~ — incluse dans la PR groupée d'acceptance (2026-05-24).
 2. ~~**PR « rfc(v4): promote RFC-002 (v1 core) from Proposed to Accepted »**~~ — idem.
 3. ~~**PR « rfc(v4): promote RFC-004 from Proposed to Accepted »**~~ — idem.
-4. **PR « spec(v4): begin promoting §33 preview wording toward normative (P0-1) »** — démarre la phase SPEC normative maintenant que les trois RFCs sont en `Accepted`.
+4. ~~**PR « rfc(v4): promote RFC-001 / RFC-002 (v1 core) / RFC-004 from Proposed to Accepted »**~~ — mergée 2026-05-24 (PR #35, SHA `891e7581`).
+5. **PR courante** (docs-only) — inscrit le backlog UX/DX-driven §2.4 et l'intake [`V4-UX-DX-RESEARCH-NOTES.md`](./V4-UX-DX-RESEARCH-NOTES.md). Confirme les corrections de périmètre V4 §0 (continuité générique V4, baseline gaming V4-conditionnel, 3D/spatial/CAD/printing V5).
+6. **PR suivante recommandée — `spec(v4): begin promoting §33 preview wording toward normative (P0-1)`** — démarre la phase SPEC normative maintenant que les trois RFCs sont en `Accepted` et que le backlog UX/DX-driven est inscrit. Cette PR sera docs-only également (touche `SPEC.md` §33 — pas de schéma strict, pas de SDK, pas de vector), conformément à la règle §3.10.
 
 Aucune de ces PR ne déclenche un publish (npm / PyPI / Zenodo), un tag, ni une
 annonce externe. Elles restent docs-first conformément à la règle §3.10.
