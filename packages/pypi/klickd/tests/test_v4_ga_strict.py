@@ -28,6 +28,12 @@ from klickd import (
     validate_iter_errors,
 )
 
+# Validation tests require the optional `jsonschema` dependency.
+# Install with `pip install klickd[validate]` (or `pip install jsonschema`).
+# When absent, every validation test in this file is skipped — load/save
+# tests in test_roundtrip.py and test_v4_preview_roundtrip.py still run.
+jsonschema = pytest.importorskip("jsonschema")
+
 REPO_ROOT = Path(__file__).resolve().parents[4]
 PERSONAS_DIR = REPO_ROOT / "examples" / "v4" / "personas"
 PASSPHRASE = "correct-horse-battery-staple-v4"
