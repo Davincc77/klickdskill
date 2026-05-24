@@ -73,6 +73,67 @@ class KlickdKnowledge(TypedDict, total=False):
     next_steps: List[str]
 
 
+class KlickdMediaProfileEntryHash(TypedDict):
+    algo: Literal["blake3"]
+    value: str
+
+
+class KlickdMediaProfileEntry(TypedDict, total=False):
+    id: Required[str]
+    modality: Required[Literal["voice", "image", "document", "embedding"]]
+    hash: Required[KlickdMediaProfileEntryHash]
+    label: str
+    language: str
+    uri: str
+    media_type: str
+    byte_size: int
+    duration_ms: int
+    bytes_b64: str
+    producer: dict
+    consent: dict
+
+
+class KlickdMediaProfileV1(TypedDict, total=False):
+    version: Required[Literal[1]]
+    entries: Required[List[KlickdMediaProfileEntry]]
+
+
+KlickdGateLevel = Literal["silent", "warn", "confirm", "block", "require-owner"]
+
+
+class KlickdGateEntry(TypedDict, total=False):
+    action_class: Required[str]
+    level: Required[KlickdGateLevel]
+    id: str
+    reason: str
+
+
+class KlickdVerificationGatesV1(TypedDict, total=False):
+    version: Required[Literal[1]]
+    gates: Required[List[KlickdGateEntry]]
+    user_default: KlickdGateLevel
+
+
+class KlickdHumanVetoPolicy(TypedDict, total=False):
+    applies_to: List[str]
+    second_party: Optional[str]
+    min_level: KlickdGateLevel
+    rationale: str
+
+
+class KlickdClaimSources(TypedDict, total=False):
+    prefer: List[str]
+    require_citation_for: List[str]
+    records: List[Any]
+
+
+class KlickdMigrationV1(TypedDict, total=False):
+    source_version: str
+    migrated_at: str
+    migration_report_ref: str
+    backup_ref: str
+
+
 class KlickdPayload(TypedDict, total=False):
     payload_schema_version: Required[str]
     domain_schema_version: Required[str]
@@ -84,3 +145,23 @@ class KlickdPayload(TypedDict, total=False):
     context: KlickdContext
     knowledge: KlickdKnowledge
     memory: List[KlickdMemoryEntry]
+    # v4 additive surface (preview + GA). Strict shape on v1-frozen fields.
+    profile_kind: str
+    preview: str
+    onboarding_trigger: str
+    media_profile: Union[KlickdMediaProfileV1, dict]
+    verification_gates: Union[KlickdVerificationGatesV1, dict]
+    human_veto_policy: Optional[KlickdHumanVetoPolicy]
+    claim_sources: Optional[KlickdClaimSources]
+    migration: Optional[KlickdMigrationV1]
+    risk_thresholds: Optional[dict]
+    preflight_checks: Optional[List[Any]]
+    error_journal: Optional[List[Any]]
+    verification_artifacts: Optional[List[Any]]
+    contract_tests: Optional[List[Any]]
+    success_criteria: Optional[Any]
+    reversibility: Optional[dict]
+    blast_radius: Optional[dict]
+    context_cost: Optional[dict]
+    gaming_profile: Optional[dict]
+    deprecated_fields: Optional[List[Any]]

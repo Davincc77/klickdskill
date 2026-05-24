@@ -62,17 +62,53 @@ payload = load_klickd(file_bytes, passphrase="my-passphrase", legacy=True)
 
 ---
 
-## `.klickd` v4 preview fields (additive, non-GA)
+## `.klickd` v4 — GA strict + preview fields
 
-This library currently targets the **v3** envelope and is **stable at v3.5.1**.
-The v4 preview track (`v4.0.0-preview.1`, NOT GA) introduces additive payload
-fields such as `profile_kind`, `media_profile`, `verification_gates`,
-`claim_sources`, `verification_artifacts`, `migration`, and `context_cost`.
+This library targets the **v3** envelope on the wire (envelope crypto contract
+is frozen at v3 per SPEC.md §33.10 #2) and ships the **v4 GA strict candidate
+payload schema** for validation. The v4 preview track (`v4.0.0-preview.1`)
+remains accepted in parallel.
 
-These fields are **preserved verbatim** on round-trip — `load_klickd` returns
-the raw decrypted JSON object and `save_klickd` re-encrypts it without
-filtering unknown keys. Strict v4 validation, migrations, and business-logic
-helpers are intentionally **not** implemented yet.
+The v4 additive payload fields — `profile_kind`, `media_profile`,
+`verification_gates`, `human_veto_policy`, `claim_sources`,
+`verification_artifacts`, `migration`, `context_cost`, `deprecated_fields` —
+are **preserved verbatim** on round-trip (SPEC.md §33.7). `load_klickd`
+returns the raw decrypted JSON object; `save_klickd` re-encrypts it without
+filtering unknown keys.
+
+### Optional v4 schema validation
+
+Install the optional `validate` extra to enable strict / preview schema
+validation against the bundled v4 JSON schemas (RFC-001 v1, RFC-002 v1
+core, RFC-004 v1):
+
+```bash
+pip install klickd[validate]
+```
+
+```python
+from klickd import validate, validate_iter_errors
+
+payload = {
+    "payload_schema_version": "4.0",
+    "verification_gates": {
+        "version": 1,
+        "gates": [
+            {"action_class": "public_post", "level": "block"},
+        ],
+    },
+}
+
+validate(payload, strict=True)  # raises KlickdError(KLICKD_E_SCHEMA) on fail
+
+# Non-raising variant that returns every (path, message):
+errors = validate_iter_errors(payload, strict=True)
+```
+
+`validate(..., strict=False)` selects the permissive v4 preview schema.
+`validate(..., target="unified")` selects the unified envelope+payload
+schema. The strict schema accepts both `"4.0"` and `"4.0.0-preview.1"`
+in `payload_schema_version` so preview files round-trip without rewriting.
 
 ```python
 v4_preview_payload = {

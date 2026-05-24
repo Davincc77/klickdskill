@@ -9,6 +9,7 @@
 from .decode import load_klickd
 from .encode import save_klickd
 from .errors import KlickdError, KlickdErrorCode, HTTP_STATUS
+from .validate import validate, validate_iter_errors
 from ._types import (
     KlickdPayload,
     KlickdEnvelope,
@@ -16,12 +17,21 @@ from ._types import (
     KlickdIdentity,
     KlickdContext,
     KlickdKnowledge,
+    KlickdMediaProfileEntry,
+    KlickdMediaProfileV1,
+    KlickdGateEntry,
+    KlickdVerificationGatesV1,
+    KlickdHumanVetoPolicy,
+    KlickdClaimSources,
+    KlickdMigrationV1,
 )
 
 __version__ = "4.0.0a1"
 __all__ = [
     "load_klickd",
     "save_klickd",
+    "validate",
+    "validate_iter_errors",
     "KlickdError",
     "KlickdErrorCode",
     "HTTP_STATUS",
@@ -31,5 +41,12 @@ __all__ = [
     "KlickdIdentity",
     "KlickdContext",
     "KlickdKnowledge",
+    "KlickdMediaProfileEntry",
+    "KlickdMediaProfileV1",
+    "KlickdGateEntry",
+    "KlickdVerificationGatesV1",
+    "KlickdHumanVetoPolicy",
+    "KlickdClaimSources",
+    "KlickdMigrationV1",
     "__version__",
 ]
