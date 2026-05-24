@@ -1973,6 +1973,36 @@ This section restates, in one place, the privacy and stability invariants that a
 
 These invariants apply equally to the production v3.x line and the v4 preview track. The preview adds new *fields*; it does not relax existing privacy or stability rules.
 
+### §33.11 Normative onboarding contract — R4-P0-1 (`user.klickd` wizard)
+
+While the field surface of §33 remains preview / non-normative, the
+**user-visible onboarding flow** for any future v4 `user.klickd`
+writer is now constrained by a normative companion document:
+
+- [`docs/spec/R4-P0-1-onboarding-wizard.md`](./docs/spec/R4-P0-1-onboarding-wizard.md) — Normative (V4 P0).
+
+That document binds, in RFC 2119 language, the seven-step
+`user.klickd` onboarding wizard with mandatory reload verification
+(step 6). It is **docs-only** and does **not** introduce any new
+on-the-wire field, schema, SDK API, vector, package version, Git
+tag, or release. It does **not** relax or modify the §33.7
+forward-compatibility contract or the §33.10 privacy invariants.
+
+R4-P0-1 lands ahead of the wider P0-1 SPEC §33 field-surface
+promotion because the empirical UX research
+([`docs/roadmap/V4-UX-DX-RESEARCH-NOTES.md`](./docs/roadmap/V4-UX-DX-RESEARCH-NOTES.md))
+shows the onboarding contract is the load-bearing piece that
+determines whether `.klickd` v4 can reach non-developer users at
+all. Strict schema (P0-2), SDK alignment (P0-3 / P0-4), and
+vectors (P0-6) remain on their own tracks. The QR / deeplink
+onboarding trigger remains out of scope for R4-P0-1 and is
+governed by [`docs/ux/V4-ONBOARDING-QR-DEEPLINK.md`](./docs/ux/V4-ONBOARDING-QR-DEEPLINK.md).
+
+When the §33 field surface is itself promoted to the normative SPEC
+body in a future PR, the cross-reference inside
+[`docs/spec/R4-P0-1-onboarding-wizard.md`](./docs/spec/R4-P0-1-onboarding-wizard.md) §3.2 MUST be updated to
+point at the new normative SPEC section.
+
 ---
 
 ## License

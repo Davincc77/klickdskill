@@ -259,10 +259,10 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 
 - **Objet :** interface guidée (web component / page dédiée) qui génère un `user.klickd` valide **sans exposer le JSON brut**. Étape 6 = recharger le fichier dans le wizard avant de quitter — non-négociable.
 - **Pourquoi :** 1Password, Obsidian, Bitwarden convergent ; sans wizard avec rechargement, `.klickd` reste réservé aux développeurs et l'onboarding crée des fichiers non-réouvrables.
-- **Livrables :** spec UX dans [`docs/ux/V4-UX-SPEC.md`](../ux/V4-UX-SPEC.md), maquette des 7 écrans, contrat des erreurs aux étapes 4 (passphrase) et 6 (rechargement).
-- **DoD :** chaque étape a un seul choix dominant ; étape 6 produit un succès ou un message d'erreur orienté utilisateur (cf. R4-P0-2) ; aucun écran n'expose un payload JSON brut.
+- **Livrables :** contrat normatif RFC 2119 dans [`docs/spec/R4-P0-1-onboarding-wizard.md`](../spec/R4-P0-1-onboarding-wizard.md), spec UX dans [`docs/ux/V4-UX-SPEC.md`](../ux/V4-UX-SPEC.md), maquette des 7 écrans, contrat des erreurs aux étapes 4 (passphrase) et 6 (rechargement).
+- **DoD :** chaque étape a un seul choix dominant ; étape 6 produit un succès ou un message d'erreur orienté utilisateur (cf. R4-P0-2) ; aucun écran n'expose un payload JSON brut. **Statut :** contrat normatif R4-P0-1 inscrit (docs/spec) — implémentation `klickd.app` séparée.
 - **Garde-fou anti-pattern :** A1 (mur JSON), A5 (spec-first sans exemples), A6 (erreurs non actionnables).
-- **Périmètre :** docs-only pour la spec UX. L'implémentation du wizard est tracée séparément côté `klickd.app` (hors-repo) et ne bloque pas le tag `v4.0.0` côté format — mais bloque l'adoption non-développeur.
+- **Périmètre :** docs-only pour la spec UX et le contrat normatif. L'implémentation du wizard est tracée séparément côté `klickd.app` (hors-repo) et ne bloque pas le tag `v4.0.0` côté format — mais bloque l'adoption non-développeur.
 - **Dépendances :** P0-1 (SPEC normative v4), R4-P0-2 (messages d'erreur), R4-P0-3 (profils d'exemple).
 
 #### R4-P0-2 — Messages d'erreur `KLICKD_E_*` i18n orientés utilisateur
