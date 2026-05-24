@@ -196,6 +196,19 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 - **P2-9 — `agent_core` schéma strict + SDK surface (post-GA).** Une fois [RFC-006](../rfcs/RFC-006-agent-core.md) en `Accepted`, ajouter un schéma strict `klickd-agent-core-v1.schema.json`, des hooks SDK (Python + JS) pour lire/écrire/valider `agent_core`, et le check fail-closed *no-PII* du §6 RFC-006 (`KLICKD_E_AGENT_CORE_MIXED` / `KLICKD_E_AGENT_CORE_PII`). Hors P0 GA — démarre uniquement après tag `v4.0.0`.
 - **P2-10 — Showcase first-party `core.Kai.klickd`.** Publier un fichier `core.Kai.klickd` réel (versionné via `agent_core.version`, provenance Klickd), démonstration de portabilité cross-provider d'un *agent core* (vs profil utilisateur). Lié à `klickd.app` (intégration), mais le fichier vit dans le repo (`examples/v4/agent_core/`) pour reproductibilité. **Aucune publication npm/PyPI/Zenodo associée.** Dépend de P2-9.
 - **P2-11 — Benchmark cross-provider `agent_core` (extension RFC-003).** Étendre le Context Cost Benchmark pour mesurer la dérive de comportement d'un même `core.Kai.klickd` entre providers (consistance posture pédagogique, refus, langue). Recherche, non normatif.
+- **P2-13 — `usage_profile` & in-session skill routing (RFC-007).** Piste future
+  décrite dans [`docs/rfcs/RFC-007-usage-profile-skill-routing.md`](../rfcs/RFC-007-usage-profile-skill-routing.md) :
+  sélection de **purpose** au premier lancement (`learner` / `creator` /
+  `developer` / `legal` / `finance` / `health` / `research` / …), principe de
+  **progressive disclosure** (le `.klickd` de base ne contient que les sections
+  utiles à la purpose retenue), et **routing de skill / facette** en session
+  (rules + log append-only, sans jamais stocker le prompt brut). Invariants
+  durs : user wins sur les `verification_gates` (RFC-002), mutuellement
+  exclusif avec `agent_core` (RFC-006), `no-raw-prompts` dans le
+  `profile_switch_log`. **Aucun changement schéma / SDK / vector**, **post-V4
+  GA**, **ne bloque pas le tag `v4.0.0`**. Promotion `Draft → Proposed` envisagée
+  uniquement si la pression empirique se confirme après GA (first-run bloat,
+  routing inconsistency cross-provider).
 - **P2-12 — Use case « creator core.klickd » (B2C / créateur).** Piste produit
   forward-looking décrite dans [`docs/use-cases/CREATOR-CORE-KLICKD.md`](../use-cases/CREATOR-CORE-KLICKD.md) :
   utiliser `.klickd` comme **contexte créatif réutilisable** pour la
