@@ -574,6 +574,156 @@ for (const { path, label } of suites) {
   totalSkipped += skipped;
 }
 
+// ── v4.0 GA strict suite — schema-validation cross-impl (P0-6) ──────────────
+// Positive vectors: structural assertions must hold (each `assertions` entry is
+// a dotted path → expected value, with `.length` suffix supported for arrays).
+// Negative vectors: a hand-rolled rule checker mirrors the strict v4 GA schema
+// rules referenced by `failure_reason` so this runner does not require Ajv.
+// The canonical strict-schema validation (jsonschema in Python) is run by
+// scripts/validate_v4_schemas.py and by the Python half of this test runner.
+const GA_GATE_LEVELS = new Set(['silent', 'warn', 'confirm', 'block', 'require-owner']);
+const GA_MEDIA_MODALITIES = new Set(['voice', 'image', 'document', 'embedding']);
+const GA_PAYLOAD_SCHEMA_VERSIONS = new Set(['4.0', '4.0.0-preview.1']);
+const RFC3339_Z_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
+const GA_KLICKD_VERSION_RE = /^(3|4)\.\d+(\.[0-9A-Za-z-.]+)?$/;
+const GATE_ENTRY_KEYS = new Set(['id', 'action_class', 'level', 'reason']);
+const HUMAN_VETO_KEYS = new Set(['applies_to', 'second_party', 'min_level', 'rationale']);
+
+function gaGetPath(doc, dotted) {
+  let cur = doc;
+  for (const seg of dotted.split('.')) {
+    if (cur === null || cur === undefined) return undefined;
+    if (Array.isArray(cur)) {
+      const idx = Number(seg);
+      if (!Number.isInteger(idx)) return undefined;
+      cur = cur[idx];
+    } else if (typeof cur === 'object') {
+      cur = cur[seg];
+    } else {
+      return undefined;
+    }
+  }
+  return cur;
+}
+
+function gaCheckNegative(doc, against, reason) {
+  // Returns true if the document violates the documented rule.
+  switch (reason) {
+    case 'gate_level_not_in_enum': {
+      const vg = doc.verification_gates;
+      if (!vg) return false;
+      const entries = Array.isArray(vg.gates) ? vg.gates : Object.entries(vg).map(([k, v]) => ({ action_class: k, level: v }));
+      return entries.some(g => g && typeof g === 'object' && g.level !== undefined && !GA_GATE_LEVELS.has(g.level));
+    }
+    case 'missing_required_payload_schema_version':
+      return !('payload_schema_version' in doc);
+    case 'payload_schema_version_not_in_enum':
+      return 'payload_schema_version' in doc && !GA_PAYLOAD_SCHEMA_VERSIONS.has(doc.payload_schema_version);
+    case 'media_entry_missing_hash':
+      return Array.isArray(doc?.media_profile?.entries) &&
+             doc.media_profile.entries.some(e => e && typeof e === 'object' && !('hash' in e));
+    case 'media_modality_not_in_v1_enum':
+      return Array.isArray(doc?.media_profile?.entries) &&
+             doc.media_profile.entries.some(e => e?.modality && !GA_MEDIA_MODALITIES.has(e.modality));
+    case 'media_hash_algo_not_blake3':
+      return Array.isArray(doc?.media_profile?.entries) &&
+             doc.media_profile.entries.some(e => e?.hash && e.hash.algo !== 'blake3');
+    case 'human_veto_min_level_not_in_enum':
+      return doc?.human_veto_policy?.min_level !== undefined &&
+             !GA_GATE_LEVELS.has(doc.human_veto_policy.min_level);
+    case 'encrypted_missing_envelope_fields':
+      return against === 'unified' && doc.encrypted === true &&
+             (!('kdf' in doc) || !('cipher' in doc) || !('ciphertext' in doc));
+    case 'klickd_version_unsupported_major':
+      return against === 'unified' && typeof doc.klickd_version === 'string' &&
+             !GA_KLICKD_VERSION_RE.test(doc.klickd_version);
+    case 'migration_migrated_at_not_rfc3339_z':
+      return doc?.migration?.migrated_at !== undefined &&
+             !RFC3339_Z_RE.test(doc.migration.migrated_at);
+    case 'gate_entry_additional_property': {
+      const gates = doc?.verification_gates?.gates;
+      if (!Array.isArray(gates)) return false;
+      return gates.some(g => g && typeof g === 'object' && Object.keys(g).some(k => !GATE_ENTRY_KEYS.has(k)));
+    }
+    case 'human_veto_additional_property': {
+      const hv = doc?.human_veto_policy;
+      if (!hv || typeof hv !== 'object') return false;
+      return Object.keys(hv).some(k => !HUMAN_VETO_KEYS.has(k));
+    }
+    default:
+      return false;
+  }
+}
+
+async function runV40GaStrictSuite(posPath, negPath, label) {
+  let passed = 0, failed = 0;
+  console.log(`\n── ${label} ──────────────────────────`);
+
+  if (existsSync(posPath)) {
+    const pos = JSON.parse(readFileSync(posPath, 'utf8'));
+    console.log(`   spec ${pos.spec_version} — POSITIVE vectors`);
+    for (const v of pos.vectors) {
+      const vid = v.id;
+      const doc = v.document;
+      const mismatched = [];
+      for (const [path, expected] of Object.entries(v.assertions ?? {})) {
+        let actual;
+        if (path.endsWith('.length')) {
+          const base = gaGetPath(doc, path.slice(0, -'.length'.length));
+          actual = (Array.isArray(base) || typeof base === 'string') ? base.length
+                 : (base && typeof base === 'object') ? Object.keys(base).length
+                 : undefined;
+        } else {
+          actual = gaGetPath(doc, path);
+        }
+        if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+          mismatched.push({ path, expected, actual });
+        }
+      }
+      if (mismatched.length > 0) {
+        console.log(`  FAIL ${vid}: assertion mismatch ${JSON.stringify(mismatched.slice(0, 3))}`);
+        failed++;
+      } else {
+        console.log(`  PASS ${vid}: ${Object.keys(v.assertions ?? {}).length} assertion(s) OK`);
+        passed++;
+      }
+    }
+  } else {
+    console.log('   [SKIP] positive vectors file not found');
+  }
+
+  if (existsSync(negPath)) {
+    const neg = JSON.parse(readFileSync(negPath, 'utf8'));
+    console.log(`   spec ${neg.spec_version} — NEGATIVE vectors`);
+    for (const v of neg.vectors) {
+      const vid = v.id;
+      const violated = gaCheckNegative(v.document, v.against ?? 'payload', v.failure_reason);
+      if (violated) {
+        console.log(`  PASS ${vid}: rule violation detected as expected (${v.failure_reason})`);
+        passed++;
+      } else {
+        console.log(`  FAIL ${vid}: expected rule violation (${v.failure_reason}), none detected`);
+        failed++;
+      }
+    }
+  } else {
+    console.log('   [SKIP] negative vectors file not found');
+  }
+
+  return { passed, failed, skipped: 0 };
+}
+
+{
+  const { passed, failed, skipped } = await runV40GaStrictSuite(
+    join(__dir, 'tests/vectors_v40_ga.json'),
+    join(__dir, 'tests/negative_vectors_v40_ga.json'),
+    'v4.0 GA strict vectors — cross-impl (P0-6)',
+  );
+  totalPassed  += passed;
+  totalFailed  += failed;
+  totalSkipped += skipped;
+}
+
 const total = totalPassed + totalFailed;
 console.log('\n' + '='.repeat(50));
 if (totalSkipped > 0) {

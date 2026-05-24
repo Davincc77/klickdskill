@@ -54,3 +54,9 @@ To unblock the GA track described in [`docs/roadmap/ROAD-TO-V4-GA.md` §P0-2](./
 - **No SDK is bumped.** No npm / PyPI / Zenodo release is triggered. No git tag is created.
 
 **Validation:** see [`scripts/validate_v4_schemas.py`](./scripts/validate_v4_schemas.py) for the canonical local validation runner.
+
+**Cross-impl strict vectors (P0-6 — PR candidate):**
+
+- Positive: [`tests/vectors_v40_ga.json`](./tests/vectors_v40_ga.json) — 5 persona payloads (`profile_kind` learner/team/agent/creator/learner+gaming) covering the v1 frozen surface of `verification_gates` (structured + flat-map), `human_veto_policy`, `claim_sources`, `media_profile`, `migration`, plus one unified `encrypted=true` envelope (envelope-v3 contract retained per SPEC §33.10 #2).
+- Negative: [`tests/negative_vectors_v40_ga.json`](./tests/negative_vectors_v40_ga.json) — 12 rejection cases pinning each frozen rule (gate-level enum, missing/unknown `payload_schema_version`, `media_profile` v1 hash/modality strictness, `human_veto_policy.min_level`, encrypted envelope completeness, `klickd_version` major range, `migration.migrated_at` RFC 3339 Z, `gateEntry` / `human_veto_policy` `additionalProperties: false`).
+- Runners: [`verify_vectors.py`](./verify_vectors.py) (canonical `jsonschema` validation + structural assertions) and [`verify_vectors.mjs`](./verify_vectors.mjs) (structural rule checker mirroring the strict schema — no Ajv dep required at root). Both implementations validate the same fixtures and reject the same negatives without divergence. Preview vectors ([`tests/vectors_v40_preview.json`](./tests/vectors_v40_preview.json)) remain intact.
