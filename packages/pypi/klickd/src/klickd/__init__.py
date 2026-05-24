@@ -9,6 +9,11 @@
 from .decode import load_klickd
 from .encode import save_klickd
 from .errors import KlickdError, KlickdErrorCode, HTTP_STATUS
+from .migrate import (
+    migrate_payload,
+    migrate_payload_iter_warnings,
+    needs_migration,
+)
 from .validate import validate, validate_iter_errors
 from ._types import (
     KlickdPayload,
@@ -32,6 +37,9 @@ __all__ = [
     "save_klickd",
     "validate",
     "validate_iter_errors",
+    "migrate_payload",
+    "migrate_payload_iter_warnings",
+    "needs_migration",
     "KlickdError",
     "KlickdErrorCode",
     "HTTP_STATUS",

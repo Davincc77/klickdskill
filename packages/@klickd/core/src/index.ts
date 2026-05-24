@@ -12,3 +12,9 @@ export {
   listBundledSchemas,
 } from './validate.js';
 export type { ValidateOptions, ValidationIssue, ValidationTarget } from './validate.js';
+export {
+  migratePayload,
+  migratePayloadIterWarnings,
+  needsMigration,
+} from './migrate.js';
+export type { MigrateOptions, MigrationWarning } from './migrate.js';
