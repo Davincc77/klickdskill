@@ -293,6 +293,7 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 - **DoD :** la politique distingue *deprecated dans la SPEC* (champ encore valide mais discouraged) et *removed* (champ supprimé du schéma) ; aucune suppression sans transition `deprecated` d'au moins une version mineure ; le `deprecated_fields[]` est purement documentaire, jamais utilisé pour rejeter.
 - **Garde-fou anti-pattern :** A4 (inflation schéma).
 - **Dépendances :** P0-1.
+- **Statut :** contrat normatif R4-P0-4 inscrit ([`docs/spec/DEPRECATION_POLICY_V4.md`](../spec/DEPRECATION_POLICY_V4.md)) — cycle `active` → `deprecated` → `removed`, gate combiné **Vx+2 AND <10 % d'usage** sur le corpus de référence, préservation verbatim inconditionnelle sur round-trip, bloc envelope OPTIONNEL `deprecated_fields[]` purement documentaire, exception champs locked / safety (§9), garde-fous A4 opératoires (§14). Pointeur ajouté en SPEC §33.13. Alignement SDK (log développeur de la dépréciation) **différé** à une track SDK ultérieure.
 
 #### R4-P1-1 — `media.klickd` minimal (alignement RFC-001)
 
