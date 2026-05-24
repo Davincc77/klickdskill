@@ -1,0 +1,93 @@
+{
+  "klickd_version": "4.0",
+  "preview": "v4.0.0-preview.1",
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "work-1.0",
+  "created_at": "2026-05-24T09:10:00Z",
+  "encrypted": false,
+  "domain": "work",
+  "profile_kind": "learner",
+  "_example_metadata": {
+    "persona": "Full-stack developer (EN)",
+    "non_normative": true,
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "test_passphrase_if_encrypted": "klickd-example-only",
+    "see_readme": "examples/v4/personas/README.md"
+  },
+  "identity": {
+    "display_name": "Dev Example",
+    "language": "en",
+    "communication_style": "technical",
+    "timezone": "Europe/London"
+  },
+  "companion_identity": {
+    "name": "Max",
+    "persona": "concise, technically rigorous, results-oriented",
+    "teaching_mode": ["direct", "coaching"],
+    "response_hint": "detailed",
+    "updated_at": "2026-05-24"
+  },
+  "learning_goal": {
+    "type": "delivery",
+    "deadline": "2026-07-15",
+    "stakes": "medium"
+  },
+  "context": {
+    "summary": "Mid-level full-stack engineer (Node + React + Postgres). Shipping a multi-tenant feature behind a flag. CI is on GitHub Actions.",
+    "current_project": "Multi-tenant rollout — feature flagged",
+    "current_state": "Backend migration merged. Frontend rollout gated by GrowthBook flag. E2E tests stable on main.",
+    "resume_trigger": "Resume on tightening the rollout flag and writing migration tests."
+  },
+  "knowledge": {
+    "expertise_level": "advanced",
+    "mastered": ["TypeScript", "Node.js", "PostgreSQL", "GitHub Actions"],
+    "next_steps": ["Add migration tests", "Write rollout runbook", "Reduce flake in E2E suite"]
+  },
+  "verification_gates": {
+    "version": 1,
+    "user_default": "silent",
+    "gates": [
+      {
+        "id": "prod-deploy",
+        "action_class": "deploy_to_production",
+        "level": "require-owner",
+        "reason": "No agent ships prod without an explicit human go."
+      },
+      {
+        "id": "db-migration",
+        "action_class": "irreversible_data_change",
+        "level": "block",
+        "reason": "Migrations always reviewed in PR — never executed by the agent."
+      },
+      {
+        "id": "casual-code",
+        "action_class": "casual_code_edit",
+        "level": "silent",
+        "reason": "Local refactors and tests don't need a gate."
+      }
+    ]
+  },
+  "claim_sources": {
+    "prefer": ["user_supplied", "tool:internal_kb", "tool:web_search"],
+    "require_citation_for": ["factual_claim_with_date"]
+  },
+  "human_veto_policy": {
+    "applies_to": ["deploy_to_production", "irreversible_data_change", "public_post"],
+    "second_party": null,
+    "min_level": "require-owner",
+    "rationale": "Production state is shared — humans approve, agents prepare."
+  },
+  "reversibility": {
+    "deploy_to_production": "low",
+    "irreversible_data_change": "none",
+    "casual_code_edit": "high"
+  },
+  "blast_radius": {
+    "deploy_to_production": "all_users",
+    "irreversible_data_change": "all_users",
+    "casual_code_edit": "local_only"
+  },
+  "user_preferences": "Pick up as a senior pair-programmer. Short answers, code first, no preamble. Cite docs when you assert API behavior.",
+  "agent_instructions": "Continue on the rollout. If unsure whether a change is reversible, surface the gate level you'd apply BEFORE the diff."
+}

@@ -283,6 +283,7 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 - **DoD :** chaque fichier passe la validation stricte v4 (P0-2/P0-6) sans warning ; chaque fichier round-trip via les SDKs (P0-3/P0-4) ; aucune donnée personnelle ni secret réel.
 - **Garde-fou anti-pattern :** A5 (spec-first sans exemples).
 - **Dépendances :** P0-2, P0-3, P0-4, P0-6.
+- **Statut :** 5 personas inscrits dans [`examples/v4/personas/`](../../examples/v4/personas/) (cf. README du dossier) — validés contre le schéma permissif v4-preview ([`schemas/klickd-payload-v4-preview.schema.json`](../../schemas/klickd-payload-v4-preview.schema.json) et [`schema/klickd-v4-preview.schema.json`](../../schema/klickd-v4-preview.schema.json)). La validation stricte v4 et le round-trip SDK restent **différés** à P0-2 / P0-6 / SDK alignment conformément à l'ordre des dépendances.
 
 #### R4-P0-4 — Politique de dépréciation V4 formelle
 

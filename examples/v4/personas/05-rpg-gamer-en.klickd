@@ -1,0 +1,99 @@
+{
+  "klickd_version": "4.0",
+  "preview": "v4.0.0-preview.1",
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "gaming-1.0",
+  "created_at": "2026-05-24T09:20:00Z",
+  "encrypted": false,
+  "domain": "gaming",
+  "profile_kind": "learner",
+  "_example_metadata": {
+    "persona": "RPG gamer (preview gaming.klickd alignment)",
+    "non_normative": true,
+    "preview_facet_alignment": "gaming.klickd baseline (R4-P1-4, conditional V4)",
+    "registry_based": true,
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "test_passphrase_if_encrypted": "klickd-example-only",
+    "see_readme": "examples/v4/personas/README.md"
+  },
+  "identity": {
+    "display_name": "Player Example",
+    "language": "en",
+    "timezone": "America/New_York"
+  },
+  "companion_identity": {
+    "name": "Quill",
+    "persona": "fellow party member, never breaks immersion, factual about rules",
+    "teaching_mode": ["adaptive"],
+    "updated_at": "2026-05-24"
+  },
+  "context": {
+    "summary": "Long-running tabletop-style RPG campaign with three friends. Session 14 next week. Character is a half-elf ranger at level 6.",
+    "current_project": "Campaign — Ashfall Reach (session 14)",
+    "current_state": "Party just escaped the Sunken Library. Two unresolved NPC threads.",
+    "resume_trigger": "Resume on planning the next session's opening scene."
+  },
+  "gaming_profile": {
+    "version": 1,
+    "character_name": "Veyra Stoneash",
+    "game": "Custom tabletop campaign — Ashfall Reach",
+    "continuity_state": {
+      "current_chapter": "Aftermath of the Sunken Library",
+      "open_threads": [
+        "Find out what the Archivist actually wanted from Veyra",
+        "Decide whether to warn the village before the Reachfall ceremony"
+      ]
+    },
+    "next_session_trigger": "We pick up the morning after the escape, in the abandoned tollhouse.",
+    "npc_memory": [
+      {
+        "name": "Archivist Halund",
+        "last_seen": "Sunken Library, session 13",
+        "relationship": "ambiguous-ally",
+        "note": "Knows more about Veyra's lineage than he admits."
+      },
+      {
+        "name": "Mira of Reachfall",
+        "last_seen": "Reachfall village, session 11",
+        "relationship": "friendly",
+        "note": "Asked the party to return before the next full moon."
+      }
+    ]
+  },
+  "verification_gates": {
+    "version": 1,
+    "user_default": "silent",
+    "gates": [
+      {
+        "id": "spoil-future",
+        "action_class": "spoil_future_plot",
+        "level": "block",
+        "reason": "Companion must never reveal future plot beats — immersion-critical."
+      },
+      {
+        "id": "casual-narration",
+        "action_class": "casual_media_generation",
+        "level": "silent",
+        "reason": "In-game narration and table banter don't need a gate."
+      },
+      {
+        "id": "real-person-claim",
+        "action_class": "factual_claim_about_person",
+        "level": "confirm",
+        "reason": "Players are real people; never assert anything about them from memory."
+      }
+    ]
+  },
+  "claim_sources": {
+    "prefer": ["user_supplied"],
+    "require_citation_for": ["factual_claim_about_person"]
+  },
+  "human_veto_policy": {
+    "applies_to": ["public_post", "identity_assertion"],
+    "second_party": null,
+    "rationale": "Nothing about this campaign is published without my explicit ok."
+  },
+  "user_preferences": "Stay in tone with the campaign. When I ask out-of-character (OOC), respond plainly; in-character (IC), keep Quill's voice. Never invent NPC facts that contradict npc_memory.",
+  "agent_instructions": "On resume: summarize the last session's cliffhanger in 3 lines, then ask which open thread to pick first. Never spoil a future scene."
+}

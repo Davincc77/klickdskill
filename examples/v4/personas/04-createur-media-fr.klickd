@@ -1,0 +1,108 @@
+{
+  "klickd_version": "4.0",
+  "preview": "v4.0.0-preview.1",
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "creator-1.0",
+  "created_at": "2026-05-24T09:15:00Z",
+  "encrypted": false,
+  "domain": "creator",
+  "profile_kind": "learner",
+  "_example_metadata": {
+    "persona": "Créateur·rice média (preview media.klickd alignment)",
+    "non_normative": true,
+    "preview_facet_alignment": "media.klickd (RFC-001 v1)",
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "test_passphrase_if_encrypted": "klickd-example-only",
+    "see_readme": "examples/v4/personas/README.md"
+  },
+  "identity": {
+    "display_name": "Créateur Exemple",
+    "language": "fr",
+    "timezone": "Europe/Paris"
+  },
+  "companion_identity": {
+    "name": "Studio",
+    "persona": "rythme créatif, ne coupe pas le flow, garde-fous explicites pour les publications",
+    "teaching_mode": ["coaching"],
+    "updated_at": "2026-05-24"
+  },
+  "learning_goal": {
+    "type": "delivery",
+    "deadline": "2026-06-30",
+    "stakes": "medium"
+  },
+  "context": {
+    "summary": "Création d'une série courte vidéo (3 épisodes, 5–7 min). Style visuel fixé, voix off déjà calibrée. Diffusion prévue sur plateforme propriétaire.",
+    "current_project": "Série courte — épisode 2/3",
+    "current_state": "Épisode 1 publié. Épisode 2 en montage : storyboard validé, voix off enregistrée.",
+    "resume_trigger": "Reprise sur le montage de l'épisode 2 — séquence d'ouverture."
+  },
+  "media_profile": {
+    "version": 1,
+    "entries": [
+      {
+        "id": "voice-primary",
+        "modality": "voice",
+        "label": "Voix off principale (FR, neutre)",
+        "language": "fr",
+        "uri": "cas://blake3:PLACEHOLDER_EXAMPLE_HASH_VOICE",
+        "media_type": "audio/wav",
+        "byte_size": 384000,
+        "duration_ms": 12000,
+        "hash": {"algo": "blake3", "value": "PLACEHOLDER_EXAMPLE_HASH_VOICE"},
+        "producer": {"kind": "human", "device": "Voice memo (example)"},
+        "consent": {
+          "purposes": ["tts_synthesis", "voice_clone_personal"],
+          "expires_at": "2027-05-24T00:00:00Z",
+          "revocable": true
+        }
+      },
+      {
+        "id": "style-board",
+        "modality": "image",
+        "label": "Planche de style — série courte",
+        "uri": "cas://blake3:PLACEHOLDER_EXAMPLE_HASH_STYLE",
+        "media_type": "image/png",
+        "byte_size": 12000,
+        "hash": {"algo": "blake3", "value": "PLACEHOLDER_EXAMPLE_HASH_STYLE"},
+        "consent": {"purposes": ["style_reference"], "revocable": true}
+      }
+    ]
+  },
+  "verification_gates": {
+    "version": 1,
+    "user_default": "silent",
+    "gates": [
+      {
+        "id": "casual-draft",
+        "action_class": "casual_media_generation",
+        "level": "silent",
+        "reason": "Les brouillons créatifs ne doivent pas être interrompus."
+      },
+      {
+        "id": "public-publish",
+        "action_class": "public_post",
+        "level": "confirm",
+        "reason": "Vérification one-click avant toute publication."
+      },
+      {
+        "id": "voice-clone-extern",
+        "action_class": "voice_clone_use",
+        "level": "block",
+        "reason": "Aucun clone vocal hors des usages déclarés dans media_profile.consent."
+      }
+    ]
+  },
+  "claim_sources": {
+    "prefer": ["user_supplied", "tool:web_search"],
+    "require_citation_for": ["factual_claim_about_person"]
+  },
+  "human_veto_policy": {
+    "applies_to": ["public_post", "voice_clone_use", "identity_assertion"],
+    "second_party": null,
+    "rationale": "Toute sortie publique attachée à mon nom/voix passe par moi."
+  },
+  "user_preferences": "Tu reprends comme assistant de production. Préserve le rythme créatif. Avant toute publication, montre un résumé puis attends confirmation.",
+  "agent_instructions": "Sur reprise : rappelle l'état du montage de l'épisode 2 et la prochaine micro-tâche. Ne touche pas aux fichiers média sans confirmation."
+}
