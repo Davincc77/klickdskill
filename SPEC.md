@@ -2003,6 +2003,39 @@ body in a future PR, the cross-reference inside
 [`docs/spec/R4-P0-1-onboarding-wizard.md`](./docs/spec/R4-P0-1-onboarding-wizard.md) §3.2 MUST be updated to
 point at the new normative SPEC section.
 
+### §33.12 Normative user-facing error contract — R4-P0-2 (`KLICKD_E_*` i18n)
+
+While the field surface of §33 remains preview / non-normative, the
+**user-visible error message contract** for any future v4
+`user.klickd` writer / reader is now constrained by a normative
+companion document:
+
+- [`docs/spec/R4-P0-2-error-i18n-table.md`](./docs/spec/R4-P0-2-error-i18n-table.md) — Normative (V4 P0).
+
+That document binds, in RFC 2119 language, the user-facing message,
+recommended user action, severity, recoverability, and safe-disclosure
+behaviour for every `KLICKD_E_*` code surfaced in the R4-P0-1 wizard
+contexts (passphrase creation, save / download, reload verification,
+import / decrypt, legacy version / migration, corrupt / unsupported
+file, locked policy violation, unsafe QR / deeplink). It covers
+**FR / EN / DE / LB** (the four officially supported project
+languages) and defines an **EN fallback** rule for any other UI
+language.
+
+R4-P0-2 is **docs-only** and does **not** modify the v3.x SDKs
+([`errors.py`](./packages/pypi/klickd/src/klickd/errors.py),
+[`errors.ts`](./packages/@klickd/core/src/errors.ts)), introduce any
+new on-the-wire field, schema change, vector, package version, Git
+tag, or release. It does **not** relax or modify the §33.7
+forward-compatibility contract or the §33.10 privacy invariants.
+
+R4-P0-2 lands now because [R4-P0-1 §3.4 and §3.6](./docs/spec/R4-P0-1-onboarding-wizard.md)
+(passphrase confirmation failure and mandatory reload verification
+failure) already depend on this user-facing error contract. SDK
+alignment (i.e., adding the R4-P0-2-introduced codes to the SDKs as
+runtime identifiers) is deferred to R4-P0-3 (Python) / R4-P0-4
+(TypeScript) and is **not** in scope of this PR.
+
 ---
 
 ## License

@@ -269,11 +269,11 @@ Chaque entrée précise : *Objet → Livrables → Critères de sortie (Definiti
 
 - **Objet :** table `error_messages` mappant **chaque** code `KLICKD_E_*` à un message utilisateur + action recommandée, en FR/EN/DE/LB (langues officielles du projet).
 - **Pourquoi :** Bitwarden et KeePassXC : codes seuls inutilisables par non-développeurs. Couvre l'anti-pattern A6.
-- **Livrables :** `docs/errors/KLICKD_ERRORS.md` (table normative non-secrète), exemples par code, contrat de fallback (code anglais si la langue n'est pas couverte).
-- **DoD :** chaque code `KLICKD_E_*` documenté dans la spec a une ligne `code → message FR/EN/DE/LB → action`. Au moins une action ne renvoie **jamais** « contactez le support » (autonomie utilisateur).
+- **Livrables :** contrat normatif RFC 2119 dans [`docs/spec/R4-P0-2-error-i18n-table.md`](../spec/R4-P0-2-error-i18n-table.md) (table FR/EN/DE/LB + safe-disclosure + sévérité/recoverabilité + actions utilisateur), exemples par code, contrat de fallback (EN si la langue n'est pas couverte).
+- **DoD :** chaque code `KLICKD_E_*` documenté dans la spec a une ligne `code → message FR/EN/DE/LB → action`. Au moins une action ne renvoie **jamais** « contactez le support » (autonomie utilisateur). **Statut :** contrat normatif R4-P0-2 inscrit (docs/spec) — alignement SDK différé à R4-P0-3 / R4-P0-4.
 - **Garde-fou anti-pattern :** A6.
-- **Périmètre :** docs-only. Les SDKs Python/JS ne sont pas modifiés tant que P0-3/4 n'attaquent pas l'API publique de validation.
-- **Dépendances :** P0-1.
+- **Périmètre :** docs-only. Les SDKs Python/JS ne sont pas modifiés tant que P0-3/4 n'attaquent pas l'API publique de validation. Les codes introduits par R4-P0-2 (`KLICKD_E_PASS_MISMATCH`, `KLICKD_E_SAVE_LOCAL`, `KLICKD_E_LEGACY_VERSION`, `KLICKD_E_CORRUPT`, `KLICKD_E_POLICY_LOCKED`, `KLICKD_E_UNSAFE_QR`) sont normatifs côté contrat utilisateur mais **non encore présents** dans les SDKs.
+- **Dépendances :** P0-1, R4-P0-1 (le wizard §3.4 / §3.6 dépend de cette table pour ses messages d'erreur).
 
 #### R4-P0-3 — Profils d'exemple téléchargeables (5 personas)
 
