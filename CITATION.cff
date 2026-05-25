@@ -8,9 +8,9 @@ abstract: >-
   AES-256-GCM and Argon2id key derivation. No server is required.
 type: software
 authors:
-  - family-names: "C."
-    given-names: "Vince"
-    affiliation: "Klickd / Luxlearn, Luxembourg"
+  - family-names: "Cirilli"
+    given-names: "Vincenzo"
+    affiliation: "Klickd.app, Luxembourg"
 repository-code: "https://github.com/Davincc77/klickdskill"
 url: "https://klickd.app"
 license: CC0-1.0

@@ -5,8 +5,8 @@
   "description": ".klickd is an open, encrypted file format for portable AI user context. A single JSON document travels with the user across AI models and sessions. The payload is encrypted client-side with AES-256-GCM and Argon2id key derivation (m=65536, t=3, p=4). No server is required. Version 4.0.0 is the first general-availability release of the v4 track: it ships a normative SPEC for v4, strict JSON Schemas (Draft 2020-12), aligned Python and TypeScript reference SDKs, a non-destructive v3.x to v4 payload migrator, and cross-implementation strict test vectors. The wire envelope remains klickd_version 3.0 (unchanged crypto and AAD); v4 is signaled inside the payload via payload_schema_version 4.0.0. This deposit contains the reference specification (SPEC.md), reference implementations (Python and TypeScript), JSON Schemas, strict cross-implementation test vectors, the migrator, and a benchmark evaluation framework.",
   "creators": [
     {
-      "name": "C., Vince",
-      "affiliation": "Klickd / Luxlearn, Luxembourg"
+      "name": "Cirilli, Vincenzo",
+      "affiliation": "Klickd.app, Luxembourg"
     }
   ],
   "access_right": "open",
