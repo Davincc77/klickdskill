@@ -14,16 +14,15 @@ authors:
 repository-code: "https://github.com/Davincc77/klickdskill"
 url: "https://klickd.app"
 license: CC0-1.0
-version: "3.5.1"
-date-released: "2026-05-22"
-doi: "10.5281/zenodo.20320480"
+version: "4.0.0"
+date-released: "2026-05-25"
 identifiers:
-  - type: doi
-    value: "10.5281/zenodo.20320480"
-    description: "Version-specific DOI for v3.5"
   - type: doi
     value: "10.5281/zenodo.20262530"
     description: "Concept DOI (all versions)"
+  - type: doi
+    value: "10.5281/zenodo.20320480"
+    description: "Version-specific DOI for v3.5.1"
 keywords:
   - portable-ai-memory
   - ai-context
