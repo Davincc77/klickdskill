@@ -32,6 +32,10 @@ You explain your level. Your goals. Your context. Then the session ends — and 
 
 > **One soul. Any model. Any agent.**
 
+> `.klickd` does not remove integration work — it makes it reusable. One integration. Infinite reuse. Across games, engines, platforms, apps, agents, robots, devices, and models.
+>
+> Reuse requires that the client, agent, or tool on the other side actually supports `.klickd` (or follows the [generic integration pattern](docs/integrations/generic.md)). The format is portable; compatibility still depends on the reader.
+
 `.klickd` does not replace provider security, model alignment, or application-level access control; it complements them by giving the user-state layer a portable, verifiable shape.
 
 ---
