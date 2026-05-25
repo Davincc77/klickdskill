@@ -24,10 +24,27 @@ What it does:
 4. Computes a **deterministic whitespace token-proxy** per condition
    (`cold`, `paste`, `klickd`). This is a coarse approximation — NOT a
    provider token count and NOT comparable across tokenizers.
-5. Writes outputs to `results/<YYYY-MM-DD>/`:
+5. Computes **extended RFC-003 §6 metrics**, all deterministic and offline:
+   - `input_token_estimate_heuristic` — `len(text)//4` BPE-ish proxy.
+   - `input_token_estimate_tiktoken` — populated only if `tiktoken` is
+     already installed locally. Never installs anything; never calls a
+     network. Falls back to `0` and a clear "not installed" note.
+   - `prompt_size_bytes` — UTF-8 byte length of the assembled prompt.
+   - `context_duplication_avoided` — paste − klickd, per estimator.
+   - `gate_decision_presence` — count of `decisions_locked`, allowed /
+     forbidden / confirm-required tool permissions, and whether the ethics
+     lock is present in the `.klickd` payload.
+   - `continuity_fields_present` — boolean map of the structural continuity
+     fields a v4 payload is expected to carry.
+   - `missing_evidence_warnings` — diagnostic strings when the payload's
+     `verification_artifacts` block is absent, malformed, or empty.
+6. Writes outputs to `results/<YYYY-MM-DD>/`:
    - `summary.csv` — per-message proxy counts and totals.
    - `raw_runs.jsonl` — one record per (condition, message).
-   - `report.md` — human-readable summary.
+   - `report.md` — human-readable summary (now includes the extended
+     metrics block and a Chimera.klickd v4.1 extrapolation section).
+   - `extended_metrics.json` — full structured metrics dump.
+   - `chimera_v41_extrapolation.json` — forward-looking projection.
    - `artifacts/sample_test.log` — copy of the fixture verification artifact,
      mirroring RFC-003 §1.2 artifact-tee rule.
 
@@ -74,6 +91,35 @@ Structural expectations live in
 [`fixtures/validation/edge_ground_truth.json`](./fixtures/validation/edge_ground_truth.json)
 and are spot-checked by
 [`tests/test_edge_cases.py`](./tests/test_edge_cases.py).
+
+## Chimera.klickd v4.1 — forward-looking extrapolation (non-normative)
+
+The runner also emits a forward-looking projection for a hypothetical
+`Chimera.klickd v4.1`, where the single `.klickd` payload becomes a base
+context plus a set of domain "skill packs" (`core.Kai`, `core.KaiLegal`,
+`core.MediaKai`, `core.Code`, `core.Edu`, `core.Health`, `core.Ops`).
+
+Two activation strategies are compared:
+
+| Strategy | What loads at session start | Why it matters |
+|---|---|---|
+| `base_plus_seven` | base `.klickd` payload + ALL 7 packs | upper-bound cost; pays for every domain regardless of relevance |
+| `router_selected` | base `.klickd` payload + only the packs the router considers relevant to the turn (default: `core.Kai` + `core.Ops`) | lower-bound cost; pays only for what the current task needs |
+
+Inputs are deterministic token estimates. The per-pack cost is an explicit
+assumption (default: 850 heuristic tokens per pack, documented in
+`chimera_v41_extrapolation.json`). The result is **not a measurement**: it is
+an offline projection meant to bracket how much a router-selected activation
+could save vs. unconditional loading.
+
+The function `chimera_v41_extrapolation()` in `runner.py` is the canonical
+entry point and accepts a custom `pack_token_costs` dict and a custom
+`router_selection` tuple for what-if exploration. The connection to RFC-008
+(`skill_pack_manifest`) is intentional: a router-selected activation is the
+operational reading of an `agent_core` carrying a v4.1 skill-pack manifest.
+
+This section is non-normative. v4.1 does not exist yet; the projection is
+re-runnable with new assumptions as soon as real packs are drafted.
 
 ## Don't make the agent re-run the test suite to find the failure
 

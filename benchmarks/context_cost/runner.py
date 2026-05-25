@@ -51,6 +51,35 @@ def _whitespace_tokens(text: str) -> int:
     return len(re.split(r"\s+", text.strip())) if text.strip() else 0
 
 
+def _heuristic_input_token_estimate(text: str) -> int:
+    # Heuristic token estimate: ~4 chars/token for English-like text. Closer
+    # to BPE tokenizers than whitespace_tokens, but still deterministic and
+    # offline. NOT a provider token count.
+    if not text:
+        return 0
+    return max(1, len(text) // 4) if text.strip() else 0
+
+
+def _tiktoken_count(text: str) -> int | None:
+    # Optional: if tiktoken is installed locally, use cl100k_base. Returns
+    # None when unavailable — never installs anything, never calls a network.
+    if not text:
+        return 0
+    try:
+        import tiktoken  # type: ignore
+    except Exception:
+        return None
+    try:
+        enc = tiktoken.get_encoding("cl100k_base")
+        return len(enc.encode(text))
+    except Exception:
+        return None
+
+
+def _prompt_size_bytes(text: str) -> int:
+    return len(text.encode("utf-8")) if text else 0
+
+
 def _load_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
@@ -209,11 +238,217 @@ def estimate_token_proxy(condition_inputs: dict[str, list[dict[str, str]]]) -> d
     }
 
 
+def _joined_prompt(item: dict[str, str]) -> str:
+    return "\n".join([item["system"], item["leading_user"], item["user"]])
+
+
+def _count_continuity_fields(klickd_ctx: dict[str, Any]) -> dict[str, Any]:
+    # Surfaces which "continuity" fields are present in the .klickd payload.
+    ctx = klickd_ctx.get("context", {}) or {}
+    identity = klickd_ctx.get("identity", {}) or {}
+    fields = {
+        "identity.display_name": bool(identity.get("display_name")),
+        "identity.language": bool(identity.get("language")),
+        "context.summary": bool(ctx.get("summary")),
+        "context.current_state": bool(ctx.get("current_state")),
+        "context.decisions_locked": bool(ctx.get("decisions_locked")),
+        "context.handoff": bool(ctx.get("handoff")),
+        "tool_permissions": bool(klickd_ctx.get("tool_permissions")),
+        "verification_artifacts": bool(klickd_ctx.get("verification_artifacts")),
+        "ethics.locked_actions_no_override": bool(
+            (klickd_ctx.get("ethics") or {}).get("locked_actions_no_override")
+        ),
+    }
+    return {
+        "fields": fields,
+        "present_count": sum(1 for v in fields.values() if v),
+        "total_count": len(fields),
+    }
+
+
+def _gate_decision_presence(klickd_ctx: dict[str, Any]) -> dict[str, Any]:
+    perms = klickd_ctx.get("tool_permissions", {}) or {}
+    ctx = klickd_ctx.get("context", {}) or {}
+    return {
+        "decisions_locked_count": len(ctx.get("decisions_locked") or []),
+        "tool_permissions_allowed_count": len(perms.get("allowed") or []),
+        "tool_permissions_forbidden_count": len(perms.get("forbidden") or []),
+        "tool_permissions_confirm_required_count": len(perms.get("confirm_required") or []),
+        "has_ethics_lock": bool((klickd_ctx.get("ethics") or {}).get("locked_actions_no_override")),
+    }
+
+
+def _missing_evidence_warnings(klickd_ctx: dict[str, Any]) -> list[str]:
+    warnings: list[str] = []
+    va = klickd_ctx.get("verification_artifacts") or {}
+    if not va:
+        warnings.append("verification_artifacts block absent")
+    else:
+        if "policy" not in va:
+            warnings.append("verification_artifacts.policy absent")
+        if not isinstance(va.get("records"), list):
+            warnings.append("verification_artifacts.records must be a list")
+        elif len(va.get("records")) == 0:
+            warnings.append(
+                "verification_artifacts.records is empty — all external claims will be 'assumed'"
+            )
+    return warnings
+
+
+def compute_extended_metrics(
+    condition_inputs: dict[str, list[dict[str, str]]],
+    klickd_ctx: dict[str, Any],
+) -> dict[str, Any]:
+    """RFC-003 §6 metrics (input token estimate, prompt size bytes, etc.) plus
+    .klickd-payload structural diagnostics. No provider calls."""
+
+    tiktoken_seen = False
+    per_message: list[dict[str, Any]] = []
+    totals = {c: {
+        "input_token_estimate_heuristic": 0,
+        "input_token_estimate_tiktoken": 0,
+        "prompt_size_bytes": 0,
+        "whitespace_tokens": 0,
+    } for c in CONDITIONS}
+
+    n_messages = len(condition_inputs[CONDITIONS[0]])
+    for idx in range(n_messages):
+        row: dict[str, Any] = {"message_id": condition_inputs[CONDITIONS[0]][idx]["id"]}
+        for c in CONDITIONS:
+            item = condition_inputs[c][idx]
+            joined = _joined_prompt(item)
+            heur = _heuristic_input_token_estimate(joined)
+            tik = _tiktoken_count(joined)
+            ws = _whitespace_tokens(joined)
+            size_bytes = _prompt_size_bytes(joined)
+            row[f"{c}_input_token_estimate_heuristic"] = heur
+            row[f"{c}_input_token_estimate_tiktoken"] = tik
+            row[f"{c}_prompt_size_bytes"] = size_bytes
+            row[f"{c}_whitespace_tokens"] = ws
+            totals[c]["input_token_estimate_heuristic"] += heur
+            totals[c]["prompt_size_bytes"] += size_bytes
+            totals[c]["whitespace_tokens"] += ws
+            if tik is not None:
+                tiktoken_seen = True
+                totals[c]["input_token_estimate_tiktoken"] += tik
+        per_message.append(row)
+
+    # context_duplication_avoided: bytes (and heuristic tokens) the paste
+    # condition pays that the klickd condition does not. Positive means
+    # .klickd is cheaper than naive paste at the prompt boundary.
+    duplication_avoided = {
+        "prompt_size_bytes": totals["paste"]["prompt_size_bytes"]
+            - totals["klickd"]["prompt_size_bytes"],
+        "input_token_estimate_heuristic": totals["paste"]["input_token_estimate_heuristic"]
+            - totals["klickd"]["input_token_estimate_heuristic"],
+        "input_token_estimate_tiktoken": (
+            totals["paste"]["input_token_estimate_tiktoken"]
+            - totals["klickd"]["input_token_estimate_tiktoken"]
+        ) if tiktoken_seen else None,
+        "vs_cold_paste_overhead_bytes": totals["paste"]["prompt_size_bytes"]
+            - totals["cold"]["prompt_size_bytes"],
+        "vs_cold_klickd_overhead_bytes": totals["klickd"]["prompt_size_bytes"]
+            - totals["cold"]["prompt_size_bytes"],
+    }
+
+    continuity = _count_continuity_fields(klickd_ctx)
+    gate = _gate_decision_presence(klickd_ctx)
+    warnings = _missing_evidence_warnings(klickd_ctx)
+
+    return {
+        "per_message": per_message,
+        "per_condition_total": totals,
+        "tiktoken_available": tiktoken_seen,
+        "context_duplication_avoided": duplication_avoided,
+        "gate_decision_presence": gate,
+        "continuity_fields_present": continuity,
+        "missing_evidence_warnings": warnings,
+    }
+
+
+# --- Chimera.klickd v4.1 forward-looking extrapolation ----------------------
+
+DEFAULT_CHIMERA_PACKS = (
+    "core.Kai",          # general agent operating context
+    "core.KaiLegal",     # legal reasoning
+    "core.MediaKai",     # media/comms
+    "core.Code",         # software engineering
+    "core.Edu",          # education / tutoring (.klickd v3.x heritage)
+    "core.Health",       # health & wellbeing assistant
+    "core.Ops",          # ops / project management
+)
+
+
+def chimera_v41_extrapolation(
+    klickd_baseline_tokens: int,
+    pack_token_costs: dict[str, int] | None = None,
+    router_selection: tuple[str, ...] = ("core.Kai", "core.Ops"),
+) -> dict[str, Any]:
+    """Forward-looking, deterministic extrapolation for Chimera.klickd v4.1.
+
+    Models two activation strategies for a hypothetical v4.1 multi-pack core:
+
+    - `base_plus_seven`: load the base .klickd payload + ALL 7 default packs at
+      session start, paying for every pack regardless of need.
+    - `router_selected`: load the base payload + only the packs the router
+      considers relevant to the current turn (default: core.Kai + core.Ops).
+
+    Inputs are deterministic token estimates. No provider calls. Results are
+    illustrative — actual savings depend on real tokenizer + real packs.
+    """
+    if pack_token_costs is None:
+        # Conservative per-pack cost estimates (heuristic tokens) for a
+        # ~3-4kB compressed pack. Documented as illustrative.
+        pack_token_costs = {name: 850 for name in DEFAULT_CHIMERA_PACKS}
+
+    missing = [p for p in DEFAULT_CHIMERA_PACKS if p not in pack_token_costs]
+    if missing:
+        # Be explicit rather than silently zero them out.
+        for m in missing:
+            pack_token_costs[m] = 850
+
+    base_plus_seven_total = klickd_baseline_tokens + sum(
+        pack_token_costs[p] for p in DEFAULT_CHIMERA_PACKS
+    )
+    router_total = klickd_baseline_tokens + sum(
+        pack_token_costs[p] for p in router_selection if p in pack_token_costs
+    )
+    savings_tokens = base_plus_seven_total - router_total
+    savings_pct = (savings_tokens / base_plus_seven_total) if base_plus_seven_total else 0.0
+
+    return {
+        "assumptions": {
+            "klickd_baseline_tokens": klickd_baseline_tokens,
+            "pack_token_costs": pack_token_costs,
+            "default_packs": list(DEFAULT_CHIMERA_PACKS),
+            "router_selection": list(router_selection),
+            "note": (
+                "Heuristic token estimate (chars/4). Illustrative; "
+                "real numbers require a live tokenizer and real packs."
+            ),
+        },
+        "base_plus_seven": {
+            "total_tokens": base_plus_seven_total,
+            "packs_loaded": list(DEFAULT_CHIMERA_PACKS),
+        },
+        "router_selected": {
+            "total_tokens": router_total,
+            "packs_loaded": list(router_selection),
+        },
+        "expected_savings": {
+            "tokens": savings_tokens,
+            "pct_vs_base_plus_seven": round(savings_pct, 4),
+        },
+    }
+
+
 def write_results(
     validation: dict[str, Any],
     proxy: dict[str, Any],
     out_dir: Path,
     artifact_src: Path,
+    extended: dict[str, Any] | None = None,
+    extrapolation: dict[str, Any] | None = None,
 ) -> dict[str, str]:
     out_dir.mkdir(parents=True, exist_ok=True)
     artifacts_dir = out_dir / "artifacts"
@@ -301,18 +536,118 @@ def write_results(
             f"{row['paste_token_proxy']} | {row['klickd_token_proxy']} |"
         )
     lines.append("")
+
+    extra_paths: dict[str, str] = {}
+
+    if extended is not None:
+        ext_totals = extended["per_condition_total"]
+        dup = extended["context_duplication_avoided"]
+        cont = extended["continuity_fields_present"]
+        gate = extended["gate_decision_presence"]
+        warns = extended["missing_evidence_warnings"]
+        lines.extend([
+            "## Extended metrics (RFC-003 §6, deterministic / offline)",
+            "",
+            "Token estimators used (offline, no provider calls):",
+            "- `heuristic`: `max(1, len(text)//4)` — coarse BPE-ish approximation.",
+            f"- `tiktoken`: {'available (cl100k_base)' if extended['tiktoken_available'] else 'not installed; values are 0'}.",
+            "",
+            "| Condition | input_tokens_heuristic | input_tokens_tiktoken | prompt_size_bytes | whitespace_tokens |",
+            "|---|---:|---:|---:|---:|",
+        ])
+        for c in CONDITIONS:
+            t = ext_totals[c]
+            lines.append(
+                f"| {c} | {t['input_token_estimate_heuristic']} | "
+                f"{t['input_token_estimate_tiktoken']} | "
+                f"{t['prompt_size_bytes']} | {t['whitespace_tokens']} |"
+            )
+        lines.extend([
+            "",
+            "### Context duplication avoided (paste − klickd)",
+            "",
+            "Positive numbers mean .klickd is cheaper than naive paste. Negative",
+            "numbers mean the .klickd JSON serialisation is heavier than the",
+            "free-text paste for this particular fixture — typically because",
+            "the structured payload pretty-prints more whitespace than the prose",
+            "system prompt. The whitespace-token proxy and the heuristic-token",
+            "estimator can disagree for the same input; both are reported.",
+            "",
+            f"- prompt_size_bytes saved: **{dup['prompt_size_bytes']}**",
+            f"- heuristic input tokens saved: **{dup['input_token_estimate_heuristic']}**",
+            f"- tiktoken tokens saved: **{dup['input_token_estimate_tiktoken'] if dup['input_token_estimate_tiktoken'] is not None else 'n/a (tiktoken not installed)'}**",
+            f"- paste overhead vs cold (bytes): {dup['vs_cold_paste_overhead_bytes']}",
+            f"- klickd overhead vs cold (bytes): {dup['vs_cold_klickd_overhead_bytes']}",
+            "",
+            "### Gate / decision presence in .klickd payload",
+            "",
+            f"- decisions_locked: {gate['decisions_locked_count']}",
+            f"- tool_permissions.allowed: {gate['tool_permissions_allowed_count']}",
+            f"- tool_permissions.forbidden: {gate['tool_permissions_forbidden_count']}",
+            f"- tool_permissions.confirm_required: {gate['tool_permissions_confirm_required_count']}",
+            f"- ethics.locked_actions_no_override: {'yes' if gate['has_ethics_lock'] else 'no'}",
+            "",
+            "### Continuity fields present",
+            "",
+            f"{cont['present_count']} / {cont['total_count']} expected continuity fields present:",
+        ])
+        for k, v in cont["fields"].items():
+            lines.append(f"- {k}: {'present' if v else 'absent'}")
+        lines.append("")
+        lines.append("### Missing-evidence warnings")
+        lines.append("")
+        if warns:
+            for w in warns:
+                lines.append(f"- {w}")
+        else:
+            lines.append("- (none)")
+        lines.append("")
+
+        extended_json = out_dir / "extended_metrics.json"
+        extended_json.write_text(
+            json.dumps(extended, ensure_ascii=False, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+        extra_paths["extended_metrics_json"] = str(extended_json)
+
+    if extrapolation is not None:
+        ex_json = out_dir / "chimera_v41_extrapolation.json"
+        ex_json.write_text(
+            json.dumps(extrapolation, ensure_ascii=False, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+        extra_paths["chimera_v41_extrapolation_json"] = str(ex_json)
+        savings = extrapolation["expected_savings"]
+        lines.extend([
+            "## Chimera.klickd v4.1 — forward-looking extrapolation",
+            "",
+            "> Forward-looking. v4.1 does not exist yet. Numbers below are a",
+            "> deterministic offline extrapolation from the v4 baseline and",
+            "> illustrative per-pack costs. **Not** a measurement.",
+            "",
+            f"- base + 7 packs total tokens: **{extrapolation['base_plus_seven']['total_tokens']}**",
+            f"- router-selected ({', '.join(extrapolation['router_selected']['packs_loaded'])}) total tokens: **{extrapolation['router_selected']['total_tokens']}**",
+            f"- expected savings: **{savings['tokens']} tokens** "
+            f"(**{savings['pct_vs_base_plus_seven'] * 100:.1f}%** vs. base+7)",
+            "",
+            "See `chimera_v41_extrapolation.json` for full assumptions.",
+            "",
+        ])
+
     lines.append("## Artifacts")
     lines.append("")
     lines.append(f"- `{copied_artifact.relative_to(out_dir)}` (copied from fixture)")
     lines.append("")
     report_md.write_text("\n".join(lines), encoding="utf-8")
 
-    return {
+    paths = {
         "summary_csv": str(summary_csv),
         "raw_jsonl": str(raw_jsonl),
         "report_md": str(report_md),
         "artifact_copy": str(copied_artifact),
     }
+    paths.update(extra_paths)
+    return paths
 
 
 def run(
@@ -331,17 +666,27 @@ def run(
 
     inputs = _build_condition_inputs(system_prompt, klickd_ctx, flow)
     proxy = estimate_token_proxy(inputs)
+    extended = compute_extended_metrics(inputs, klickd_ctx)
+    extrapolation = chimera_v41_extrapolation(
+        klickd_baseline_tokens=extended["per_condition_total"]["klickd"][
+            "input_token_estimate_heuristic"
+        ],
+    )
 
     paths = write_results(
         validation,
         proxy,
         out_dir,
         REQUIRED_FIXTURES["verification_artifact"],
+        extended=extended,
+        extrapolation=extrapolation,
     )
     return {
         "out_dir": str(out_dir),
         "validation": validation,
         "proxy": proxy,
+        "extended": extended,
+        "extrapolation": extrapolation,
         "paths": paths,
     }
 
