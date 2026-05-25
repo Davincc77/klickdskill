@@ -1,6 +1,6 @@
 {
   "name": "klickdskill",
-  "version": "4.0.0-preview.1",
+  "version": "4.0.0",
   "private": true,
   "description": "Reference implementation and test suite for the .klickd portable AI context format",
   "type": "module",
@@ -17,7 +17,7 @@
     "node": ">=18"
   },
   "license": "CC0-1.0",
-  "author": "Vince C. (Klickd / Luxlearn, Luxembourg)",
+  "author": "Vincenzo Cirilli (.klickd / klickd.app, Luxembourg)",
   "repository": {
     "type": "git",
     "url": "https://github.com/Davincc77/klickdskill"

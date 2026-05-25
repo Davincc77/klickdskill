@@ -1,6 +1,6 @@
 {
   "name": "@klickd/core",
-  "version": "4.0.0-preview.1",
+  "version": "4.0.0",
   "description": "Official JavaScript/TypeScript library for reading and writing .klickd portable AI context files",
   "keywords": [
     "klickd",
@@ -15,7 +15,7 @@
     "url": "https://github.com/Davincc77/klickdskill"
   },
   "license": "CC0-1.0",
-  "author": "Vince C. <Luxlearn@pm.me> (https://klickd.app)",
+  "author": "Vincenzo Cirilli (.klickd) <hello@klickd.app> (https://klickd.app)",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

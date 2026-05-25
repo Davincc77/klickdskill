@@ -12,7 +12,7 @@ authors:
   - name: Vincenzo Cirilli
     affiliation: 1
 affiliations:
-  - name: Klickd / Luxlearn, Luxembourg
+  - name: .klickd / klickd.app, Luxembourg
     index: 1
 date: 20 May 2026
 bibliography: paper.bib

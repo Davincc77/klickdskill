@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "klickd"
-version = "4.0.0a1"
+version = "4.0.0"
 description = "Official Python library for reading and writing .klickd portable AI context files"
 readme = "README.md"
 license = {text = "CC0-1.0"}
-authors = [{name = "Vince C.", email = "Luxlearn@pm.me"}]
+authors = [{name = "Vincenzo Cirilli (.klickd)", email = "hello@klickd.app"}]
 keywords = ["klickd", "ai-context", "portable", "memory", "encrypted"]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
   "Programming Language :: Python :: 3",

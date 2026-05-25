@@ -7,6 +7,82 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## v4.0.0 (GA) — 2026-05-25 — final v4 general availability (release-prep, not published)
+
+> **Status: RELEASE-PREP (PR open).** No git tag, no GitHub Release, no npm
+> publish (no `latest` dist-tag flip), no PyPI publish, no Zenodo deposit yet.
+> Those remain final gated public actions after maintainer review.
+>
+> v4.0.0 is the first general-availability release of the v4 track. The wire
+> envelope stays at `klickd_version: "3.0"` (crypto, AAD and KDF unchanged);
+> v4 is signalled inside the payload via
+> `payload_schema_version: "4.0.0"`. v3.x readers MUST ignore unknown
+> fields; v4 readers MUST preserve them verbatim.
+>
+> **Positioning (v4).** `.klickd` is positioned as an open-source security
+> and continuity layer for every actor in AI: users (privacy / ownership /
+> memory portability), agents (structured context / verified constraints),
+> developers (schemas / SDKs / migration) and industry (controlled,
+> opt-in interoperability). Tagline: *One soul. Any model. Any agent.*
+> v4.0.0 makes this layer normative and strict; it does not claim adoption
+> as an industry standard or universal cross-product compatibility.
+
+### What ships in v4.0.0
+
+- **SPEC normative v4** — `SPEC.md` promoting v4 wording from preview to
+  normative; `klickd_version: "3.0"` stays the wire identifier; the v4
+  surface is signalled via `payload_schema_version`.
+- **Strict JSON Schemas (Draft 2020-12)** — `schemas/klickd-payload-v4.schema.json`
+  and `schema/klickd-v4.schema.json`; coexist with v4 preview schemas for
+  one cycle.
+- **Reference SDKs aligned to v4 GA strict** — Python `klickd==4.0.0`
+  (`packages/pypi/klickd/`) and TypeScript `@klickd/core@4.0.0`
+  (`packages/@klickd/core/`). Public surface for v4 sections, strict
+  validation entrypoint, and preservation of unknown fields.
+- **Non-destructive v3.x → v4 payload migrator** (RFC-004) — exposed in
+  both SDKs; produces a `migration_report` and never overwrites caller-set
+  v4 fields.
+- **Strict cross-implementation v4 test vectors** — positive and adversarial,
+  verified by `verify_vectors.py` (Python) and `verify_vectors.mjs` (Node).
+- **Community files** — CODE_OF_CONDUCT, issue templates, PR template
+  (landed in #47).
+
+### Distribution version mapping (release-prep)
+
+| Channel    | Version target                                       | Notes                                                                       |
+|------------|------------------------------------------------------|-----------------------------------------------------------------------------|
+| git tag    | `v4.0.0`                                             | NOT created in this PR; final gated action.                                 |
+| npm        | `@klickd/core@4.0.0`                                 | NOT published in this PR; `latest` flip is a final gated action.            |
+| PyPI       | `klickd==4.0.0`                                      | NOT published in this PR; final gated action.                               |
+| Zenodo     | new version of concept DOI `10.5281/zenodo.20262530` | NOT deposited in this PR; final gated action.                               |
+
+### Backward compatibility
+
+- Wire envelope unchanged (`klickd_version: "3.0"`); v3.x readers continue
+  to load v4 files and MUST ignore unknown payload fields.
+- v3.5.1 deposit on Zenodo remains valid and citeable; v4.0.0 declares a
+  `isNewVersionOf` relationship to it.
+- The Python `klickd==3.x` series continues to load v4 payloads (round-trip)
+  but does not enforce the strict v4 schema; upgrading to `klickd==4.0.0`
+  is recommended to opt in to strict validation and to use the migrator.
+
+### Documentation
+
+- Release notes: [`docs/releases/v4.0.0.md`](docs/releases/v4.0.0.md).
+- Migration guide: [`docs/spec/MIGRATION_V3_TO_V4.md`](docs/spec/MIGRATION_V3_TO_V4.md).
+- Roadmap status: P0-1 to P0-6 all landed prior to this release-prep PR.
+
+### Not in this PR
+
+- No git tag.
+- No GitHub Release.
+- No npm publish, no `@klickd/core` `latest` dist-tag flip.
+- No PyPI publish.
+- No Zenodo deposit; no v4.0.0 version-specific DOI yet.
+- No public announcements.
+
+---
+
 ## Unreleased — docs-only — RFC promotions toward v4 GA
 
 > **Status: DOCS-ONLY / NON-NORMATIVE.** No SDK, schema, or vector change.

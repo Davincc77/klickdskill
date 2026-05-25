@@ -2,9 +2,9 @@
 
 > *When it all .klickd*
 
-[![.klickd version](https://img.shields.io/badge/.klickd-v3.5.1-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
+[![.klickd version](https://img.shields.io/badge/.klickd-v4.0.0-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 [![License: CC0](https://img.shields.io/badge/License-CC0%201.0-lightgrey?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20320480.svg)](https://doi.org/10.5281/zenodo.20320480)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20262530.svg)](https://doi.org/10.5281/zenodo.20262530)
 
 **Official page for the open `.klickd` format → [klickd.app/klickdskill](https://klickd.app/klickdskill)**
 
@@ -20,12 +20,28 @@ You explain your level. Your goals. Your context. Then the session ends — and 
 
 ---
 
+## Positioning (v4)
+
+`.klickd` is an **open-source security and continuity layer for every actor in AI**.
+
+- **For users** — privacy, ownership, and memory portability: your context is a file on your device, encrypted client-side, and follows you across models.
+- **For agents** — structured context and verified constraints: a strict schema for identity, preferences, gates and human-veto signals that an agent can read without inventing them.
+- **For developers** — schemas, SDKs and a non-destructive migrator: Python (`klickd`) and TypeScript (`@klickd/core`) reference implementations, strict v4 JSON Schemas (Draft 2020-12), and a v3.x → v4 payload migrator.
+- **For industry** — controlled, opt-in interoperability: a CC0 format with cross-implementation strict test vectors, so independent readers and writers can interoperate without ceding control of state to any single vendor.
+
+> **One soul. Any model. Any agent.**
+
+`.klickd` does not replace provider security, model alignment, or application-level access control; it complements them by giving the user-state layer a portable, verifiable shape.
+
+---
+
 ## What it looks like
 
 ```json
 {
-  "klickd_version": "3.5.1",
-  "created_at": "2026-05-21T00:00:00Z",
+  "klickd_version": "3.0",
+  "payload_schema_version": "4.0.0",
+  "created_at": "2026-05-25T00:00:00Z",
   "encrypted": false,
   "domain": "education",
   "user_preferences": "You are continuing a session with a learner working on calculus. Resume as if you have been here from the start."
@@ -59,7 +75,7 @@ They all require a running server, a Docker container, or an API key. Your memor
 ## The numbers
 
 Benchmarked across 23 subjects, 115 profiles. Scorer: `qwen/qwen3-32b` via Groq.  
-Full methodology: [DOI 10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480)
+Full methodology (v3.5.1 deposit, still applicable to v4.0.0 payload semantics): [DOI 10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480)
 
 | Sequence | What was tested | Δ WITH vs WITHOUT |
 |---|---|---|
@@ -97,7 +113,7 @@ npm install @klickd/core
 | [`examples/student_fr.klickd`](examples/student_fr.klickd) | French high-school student, maths, Socratic mode |
 | [`examples/professional_en.klickd`](examples/professional_en.klickd) | Mid-level developer upskilling into ML |
 | [`examples/family_plan.klickd`](examples/family_plan.klickd) | Child profile with ADHD support and shared family context |
-| [`examples/minimal.klickd`](examples/minimal.klickd) | Cold start — 5 fields only, valid v3.5 |
+| [`examples/minimal.klickd`](examples/minimal.klickd) | Cold start — minimal valid v3.x payload (forward-compatible with v4.0.0) |
 | [`examples/full_v34.klickd`](examples/full_v34.klickd) | Full reference file — all fields populated |
 
 ---
@@ -129,7 +145,9 @@ print('Valid.')
 "
 ```
 
-Schema: [`schema/klickd-v3.4.schema.json`](schema/klickd-v3.4.schema.json)
+Schemas:
+- v4.0.0 GA (strict): [`schema/klickd-v4.schema.json`](schema/klickd-v4.schema.json), [`schemas/klickd-payload-v4.schema.json`](schemas/klickd-payload-v4.schema.json)
+- v3.x (legacy, still valid): [`schema/klickd-v3.4.schema.json`](schema/klickd-v3.4.schema.json)
 
 ---
 
@@ -161,11 +179,11 @@ For most real workloads the useful question is not "long context **or** portable
 
 ```bibtex
 @misc{klickd2026,
-  title  = {.klickd — Open Learner Context Format, v3.5},
+  title  = {.klickd — Open Encrypted Format for Portable AI User Context, v4.0.0},
   author = {Cirilli, Vincenzo},
   year   = {2026},
-  doi    = {10.5281/zenodo.20320480},
-  url    = {https://doi.org/10.5281/zenodo.20320480}
+  doi    = {10.5281/zenodo.20262530},
+  url    = {https://doi.org/10.5281/zenodo.20262530}
 }
 ```
 
@@ -174,7 +192,7 @@ For most real workloads the useful question is not "long context **or** portable
 ## Badge
 
 ```markdown
-[![.klickd compatible](https://img.shields.io/badge/.klickd-v3.5%20compatible-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
+[![.klickd compatible](https://img.shields.io/badge/.klickd-v4.0.0%20compatible-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 ```
 
 ---
@@ -183,19 +201,19 @@ For most real workloads the useful question is not "long context **or** portable
 
 [`SPEC.md`](SPEC.md) — encryption (AES-256-GCM), all field references, teaching modes, Soul Handoff, JSON Injection Guard, benchmark namespace, memory decay, shared context, versioning policy.
 
-### Looking ahead — `.klickd v4` preview (non-normative, not GA)
+### Current GA — `.klickd v4.0.0`
 
-The current and recommended production format is **v3.5.1**. In parallel, the repository hosts a **preview track** for the next iteration of the same `.klickd` standard family:
+The current and recommended production format is **v4.0.0**. The wire envelope stays at `klickd_version: "3.0"` (unchanged crypto and AAD); v4 is signalled inside the payload via `payload_schema_version: "4.0.0"`. v3.x readers MUST ignore unknown fields; v4 readers MUST preserve them verbatim.
 
-- Spec: [`SPEC.md` §33 — `.klickd` v4 Preview](SPEC.md) (non-normative, additive over v3.5.1)
-- Permissive schemas: [`schemas/klickd-payload-v4-preview.schema.json`](schemas/klickd-payload-v4-preview.schema.json), [`schema/klickd-v4-preview.schema.json`](schema/klickd-v4-preview.schema.json)
-- Design source: RFCs under [`docs/rfcs/`](docs/rfcs/) (`media_profile`, `verification_gates` + `human_veto`, migration & backward compatibility) and the [Context Cost Benchmark](benchmarks/context_cost/RFC.md)
-- Minimal example: [`examples/v4-preview/minimal.klickd`](examples/v4-preview/minimal.klickd)
+- Spec: [`SPEC.md`](SPEC.md) — normative v4 surface (additive over v3.5.1).
+- Strict JSON Schemas (Draft 2020-12): [`schemas/klickd-payload-v4.schema.json`](schemas/klickd-payload-v4.schema.json), [`schema/klickd-v4.schema.json`](schema/klickd-v4.schema.json)
+- Reference SDKs (4.0.0): [`packages/pypi/klickd/`](packages/pypi/klickd/) (Python), [`packages/@klickd/core/`](packages/@klickd/core/) (TypeScript / JavaScript)
+- Migrator (v3.x → v4, non-destructive): see `migrate` API in both SDKs.
+- Migration guide: [`docs/spec/MIGRATION_V3_TO_V4.md`](docs/spec/MIGRATION_V3_TO_V4.md)
+- Cross-implementation strict vectors: [`tests/`](tests/) and the two `verify_vectors.*` runners.
+- Final release notes: [`docs/releases/v4.0.0.md`](docs/releases/v4.0.0.md)
 
-The preview targets `v4.0.0-preview.1`. No SDK release, no npm / PyPI / Zenodo publication, and no git tag are associated with it. v3.x readers MUST ignore preview fields; v4-preview readers MUST preserve unknown fields verbatim.
-
-- Draft release notes: [`docs/releases/v4.0.0-preview.1.md`](docs/releases/v4.0.0-preview.1.md) — non-binding, prepared for a possible future preview release.
-- Publication checklist (not yet executed): [`docs/releases/CHECKLIST_v4_preview.md`](docs/releases/CHECKLIST_v4_preview.md).
+The previous v3.5.1 release remains valid and interoperable; v4.0.0 readers accept v3.x payloads via the migrator.
 
 ---
 

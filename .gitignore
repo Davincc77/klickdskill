@@ -7,3 +7,8 @@ __pycache__/
 # Node
 node_modules/
 dist/
+
+# Release-prep local artefacts (npm pack, python build, SHA256SUMS).
+# Never committed to the repo; produced on demand by
+# scripts/release_bundle_inventory.sh for maintainer inspection.
+release-artifacts/
