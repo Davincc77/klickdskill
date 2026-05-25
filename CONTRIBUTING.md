@@ -79,4 +79,4 @@ preservation, not strict v4 business semantics.
 
 ## Contact
 
-Questions? Open a GitHub issue or email **Luxlearn@pm.me**.
+Questions? Open a GitHub issue or email **hello@klickd.app**.

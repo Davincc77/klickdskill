@@ -25,7 +25,7 @@ tools:
         type: string
         description: Path to the written /.memory/ directory
 license: CC0-1.0
-author: Vince C. (Klickd / Luxlearn, Luxembourg)
+author: Vincenzo Cirilli (.klickd / klickd.app, Luxembourg)
 repo: https://github.com/Davincc77/klickdskill
 ---
 
@@ -1691,7 +1691,7 @@ User A discovers "Byzantine fault tolerance" in a distributed systems course
 
 | Role | Who | What |
 |---|---|---|
-| Maintainer | Klickd / Luxlearn | Reviews PRs, enforces privacy rules, manages versioning |
+| Maintainer | .klickd / klickd.app | Reviews PRs, enforces privacy rules, manages versioning |
 | Contributor | Any user | Opens PRs with anonymised templates |
 | Consumer | Any Jarvis | Pulls templates via HTTP GET |
 | Auditor | Community / whitehat | Reviews merged templates for quality and privacy compliance |
@@ -1802,7 +1802,7 @@ Released under **CC0 1.0 Universal** — public domain, no restrictions.
 
 Full legal text: https://creativecommons.org/publicdomain/zero/1.0/
 
-> To the extent possible under law, Klickd / Luxlearn has waived all copyright and related or neighbouring rights to the `.klickd` format specification. Published from Luxembourg.
+> To the extent possible under law, .klickd / klickd.app has waived all copyright and related or neighbouring rights to the `.klickd` format specification. Published from Luxembourg.
 
 ---
 

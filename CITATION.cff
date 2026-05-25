@@ -10,7 +10,8 @@ type: software
 authors:
   - family-names: "Cirilli"
     given-names: "Vincenzo"
-    affiliation: "Klickd.app, Luxembourg"
+    name-suffix: ".klickd"
+    affiliation: ".klickd / klickd.app, Luxembourg"
 repository-code: "https://github.com/Davincc77/klickdskill"
 url: "https://klickd.app"
 license: CC0-1.0

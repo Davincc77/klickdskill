@@ -2,7 +2,7 @@
 
 **An open encrypted file format for portable AI identity**
 
-Klickd / Luxlearn — Luxembourg — 2026
+.klickd / klickd.app — Luxembourg — 2026
 DOI: [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
 
 ---
@@ -139,8 +139,8 @@ The goal is adoption. If `.klickd` becomes the standard, every AI user on earth 
 
 ## Contact
 
-Vince C. — Klickd / Luxlearn, Luxembourg
-Luxlearn@pm.me
+Vincenzo Cirilli (.klickd) — klickd.app, Luxembourg
+hello@klickd.app
 https://github.com/Davincc77/klickdskill
 DOI: 10.5281/zenodo.20262530
 

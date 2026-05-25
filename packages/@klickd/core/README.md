@@ -152,4 +152,4 @@ See `SPEC.md §33` and `examples/v4-preview/` for preview-track details.
 ## License
 
 [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) — Public Domain Dedication.  
-Author: Vince C. (Luxlearn, Luxembourg)
+Author: Vincenzo Cirilli (.klickd / klickd.app, Luxembourg)

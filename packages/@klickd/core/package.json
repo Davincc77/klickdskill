@@ -15,7 +15,7 @@
     "url": "https://github.com/Davincc77/klickdskill"
   },
   "license": "CC0-1.0",
-  "author": "Vince C. <Luxlearn@pm.me> (https://klickd.app)",
+  "author": "Vincenzo Cirilli (.klickd) <hello@klickd.app> (https://klickd.app)",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

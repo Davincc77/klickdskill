@@ -4,7 +4,7 @@
 
 If you discover a security vulnerability in the `.klickd` specification, reference implementations, or test vectors, please report it **privately** before any public disclosure:
 
-**Email:** Luxlearn@pm.me  
+**Email:** security@klickd.app  
 **Subject:** `[SECURITY] .klickd — <brief description>`
 
 We aim to respond within 72 hours and to publish a fix or advisory within 30 days of a confirmed issue.

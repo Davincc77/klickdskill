@@ -8,7 +8,7 @@ version = "4.0.0"
 description = "Official Python library for reading and writing .klickd portable AI context files"
 readme = "README.md"
 license = {text = "CC0-1.0"}
-authors = [{name = "Vince C.", email = "Luxlearn@pm.me"}]
+authors = [{name = "Vincenzo Cirilli (.klickd)", email = "hello@klickd.app"}]
 keywords = ["klickd", "ai-context", "portable", "memory", "encrypted"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",

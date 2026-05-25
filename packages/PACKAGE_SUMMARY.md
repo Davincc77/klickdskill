@@ -1,6 +1,6 @@
 # Klickd Package Scaffolds — Summary
 
-**Format:** .klickd v3.0 | **License:** CC0-1.0 | **Author:** Vince C. (Luxlearn, Luxembourg)
+**Format:** .klickd v3.0 | **License:** CC0-1.0 | **Author:** Vincenzo Cirilli (.klickd / klickd.app, Luxembourg)
 **Repo:** https://github.com/Davincc77/klickdskill | **DOI:** https://doi.org/10.5281/zenodo.20262530
 
 ---
