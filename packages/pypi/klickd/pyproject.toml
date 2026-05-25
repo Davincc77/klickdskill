@@ -36,7 +36,7 @@ dependencies = [
 validate = ["jsonschema>=4.18"]
 
 [project.urls]
-Homepage = "https://klickd.app"
+Homepage = "https://klickd.app/klickdskill"
 Repository = "https://github.com/Davincc77/klickdskill"
 Documentation = "https://github.com/Davincc77/klickdskill/blob/main/SPEC.md"
 
