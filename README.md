@@ -87,7 +87,7 @@ Full methodology (v3.5.1 deposit, still applicable to v4.0.0 payload semantics):
 
 ## Try it now
 
-- [**Playground**](https://klickd.app/playground) — load a `.klickd` file live, see what the AI receives
+- [**Playground**](https://klickd.app/klickdskill/playground) — load a `.klickd` file live, see what the AI receives
 - [**klickdskill docs**](https://klickd.app/klickdskill) — full specification and integration guides
 
 ---
@@ -223,4 +223,4 @@ The previous v3.5.1 release remains valid and interoperable; v4.0.0 readers acce
 
 ---
 
-*Made in Luxembourg · GDPR-native · [klickd.app](https://klickd.app)*
+*Made in Luxembourg · GDPR-native · [klickd.app/klickdskill](https://klickd.app/klickdskill)*

@@ -169,7 +169,7 @@ except KlickdError as e:
 - Specification: [SPEC.md](https://github.com/Davincc77/klickdskill/blob/main/SPEC.md)
 - Repository: [github.com/Davincc77/klickdskill](https://github.com/Davincc77/klickdskill)
 - DOI: [10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480) (v3.5) · concept DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
-- Homepage: [klickd.app](https://klickd.app)
+- Homepage: [klickd.app/klickdskill](https://klickd.app/klickdskill)
 
 ---
 
