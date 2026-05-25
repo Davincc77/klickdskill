@@ -31,7 +31,7 @@ from ._types import (
     KlickdMigrationV1,
 )
 
-__version__ = "4.0.0a1"
+__version__ = "4.0.0"
 __all__ = [
     "load_klickd",
     "save_klickd",
