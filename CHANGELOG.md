@@ -16,8 +16,9 @@ Versions follow: `envelope_version (skill_revision)`.
 > v4.0.0 is the first general-availability release of the v4 track. The wire
 > envelope stays at `klickd_version: "3.0"` (crypto, AAD and KDF unchanged);
 > v4 is signalled inside the payload via
-> `payload_schema_version: "4.0.0"`. v3.x readers MUST ignore unknown
-> fields; v4 readers MUST preserve them verbatim.
+> `payload_schema_version: "4.0"` (the canonical v4 GA value; release label
+> is `v4.0.0`). v3.x readers MUST ignore unknown fields; v4 readers MUST
+> preserve them verbatim.
 >
 > **Positioning (v4).** `.klickd` is positioned as an open-source security
 > and continuity layer for every actor in AI: users (privacy / ownership /

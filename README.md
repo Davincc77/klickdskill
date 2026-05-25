@@ -40,7 +40,7 @@ You explain your level. Your goals. Your context. Then the session ends — and 
 ```json
 {
   "klickd_version": "3.0",
-  "payload_schema_version": "4.0.0",
+  "payload_schema_version": "4.0",
   "created_at": "2026-05-25T00:00:00Z",
   "encrypted": false,
   "domain": "education",
@@ -203,7 +203,7 @@ For most real workloads the useful question is not "long context **or** portable
 
 ### Current GA — `.klickd v4.0.0`
 
-The current and recommended production format is **v4.0.0**. The wire envelope stays at `klickd_version: "3.0"` (unchanged crypto and AAD); v4 is signalled inside the payload via `payload_schema_version: "4.0.0"`. v3.x readers MUST ignore unknown fields; v4 readers MUST preserve them verbatim.
+The current and recommended production format is **v4.0.0**. The wire envelope stays at `klickd_version: "3.0"` (unchanged crypto and AAD); v4 is signalled inside the payload via `payload_schema_version: "4.0"` (the canonical v4 GA value; the release label is `v4.0.0`). v3.x readers MUST ignore unknown fields; v4 readers MUST preserve them verbatim.
 
 - Spec: [`SPEC.md`](SPEC.md) — normative v4 surface (additive over v3.5.1).
 - Strict JSON Schemas (Draft 2020-12): [`schemas/klickd-payload-v4.schema.json`](schemas/klickd-payload-v4.schema.json), [`schema/klickd-v4.schema.json`](schema/klickd-v4.schema.json)
