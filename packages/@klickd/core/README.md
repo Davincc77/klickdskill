@@ -2,7 +2,7 @@
 
 Official JavaScript/TypeScript library for reading and writing `.klickd` portable AI context files.
 
-**One soul. Any model. Any body.**
+**One soul. Any model. Any agent.** — open-source security and continuity layer for every actor in AI.
 
 Official page for the open `.klickd` format → **[klickd.app/klickdskill](https://klickd.app/klickdskill)**
 

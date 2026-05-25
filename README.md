@@ -20,6 +20,21 @@ You explain your level. Your goals. Your context. Then the session ends — and 
 
 ---
 
+## Positioning (v4)
+
+`.klickd` is an **open-source security and continuity layer for every actor in AI**.
+
+- **For users** — privacy, ownership, and memory portability: your context is a file on your device, encrypted client-side, and follows you across models.
+- **For agents** — structured context and verified constraints: a strict schema for identity, preferences, gates and human-veto signals that an agent can read without inventing them.
+- **For developers** — schemas, SDKs and a non-destructive migrator: Python (`klickd`) and TypeScript (`@klickd/core`) reference implementations, strict v4 JSON Schemas (Draft 2020-12), and a v3.x → v4 payload migrator.
+- **For industry** — controlled, opt-in interoperability: a CC0 format with cross-implementation strict test vectors, so independent readers and writers can interoperate without ceding control of state to any single vendor.
+
+> **One soul. Any model. Any agent.**
+
+`.klickd` does not replace provider security, model alignment, or application-level access control; it complements them by giving the user-state layer a portable, verifiable shape.
+
+---
+
 ## What it looks like
 
 ```json

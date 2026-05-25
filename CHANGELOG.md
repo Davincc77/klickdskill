@@ -18,6 +18,14 @@ Versions follow: `envelope_version (skill_revision)`.
 > v4 is signalled inside the payload via
 > `payload_schema_version: "4.0.0"`. v3.x readers MUST ignore unknown
 > fields; v4 readers MUST preserve them verbatim.
+>
+> **Positioning (v4).** `.klickd` is positioned as an open-source security
+> and continuity layer for every actor in AI: users (privacy / ownership /
+> memory portability), agents (structured context / verified constraints),
+> developers (schemas / SDKs / migration) and industry (controlled,
+> opt-in interoperability). Tagline: *One soul. Any model. Any agent.*
+> v4.0.0 makes this layer normative and strict; it does not claim adoption
+> as an industry standard or universal cross-product compatibility.
 
 ### What ships in v4.0.0
 
