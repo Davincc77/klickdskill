@@ -1,0 +1,65 @@
+name: Publish @klickd/core to npm (latest)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref (tag or branch) to build from, e.g. v4.0.0'
+        required: false
+        default: 'v4.0.0'
+      expected_version:
+        description: 'Exact package.json version required to publish (must match v4 final, e.g. 4.0.0)'
+        required: false
+        default: '4.0.0'
+
+jobs:
+  publish-latest:
+    name: Build, test, and publish @klickd/core to npm with dist-tag latest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/@klickd/core
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || 'v4.0.0' }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify package version is the expected final release
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          EXPECTED="${{ github.event.inputs.expected_version || '4.0.0' }}"
+          echo "Package version: $PKG_VERSION"
+          echo "Expected version: $EXPECTED"
+          case "$PKG_VERSION" in
+            *-*)
+              echo "ERROR: package.json version '$PKG_VERSION' looks like a pre-release. Refusing to publish to latest."
+              exit 1
+              ;;
+          esac
+          if [ "$PKG_VERSION" != "$EXPECTED" ]; then
+            echo "ERROR: expected version $EXPECTED, got $PKG_VERSION. Refusing to publish."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm with dist-tag latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --tag latest --access public
