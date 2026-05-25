@@ -9,7 +9,7 @@ Official page for the open `.klickd` format → **[klickd.app/klickdskill](https
 [![PyPI version](https://img.shields.io/pypi/v/klickd)](https://pypi.org/project/klickd/)
 [![Python](https://img.shields.io/pypi/pyversions/klickd)](https://pypi.org/project/klickd/)
 [![License: CC0-1.0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20320480.svg)](https://doi.org/10.5281/zenodo.20320480)
+[![DOI (v4.0.0)](https://zenodo.org/badge/DOI/10.5281/zenodo.20383133.svg)](https://doi.org/10.5281/zenodo.20383133)
 
 ---
 
@@ -168,7 +168,7 @@ except KlickdError as e:
 - Format page: [klickd.app/klickdskill](https://klickd.app/klickdskill)
 - Specification: [SPEC.md](https://github.com/Davincc77/klickdskill/blob/main/SPEC.md)
 - Repository: [github.com/Davincc77/klickdskill](https://github.com/Davincc77/klickdskill)
-- DOI: [10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480) (v3.5) · concept DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
+- DOI: [10.5281/zenodo.20383133](https://doi.org/10.5281/zenodo.20383133) (v4.0.0) · concept DOI (all versions): [10.5281/zenodo.20262530](https://doi.org/10.5281/zenodo.20262530)
 - Homepage: [klickd.app/klickdskill](https://klickd.app/klickdskill)
 
 ---

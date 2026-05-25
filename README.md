@@ -4,7 +4,8 @@
 
 [![.klickd version](https://img.shields.io/badge/.klickd-v4.0.0-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 [![License: CC0](https://img.shields.io/badge/License-CC0%201.0-lightgrey?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20262530.svg)](https://doi.org/10.5281/zenodo.20262530)
+[![DOI (v4.0.0)](https://zenodo.org/badge/DOI/10.5281/zenodo.20383133.svg)](https://doi.org/10.5281/zenodo.20383133)
+[![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20262530.svg)](https://doi.org/10.5281/zenodo.20262530)
 
 **Official page for the open `.klickd` format → [klickd.app/klickdskill](https://klickd.app/klickdskill)**
 
@@ -179,11 +180,13 @@ For most real workloads the useful question is not "long context **or** portable
 
 ```bibtex
 @misc{klickd2026,
-  title  = {.klickd — Open Encrypted Format for Portable AI User Context, v4.0.0},
-  author = {Cirilli, Vincenzo},
-  year   = {2026},
-  doi    = {10.5281/zenodo.20262530},
-  url    = {https://doi.org/10.5281/zenodo.20262530}
+  title   = {.klickd — Open Encrypted Format for Portable AI User Context, v4.0.0},
+  author  = {Cirilli, Vincenzo},
+  year    = {2026},
+  version = {4.0.0},
+  doi     = {10.5281/zenodo.20383133},
+  url     = {https://doi.org/10.5281/zenodo.20383133},
+  note    = {Concept DOI (all versions): 10.5281/zenodo.20262530}
 }
 ```
 

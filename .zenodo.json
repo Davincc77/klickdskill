@@ -55,13 +55,19 @@
       "resource_type": "software"
     },
     {
-      "identifier": "10.5281/zenodo.20320480",
+      "identifier": "10.5281/zenodo.20383133",
       "relation": "isNewVersionOf",
+      "scheme": "doi",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "10.5281/zenodo.20320480",
+      "relation": "isPreviousVersionOf",
       "scheme": "doi",
       "resource_type": "software"
     }
   ],
   "communities": [],
   "language": "eng",
-  "notes": "Final v4.0.0 release metadata. Description is plain text (no HTML) for portability. Version-specific DOI for v4.0.0 will be minted by Zenodo upon deposit."
+  "notes": "v4.0.0 was deposited to Zenodo on 2026-05-25 and minted version-specific DOI 10.5281/zenodo.20383133 (concept DOI 10.5281/zenodo.20262530). The related_identifiers above are staged for the NEXT release: 'isNewVersionOf' points to v4.0.0 (20383133), and the prior v3.5.1 deposit (20320480) is recorded as 'isPreviousVersionOf'. Update version, title and these identifiers before the next deposit. Description is plain text (no HTML) for portability."
 }

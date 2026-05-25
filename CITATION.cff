@@ -22,8 +22,11 @@ identifiers:
     value: "10.5281/zenodo.20262530"
     description: "Concept DOI (all versions)"
   - type: doi
+    value: "10.5281/zenodo.20383133"
+    description: "Version-specific DOI for v4.0.0"
+  - type: doi
     value: "10.5281/zenodo.20320480"
-    description: "Version-specific DOI for v3.5.1"
+    description: "Version-specific DOI for v3.5.1 (prior release)"
 keywords:
   - portable-ai-memory
   - ai-context
