@@ -127,9 +127,23 @@ npm install @klickd/core
 | Anthropic (Claude Opus, Sonnet, …) | [`docs/integrations/anthropic.md`](docs/integrations/anthropic.md) |
 | Groq (Llama, Qwen, …) | [`docs/integrations/groq.md`](docs/integrations/groq.md) |
 | OpenRouter (multi-provider Soul Handoff) | [`docs/integrations/openrouter.md`](docs/integrations/openrouter.md) |
+| xAI Grok (OpenAI-compatible) | [`docs/integrations/xai_grok.md`](docs/integrations/xai_grok.md) |
+| LangChain (provider-agnostic chains) | [`docs/integrations/langchain.md`](docs/integrations/langchain.md) |
+| LlamaIndex (system prompt + vector index) | [`docs/integrations/llamaindex.md`](docs/integrations/llamaindex.md) |
 | Any provider (generic pattern) | [`docs/integrations/generic.md`](docs/integrations/generic.md) |
 
 > **Experimental POC:** [`integrations/hermes/`](integrations/hermes/README.md) — Hermes Agent as workflow runner, `.klickd` as portable state layer. Local dry-run only; not a production integration.
+
+---
+
+## Demos (v4)
+
+| Demo | What it shows |
+|---|---|
+| [`examples/v4/cli/`](examples/v4/cli/) | Python CLI: `pip install klickd==4.0.0` + a path-based `load_klickd` walkthrough |
+| [`examples/v4/web-dropzone/`](examples/v4/web-dropzone/) | Browser drag-and-drop, zero install, local-only parse |
+| [`examples/v4/student-walkthrough/`](examples/v4/student-walkthrough/) | One student profile, four providers (OpenAI · Anthropic · Groq · xAI Grok) |
+| [`docs/demos/storyboards/`](docs/demos/storyboards/) | 30–60s recording scripts for each integration (text only, no video) |
 
 ---
 
