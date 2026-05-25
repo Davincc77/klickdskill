@@ -1,0 +1,85 @@
+name: Spec change / RFC
+description: Propose a normative change to the .klickd specification, JSON schemas, test vectors, or wire format.
+title: "[rfc] "
+labels: ["spec", "rfc", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for any proposal that affects:
+
+        - The `.klickd` wire format
+        - Normative requirements in `SPEC.md` / `SPEC_v30.md`
+        - JSON schemas under `schema/`
+        - Test vectors under `vectors/`
+        - Cryptographic defaults (KDF, cipher, AAD coverage)
+
+        Breaking changes require a major version bump and a coexistence / migration story. See `CONTRIBUTING.md`.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One-paragraph summary of the proposed change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this change needed? What problem does it solve that cannot be solved without a normative change?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Detailed proposal
+      description: Specify the change precisely — new fields, modified validation rules, schema diffs, vector additions, etc.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Compatibility impact
+      options:
+        - Additive (backward compatible, no version bump)
+        - Minor (backward compatible, minor version bump)
+        - Breaking (requires major version bump and migration path)
+    validations:
+      required: true
+
+  - type: textarea
+    id: security
+    attributes:
+      label: Security considerations
+      description: Cryptographic implications, threat-model impact, AAD coverage, downgrade resistance.
+    validations:
+      required: true
+
+  - type: textarea
+    id: migration
+    attributes:
+      label: Migration / coexistence story
+      description: For breaking changes, describe how implementations and existing payloads transition. Reference the migrator if applicable.
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have read `CONTRIBUTING.md` and the relevant SPEC document.
+          required: true
+        - label: This proposal does not weaken cryptographic defaults (Argon2id floors, GCM tag, AAD coverage).
+          required: true
+        - label: I understand that normative changes require maintainer review and may require a major version bump.
+          required: true
