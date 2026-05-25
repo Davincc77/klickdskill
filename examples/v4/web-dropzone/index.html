@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>.klickd v4 — Browser Dropzone</title>
+<style>
+  :root {
+    --bg:#0E1117; --card:#141824; --border:#1E293B;
+    --primary:#6366F1; --accent:#818CF8; --emerald:#10B981;
+    --text:#E2E8F0; --muted:#94A3B8; --warn:#F59E0B; --fail:#EF4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+       font-size:15px;line-height:1.6;min-height:100vh}
+  header{border-bottom:1px solid var(--border);padding:20px 32px;
+         display:flex;align-items:center;gap:16px}
+  .logo{font-size:22px;font-weight:700;color:var(--accent)}
+  .tagline{color:var(--muted);font-size:13px}
+  .badge{background:var(--primary);color:#fff;font-size:11px;font-weight:600;
+         padding:2px 8px;border-radius:4px;margin-left:auto}
+  main{max-width:880px;margin:32px auto;padding:0 24px}
+  h2{font-size:18px;margin-bottom:12px}
+  .card{background:var(--card);border:1px solid var(--border);
+        border-radius:10px;padding:24px;margin-bottom:24px}
+  .dropzone{border:2px dashed var(--border);border-radius:10px;
+            padding:48px 24px;text-align:center;color:var(--muted);
+            cursor:pointer;transition:all .15s}
+  .dropzone:hover,.dropzone.dragover{border-color:var(--accent);
+                                     background:rgba(129,140,248,.06);color:var(--text)}
+  .dropzone strong{color:var(--text)}
+  .hint{color:var(--muted);font-size:12px;margin-top:8px}
+  .result{display:none;margin-top:16px;border-radius:8px;padding:16px;
+          font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+          font-size:13px;white-space:pre-wrap;word-break:break-word;
+          max-height:420px;overflow:auto}
+  .result.ok{background:rgba(16,185,129,.07);border:1px solid var(--emerald)}
+  .result.warn{background:rgba(245,158,11,.08);border:1px solid var(--warn)}
+  .result.fail{background:rgba(239,68,68,.08);border:1px solid var(--fail)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  button{background:var(--primary);color:#fff;border:0;border-radius:6px;
+         padding:8px 14px;cursor:pointer;font-size:13px}
+  button.secondary{background:transparent;border:1px solid var(--border);color:var(--text)}
+  button:hover{filter:brightness(1.1)}
+  footer{color:var(--muted);font-size:12px;text-align:center;padding:24px 0 40px}
+  a{color:var(--accent)}
+  code{background:rgba(255,255,255,.05);padding:1px 5px;border-radius:3px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">.klickd</div>
+  <div class="tagline">v4 Browser Dropzone — local-only, zero install</div>
+  <div class="badge">v4.0.0</div>
+</header>
+<main>
+  <div class="card">
+    <h2>1. Drop a <code>.klickd</code> file</h2>
+    <p class="tagline" style="margin-bottom:12px">
+      Plain (<code>encrypted: false</code>) payloads only. For encrypted
+      envelopes, use <a href="../../../demo/index.html">/demo/</a> which carries the full
+      AES-GCM + Argon2id decrypt path.
+    </p>
+    <div id="dz" class="dropzone" tabindex="0">
+      <div><strong>Drop your <code>.klickd</code> here</strong></div>
+      <div class="hint">or press Enter / click to pick a file</div>
+    </div>
+    <input type="file" id="file" accept=".klickd,application/json" style="display:none">
+    <div class="row">
+      <button id="example">Load example (student_fr)</button>
+      <button class="secondary" id="reset">Reset</button>
+    </div>
+    <div id="summary" class="result"></div>
+  </div>
+
+  <div class="card">
+    <h2>2. Parsed payload</h2>
+    <p class="tagline">Local-only; nothing is uploaded. View source to confirm.</p>
+    <div id="raw" class="result"></div>
+  </div>
+
+  <footer>
+    No network calls. No telemetry. Inspect <a href="index.html">source</a>.
+    See <a href="../../../README.md">README</a> ·
+    <a href="../../../SPEC.md">SPEC</a> ·
+    <a href="../personas/">v4 personas</a>.
+  </footer>
+</main>
+<script>
+const dz = document.getElementById('dz');
+const fileInput = document.getElementById('file');
+const summaryEl = document.getElementById('summary');
+const rawEl = document.getElementById('raw');
+
+function show(el, klass, text){
+  el.className = 'result ' + klass;
+  el.style.display = 'block';
+  el.textContent = text;
+}
+
+function shortLine(s, n){
+  s = String(s || '').split(/\r?\n/)[0];
+  return s.length > n ? s.slice(0, n - 1) + '…' : s;
+}
+
+function renderSummary(p){
+  const id = p.identity || {};
+  const ctx = p.context || {};
+  const kn = p.knowledge || {};
+  const lines = [
+    'klickd_version        : ' + (p.klickd_version || '(unknown)'),
+    'payload_schema_version: ' + (p.payload_schema_version || '(unknown)'),
+    'domain                : ' + (p.domain || '(unset)'),
+    'profile_kind          : ' + (p.profile_kind || '(unset)'),
+    'display_name          : ' + (id.display_name || '(unset)'),
+    'language              : ' + (id.language || '(unset)'),
+  ];
+  if (ctx.current_project) lines.push('current_project       : ' + ctx.current_project);
+  if (ctx.current_state)   lines.push('current_state         : ' + ctx.current_state);
+  if (kn.expertise_level)  lines.push('expertise_level       : ' + kn.expertise_level);
+  if (p.verification_gates) {
+    const g = Array.isArray(p.verification_gates.gates) ? p.verification_gates.gates.length : 0;
+    lines.push('verification_gates    : ' + g + ' declared');
+  }
+  if (p.user_preferences)  lines.push('user_preferences      : ' + shortLine(p.user_preferences, 80));
+  return lines.join('\n');
+}
+
+function handlePayload(text, sourceName){
+  let payload;
+  try { payload = JSON.parse(text); }
+  catch (e) {
+    show(summaryEl, 'fail', 'Parse error: not valid JSON\n' + e.message);
+    rawEl.style.display = 'none';
+    return;
+  }
+  if (payload.encrypted === true) {
+    show(summaryEl, 'warn',
+      'Encrypted envelope detected (encrypted: true).\n' +
+      'This dropzone only renders plain payloads. Use /demo/ for the\n' +
+      'AES-GCM + Argon2id decrypt path.');
+    rawEl.style.display = 'none';
+    return;
+  }
+  const v = String(payload.klickd_version || '');
+  const ok = v.startsWith('4') || v.startsWith('3');
+  show(summaryEl, ok ? 'ok' : 'warn',
+    '# source: ' + sourceName + '\n\n' + renderSummary(payload) +
+    (ok ? '' : '\n\n(warning: klickd_version "' + v + '" is outside 3.x / 4.x — best-effort render.)'));
+  rawEl.className = 'result ok';
+  rawEl.style.display = 'block';
+  rawEl.textContent = JSON.stringify(payload, null, 2);
+}
+
+['dragenter','dragover'].forEach(ev =>
+  dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragover'); }));
+['dragleave','drop'].forEach(ev =>
+  dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragover'); }));
+dz.addEventListener('drop', e => {
+  const f = (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) || null;
+  if (f) readFile(f);
+});
+dz.addEventListener('click', () => fileInput.click());
+dz.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) readFile(fileInput.files[0]); });
+
+function readFile(f){
+  const r = new FileReader();
+  r.onload = e => handlePayload(e.target.result, f.name);
+  r.onerror = () => show(summaryEl, 'fail', 'FileReader error: ' + r.error);
+  r.readAsText(f);
+}
+
+document.getElementById('reset').addEventListener('click', () => {
+  fileInput.value = '';
+  summaryEl.style.display = 'none';
+  rawEl.style.display = 'none';
+});
+
+document.getElementById('example').addEventListener('click', async () => {
+  try {
+    const resp = await fetch('../../student_fr.klickd');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    handlePayload(await resp.text(), 'examples/student_fr.klickd');
+  } catch (e) {
+    show(summaryEl, 'fail',
+      'Could not fetch example. Serve this folder over http (e.g.\n' +
+      '  python -m http.server 8000\n' +
+      ') and reload, or drop a file manually.\n\n' + e.message);
+  }
+});
+</script>
+</body>
+</html>
