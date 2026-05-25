@@ -2,6 +2,10 @@
 
 This guide covers the universal pattern for integrating `.klickd` files with any AI provider or agent framework.
 
+> `.klickd` does not remove integration work — it makes it reusable. One integration. Infinite reuse. Across games, engines, platforms, apps, agents, robots, devices, and models.
+>
+> The same parse → validate → strip → toSystemPrompt → inject → call pattern below is what every provider-specific guide in this directory specialises. Reuse across surfaces requires that each target client/tool implements (or wraps) this pattern; portability of the file does not by itself guarantee compatibility on the reader side.
+
 ## Universal Pattern
 
 ```
