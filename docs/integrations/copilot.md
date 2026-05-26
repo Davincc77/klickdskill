@@ -86,6 +86,31 @@ from a `.klickd` file loaded by a custom loader.
 > It documents the contract that a Copilot Extension, MCP server, or CLI
 > pre-step would fulfil.
 
+## Reference bridge implementation
+
+A working reference of the CLI pre-step (option 3 above) and the VS Code
+extension design (option 2) lives at
+[`examples/v4/integrations/copilot-bridge/`](../../examples/v4/integrations/copilot-bridge/).
+It contains:
+
+- A Python CLI (`klickd_copilot_bridge.py`) and a TypeScript CLI
+  (`klickdCopilotBridge.ts`) that load a local `.klickd` v4 profile,
+  prompt for the passphrase interactively if needed, and emit a
+  sanitized system/context block to stdout or a file.
+- A schema-tolerant context builder (Python + TypeScript mirror) that
+  handles `identity`, `user_preferences`, `context`, `memory`,
+  `decisions_locked`, `verification_gates`, `human_veto_policy`, and
+  `agent_instructions`, strips `_`-prefixed fields at every level, and
+  refuses to surface contact data from `identity`.
+- A VS Code extension design doc with commands, settings,
+  architecture, security properties, and honest limitations
+  ([`EXTENSION_DESIGN.md`](../../examples/v4/integrations/copilot-bridge/vscode-extension-design/EXTENSION_DESIGN.md)).
+- Tests for redaction and a CLI dry-run smoke test.
+
+The bridge uses the v4 GA API names — `loadKlickd` in TypeScript and
+`load_klickd` in Python. The retired v3 names (`decryptKlickd` /
+`decrypt_klickd`) are not used anywhere.
+
 ## What to tell users
 
 Safe wording when describing this integration externally:

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "_comment": "Sketch only — not a publishable manifest. See EXTENSION_DESIGN.md for the full design.",
+  "name": "klickd-copilot-bridge-vscode",
+  "displayName": ".klickd ↔ Copilot bridge",
+  "description": "Load a local .klickd v4 profile and inject a sanitized context block into GitHub Copilot Chat.",
+  "version": "0.0.0",
+  "private": true,
+  "publisher": "klickd",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onCommand:klickd.copilot.loadProfile",
+    "onCommand:klickd.copilot.exportContextToClipboard",
+    "onCommand:klickd.copilot.exportContextToFile",
+    "onCommand:klickd.copilot.dryRunRedaction",
+    "onCommand:klickd.copilot.forgetSession"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "klickd.copilot.loadProfile",              "title": ".klickd: Load profile into Copilot Chat" },
+      { "command": "klickd.copilot.exportContextToClipboard", "title": ".klickd: Export profile as Copilot context (clipboard)" },
+      { "command": "klickd.copilot.exportContextToFile",      "title": ".klickd: Export profile as Copilot context (file)" },
+      { "command": "klickd.copilot.dryRunRedaction",          "title": ".klickd: Preview redacted context (dry-run)" },
+      { "command": "klickd.copilot.forgetSession",            "title": ".klickd: Forget loaded profile" }
+    ],
+    "configuration": {
+      "title": ".klickd ↔ Copilot bridge",
+      "properties": {
+        "klickd.copilot.defaultProfile":          { "type": "string",  "default": "", "description": "Optional path to a .klickd file used by loadProfile when no picker is shown." },
+        "klickd.copilot.memoryEntryLimit":        { "type": "number",  "default": 10, "description": "Max number of memory entries to include in the injected block." },
+        "klickd.copilot.includeAgentInstructions":{ "type": "boolean", "default": true, "description": "Include the agent_instructions section." },
+        "klickd.copilot.askBeforeInjecting":      { "type": "boolean", "default": true, "description": "Show a confirmation preview before sending the block to Copilot." }
+      }
+    }
+  },
+  "dependencies": {
+    "@klickd/core": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node":   "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript":    "^5.4.0"
+  }
+}
