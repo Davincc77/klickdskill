@@ -15,15 +15,15 @@
 
 ---
 
-## 0. The one rule
+## 0. The two rules
 
-> **`x.klickd/student` carries learner state. It does NOT carry teacher skill.**
+> **Rule 1 — carrier-vs-skill.** `x.klickd/student` carries learner state. It does NOT carry teacher skill. The Socratic teacher / tutor skill is loaded by the **Klickd / Kai LLM** side (or any other host) as a host skill (`skill.kai.tutor.socratic`), not by the pack. The pack is what the LLM *consults*; the skill is what the LLM *applies*. Enforced by [RFC-009 §5.1.1](../../RFC-009-chimera-v4.1.md) + §8.10.
 >
-> The Socratic teacher / tutor skill is loaded by the **Klickd / Kai LLM** side (or any other host) as a host skill (`skill.kai.tutor.socratic`), not by the pack. The pack is what the LLM *consults*; the skill is what the LLM *applies*.
+> **Rule 2 — v4.1-native, no legacy adapter.** This pack is built from authoritative frameworks (ESCO / DigComp / EQF, optionally O\*NET / WEF) under the SKOS/JSON-LD backbone of RFC-009 §5.7. It does **not** accept v4-preview persona fields (`knowledge.mastered[]`, `mastered_topics[]`, free-text `subjects[].mastery`, narrative `level: "advanced"` strings) as input. The persona `01-eleve-terminale-fr.klickd` is a **design anchor**, not a compatibility source. Enforced by [RFC-009 §5.0](../../RFC-009-chimera-v4.1.md) + §8.9.
 
-If you find yourself writing `"pedagogy"`, `"how_to_teach"`, `"socratic_steps"`, `"prompt_strategy"`, `"intervention_policy"`, or `"tone_rules"` inside this pack — stop. That belongs in the host skill. The pack only describes the carrier.
+If you find yourself writing `"pedagogy"`, `"how_to_teach"`, `"socratic_steps"`, `"prompt_strategy"`, `"intervention_policy"`, or `"tone_rules"` inside this pack — stop. That belongs in the host skill (Rule 1).
 
-This rule is enforced by [RFC-009 §8.10](../../RFC-009-chimera-v4.1.md) (validation criterion #10).
+If you find yourself writing `"knowledge.mastered[]"`, `"mastered_topics"`, or harvesting fields from a v4-preview persona — stop. The pack is authored from frameworks, not from personas (Rule 2).
 
 ## 1. Why a concrete scaffold
 
@@ -31,7 +31,36 @@ This rule is enforced by [RFC-009 §8.10](../../RFC-009-chimera-v4.1.md) (valida
 
 ## 2. What the pack carries (state, not skill)
 
-Eleven sections. All are **carrier state**. None are teacher behaviour.
+Twelve sections. All are **carrier state**. None are teacher behaviour. All competency / level references are framework-anchored (§2.0).
+
+### 2.0 `base_transversal_core` (mandatory, v4.1-native)
+
+Every Chimera pack — `student` included — carries the **base transversal core**: a small cross-pack competency layer composed only of framework-anchored references. The base is what survives even when no other pack is active (RFC-009 §5.2).
+
+For `x.klickd/student`, the base anchors are:
+
+- **ESCO transversal skills** — communication, literacy, numeracy, problem solving, planning.
+- **DigComp 2.2** — basic digital competence (information literacy, communication, content creation, safety, problem solving).
+- **EQF** — qualifications framework, used for `level_label` resolution.
+
+Wire-shape (illustrative):
+
+```jsonc
+"base_transversal_core": {
+  "frameworks": [
+    { "scheme": "esco",    "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/" },
+    { "scheme": "digcomp", "version": "2.2",    "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/" },
+    { "scheme": "eqf",     "version": "2017",   "iri_prefix": "https://europa.eu/europass/eqf/" }
+  ],
+  "transversal_refs": [
+    { "competency_ref": "esco:T1.1", "prefLabel": "Reading comprehension",      "scheme": "esco" },
+    { "competency_ref": "esco:T2.3", "prefLabel": "Mathematical reasoning",     "scheme": "esco" },
+    { "competency_ref": "digcomp:1.1", "prefLabel": "Browsing/searching/filtering data, information and digital content", "scheme": "digcomp" }
+  ]
+}
+```
+
+The base is **not** harvested from a persona's narrative description; it is declared against frameworks. A pack with an empty `base_transversal_core` fails RFC-009 §8.1 (top-level `frameworks[]` required).
 
 ### 2.1 `identity`
 Minimal identification *within* the learning context, **distinct** from v4.0 `user.klickd` identity (which carries the human's identity). A pack `identity` is the role-shaped sub-identity (e.g. "Terminale S student, Lycée X, session 2026").
@@ -125,6 +154,8 @@ The pack-local restatement of [RFC-009 §5.1](../../RFC-009-chimera-v4.1.md).
 
 ## 3. What the pack does NOT carry
 
+### 3.1 Forbidden host-side fields (Rule 1)
+
 Explicitly **not** in this pack. These belong host-side (skill or agent core).
 
 | Forbidden in pack | Lives where | Why |
@@ -135,6 +166,21 @@ Explicitly **not** in this pack. These belong host-side (skill or agent core).
 | `intervention_policy`, `when_to_correct`, `when_to_praise` | host skill | Behaviour belongs with the actor; the pack is not an actor. |
 | `tone_rules`, `persona_voice` | `agent_core` (RFC-006) | Already the agent core's job. |
 | Hidden curriculum claims, predictive grades | nowhere (not allowed) | Predictions about the student must be agent-emitted with RFC-002 §8b grounding, not pack-asserted. |
+
+### 3.2 Forbidden legacy / persona fields (Rule 2 — v4.1-native, RFC-009 §5.0)
+
+Also explicitly **not** in this pack. These are v4-preview persona shapes; v4.1 packs do not accept them as input or alias.
+
+| Forbidden legacy key | Why rejected | What replaces it (v4.1-native) |
+|---|---|---|
+| `knowledge.mastered[]` (persona-style "I have mastered topic X") | Not framework-anchored; cannot resolve to an external IRI. | `mastery[]` entries each with `competency_ref` into ESCO / DigComp + `scale_ref` + `evidence_refs[]`. |
+| `mastered_topics: ["..."]` (free-string array) | Same as above; loses provenance and scale. | Same as above. |
+| Narrative `level: "advanced"` / `"expert"` strings | Not resolvable against EQF / ESCO. | `level.level_label` from a declared framework (e.g. `"EQF level 4"` with `framework_ref` IRI). |
+| Persona-style `subjects[].mastery` free text | Conflates subject with competency and scale. | `subjects[]` (subject IRI only) + separate `competencies[]` + `mastery[]`. |
+| Hand-written `accommodations: "more time"` strings | Loses provenance; no consent posture. | `accessibility.accommodations[]` against an external scheme + `consent_to_disclose_to_agent`. |
+| Free-text `curriculum: "FR bac"` strings | Loses curriculum versioning. | `curriculum_refs[]` with `curriculum_id` IRI + `jurisdiction` + `track` + `as_of`. |
+
+A reader MUST NOT silently map a legacy key into a pack field. If a `examples/v4/personas/01-eleve-terminale-fr.klickd` block appears next to a `x.klickd/student` block, the persona stays a persona — it is not harvested into the pack. There is **no migration tool**, and writing one is out of scope for v4.1.
 
 ## 4. Companion host skill — `skill.kai.tutor.socratic`
 
@@ -155,8 +201,24 @@ Non-normative. Field names illustrative. **No additionalProperties contract** de
 {
   "pack": "x.klickd/student",
   "pack_version": "0.1.0-draft",            // draft only; no release
-  "spec_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
+  "spec_ref": "docs/rfcs/chimera/packs/student.md",
   "publisher": { "name": "klickd", "ref": "https://klickd.app" },
+
+  // v4.1-native required: declared frameworks (RFC-009 §8.1)
+  "frameworks": [
+    { "scheme": "esco",    "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/" },
+    { "scheme": "digcomp", "version": "2.2",    "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/" },
+    { "scheme": "eqf",     "version": "2017",   "iri_prefix": "https://europa.eu/europass/eqf/" }
+  ],
+
+  // RFC-009 §5.2 + this pack §2.0
+  "base_transversal_core": {
+    "transversal_refs": [
+      { "competency_ref": "esco:T1.1",   "prefLabel": "Reading comprehension",  "scheme": "esco" },
+      { "competency_ref": "esco:T2.3",   "prefLabel": "Mathematical reasoning", "scheme": "esco" },
+      { "competency_ref": "digcomp:1.1", "prefLabel": "Information literacy",   "scheme": "digcomp" }
+    ]
+  },
 
   "identity": {
     "pack_role": "student",
@@ -234,7 +296,37 @@ Non-normative. Field names illustrative. **No additionalProperties contract** de
     "final_decision_owner": "human_carrier",
     "agent_role": "advisory",
     "escalation": "guardian_then_school"
-  }
+  },
+
+  // RFC-009 §5.6 — pack-scoped memory slice; never the v4.0 main memory[]
+  "memory_scope": "memory.x_klickd.student",
+
+  // RFC-009 §8.1 — evidence and source policies are required v4.1-native fields
+  "evidence_policy": {
+    "required_for_claims": true,
+    "pointer_only": true,
+    "attestation_shape_ref": "rfc-002#8b"
+  },
+  "source_policy": {
+    "frameworks_offline_bundle": "TODO: bundle ESCO+DigComp+EQF SKOS subset (criterion §8.6)",
+    "allow_inline_definitions": false,
+    "language_tags": ["fr", "en"]
+  },
+
+  // RFC-009 §8.7 — deterministic token-cost estimate (RFC-003 chimera_v41_extrapolation())
+  "router_cost": {
+    "tokens_estimate": null,           // TODO: fill from chimera_v41_extrapolation() row
+    "baseline": "base_plus_one",
+    "source_row": "TODO: benchmarks/context_cost/README.md#chimera_v41"
+  },
+
+  // RFC-009 §5.0 + §5.1.1 — frozen literal list; presence of any of these as a TOP-LEVEL key fails validation
+  "forbidden_fields": [
+    "pedagogy", "teaching_method", "socratic_steps",
+    "prompt_strategy", "scoring_rubric", "intervention_policy",
+    "tone_rules", "system_prompt_overrides",
+    "knowledge.mastered", "mastered_topics"
+  ]
 }
 ```
 
@@ -244,18 +336,40 @@ The scaffold above satisfies all ten validation criteria *in shape*. It does not
 
 | # | Criterion (RFC-009 §8) | Status for this scaffold |
 |---|---|---|
-| 1 | Framework anchor (SKOS/JSON-LD into ESCO / WEF / O\*NET) | **TODO** — IRIs are placeholder. Must resolve to real ESCO/EQF/DigComp IRIs. |
+| 1 | Framework anchor (SKOS/JSON-LD into ESCO / WEF / O\*NET) | **Partial** — top-level `frameworks[]` declares ESCO + DigComp + EQF; per-competency IRIs still placeholders (`esco:S1.2.3`, `digcomp:1.1`). Real ESCO/EQF/DigComp IRIs are the remaining substance gap. |
 | 2 | Gates declared (RFC-002 defaults + veto posture) | **Yes** in `gates` and `human_authority`. |
-| 3 | Evidence rules (RFC-002 §8b grounding) | **Yes** — `mastery[].evidence_refs` enforces pointer-based attestation. |
+| 3 | Evidence rules (RFC-002 §8b grounding) | **Yes** — top-level `evidence_policy` (`pointer_only: true`) + `mastery[].evidence_refs[]` enforce pointer-based attestation. |
 | 4 | No PII (publisher-owned, not user-owned) | **Yes** — `identity` is role-shaped; user PII stays in `user.klickd` v4.0. |
-| 5 | Round-trip safe with v4.0-only readers | **Pending** — depends on final wire format; pack-scoped fields under `memory.x_klickd.student` satisfy SPEC §33.7. |
-| 6 | Offline-resolvable (SKOS subset bundled) | **TODO** — bundle deferred to first real release. |
-| 7 | Router-priceable (deterministic token-cost estimate) | **TODO** — needs an `chimera_v41_extrapolation()` row. |
+| 5 | Round-trip safe with v4.0-only readers | **Pending** — depends on final wire format; pack-scoped fields under `memory.x_klickd.student` (`memory_scope`) satisfy SPEC §33.7. |
+| 6 | Offline-resolvable (SKOS subset bundled) | **TODO** — `source_policy.frameworks_offline_bundle` names the bundle; physical SKOS subset deferred to first real release. |
+| 7 | Router-priceable (deterministic token-cost estimate) | **TODO** — `router_cost` block present with `tokens_estimate: null`; needs an actual `chimera_v41_extrapolation()` row. |
 | 8 | Human-authority preserved (no pack default lowers user v4.0 gate) | **Yes** — `gates.verification_gates_default.raise_only: true`. |
-| 9 | No persona reuse | **Yes** — scaffold is field-shaped, not narrative; persona `01-eleve-terminale-fr.klickd` remains a separate v4-preview fixture. |
-| 10 | Carrier-vs-skill separation (§5.1.1) | **Yes** — §3 of this file explicitly lists every forbidden field; the Socratic tutor skill lives in `skill.kai.tutor.socratic` host-side. |
+| 9 | No persona reuse / no legacy adapter (RFC-009 §5.0) | **Yes** — §3.2 above lists rejected legacy keys (`knowledge.mastered[]`, `mastered_topics`, narrative `level`, …); persona `01-eleve-terminale-fr.klickd` is anchor-only, not a compatibility input. |
+| 10 | Carrier-vs-skill separation (§5.1.1) | **Yes** — §3.1 lists forbidden host-side fields; `forbidden_fields` literal block makes the check mechanical; Socratic tutor skill lives host-side as `skill.kai.tutor.socratic`. |
 
-Six of ten satisfied; four `TODO` items are explicitly deferred and tracked.
+Seven of ten satisfied in shape; three `TODO` items (real IRIs, SKOS offline bundle, router-cost row) are the substance gap and are explicitly tracked.
+
+### 6.1 Compliance against the v4.1-native shape table (RFC-009 §8.1)
+
+Cross-check of top-level fields the v4.1-native shape table mandates:
+
+| §8.1 field | Present in this scaffold? | Notes |
+|---|---|---|
+| `pack` | ✅ `"x.klickd/student"` | P0 id (RFC-009 §3). |
+| `pack_version` | ✅ `"0.1.0-draft"` | Pre-release tag; no release implied. |
+| `spec_ref` | ✅ Points at this file. | — |
+| `publisher` | ✅ `{name, ref}` | No PII. |
+| `frameworks[]` | ✅ ESCO + DigComp + EQF declared. | Per-IRI resolution still TODO (criterion §8.1 schema). |
+| `competencies[]` | ✅ Present (placeholder IRI). | Real IRIs TODO. |
+| `mastery[]` | ✅ Present, scale-anchored. | `scale_ref: "digcomp:2.2/scale"` cited; no legacy `mastered_topics`. |
+| `levels[]` (≈ `level` here) | ✅ Single-level object today. | Open decision §8.4 of this file may make it an array for multi-track learners. |
+| `gates` | ✅ `raise_only: true`. | — |
+| `human_authority` | ✅ `human_carrier` + `advisory`. | — |
+| `memory_scope` | ✅ `"memory.x_klickd.student"`. | — |
+| `evidence_policy` | ✅ `pointer_only: true`, attestation ref. | — |
+| `source_policy` | ✅ Declared (bundle TODO). | — |
+| `router_cost` | ✅ Block present; `tokens_estimate: null`. | Substance TODO. |
+| `forbidden_fields` | ✅ Literal frozen list. | Used by the §3.1 / §3.2 static check. |
 
 ## 7. Integration with `klickd.app`
 

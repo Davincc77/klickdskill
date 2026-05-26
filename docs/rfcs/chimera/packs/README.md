@@ -24,13 +24,21 @@ This directory is where concrete per-pack specs live. They are **scaffolds**, no
 
 > "Companion host skill" is the **method** the LLM / agent applies *on top of* the pack. It is **not** part of the pack. See [RFC-009 §5.1.1](../../RFC-009-chimera-v4.1.md) and `student.md` §3 for what is forbidden inside a pack.
 
-## 2. The carrier-vs-skill rule (one-line restatement)
+## 2. The two architectural rules
+
+### 2.1 Carrier-vs-skill (Rule 1)
 
 > **Packs carry state. Hosts carry skill.**
 >
 > A pack describes what the carrier *is* in a domain (learner, developer, researcher, …). The matching pedagogy / method / behaviour (how to *teach*, *review*, *prosecute*, *coach*) is loaded host-side as a Klickd/Kai skill, never embedded in the pack.
 
 This separation is what makes packs portable across hosts and what lets pedagogy improve without touching user files.
+
+### 2.2 v4.1-native, no legacy adapter (Rule 2)
+
+> **Packs are authored from authoritative frameworks, not adapted from v4-preview personas.**
+
+No `knowledge.mastered[]`, no `mastered_topics[]`, no narrative `level` strings, no implicit `persona → pack` migration. Personas under `examples/v4/personas/` stay v4-preview anchors per [RFC-009 §5.0 / §6](../../RFC-009-chimera-v4.1.md).
 
 ## 3. Validation criteria
 
@@ -47,7 +55,9 @@ A scaffold becomes a **real** pack only after satisfying all **ten** criteria of
 9. No persona reuse (`examples/v4/personas/*` files stay anchors).
 10. Carrier-vs-skill separation (no method / pedagogy / prompting / scoring rubric / intervention policy in the pack).
 
-A scaffold that satisfies the rule and the shape but lacks the resolved framework refs, the SKOS bundle, the cost estimate, or the offline-resolvable subset is **not** a real pack. The `student.md` scaffold is in that state today: shape and rule are clean; substance (real ESCO IRIs, SKOS bundle, cost row) is explicitly TODO.
+A scaffold that satisfies the rule and the shape but lacks the resolved framework refs, the SKOS bundle, the cost estimate, or the offline-resolvable subset is **not** a real pack. The `student.md` scaffold is in that state today: shape and both rules are clean; substance (real ESCO/EQF/DigComp IRIs, SKOS offline bundle, router-cost row) is explicitly TODO.
+
+For the v4.1-native shape contract (top-level fields, types, required, framework anchoring, frozen `forbidden_fields` list), see [RFC-009 §8.1](../../RFC-009-chimera-v4.1.md). A candidate pack is reviewed against that table.
 
 ## 4. The no-fake-catalog rule (explicit)
 

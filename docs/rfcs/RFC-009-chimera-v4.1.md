@@ -23,6 +23,7 @@
 - **v4.1 Chimera = real competency packs / portable competence architecture.** On top of the v4.0 base, a user (or an agent) MAY load up to **seven** signed competency packs (`x.klickd/<pack>`) that declare what the carrier *can do* in a domain: skills (mapped to ESCO / WEF / O\*NET via SKOS/JSON-LD), expected verifications, allowed tools, escalation gates, and evidence rules. The user keeps the soul; Chimera adds portable competence.
 - **Five things v4.1 does NOT do:** (1) it does not become a new envelope, (2) it does not redefine `agent_core` from RFC-006, (3) it does not introduce a public catalog, (4) it does not retire the v4 *personas* (those remain anchors / inspiration only — see §6), (5) it does not change human authority: the human always wins (§5.1).
 - **One thing v4.1 *adds* on top of v4.0 that didn't exist before:** the **carrier-vs-skill split** (§5.1.1). A pack carries the carrier's *state* in a domain; the matching *skill / method* (how to teach, how to review code, how to reason legally) lives **host-side** as a Klickd/Kai LLM skill — not in the user's file. This is the architectural rule that lets `x.klickd/student` be portable across tutors, exam tools, and parent dashboards.
+- **Clean-architecture invariant (§5.0).** v4.1 packs are **v4.1-native**. They are built from authoritative skill frameworks (ESCO / WEF / O\*NET / DigComp / EQF) under the SKOS/JSON-LD backbone, not adapted from v4-preview persona fixtures. There is **no compatibility path** by which an old `examples/v4/personas/*.klickd` block (or any legacy `knowledge.mastered[]` / `mastered_topics[]` / persona-shaped `subjects[].mastery` payload) becomes a Chimera pack. Personas remain v4-preview anchors / inspiration; packs are new artefacts. Reviewers MUST treat any "let this old persona key map to a pack field" proposal as a §8 validation failure.
 
 ---
 
@@ -89,6 +90,20 @@ P1 lands only when every P0 pack has passed the validation criteria of §6 and t
 P1 is **five packs**, bringing the long-run total to 11. Together with `x.klickd/user` always-on, the **per-session active set is capped at seven** (see §5.4) regardless of how many packs a carrier owns.
 
 ## 5. Architecture
+
+### 5.0 Clean-architecture invariant (normative intent) — *new in v4.1*
+
+> **v4.1 packs are v4.1-native. There is no compatibility path from v4-preview personas to Chimera packs.**
+
+Concretely:
+
+1. A Chimera pack (`x.klickd/<pack>`) is a **new artefact** built from authoritative skill frameworks (ESCO / WEF / O\*NET / DigComp / EQF) via the SKOS/JSON-LD backbone (§5.7). Its fields are defined by this RFC and by the per-pack scaffolds under [`chimera/packs/`](./chimera/packs/), not by any prior persona shape.
+2. **No legacy adapter.** The pack reader MUST NOT accept v4-preview persona blocks (`knowledge.mastered[]`, `mastered_topics[]`, free-text `subjects[].mastery`, narrative `level: "advanced"` strings, etc.) as substitutes for pack fields. A v4-preview persona that "looks like" a pack is still a persona; it is not loaded as a pack.
+3. **No silent upgrade.** A v4.0 reader that encounters a `x.klickd/<pack>` block round-trips it verbatim (§5.6, SPEC §33.7). It does **not** synthesise pack state from v4.0 fields.
+4. **Personas remain anchors.** The five `examples/v4/personas/*.klickd` files and `student-multi-provider` stay v4-preview anchors per §6 / [`examples/v4/personas/README.md`](../../examples/v4/personas/README.md). They are inspiration for what state a pack should carry; they are **not** transformed into packs.
+5. **Reviewer rule.** Any PR that proposes "let `knowledge.mastered[]` from the persona populate `mastery[]` in the pack" — or any equivalent compatibility shim — MUST be rejected as a §8 validation failure (criteria #1, #9, and #10 fail together). A new `x.klickd/<pack>` is authored from frameworks; it is never harvested from a persona file.
+
+The invariant exists because every prior agent-context attempt that allowed legacy adapters ended up with the adapter shape locking the canonical shape. v4.1 ships clean or not at all.
 
 ### 5.1 Human authority invariant (normative intent)
 
@@ -184,6 +199,8 @@ The five `examples/v4/personas/*.klickd` files and the `student-multi-provider` 
 
 **Normative intent:** these personas MUST NOT be renamed, repackaged, or republished as `x.klickd/*` competency packs. They remain non-normative v4-preview examples per [`examples/v4/personas/README.md`](../../examples/v4/personas/README.md). When a real pack ships, it MUST be a new artefact derived from authoritative frameworks (§5.7), not a relabelled persona.
 
+Per §5.0 (clean-architecture invariant), the personas are also **not** a compatibility input. No field, key, or value from a `examples/v4/personas/*.klickd` file is loaded into a pack at runtime. The persona may be **read as a design reference** by a pack author, but the pack itself is authored against frameworks. There is no `persona → pack` migration tool, no `mastered_topics` adapter, and no implicit promotion of persona narrative into pack fields.
+
 ## 7. No-catalog rule
 
 > **Until a real Chimera pack passes validation (§8), `/klickdskill` MUST NOT expose any "competency pack" catalog, listing, or download surface.**
@@ -209,10 +226,38 @@ A pack is **not** ready for catalog exposure (§7) until **all** of the followin
 6. **Offline-resolvable.** The pack ships its SKOS/JSON-LD subset; opening it on an air-gapped machine yields full labels and definitions (§5.7).
 7. **Router-priceable.** The pack publishes a deterministic token-cost estimate consistent with RFC-003's `chimera_v41_extrapolation()` shape, so router activation can be reasoned about.
 8. **Human-authority preserved.** No pack default lowers a user's v4.0 gate (§5.1). Static review of the pack MUST verify this.
-9. **No persona reuse.** The pack is not a renamed `examples/v4/personas/*` file (§6).
+9. **No persona reuse / no legacy adapter (§5.0).** The pack is not a renamed `examples/v4/personas/*` file (§6) and does **not** accept persona-shaped legacy keys (`knowledge.mastered[]`, `mastered_topics[]`, narrative `level` strings, etc.) as substitutes for pack fields. A pack's `mastery[]` is populated from framework-anchored evidence, not harvested from a persona block.
 10. **Carrier-vs-skill separation (§5.1.1).** The pack contains **state, not behaviour**. It MUST NOT carry method, pedagogy, prompting strategy, tone rules, scoring rubrics, or intervention policy. Any "skill" the agent applies on top of the pack lives on the host side (Klickd/Kai skill, agent core, or external skill registry). Static review verifies the pack declares no instructions that read like *"teach the user by …"*, *"review the user's code by …"*, *"prosecute the case by …"*.
 
 A pack passing all **ten** is **eligible** for promotion to a real `x.klickd/<pack>` artefact via a future RFC + checklist gate. Passing validation does **not** trigger catalog exposure (§7); catalog exposure is its own decision.
+
+### 8.1 v4.1-native shape (validation table, NOT a JSON Schema)
+
+A "true" Chimera pack is v4.1-native: every required field below is present, framework-anchored where applicable, and free of legacy persona-shaped keys. This table is the **validation contract** reviewers run against a candidate pack. It is **not** a JSON Schema (no `additionalProperties`, no `$id`, no `$schema`); a real schema lands only if and when the RFC promotes past `Proposed`.
+
+| Field (top-level) | Type | Required | Source | v4.1-native rule |
+|---|---|---|---|---|
+| `pack` | string | **yes** | author | MUST equal `x.klickd/<name>` where `<name>` is a P0/P1 id (§3, §4). Free-form names rejected. |
+| `pack_version` | semver string | **yes** | author | SemVer. Pre-release tag `-draft` allowed before validation passes. No release artefact implied (§7). |
+| `spec_ref` | path/URL | **yes** | author | Points at the pack's canonical scaffold under `docs/rfcs/chimera/packs/<name>.md`. |
+| `publisher` | object `{name, ref}` | **yes** | author | Publisher is **not** the carrier. No PII (§8.4). |
+| `frameworks[]` | array of `{scheme, version, iri_prefix}` | **yes** | author | Declares which authoritative frameworks the pack anchors to (ESCO / WEF / O\*NET / DigComp / EQF). MUST be non-empty. |
+| `competencies[]` | array of `{competency_ref, prefLabel, scheme}` | **yes** | author | Each `competency_ref` MUST be a stable IRI in a declared `frameworks[]` scheme. No homegrown competency. |
+| `mastery[]` | array of `{competency_ref, mastery_level, scale_ref, evidence_refs[], assessed_at, assessed_by_ref}` | optional (carrier state) | carrier | If present, every entry MUST reference a `competencies[]` IRI and a `scale_ref` (DigComp / EQF / Bloom / declared rubric). Pointer-only `evidence_refs[]`. **No** persona-shaped `mastered: true` / `mastered_topics: [...]` accepted. |
+| `levels[]` | array of `{framework_ref, level_label, effective_at}` | **yes** for student/work/coding/research/security/legal | carrier | `level_label` MUST be a value from the cited framework (e.g. `EQF level 4`), not a free-text narrative ("advanced", "expert"). |
+| `gates` | object (RFC-002 shape) | **yes** | author + carrier | Declares `verification_gates_default` and `human_veto_policy`. `raise_only: true` MUST hold against the carrier's v4.0 gates (§5.1, §8.8). |
+| `human_authority` | object `{final_decision_owner, agent_role, escalation}` | **yes** | author | `final_decision_owner ∈ {human_carrier, human_carrier_with_guardian}`, `agent_role = "advisory"`. |
+| `memory_scope` | string | **yes** | author | MUST equal `memory.x_klickd.<name>` (pack-scoped slice; §5.6). MUST NOT alias `memory[]` (the v4.0 main memory). |
+| `evidence_policy` | object `{required_for_claims, pointer_only, attestation_shape_ref}` | **yes** | author | Mirrors RFC-002 §8b. `pointer_only: true` is the v4.1 default (no inline copies of student work). |
+| `source_policy` | object `{frameworks_offline_bundle, allow_inline_definitions, language_tags[]}` | **yes** | author | Names the SKOS/JSON-LD subset shipped offline (§5.7, §8.6). |
+| `router_cost` | object `{tokens_estimate, baseline, source_row}` | **yes** | author | Deterministic token-cost estimate consistent with RFC-003 `chimera_v41_extrapolation()`. Pack without a `router_cost` row fails §8.7. |
+| `forbidden_fields` | array (literal, frozen) | **yes** | author | MUST literally include `["pedagogy", "teaching_method", "socratic_steps", "prompt_strategy", "scoring_rubric", "intervention_policy", "tone_rules", "system_prompt_overrides", "knowledge.mastered", "mastered_topics"]`. Used by the §8.10 / §5.1.1 static check and the §5.0 no-legacy-adapter check. |
+
+Notes:
+
+- A pack file containing any key listed in `forbidden_fields` fails validation immediately (carrier-vs-skill + clean-architecture). This is the static check §8.10 performs.
+- Fields not in the table above are **out of scope for v4.1-native validation**. Reviewers MUST NOT accept "but we also need field X for legacy reasons" — see §5.0.
+- This table is a **contract, not a schema.** A strict JSON Schema arrives only post-Proposed. Until then, validation is reviewer-driven against this table and against the per-pack scaffold (e.g. [`chimera/packs/student.md`](./chimera/packs/student.md) §6).
 
 ## 9. Composition with existing RFCs
 

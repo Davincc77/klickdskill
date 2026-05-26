@@ -21,6 +21,12 @@ The v4.0 surface is unchanged by v4.1. A v4.0-only reader MUST round-trip v4.1 f
 
 Worked example: `x.klickd/student` carries learner state; the Socratic tutor skill (`skill.kai.tutor.socratic`) lives host-side. See [`packs/student.md`](./packs/student.md) and [RFC-009 §5.1.1](../RFC-009-chimera-v4.1.md).
 
+## 1.2 Clean-architecture invariant (one-line restatement)
+
+> **v4.1 packs are v4.1-native. There is no compatibility path from v4-preview personas.**
+
+A pack is authored from authoritative frameworks (ESCO / WEF / O\*NET / DigComp / EQF) via SKOS/JSON-LD. It does **not** accept legacy persona keys (`knowledge.mastered[]`, `mastered_topics[]`, narrative `level: "advanced"`, free-text `subjects[].mastery`) as input or alias. Personas remain v4-preview anchors. See [RFC-009 §5.0](../RFC-009-chimera-v4.1.md) and `packs/student.md` §3.2.
+
 ## 2. Pack scope table
 
 ### P0 — six packs (must ship together; no catalog before all six validate)
@@ -69,6 +75,10 @@ A pack is **not** ready for catalog exposure until **all ten** criteria below ar
 10. **Carrier-vs-skill separation.** The pack carries **state, not behaviour**. No `pedagogy`, `prompt_strategy`, `scoring_rubric`, `intervention_policy`, or `tone_rules` fields. The matching method lives host-side as a Klickd/Kai skill.
 
 A pack passing all ten is eligible for a future promotion RFC + checklist gate. Passing validation does **not** trigger catalog exposure — that is a separate decision.
+
+### 4.0 v4.1-native shape table (validation contract, NOT a JSON Schema)
+
+For the actual per-field validation contract (top-level keys, types, required, framework anchoring, frozen `forbidden_fields` list, etc.), see [RFC-009 §8.1](../RFC-009-chimera-v4.1.md). Reviewers run a candidate pack against that table; this companion only restates the ten criteria.
 
 ## 4.1 Concrete scaffolds shipped with this RFC
 
