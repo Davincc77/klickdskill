@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "klickd"
-version = "4.0.0"
+version = "4.0.1"
 description = "Official Python library for reading and writing .klickd portable AI context files"
 readme = "README.md"
 license = {text = "CC0-1.0"}
@@ -42,6 +42,7 @@ Documentation = "https://github.com/Davincc77/klickdskill/blob/main/SPEC.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/klickd"]
-# Schema files under src/klickd/schemas/ are part of the package tree and
+# Schema files under src/klickd/schemas/ and starter .klickd files under
+# src/klickd/starter_skills/ are part of the package tree and are
 # auto-included by hatchling when packages = ["src/klickd"] selects the
 # parent directory. No explicit include rule is required.

@@ -1,0 +1,161 @@
+{
+  "klickd_version": "4.0",
+  "preview": "4.0.0-chimera-starter.1",
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "chimera-starter-1.0",
+  "created_at": "2026-05-26T00:00:00Z",
+  "encrypted": false,
+  "domain": "transversal",
+  "profile_kind": "carrier_base",
+  "_pack_metadata": {
+    "kind": "chimera_starter_pack",
+    "non_normative": true,
+    "claims_v41_ga": false,
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "see_readme": "examples/v4/starter-skills/README.md",
+    "spec_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
+    "note": "Real structured Chimera-aligned starter pack on the v4.0 envelope. Not a v4.1 GA pack."
+  },
+  "x_klickd_pack": {
+    "pack": "x.klickd/user",
+    "pack_version": "0.1.0-starter",
+    "spec_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
+    "publisher": {
+      "name": "klickd",
+      "ref": "https://klickd.app"
+    },
+    "frameworks": [
+      {
+        "scheme": "esco",
+        "version": "v1.1.1",
+        "iri_prefix": "http://data.europa.eu/esco/skill/",
+        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
+      },
+      {
+        "scheme": "digcomp",
+        "version": "2.2",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"
+      },
+      {
+        "scheme": "lifecomp",
+        "version": "2020",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en"
+      },
+      {
+        "scheme": "eqf",
+        "version": "2017",
+        "iri_prefix": "https://europa.eu/europass/eqf/",
+        "canonical_url": "https://europa.eu/europass/en/europass-tools/european-qualifications-framework"
+      }
+    ],
+    "base_transversal_core": {
+      "frameworks": [
+        { "scheme": "esco", "version": "v1.1.1" },
+        { "scheme": "digcomp", "version": "2.2" },
+        { "scheme": "lifecomp", "version": "2020" },
+        { "scheme": "eqf", "version": "2017" }
+      ],
+      "transversal_refs": [
+        { "competency_ref": "esco:S1", "scheme": "esco", "prefLabel": "communication, collaboration and creativity" },
+        { "competency_ref": "esco:S2", "scheme": "esco", "prefLabel": "information skills" },
+        { "competency_ref": "esco:S5", "scheme": "esco", "prefLabel": "working with computers" },
+        { "competency_ref": "digcomp:1.1", "scheme": "digcomp", "prefLabel": "Browsing, searching, filtering data, information and digital content" },
+        { "competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content" },
+        { "competency_ref": "lifecomp:L2", "scheme": "lifecomp", "prefLabel": "Critical thinking" },
+        { "competency_ref": "lifecomp:L3", "scheme": "lifecomp", "prefLabel": "Managing learning" }
+      ]
+    },
+    "competencies": [
+      { "competency_ref": "esco:S1", "scheme": "esco", "prefLabel": "communication, collaboration and creativity" },
+      { "competency_ref": "esco:S2", "scheme": "esco", "prefLabel": "information skills" },
+      { "competency_ref": "esco:S5", "scheme": "esco", "prefLabel": "working with computers" },
+      { "competency_ref": "digcomp:1.1", "scheme": "digcomp", "prefLabel": "Browsing, searching, filtering data, information and digital content" },
+      { "competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content" }
+    ],
+    "levels": [
+      {
+        "framework_ref": "https://europa.eu/europass/eqf/level/4",
+        "level_label": "EQF level 4",
+        "effective_at": "2026-05-26"
+      }
+    ],
+    "language_proficiency": [],
+    "mastery": [],
+    "gates": {
+      "verification_gates_default": {
+        "raise_only": true,
+        "claim_grounding_required": true,
+        "reversibility_threshold": "medium"
+      },
+      "human_veto_policy": {
+        "owner": "human_carrier",
+        "scope": ["public_post", "identity_assertion", "irreversible_action"]
+      }
+    },
+    "human_authority": {
+      "final_decision_owner": "human_carrier",
+      "agent_role": "advisory",
+      "escalation": "human_carrier_only"
+    },
+    "memory_scope": "memory.x_klickd.user",
+    "structured_memory": {
+      "scope": "memory.x_klickd.user",
+      "policy": "pack_scoped_only",
+      "entries": []
+    },
+    "evidence_policy": {
+      "required_for_claims": true,
+      "pointer_only": true,
+      "attestation_shape_ref": "rfc-002#8b"
+    },
+    "source_policy": {
+      "frameworks_offline_bundle": "docs/rfcs/chimera/frameworks/base_transversal_core.bundle.json",
+      "allow_inline_definitions": false,
+      "language_tags": ["en", "fr"]
+    },
+    "verification_gates": {
+      "version": 1,
+      "user_default": "silent",
+      "gates": [
+        {
+          "id": "factual-claim",
+          "action_class": "factual_claim_with_date",
+          "level": "confirm",
+          "reason": "Claims with dates require grounding (RFC-002 §8b)."
+        },
+        {
+          "id": "public-post",
+          "action_class": "public_post",
+          "level": "confirm",
+          "reason": "Public posting requires explicit human authorisation."
+        },
+        {
+          "id": "irreversible-action",
+          "action_class": "irreversible_action",
+          "level": "block",
+          "reason": "Irreversible actions blocked at base level; pack may raise but not lower."
+        }
+      ]
+    },
+    "router_cost": {
+      "tokens_estimate": 600,
+      "baseline": "base_plus_one",
+      "source_row": "docs/rfcs/chimera/packs/router_cost.md#31-xklickduser-derivation"
+    },
+    "forbidden_fields": [
+      "pedagogy",
+      "teaching_method",
+      "socratic_steps",
+      "prompt_strategy",
+      "scoring_rubric",
+      "intervention_policy",
+      "tone_rules",
+      "system_prompt_overrides",
+      "knowledge.mastered",
+      "mastered_topics"
+    ]
+  }
+}
