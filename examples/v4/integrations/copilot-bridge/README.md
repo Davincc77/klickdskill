@@ -1,14 +1,47 @@
-# `.klickd` ↔ Copilot bridge — reference implementation
+# `.klickd` ↔ Copilot bridge — first adapter of the Universal `.klickd` Bridge
 
-> **Status:** reference scaffold. This is **not** a claim of native
-> Copilot compatibility. GitHub Copilot and Microsoft 365 Copilot
-> cannot directly read or decrypt `.klickd` files. This bridge enables
-> a user-mediated workflow: load a `.klickd` profile locally, build a
+> **Status:** reference scaffold. This directory is the **first
+> concrete adapter** of the
+> [Universal `.klickd` Bridge](../../../../docs/integrations/universal-bridge.md).
+> The framing here is intentionally Copilot-specific because Copilot is
+> the first surface we have wired end-to-end, but the same
+> `context_builder` and security properties are reused by every other
+> adapter we add. Where this file says "Copilot", read "the first
+> adapter — the same machinery targets ChatGPT, Claude, Gemini, Grok,
+> Perplexity, OpenAI/Anthropic/Groq/xAI/OpenRouter, Ollama, LM Studio,
+> VS Code, Cursor-like editors, and MCP-compatible agents the same way".
+>
+> Everything provided here is **bridge-mediated compatibility, not
+> native support**. GitHub Copilot and Microsoft 365 Copilot cannot
+> directly read or decrypt `.klickd` files. This bridge enables a
+> user-mediated workflow: load a `.klickd` profile locally, build a
 > sanitized system/context block, and let the user (or a VS Code
 > extension) paste/inject it into a Copilot Chat session.
+>
+> **The AI model does not decrypt the `.klickd` file. The trusted local
+> runtime does.**
 
-See [`docs/integrations/copilot.md`](../../../../docs/integrations/copilot.md)
-for the broader hybrid pattern and safe wording.
+> `.klickd` does not remove integration work — it makes it reusable.
+> One integration. Infinite reuse. Across games, engines, platforms,
+> apps, agents, robots, devices, and models.
+
+See:
+
+- [`docs/integrations/universal-bridge.md`](../../../../docs/integrations/universal-bridge.md)
+  — the four-layer model (SKILL.md / `.klickd` / Bridge / MCP), the
+  compatibility matrix, and the surfaces this bridge can target.
+- [`docs/integrations/copilot.md`](../../../../docs/integrations/copilot.md)
+  — the broader Copilot-specific hybrid pattern and safe wording.
+
+## Layered model in one paragraph
+
+`SKILL.md` describes **behavior** (what the model is allowed to do).
+`.klickd` carries **memory / identity / state** (who the user is, what
+the project is, what was decided, where we left off). The **bridge** is
+the runtime that decrypts `.klickd` locally and injects a sanitized
+block into a target surface. **MCP and provider APIs** are the
+tool/action layer. `.klickd` complements skills; it does not replace
+them.
 
 ## What is here
 
@@ -32,6 +65,29 @@ copilot-bridge/
 └── fixtures/
     └── plain_profile.klickd               ← unencrypted v4 fixture for tests
 ```
+
+## Compatibility matrix (this adapter)
+
+Every cell is **bridge-mediated compatibility, not native support**.
+The full matrix across adapters lives in
+[`docs/integrations/universal-bridge.md`](../../../../docs/integrations/universal-bridge.md).
+
+| Integration mode | Status in this adapter |
+|---|---|
+| Copy/paste system-prompt export | ✅ stdout from the CLI |
+| CLI pre-step (writes a file other tools consume) | ✅ `--out PATH` |
+| VS Code / editor extension | 📐 design doc + `.example` sketches |
+| MCP server / tool | 🚧 not in this directory; pattern documented |
+| API middleware | 🚧 pattern in `docs/integrations/generic.md` |
+| Web dropzone | 🚧 not in this directory |
+| Local LLM adapter (Ollama, LM Studio, llama.cpp) | ✅ same CLI; redirect into the local-model CLI |
+
+Surfaces reachable through this adapter today (all bridge-mediated):
+GitHub Copilot Chat, Microsoft 365 Copilot Chat. Surfaces the same
+`context_builder` is designed to support via future sibling adapters or
+the CLI's plain-text output: ChatGPT, Claude, Gemini, Grok, Perplexity,
+OpenAI API, Anthropic API, Groq, xAI, OpenRouter, Ollama, LM Studio,
+VS Code, Cursor-like editors, MCP-compatible agents.
 
 ## v4 API names — important
 
@@ -143,8 +199,19 @@ When describing this bridge externally:
 - ✅ "`.klickd` works with Copilot through a user-mediated bridge:
   a local CLI or VS Code extension exports a sanitized context block
   that the user pastes into Copilot Chat."
+- ✅ "Bridge-mediated compatibility, not native support."
+- ✅ "The AI model does not decrypt the `.klickd` file. The trusted
+  local runtime does."
 - ✅ "The bridge decrypts locally; the passphrase never leaves the
   device."
+- ✅ "`.klickd` complements `SKILL.md`-style behavior contracts; it
+  does not replace them."
 - ❌ Do **not** say "Copilot loads `.klickd` directly", "native Copilot
   compatibility", or "drop a `.klickd` file in `.github/skills/` and
   Copilot will read it." None of those are true today.
+- ❌ Do **not** claim "universal native support," "automatic
+  GDPR / EU AI Act compliance," or "industry-standard adoption" —
+  none of those are accurate today.
+
+For the cross-adapter framing (one integration, infinite reuse), see
+[`docs/integrations/universal-bridge.md`](../../../../docs/integrations/universal-bridge.md).

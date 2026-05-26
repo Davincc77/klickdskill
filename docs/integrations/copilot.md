@@ -91,6 +91,13 @@ from a `.klickd` file loaded by a custom loader.
 A working reference of the CLI pre-step (option 3 above) and the VS Code
 extension design (option 2) lives at
 [`examples/v4/integrations/copilot-bridge/`](../../examples/v4/integrations/copilot-bridge/).
+It is the **first concrete adapter of the Universal `.klickd` Bridge**;
+the broader framing — four-layer model, compatibility matrix across
+surfaces, and the security phrasing "the AI model does not decrypt the
+`.klickd` file; the trusted local runtime does" — is in
+[`universal-bridge.md`](universal-bridge.md). Copilot is the first
+adapter; everything provided is bridge-mediated compatibility, not
+native support.
 It contains:
 
 - A Python CLI (`klickd_copilot_bridge.py`) and a TypeScript CLI
@@ -133,6 +140,9 @@ Safe wording when describing this integration externally:
 
 ## See also
 
+- [`universal-bridge.md`](universal-bridge.md) — Universal `.klickd`
+  Bridge: four-layer model, compatibility matrix, and the surfaces
+  reachable through bridge-mediated compatibility
 - [`generic.md`](generic.md) — the universal `.klickd` reader pattern
 - [`anthropic.md`](anthropic.md), [`openai.md`](openai.md) — provider-specific
   injection examples that the custom loader can reuse

@@ -200,3 +200,103 @@ def test_cli_handles_missing_file(tmp_path: Path) -> None:
     )
     assert result.returncode == 2
     assert "file not found" in result.stderr
+
+
+# --- Universal bridge positioning --------------------------------------------
+#
+# These tests pin the public framing introduced when the Copilot bridge
+# became the first adapter of the Universal `.klickd` Bridge. If someone
+# refactors the README or the universal-bridge doc and accidentally drops
+# the safety phrasing or the layered-model claim, CI catches it.
+
+_REPO_ROOT = Path(__file__).resolve().parents[5]
+_BRIDGE_README = _REPO_ROOT / "examples/v4/integrations/copilot-bridge/README.md"
+_UNIVERSAL_DOC = _REPO_ROOT / "docs/integrations/universal-bridge.md"
+
+
+def _flat(text: str) -> str:
+    """Collapse all runs of whitespace to single spaces.
+
+    Markdown blockquotes and word-wrap split key phrases across lines
+    (and add leading ``> ``). Tests assert against the prose, not the
+    layout, so we flatten before substring-checking.
+    """
+    import re
+    return re.sub(r"\s+", " ", text.replace(">", " "))
+
+
+def test_bridge_readme_has_universal_framing() -> None:
+    flat = _flat(_BRIDGE_README.read_text("utf-8"))
+    assert "Universal `.klickd` Bridge" in flat
+    assert "first" in flat.lower() and "adapter" in flat.lower()
+    assert "bridge-mediated compatibility, not native support" in flat
+    assert (
+        "The AI model does not decrypt the `.klickd` file. "
+        "The trusted local runtime does." in flat
+    )
+    assert "complement" in flat.lower()  # complements skills, doesn't replace
+
+
+def test_bridge_readme_has_reuse_positioning_line() -> None:
+    flat = _flat(_BRIDGE_README.read_text("utf-8"))
+    assert "does not remove integration work" in flat
+    assert "One integration. Infinite reuse." in flat
+
+
+def test_bridge_readme_disallows_unsafe_claims() -> None:
+    flat = _flat(_BRIDGE_README.read_text("utf-8"))
+    # The README *describes* the unsafe phrasings only inside a "do not say"
+    # list, so we check the safer signal: the warnings must be present.
+    assert "Do **not** claim" in flat or "Do not claim" in flat
+    assert "universal native support" in flat
+    assert "GDPR" in flat
+
+
+def test_universal_bridge_doc_exists_and_covers_matrix() -> None:
+    assert _UNIVERSAL_DOC.is_file(), "universal-bridge.md must exist"
+    flat = _flat(_UNIVERSAL_DOC.read_text("utf-8"))
+    # Four-layer model
+    for layer in ("Skills", "Memory", "Bridge", "Tools"):
+        assert layer in flat, f"layer not described: {layer}"
+    # Compatibility matrix rows
+    for mode in (
+        "Copy/paste system-prompt export",
+        "CLI pre-step",
+        "VS Code",
+        "MCP",
+        "API middleware",
+        "Web dropzone",
+        "Local LLM",
+    ):
+        assert mode in flat, f"matrix row missing: {mode}"
+    # Surfaces
+    for surface in (
+        "Copilot",
+        "ChatGPT",
+        "Claude",
+        "Gemini",
+        "Grok",
+        "Perplexity",
+        "OpenAI",
+        "Anthropic",
+        "Groq",
+        "xAI",
+        "OpenRouter",
+        "Ollama",
+        "LM Studio",
+        "Cursor",
+        "MCP-compatible agents",
+    ):
+        assert surface in flat, f"surface missing from universal doc: {surface}"
+    # Security phrase
+    assert (
+        "The AI model does not decrypt the `.klickd` file. "
+        "The trusted local runtime does." in flat
+    )
+    # Positioning line
+    assert "does not remove integration work" in flat
+    assert "One integration. Infinite reuse." in flat
+    # Anti-claims
+    assert "universal native support" in flat
+    assert "GDPR" in flat
+    assert "industry-standard adoption" in flat or "industry standard adoption" in flat

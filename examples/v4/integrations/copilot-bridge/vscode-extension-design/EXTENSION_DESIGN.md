@@ -4,6 +4,14 @@
 > describes how an extension *would* wire the CLI bridge into VS Code so
 > a user can load a local `.klickd` v4 profile into a GitHub Copilot
 > Chat session with one command.
+>
+> This extension is the **first editor-side adapter of the Universal
+> `.klickd` Bridge** (see
+> [`docs/integrations/universal-bridge.md`](../../../../../docs/integrations/universal-bridge.md)).
+> The same architecture applies to Cursor-like editors and other surfaces
+> that expose a chat-input command. All compatibility provided is
+> **bridge-mediated, not native support** — and **the AI model does not
+> decrypt the `.klickd` file; the trusted local runtime does**.
 
 ## Why an extension and not direct compatibility
 
