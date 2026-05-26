@@ -52,6 +52,24 @@ python3 scripts/verify_chimera_packs.py
 pytest tests/test_chimera_starter_packs.py
 ```
 
+The general starter-pack validator (`scripts/validate_starter_packs.py`) is
+v4.1-native by default — it expects the v4.1-shaped fields at the top level
+of each file. For the v4.0 starter `.klickd` files in this directory (which
+nest those fields under `x_klickd_pack` so the v4.0 envelope round-trips
+unchanged) run it with the `--v40-envelope` flag:
+
+```bash
+# v4.0-envelope mode — unwraps `x_klickd_pack` before validation
+python3 scripts/validate_starter_packs.py \
+    --dir examples/v4/chimera-packs \
+    --v40-envelope
+```
+
+The two scripts are complementary: `verify_chimera_packs.py` covers the v4.0
+envelope, persona-isolation, and hash-stability checks specific to this
+directory; `validate_starter_packs.py --v40-envelope` covers the shared
+v4.1-shaped field/forbidden-field/PII checks against the same files.
+
 ## How to use
 
 These are downloadable starter `.klickd` files. A carrier can:

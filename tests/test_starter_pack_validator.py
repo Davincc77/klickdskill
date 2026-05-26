@@ -300,3 +300,55 @@ def test_existing_student_fixture_passes():
         pytest.skip("no fixture pack files")
     rc = vsp.main(["--dir", str(fixture_dir)])
     assert rc == 0
+
+
+def test_pack_manifest_json_is_skipped(tmp_path):
+    # A directory containing ONLY a pack-level manifest.json should be
+    # treated as having no packs (exit 2), since manifest.json is metadata
+    # not a pack file.
+    (tmp_path / "manifest.json").write_text(
+        json.dumps({"manifest_version": "1.0", "packs": []}),
+        encoding="utf-8",
+    )
+    rc = vsp.main(["--dir", str(tmp_path)])
+    assert rc == 2
+
+
+def test_v40_envelope_mode_unwraps_x_klickd_pack(tmp_path):
+    # v4.0 starter packs nest the v4.1-shaped fields under `x_klickd_pack`.
+    # In --v40-envelope mode the validator should unwrap and pass.
+    envelope = {
+        "klickd_version": "4.0",
+        "preview": "4.0.0-chimera-starter.1",
+        "payload_schema_version": "4.0.0-preview.1",
+        "domain": "transversal",
+        "profile_kind": "carrier_base",
+        "encrypted": False,
+        "created_at": "2026-05-26T00:00:00Z",
+        "x_klickd_pack": copy.deepcopy(VALID_PACK),
+    }
+    _write(tmp_path, "user.klickd", envelope)
+    # Without the flag, top-level required fields are missing → fail.
+    assert vsp.main(["--dir", str(tmp_path)]) == 1
+    # With the flag, the inner block is validated → pass.
+    assert vsp.main(["--dir", str(tmp_path), "--v40-envelope"]) == 0
+
+
+def test_v40_envelope_mode_requires_x_klickd_pack(tmp_path):
+    # If --v40-envelope is requested but the block is missing, fail clearly.
+    _write(tmp_path, "user.klickd", VALID_PACK)
+    assert vsp.main(["--dir", str(tmp_path), "--v40-envelope"]) == 1
+
+
+def test_v40_envelope_mode_on_pr64_chimera_packs():
+    # The PR #64 starter packs in examples/v4/chimera-packs/ must validate
+    # under --v40-envelope mode (they are v4.0-envelope starter .klickd
+    # files, not v4.1-native packs).
+    pack_dir = REPO / "examples" / "v4" / "chimera-packs"
+    if not pack_dir.is_dir():
+        pytest.skip("chimera-packs dir missing")
+    files = vsp.find_pack_files(pack_dir)
+    if not files:
+        pytest.skip("no chimera-packs starter files")
+    rc = vsp.main(["--dir", str(pack_dir), "--v40-envelope"])
+    assert rc == 0

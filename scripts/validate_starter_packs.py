@@ -42,6 +42,16 @@
 #   python3 scripts/validate_starter_packs.py --dir packs/starter --manifest packs/starter/bundle-manifest.json
 #   python3 scripts/validate_starter_packs.py --dir packs/starter --json  # machine-readable report
 #
+# Modes:
+#   - default (v4.1-native): expects the v4.1-shaped fields at the top level
+#     of each pack file (the shape future v4.1 GA packs will use).
+#   - --v40-envelope: unwraps the v4.0-envelope `x_klickd_pack` block before
+#     validation. Use this for the v4.0 starter `.klickd` files under
+#     examples/v4/chimera-packs/, which nest the v4.1-shaped fields under
+#     `x_klickd_pack` so existing v4.0 readers round-trip them. The
+#     companion script scripts/verify_chimera_packs.py runs the v4.0
+#     envelope+content checks specific to that directory.
+#
 # This script is independent of the starter-pack files; it can be added
 # to CI before any pack exists. No network calls. No release implied.
 
@@ -129,7 +139,7 @@ PII_HOST_ALLOWLIST = {
 def find_pack_files(target_dir: Path) -> list[Path]:
     if not target_dir.exists() or not target_dir.is_dir():
         return []
-    # Accept both .json and .klickd extensions; skip bundle manifests.
+    # Accept both .json and .klickd extensions; skip bundle/pack manifests.
     out: list[Path] = []
     for p in sorted(target_dir.iterdir()):
         if not p.is_file():
@@ -138,10 +148,28 @@ def find_pack_files(target_dir: Path) -> list[Path]:
             continue
         if p.name == "bundle-manifest.json":
             continue
+        if p.name == "manifest.json":
+            continue
         if p.name.endswith(".bundle.json"):
             continue
         out.append(p)
     return out
+
+
+def unwrap_v40_envelope(data: dict[str, Any]) -> dict[str, Any] | None:
+    """Return the inner Chimera-shaped block from a v4.0-envelope starter pack.
+
+    The v4.0 starter `.klickd` files (examples/v4/chimera-packs/) carry the
+    v4.1-shaped fields under `x_klickd_pack`. In `--v40-envelope` mode the
+    validator unwraps that block and validates the inner object as if it
+    were a v4.1-native pack. Returns None if the envelope is not present.
+    """
+    if not isinstance(data, dict):
+        return None
+    inner = data.get("x_klickd_pack")
+    if isinstance(inner, dict):
+        return inner
+    return None
 
 
 def _filter_email_hits(text: str, hits: list[str]) -> list[str]:
@@ -251,7 +279,9 @@ def check_human_authority(data: dict[str, Any]) -> list[str]:
     return errs
 
 
-def validate_pack_file(path: Path) -> tuple[list[str], dict[str, Any] | None]:
+def validate_pack_file(
+    path: Path, v40_envelope: bool = False
+) -> tuple[list[str], dict[str, Any] | None]:
     try:
         raw = path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as e:
@@ -262,13 +292,25 @@ def validate_pack_file(path: Path) -> tuple[list[str], dict[str, Any] | None]:
         return [f"JSON parse error: {e.msg} at line {e.lineno} col {e.colno}"], None
     if not isinstance(data, dict):
         return ["top-level JSON value must be an object"], None
+    target = data
+    if v40_envelope:
+        inner = unwrap_v40_envelope(data)
+        if inner is None:
+            return (
+                [
+                    "v4.0-envelope mode requested but `x_klickd_pack` block "
+                    "is missing or not an object"
+                ],
+                data,
+            )
+        target = inner
     errs: list[str] = []
-    errs += check_required_fields(data)
-    errs += check_framework_refs(data)
-    errs += check_forbidden_fields(data)
-    errs += check_human_authority(data)
+    errs += check_required_fields(target)
+    errs += check_framework_refs(target)
+    errs += check_forbidden_fields(target)
+    errs += check_human_authority(target)
     errs += scan_text_for_pii_and_secrets(raw)
-    return errs, data
+    return errs, target
 
 
 def verify_manifest(manifest_path: Path) -> list[str]:
@@ -343,6 +385,17 @@ def main(argv: list[str] | None = None) -> int:
             "x.klickd/{user,student,research,coding}"
         ),
     )
+    ap.add_argument(
+        "--v40-envelope",
+        action="store_true",
+        help=(
+            "Unwrap the v4.0-envelope `x_klickd_pack` block before validation. "
+            "Use this for v4.0 starter `.klickd` files that nest the v4.1-shaped "
+            "fields under `x_klickd_pack` (examples/v4/chimera-packs/). "
+            "Without this flag the validator runs in v4.1-native mode "
+            "(top-level fields)."
+        ),
+    )
     args = ap.parse_args(argv)
 
     target = Path(args.dir)
@@ -369,7 +422,7 @@ def main(argv: list[str] | None = None) -> int:
 
     any_failed = False
     for f in pack_files:
-        errs, data = validate_pack_file(f)
+        errs, data = validate_pack_file(f, v40_envelope=args.v40_envelope)
         if args.require_known_pack_name and data is not None:
             name = data.get("pack")
             if name not in KNOWN_PACK_NAMES:
