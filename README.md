@@ -148,6 +148,7 @@ npm install @klickd/core
 | [`examples/v4/cli/`](examples/v4/cli/) | Python CLI: `pip install klickd==4.0.0` + a path-based `load_klickd` walkthrough |
 | [`examples/v4/web-dropzone/`](examples/v4/web-dropzone/) | Browser drag-and-drop, zero install, local-only parse |
 | [`examples/v4/student-walkthrough/`](examples/v4/student-walkthrough/) | One student profile, four providers (OpenAI · Anthropic · Groq · xAI Grok) |
+| [`examples/v4/chimera-packs/`](examples/v4/chimera-packs/) | Four downloadable starter `.klickd` skills on the v4.0 envelope (`user.klickd`, `student.klickd`, `research.klickd`, `coding.klickd`) — non-normative, not v4.1 GA, with sha256 manifest and offline verifier (`scripts/verify_chimera_packs.py`, `tests/test_chimera_starter_packs.py`). |
 | [`docs/demos/storyboards/`](docs/demos/storyboards/) | 30–60s recording scripts for each integration (text only, no video) |
 
 ---
