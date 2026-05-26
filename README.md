@@ -134,6 +134,7 @@ npm install @klickd/core
 | xAI Grok (OpenAI-compatible) | [`docs/integrations/xai_grok.md`](docs/integrations/xai_grok.md) |
 | LangChain (provider-agnostic chains) | [`docs/integrations/langchain.md`](docs/integrations/langchain.md) |
 | LlamaIndex (system prompt + vector index) | [`docs/integrations/llamaindex.md`](docs/integrations/llamaindex.md) |
+| GitHub Copilot / M365 Copilot (hybrid pattern) | [`docs/integrations/copilot.md`](docs/integrations/copilot.md) |
 | Any provider (generic pattern) | [`docs/integrations/generic.md`](docs/integrations/generic.md) |
 
 > **Experimental POC:** [`integrations/hermes/`](integrations/hermes/README.md) — Hermes Agent as workflow runner, `.klickd` as portable state layer. Local dry-run only; not a production integration.
