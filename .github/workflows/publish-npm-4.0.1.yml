@@ -1,0 +1,114 @@
+name: Publish @klickd/core 4.0.1 to npm (latest)
+
+# Packaging-only patch release for @klickd/core. Adds bundled starter
+# .klickd skills under starter-skills/. The stable spec release remains
+# v4.0.0 (DOI, GitHub Release). This workflow:
+#
+#   - is workflow_dispatch only (no release / tag triggers)
+#   - never creates a git tag or GitHub Release
+#   - hard-pins the published version to 4.0.1
+#   - defaults the build ref to the merged main commit
+#
+# Run from the Actions UI after the 4.0.1 packaging PR is merged.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref to build from (branch or commit SHA). No tag is required.'
+        required: false
+        default: 'main'
+      expected_version:
+        description: 'Exact package.json version required to publish (must be 4.0.1).'
+        required: false
+        default: '4.0.1'
+      dist_tag:
+        description: 'npm dist-tag to publish under (latest for the 4.0.1 patch).'
+        required: false
+        default: 'latest'
+
+jobs:
+  publish-401:
+    name: Build, test, and publish @klickd/core 4.0.1 to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/@klickd/core
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || 'main' }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify package version is 4.0.1
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          EXPECTED="${{ github.event.inputs.expected_version || '4.0.1' }}"
+          echo "Package version: $PKG_VERSION"
+          echo "Expected version: $EXPECTED"
+          case "$PKG_VERSION" in
+            *-*)
+              echo "ERROR: package.json version '$PKG_VERSION' looks like a pre-release. Refusing to publish."
+              exit 1
+              ;;
+          esac
+          if [ "$PKG_VERSION" != "$EXPECTED" ]; then
+            echo "ERROR: expected version $EXPECTED, got $PKG_VERSION. Refusing to publish."
+            exit 1
+          fi
+          if [ "$EXPECTED" != "4.0.1" ]; then
+            echo "ERROR: this workflow is hard-pinned to 4.0.1; expected_version must be 4.0.1."
+            exit 1
+          fi
+
+      - name: Verify starter skills are present in package source
+        run: |
+          test -d starter-skills
+          test -f starter-skills/manifest.json
+          test -f starter-skills/user.klickd
+          test -f starter-skills/student.klickd
+          test -f starter-skills/research.klickd
+          test -f starter-skills/coding.klickd
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify npm pack includes starter skills
+        run: |
+          npm pack --dry-run --json > pack.json
+          node -e "
+            const p = require('./pack.json');
+            const files = p[0].files.map(f => f.path);
+            const required = [
+              'starter-skills/manifest.json',
+              'starter-skills/user.klickd',
+              'starter-skills/student.klickd',
+              'starter-skills/research.klickd',
+              'starter-skills/coding.klickd',
+            ];
+            const missing = required.filter(r => !files.includes(r));
+            if (missing.length) {
+              console.error('Missing from npm tarball:', missing);
+              process.exit(1);
+            }
+            console.log('All starter skills present in npm tarball.');
+          "
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --tag "${{ github.event.inputs.dist_tag || 'latest' }}" --access public

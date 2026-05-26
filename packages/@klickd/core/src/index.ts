@@ -18,3 +18,13 @@ export {
   needsMigration,
 } from './migrate.js';
 export type { MigrateOptions, MigrationWarning } from './migrate.js';
+export {
+  getStarterSkillsDir,
+  listStarterSkills,
+  getStarterSkillBytes,
+  getStarterSkillsManifest,
+} from './starter-skills.js';
+export type {
+  StarterSkillEntry,
+  StarterSkillManifest,
+} from './starter-skills.js';

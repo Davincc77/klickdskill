@@ -15,6 +15,12 @@ from .migrate import (
     needs_migration,
 )
 from .validate import validate, validate_iter_errors
+from .starter_skills_resources import (
+    get_starter_skills_dir,
+    list_starter_skills,
+    get_starter_skill_bytes,
+    get_starter_skills_manifest,
+)
 from ._types import (
     KlickdPayload,
     KlickdEnvelope,
@@ -31,7 +37,7 @@ from ._types import (
     KlickdMigrationV1,
 )
 
-__version__ = "4.0.0"
+__version__ = "4.0.1"
 __all__ = [
     "load_klickd",
     "save_klickd",
@@ -40,6 +46,10 @@ __all__ = [
     "migrate_payload",
     "migrate_payload_iter_warnings",
     "needs_migration",
+    "get_starter_skills_dir",
+    "list_starter_skills",
+    "get_starter_skill_bytes",
+    "get_starter_skills_manifest",
     "KlickdError",
     "KlickdErrorCode",
     "HTTP_STATUS",
