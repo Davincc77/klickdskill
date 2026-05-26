@@ -1,4 +1,4 @@
-# `examples/v4/chimera-packs/` — Starter `.klickd` skills
+# `examples/v4/starter-skills/` — Starter `.klickd` skills
 
 > **Status:** Starter / sample artefacts. **Non-normative.** **Pre-release.** **Not v4.1 GA.**
 >
@@ -10,11 +10,11 @@ This directory ships four real, structured `.klickd` files — starter skills on
 
 | File | Skill id | Domain | Hash (sha256_file) |
 |---|---|---|---|
-| [`user.klickd`](./user.klickd) | `x.klickd/user` | transversal (base) | `36c790d6126ebf146649a3b692186da29945341ab62dfe42fce1b23d84f7fc80` |
-| [`student.klickd`](./student.klickd) | `x.klickd/student` | education | `3a365c2a51a7152d006b4e1c05f37b23f84bb214b2bc6ebe5fce05368f123377` |
-| [`research.klickd`](./research.klickd) | `x.klickd/research` | research / evidence | `a0325df37af7fc1b7df10000b361ee1b291001ae11868988401edbd8278d463d` |
-| [`coding.klickd`](./coding.klickd) | `x.klickd/coding` | software engineering | `78f4710d4bdfc2e44926c25db6f6ec5a1d5901b22755aff5592078604a55a28f` |
-| [`manifest.json`](./manifest.json) | — | sha256 manifest of the four skills above | (regenerable via `scripts/verify_chimera_packs.py`) |
+| [`user.klickd`](./user.klickd) | `x.klickd/user` | transversal (base) | `19121af045f6dd3537aa9bd4372edfaed5097b8436f026a8e9c585abbac6c80a` |
+| [`student.klickd`](./student.klickd) | `x.klickd/student` | education | `ffea74552ecedc9076d6468cb10214586632163f073a8c7975642e272464dba4` |
+| [`research.klickd`](./research.klickd) | `x.klickd/research` | research / evidence | `571bd07773caff23d08fe6857bbf696dd6e49f701aab750fa7b261345285ce63` |
+| [`coding.klickd`](./coding.klickd) | `x.klickd/coding` | software engineering | `1aab06122d8b6c7ed45737aa3b6becad3ae33badb5ad893cc7788ad6dd1481f4` |
+| [`manifest.json`](./manifest.json) | — | sha256 manifest of the four skills above | (regenerable via `scripts/verify_starter_skills.py`) |
 
 ## What these skills *are*
 
@@ -37,7 +37,7 @@ Each file is a real structured JSON document that carries:
 
 ## What these skills are NOT
 
-- **Not v4.1 GA.** `klickd_version: "4.0"`, `preview: "4.0.0-chimera-starter.1"`, `_pack_metadata.claims_v41_ga: false`. No public catalog is implied.
+- **Not v4.1 GA.** `klickd_version: "4.0"`, `_pack_metadata.claims_v41_ga: false`. No public catalog is implied.
 - **Not relabelled personas.** They are *new artefacts* authored against frameworks. They do **not** harvest `knowledge.mastered[]` / `mastered_topics` from the v4-preview persona fixtures under [`../personas/`](../personas/) (clean-architecture invariant).
 - **Not host-side skills.** The `forbidden_fields` literal is the carrier-vs-skill firewall. Pedagogy, scoring rubrics, prompt strategies, tone rules — those belong in a `host_skill` on the agent side, not in the starter file.
 - **Not personal data.** No PII, no secrets, no real user state. `display_name: null`, `school_or_institution_ref: null`, `mastery: []`, `history: []`. The starter files are *publisher-owned starter shapes* a carrier can adopt and personalise locally.
@@ -47,9 +47,9 @@ Each file is a real structured JSON document that carries:
 Offline verification of structure, fields, anti-PII guard, anti-host_skill guard, and hash stability:
 
 ```bash
-python3 scripts/verify_chimera_packs.py
+python3 scripts/verify_starter_skills.py
 # or via pytest
-pytest tests/test_chimera_starter_packs.py
+pytest tests/test_starter_skills.py
 ```
 
 The general starter-pack validator (`scripts/validate_starter_packs.py`) is
@@ -61,11 +61,11 @@ unchanged) run it with the `--v40-envelope` flag:
 ```bash
 # v4.0-envelope mode — unwraps `x_klickd_pack` before validation
 python3 scripts/validate_starter_packs.py \
-    --dir examples/v4/chimera-packs \
+    --dir examples/v4/starter-skills \
     --v40-envelope
 ```
 
-The two scripts are complementary: `verify_chimera_packs.py` covers the v4.0
+The two scripts are complementary: `verify_starter_skills.py` covers the v4.0
 envelope, persona-isolation, and hash-stability checks specific to this
 directory; `validate_starter_packs.py --v40-envelope` covers the shared
 v4.1-shaped field/forbidden-field/PII checks against the same files.
@@ -84,7 +84,7 @@ These starter `.klickd` files implement the **shape** described in the internal 
 
 ## Relation to existing personas
 
-| `examples/v4/personas/*.klickd` | `examples/v4/chimera-packs/*.klickd` |
+| `examples/v4/personas/*.klickd` | `examples/v4/starter-skills/*.klickd` |
 |---|---|
 | Persona anchors / v4-preview demo fixtures. | Starter `.klickd` skills on the v4.0 envelope. |
 | Free-text `knowledge.mastered[]`, narrative `level`. | Framework-anchored `competencies[]`, framework-anchored `levels[]`. |

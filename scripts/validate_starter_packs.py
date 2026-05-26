@@ -47,9 +47,9 @@
 #     of each pack file (the shape future v4.1 GA packs will use).
 #   - --v40-envelope: unwraps the v4.0-envelope `x_klickd_pack` block before
 #     validation. Use this for the v4.0 starter `.klickd` files under
-#     examples/v4/chimera-packs/, which nest the v4.1-shaped fields under
+#     examples/v4/starter-skills/, which nest the v4.1-shaped fields under
 #     `x_klickd_pack` so existing v4.0 readers round-trip them. The
-#     companion script scripts/verify_chimera_packs.py runs the v4.0
+#     companion script scripts/verify_starter_skills.py runs the v4.0
 #     envelope+content checks specific to that directory.
 #
 # This script is independent of the starter-pack files; it can be added
@@ -157,9 +157,9 @@ def find_pack_files(target_dir: Path) -> list[Path]:
 
 
 def unwrap_v40_envelope(data: dict[str, Any]) -> dict[str, Any] | None:
-    """Return the inner Chimera-shaped block from a v4.0-envelope starter pack.
+    """Return the inner v4.1-shaped block from a v4.0-envelope starter pack.
 
-    The v4.0 starter `.klickd` files (examples/v4/chimera-packs/) carry the
+    The v4.0 starter `.klickd` files (examples/v4/starter-skills/) carry the
     v4.1-shaped fields under `x_klickd_pack`. In `--v40-envelope` mode the
     validator unwraps that block and validates the inner object as if it
     were a v4.1-native pack. Returns None if the envelope is not present.
@@ -391,7 +391,7 @@ def main(argv: list[str] | None = None) -> int:
         help=(
             "Unwrap the v4.0-envelope `x_klickd_pack` block before validation. "
             "Use this for v4.0 starter `.klickd` files that nest the v4.1-shaped "
-            "fields under `x_klickd_pack` (examples/v4/chimera-packs/). "
+            "fields under `x_klickd_pack` (examples/v4/starter-skills/). "
             "Without this flag the validator runs in v4.1-native mode "
             "(top-level fields)."
         ),

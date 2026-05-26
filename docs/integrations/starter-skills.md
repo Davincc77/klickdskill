@@ -4,18 +4,25 @@
 >
 > **Triggers no release.** No tag, no npm `latest`, no PyPI release, no DOI, no IANA action, no SDK bump.
 
-This doc points integrators at the four downloadable starter `.klickd` skills under [`examples/v4/chimera-packs/`](../../examples/v4/chimera-packs/) and explains how they compose with the existing integration patterns described elsewhere in this directory.
+This doc points integrators at the four downloadable starter `.klickd` skills under [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) and explains how they compose with the existing integration patterns described elsewhere in this directory.
 
 ## The four starter skills
 
 | File | Skill id | Domain | When to load |
 |---|---|---|---|
-| [`user.klickd`](../../examples/v4/chimera-packs/user.klickd) | `x.klickd/user` | transversal (base) | Always-on base layer for any carrier. |
-| [`student.klickd`](../../examples/v4/chimera-packs/student.klickd) | `x.klickd/student` | education | Tutoring, exam preparation, learner-state carrying flows. |
-| [`research.klickd`](../../examples/v4/chimera-packs/research.klickd) | `x.klickd/research` | research / evidence | Claim-grounding-heavy work; gates `factual_claim_without_citation` to `block`. |
-| [`coding.klickd`](../../examples/v4/chimera-packs/coding.klickd) | `x.klickd/coding` | software engineering | Pair-programming flows; gates `force_push`, `secret_handling`, `production_deploy`. |
+| [`user.klickd`](../../examples/v4/starter-skills/user.klickd) | `x.klickd/user` | transversal (base) | Always-on base layer for any carrier. |
+| [`student.klickd`](../../examples/v4/starter-skills/student.klickd) | `x.klickd/student` | education | Tutoring, exam preparation, learner-state carrying flows. |
+| [`research.klickd`](../../examples/v4/starter-skills/research.klickd) | `x.klickd/research` | research / evidence | Claim-grounding-heavy work; gates `factual_claim_without_citation` to `block`. |
+| [`coding.klickd`](../../examples/v4/starter-skills/coding.klickd) | `x.klickd/coding` | software engineering | Pair-programming flows; gates `force_push`, `secret_handling`, `production_deploy`. |
 
-SHA-256 manifest: [`manifest.json`](../../examples/v4/chimera-packs/manifest.json). Offline verifier: [`scripts/verify_chimera_packs.py`](../../scripts/verify_chimera_packs.py). Pytest wrapper: [`tests/test_chimera_starter_packs.py`](../../tests/test_chimera_starter_packs.py).
+Direct GitHub source links (raw blob, `main` branch):
+
+- [`user.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/user.klickd) ([raw](https://raw.githubusercontent.com/Davincc77/klickdskill/main/examples/v4/starter-skills/user.klickd))
+- [`student.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/student.klickd) ([raw](https://raw.githubusercontent.com/Davincc77/klickdskill/main/examples/v4/starter-skills/student.klickd))
+- [`research.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/research.klickd) ([raw](https://raw.githubusercontent.com/Davincc77/klickdskill/main/examples/v4/starter-skills/research.klickd))
+- [`coding.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/coding.klickd) ([raw](https://raw.githubusercontent.com/Davincc77/klickdskill/main/examples/v4/starter-skills/coding.klickd))
+
+SHA-256 manifest: [`manifest.json`](../../examples/v4/starter-skills/manifest.json). Offline verifier: [`scripts/verify_starter_skills.py`](../../scripts/verify_starter_skills.py). Pytest wrapper: [`tests/test_starter_skills.py`](../../tests/test_starter_skills.py).
 
 ## What changes vs. the v4-preview personas
 
@@ -49,4 +56,4 @@ A host that *does* understand the block can use it to:
 
 The starter `.klickd` skills are **not yet published** as npm or PyPI package data. The live `@klickd/core` and `klickd` packages do **not** ship these files; a future patch release (`@klickd/core@4.0.x` and `klickd==4.0.x`) will be required to update the live pages.
 
-Until then, fetch the starter `.klickd` files directly from the GitHub source URL under [`examples/v4/chimera-packs/`](../../examples/v4/chimera-packs/).
+Until then, fetch the starter `.klickd` files directly from the GitHub source URLs under [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/).

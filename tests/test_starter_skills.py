@@ -1,6 +1,6 @@
-"""Pytest wrapper for examples/v4/chimera-packs/ verifier.
+"""Pytest wrapper for examples/v4/starter-skills/ verifier.
 
-Exposes one pytest test per offline check in scripts/verify_chimera_packs.py.
+Exposes one pytest test per offline check in scripts/verify_starter_skills.py.
 No network, no provider calls, no paid resources.
 """
 
@@ -12,11 +12,11 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "verify_chimera_packs.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "verify_starter_skills.py"
 
 
 def _import_verifier():
-    spec = importlib.util.spec_from_file_location("verify_chimera_packs", SCRIPT_PATH)
+    spec = importlib.util.spec_from_file_location("verify_starter_skills", SCRIPT_PATH)
     assert spec and spec.loader, f"could not load {SCRIPT_PATH}"
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -38,8 +38,8 @@ def test_v40_envelope(verifier):
     assert not errs, errs
 
 
-def test_chimera_required_fields(verifier):
-    errs = verifier.check_chimera_required_fields()
+def test_required_fields(verifier):
+    errs = verifier.check_required_fields()
     assert not errs, errs
 
 

@@ -5,20 +5,20 @@
   "domain_schema_version": "chimera-starter-1.0",
   "created_at": "2026-05-26T00:00:00Z",
   "encrypted": false,
-  "domain": "transversal",
-  "profile_kind": "carrier_base",
+  "domain": "software_engineering",
+  "profile_kind": "developer",
   "_pack_metadata": {
     "kind": "chimera_starter_pack",
     "non_normative": true,
     "claims_v41_ga": false,
     "contains_real_pii": false,
     "contains_secrets": false,
-    "see_readme": "examples/v4/chimera-packs/README.md",
+    "see_readme": "examples/v4/starter-skills/README.md",
     "spec_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
     "note": "Real structured Chimera-aligned starter pack on the v4.0 envelope. Not a v4.1 GA pack."
   },
   "x_klickd_pack": {
-    "pack": "x.klickd/user",
+    "pack": "x.klickd/coding",
     "pack_version": "0.1.0-starter",
     "spec_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
     "publisher": {
@@ -39,10 +39,10 @@
         "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"
       },
       {
-        "scheme": "lifecomp",
-        "version": "2020",
-        "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/",
-        "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en"
+        "scheme": "sfia",
+        "version": "8",
+        "iri_prefix": "https://sfia-online.org/en/sfia-8/",
+        "canonical_url": "https://sfia-online.org/en/sfia-8"
       },
       {
         "scheme": "eqf",
@@ -55,44 +55,48 @@
       "frameworks": [
         { "scheme": "esco", "version": "v1.1.1" },
         { "scheme": "digcomp", "version": "2.2" },
-        { "scheme": "lifecomp", "version": "2020" },
         { "scheme": "eqf", "version": "2017" }
       ],
       "transversal_refs": [
-        { "competency_ref": "esco:S1", "scheme": "esco", "prefLabel": "communication, collaboration and creativity" },
-        { "competency_ref": "esco:S2", "scheme": "esco", "prefLabel": "information skills" },
         { "competency_ref": "esco:S5", "scheme": "esco", "prefLabel": "working with computers" },
-        { "competency_ref": "digcomp:1.1", "scheme": "digcomp", "prefLabel": "Browsing, searching, filtering data, information and digital content" },
-        { "competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content" },
-        { "competency_ref": "lifecomp:L2", "scheme": "lifecomp", "prefLabel": "Critical thinking" },
-        { "competency_ref": "lifecomp:L3", "scheme": "lifecomp", "prefLabel": "Managing learning" }
+        { "competency_ref": "digcomp:3.4", "scheme": "digcomp", "prefLabel": "Programming" },
+        { "competency_ref": "digcomp:4.2", "scheme": "digcomp", "prefLabel": "Protecting personal data and privacy" }
       ]
     },
     "competencies": [
-      { "competency_ref": "esco:S1", "scheme": "esco", "prefLabel": "communication, collaboration and creativity" },
-      { "competency_ref": "esco:S2", "scheme": "esco", "prefLabel": "information skills" },
       { "competency_ref": "esco:S5", "scheme": "esco", "prefLabel": "working with computers" },
-      { "competency_ref": "digcomp:1.1", "scheme": "digcomp", "prefLabel": "Browsing, searching, filtering data, information and digital content" },
-      { "competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content" }
+      { "competency_ref": "digcomp:3.4", "scheme": "digcomp", "prefLabel": "Programming" },
+      { "competency_ref": "digcomp:4.1", "scheme": "digcomp", "prefLabel": "Protecting devices" },
+      { "competency_ref": "digcomp:4.2", "scheme": "digcomp", "prefLabel": "Protecting personal data and privacy" },
+      { "competency_ref": "sfia:PROG", "scheme": "sfia", "prefLabel": "Programming/software development" },
+      { "competency_ref": "sfia:TEST", "scheme": "sfia", "prefLabel": "Systems and software testing" }
     ],
     "levels": [
       {
-        "framework_ref": "https://europa.eu/europass/eqf/level/4",
-        "level_label": "EQF level 4",
+        "framework_ref": "https://europa.eu/europass/eqf/level/6",
+        "level_label": "EQF level 6",
         "effective_at": "2026-05-26"
       }
     ],
     "language_proficiency": [],
     "mastery": [],
+    "engineering_discipline": {
+      "code_review_required_before_merge": true,
+      "tests_required_for_new_logic": true,
+      "typecheck_required_for_typed_languages": true,
+      "secrets_handling": "pointer_only_never_inline",
+      "supply_chain_awareness": "verify_provenance_when_adding_dependency",
+      "reversibility_default": "prefer_reversible_changes"
+    },
     "gates": {
       "verification_gates_default": {
         "raise_only": true,
         "claim_grounding_required": true,
-        "reversibility_threshold": "medium"
+        "reversibility_threshold": "low"
       },
       "human_veto_policy": {
         "owner": "human_carrier",
-        "scope": ["public_post", "identity_assertion", "irreversible_action"]
+        "scope": ["force_push", "dependency_addition", "secret_handling", "production_deploy"]
       }
     },
     "human_authority": {
@@ -100,9 +104,9 @@
       "agent_role": "advisory",
       "escalation": "human_carrier_only"
     },
-    "memory_scope": "memory.x_klickd.user",
+    "memory_scope": "memory.x_klickd.coding",
     "structured_memory": {
-      "scope": "memory.x_klickd.user",
+      "scope": "memory.x_klickd.coding",
       "policy": "pack_scoped_only",
       "entries": []
     },
@@ -121,29 +125,41 @@
       "user_default": "silent",
       "gates": [
         {
-          "id": "factual-claim",
-          "action_class": "factual_claim_with_date",
-          "level": "confirm",
-          "reason": "Claims with dates require grounding (RFC-002 §8b)."
-        },
-        {
-          "id": "public-post",
-          "action_class": "public_post",
-          "level": "confirm",
-          "reason": "Public posting requires explicit human authorisation."
-        },
-        {
-          "id": "irreversible-action",
-          "action_class": "irreversible_action",
+          "id": "force-push",
+          "action_class": "force_push",
           "level": "block",
-          "reason": "Irreversible actions blocked at base level; pack may raise but not lower."
+          "reason": "Force push is destructive; requires explicit human authorisation."
+        },
+        {
+          "id": "dependency-add",
+          "action_class": "dependency_addition",
+          "level": "confirm",
+          "reason": "New dependencies expand the supply-chain surface; confirm provenance before adding."
+        },
+        {
+          "id": "secrets",
+          "action_class": "secret_handling",
+          "level": "block",
+          "reason": "Secrets never inline; pointer-only handling enforced at gate level."
+        },
+        {
+          "id": "production-deploy",
+          "action_class": "production_deploy",
+          "level": "block",
+          "reason": "Deploys touch shared infrastructure; reversibility threshold low."
+        },
+        {
+          "id": "destructive-git",
+          "action_class": "destructive_git",
+          "level": "confirm",
+          "reason": "Destructive git operations (reset --hard, branch -D) require confirmation."
         }
       ]
     },
     "router_cost": {
-      "tokens_estimate": 600,
+      "tokens_estimate": 900,
       "baseline": "base_plus_one",
-      "source_row": "docs/rfcs/chimera/packs/router_cost.md#31-xklickduser-derivation"
+      "source_row": "docs/rfcs/chimera/packs/router_cost.md"
     },
     "forbidden_fields": [
       "pedagogy",

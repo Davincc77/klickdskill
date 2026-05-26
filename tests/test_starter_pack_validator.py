@@ -340,15 +340,15 @@ def test_v40_envelope_mode_requires_x_klickd_pack(tmp_path):
     assert vsp.main(["--dir", str(tmp_path), "--v40-envelope"]) == 1
 
 
-def test_v40_envelope_mode_on_pr64_chimera_packs():
-    # The PR #64 starter packs in examples/v4/chimera-packs/ must validate
+def test_v40_envelope_mode_on_starter_skills():
+    # The starter packs in examples/v4/starter-skills/ must validate
     # under --v40-envelope mode (they are v4.0-envelope starter .klickd
     # files, not v4.1-native packs).
-    pack_dir = REPO / "examples" / "v4" / "chimera-packs"
+    pack_dir = REPO / "examples" / "v4" / "starter-skills"
     if not pack_dir.is_dir():
-        pytest.skip("chimera-packs dir missing")
+        pytest.skip("starter-skills dir missing")
     files = vsp.find_pack_files(pack_dir)
     if not files:
-        pytest.skip("no chimera-packs starter files")
+        pytest.skip("no starter-skills files")
     rc = vsp.main(["--dir", str(pack_dir), "--v40-envelope"])
     assert rc == 0

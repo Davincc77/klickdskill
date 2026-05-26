@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Offline verifier for examples/v4/chimera-packs/.
+"""Offline verifier for examples/v4/starter-skills/.
 
 Performs the following deterministic checks against the four starter
-Chimera-aligned packs and their manifest:
+`.klickd` skills and their manifest:
 
   1. JSON validity for every *.klickd file and manifest.json.
   2. v4.0 envelope present (klickd_version == "4.0", payload_schema_version,
      created_at, encrypted == False, _pack_metadata.claims_v41_ga == False).
-  3. Required Chimera fields present on x_klickd_pack (pack, pack_version,
+  3. Required x_klickd_pack fields present (pack, pack_version,
      spec_ref, publisher, frameworks, base_transversal_core, competencies,
      levels, gates, human_authority, memory_scope, evidence_policy,
      source_policy, verification_gates, structured_memory, router_cost,
@@ -40,7 +40,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PACK_DIR = REPO_ROOT / "examples" / "v4" / "chimera-packs"
+PACK_DIR = REPO_ROOT / "examples" / "v4" / "starter-skills"
 MANIFEST_PATH = PACK_DIR / "manifest.json"
 
 PACK_FILES = ["user.klickd", "student.klickd", "research.klickd", "coding.klickd"]
@@ -55,7 +55,7 @@ V40_ENVELOPE_REQUIRED = {
     "_pack_metadata",
 }
 
-CHIMERA_PACK_REQUIRED = {
+PACK_REQUIRED_FIELDS = {
     "pack",
     "pack_version",
     "spec_ref",
@@ -181,7 +181,7 @@ def check_v40_envelope() -> list[str]:
     return errs
 
 
-def check_chimera_required_fields() -> list[str]:
+def check_required_fields() -> list[str]:
     errs = []
     for name in PACK_FILES:
         obj = json.loads((PACK_DIR / name).read_text(encoding="utf-8"))
@@ -189,7 +189,7 @@ def check_chimera_required_fields() -> list[str]:
         if not isinstance(pack, dict):
             errs.append(f"{name}: x_klickd_pack block missing or not an object")
             continue
-        missing = CHIMERA_PACK_REQUIRED - set(pack.keys())
+        missing = PACK_REQUIRED_FIELDS - set(pack.keys())
         if missing:
             errs.append(f"{name}: x_klickd_pack missing required fields: {sorted(missing)}")
         if not pack.get("pack", "").startswith("x.klickd/"):
@@ -311,7 +311,7 @@ def check_hash_stable() -> list[str]:
 CHECKS = [
     ("json_valid", check_json_valid),
     ("v40_envelope", check_v40_envelope),
-    ("chimera_required_fields", check_chimera_required_fields),
+    ("required_fields", check_required_fields),
     ("no_pii", check_no_pii),
     ("no_host_skill_fields", check_no_host_skill_fields),
     ("no_persona_only_fields", check_no_persona_only_fields),
