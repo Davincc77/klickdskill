@@ -1,6 +1,6 @@
 {
   "name": "@klickd/core",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Official JavaScript/TypeScript library for reading and writing .klickd portable AI context files",
   "keywords": [
     "klickd",
@@ -34,8 +34,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --external argon2 --external argon2-browser --external ajv --loader .json=copy",
+    "build": "tsup src/index.ts --format esm,cjs --dts --external argon2 --external argon2-browser --external ajv",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "verify:tarball": "node scripts/verify-tarball.mjs",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {

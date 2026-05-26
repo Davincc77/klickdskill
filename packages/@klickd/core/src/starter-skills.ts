@@ -7,7 +7,7 @@
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 
 export interface StarterSkillEntry {
   id: string;
@@ -27,9 +27,41 @@ export interface StarterSkillManifest {
   [key: string]: unknown;
 }
 
+// Resolve the directory of the running module in a way that works for both
+// the CommonJS and ESM builds produced by tsup. In the CJS bundle
+// `import.meta.url` is rewritten to an empty object and would cause
+// `fileURLToPath(undefined)` to throw `ERR_INVALID_ARG_TYPE`; in the ESM
+// bundle `__dirname` is not defined. We probe each one in turn.
+function moduleDir(): string {
+  if (typeof __dirname !== 'undefined') {
+    return __dirname;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const metaUrl: string | undefined = (import.meta as any)?.url;
+  if (typeof metaUrl === 'string' && metaUrl.length > 0) {
+    return dirname(fileURLToPath(metaUrl));
+  }
+  throw new Error(
+    '@klickd/core: unable to resolve module directory for starter-skills',
+  );
+}
+
 function starterSkillsDir(): string {
-  const here = dirname(fileURLToPath(import.meta.url));
-  return join(here, '..', 'starter-skills');
+  const here = moduleDir();
+  // The compiled entry lives in `dist/`; starter skills are at the package
+  // root in `starter-skills/`. If a downstream consumer reorganises the
+  // layout (e.g. flattens `dist/`), fall back to a sibling lookup so the
+  // helper still resolves.
+  const candidates = [
+    join(here, '..', 'starter-skills'),
+    join(here, 'starter-skills'),
+  ];
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return candidates[0];
 }
 
 export function getStarterSkillsDir(): string {
