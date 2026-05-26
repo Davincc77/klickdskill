@@ -1,0 +1,221 @@
+# RFC-009 — `.klickd v4.1 — Chimera` (portable competence architecture)
+
+| | |
+|---|---|
+| **RFC** | 009 |
+| **Title** | `.klickd v4.1 — Chimera`: real competency packs on top of v4.0 portable persona / governance memory |
+| **Target** | `.klickd v4.1` (post-v4.0.0 GA; pack track, NOT in scope for `v4.0.0` GA P0) |
+| **Status** | **Draft** |
+| **Author** | Vince C. (Klickd / Luxlearn, Luxembourg) |
+| **Created** | 2026-05-26 |
+| **Supersedes** | — |
+| **Relates to** | RFC-001 (`media_profile`), RFC-002 (`verification_gates`, `human_veto_policy`), RFC-003 (Context Cost Benchmark, §"Chimera.klickd v4.1 — forward-looking extrapolation"), RFC-004 (Migration), RFC-006 (`agent_core`), RFC-007 (`usage_profile` & in-session skill routing), RFC-008 (`core_update_watch`), SPEC §33 (v4-preview), [`docs/use-cases/DOMAIN_PROFILE_CATALOG.md`](../use-cases/DOMAIN_PROFILE_CATALOG.md) |
+
+> **This RFC is non-normative.** It is a **Draft** and is **docs-only**. It does **not** modify any current `SPEC.md` section, schema (`schemas/klickd-payload-v4.schema.json`, `schemas/klickd-payload-v4-preview.schema.json`), SDK, vector, lock file, or RFC status. It introduces **no** new normative field. It does **not** trigger any release: **no** tag, **no** `latest` on npm or PyPI, **no** DOI on Zenodo, **no** IANA action, **no** SDK bump.
+>
+> The production-recommended `.klickd` remains **v3.5.1**. The GA track is **v4.0.0** (portable persona / governance memory). Chimera (**v4.1**) is the next minor and is described here so reviewers can compare it against the v4.0.0 surface *before* any normative wording or schema lands.
+
+---
+
+## 0. TL;DR — what v4.1 is and is not
+
+- **v4.0.0 GA = portable persona / governance memory.** One `.klickd` file carries a human's identity, memory, preferences, growth, accessibility, ethics, gates, and human-veto policy. This is the format's normative core today (SPEC §33).
+- **v4.1 Chimera = real competency packs / portable competence architecture.** On top of the v4.0 base, a user (or an agent) MAY load up to **seven** signed competency packs (`x.klickd/<pack>`) that declare what the carrier *can do* in a domain: skills (mapped to ESCO / WEF / O\*NET via SKOS/JSON-LD), expected verifications, allowed tools, escalation gates, and evidence rules. The user keeps the soul; Chimera adds portable competence.
+- **Five things v4.1 does NOT do:** (1) it does not become a new envelope, (2) it does not redefine `agent_core` from RFC-006, (3) it does not introduce a public catalog, (4) it does not retire the v4 *personas* (those remain anchors / inspiration only — see §4), (5) it does not change human authority: the human always wins (§5.1).
+
+---
+
+## 1. Motivation
+
+Vince's review of the previous v4.1 attempt rejected two things explicitly:
+
+1. **A too-narrow 6-pack MVP** that did not cover the actual user surface — every real user we have observed needs at minimum the `user` + `student` + `coding` triad, plus a research / security / legal stance, before any "professional" pack is even meaningful.
+2. **A fake site catalog** — proposing `/klickdskill` downloads of the current `examples/v4/personas/*.klickd` files relabelled as "competency packs". Those files are personas/demos/fixtures (see [`examples/v4/personas/README.md`](../../examples/v4/personas/README.md), R4-P0-3). They are **not** competency packs. Publishing them as if they were would lock the format into a wrong taxonomy and would mislead third-party implementers (the exact failure mode [`DOMAIN_PROFILE_CATALOG.md`](../use-cases/DOMAIN_PROFILE_CATALOG.md) §0 warned about).
+
+Chimera v4.1 is the corrected direction: a small, well-typed pack architecture, anchored on authoritative skill frameworks, with a P0 set that matches actual users and a P1 set that arrives only **after** the P0 set passes validation — and **never** a public catalog of demo personas mis-cast as packs.
+
+The architecture is also the operational reading of three already-existing pieces of the v4 surface:
+
+- **RFC-006 `agent_core`** — Chimera packs are the things an agent core *imports*.
+- **RFC-007 `usage_profile` & in-session skill routing** — the same router that picks a `usage_profile` at first run is the one that activates / deactivates packs per turn.
+- **RFC-003 §"Chimera.klickd v4.1 — forward-looking extrapolation"** — the context-cost projection that already names `Chimera.klickd v4.1` as the upper/lower bound study for `base + N packs` vs router-selected activation.
+
+This RFC names that direction, fixes its P0/P1 scope, and pins the no-catalog rule.
+
+## 2. v4.0 vs v4.1 — sharp boundary
+
+| Layer | v4.0.0 GA | v4.1 Chimera |
+|---|---|---|
+| **What the file carries** | Portable persona / governance memory of *one human*: identity, memory, preferences, growth, accessibility, ethics, gates, human-veto, consent. | The v4.0 base **plus** up to seven competency packs (`x.klickd/<pack>`) declaring what the carrier can *do* in a domain. |
+| **Ownership** | The person. | The person; each pack carries its own publisher provenance (org / community) and is verified independently. |
+| **Normative core** | SPEC §33, schemas `klickd-payload-v4*.schema.json`. | This RFC; promotion path goes through `ACCEPTANCE_CHECKLIST_V4.md`. No schema in this RFC. |
+| **Human authority** | User veto wins (RFC-002). | User veto **still** wins, over *every* pack default (§5.1). |
+| **Failure mode if missed** | A model that ignores v4.0 still talks to "a generic user". Annoying, not unsafe. | A model that ignores v4.1 packs may attempt actions outside the carrier's declared competence — Chimera's gates exist to make that visible (§5.3). |
+
+The boundary is intentional: **v4.0 is who you are; v4.1 is what you can do.** Reviewers should be able to point at any field in this RFC and answer "competence" — if the answer is "identity / memory / consent", the field belongs in v4.0, not here.
+
+## 3. P0 packs — revised scope (six)
+
+Per Vince's review, the v4.1 P0 set covers the **minimum surface a real user needs across personal, learning, professional, and safety vectors**, before any catalog discussion is meaningful:
+
+| Pack id | Anchors competence in | Why P0 |
+|---|---|---|
+| `x.klickd/user` | The carrier as a *competent autonomous human* (literacy, numeracy, communication, basic digital, civic, transversal soft skills). | Every other pack composes on top of this. Maps to ESCO transversal skills + DigComp 2.2. |
+| `x.klickd/student` | Learner competence: study skills, source evaluation, exam discipline, self-assessment, FR/LU/EU school context. | Largest single user segment; anchor persona `01-eleve-terminale-fr` already validates the shape (anchor only — see §4). |
+| `x.klickd/coding` | Software engineering competence: language fluency, code review discipline, test/typecheck rigour, security hygiene, supply-chain awareness. | Anchored by `03-fullstack-developer-en`; this is also the pack `.klickd` itself eats — Chimera must work for the people building it. |
+| `x.klickd/research` | Evidence-handling competence: claim grounding, citation, replication, falsifiability, RFC-002 §8b verification artefact discipline. | The pack that disambiguates "the model said so" from "the carrier verified it"; required by RFC-003 §1.2. |
+| `x.klickd/security` | Threat modelling, blast-radius reasoning, secrets hygiene, reversibility awareness, escalation defaults. | Cuts across every other P0 pack; declaring it as P0 prevents it from being "optional security" later. Maps to NICE + ENISA + CIS frameworks. |
+| `x.klickd/legal` | Jurisdictional awareness (FR/LU/EU baseline), data protection (GDPR/AI-Act), licensing, professional secrecy gates, escalation to a human professional. | A v4.1 carrier without `legal` invariants will leak compliance — `legal` is therefore *constraint*, not feature. |
+
+P0 is **six packs**, not five and not seven, by design — `security` and `legal` are *not* optional, they are part of the floor.
+
+### 3.1 Why six and not the previous narrow set
+
+The previous "6-pack MVP" Vince rejected lacked `security` and `legal` (or folded them into `user`) and over-indexed on professional-creator packs. That ordering let competence ship before constraint. The corrected P0 inverts the priority: constraints (`security`, `legal`) ship with `user` / `student` / `coding` / `research`; creator / work / gaming come **only** after validation (§4).
+
+## 4. P1 fast-follow — five packs, *only after* P0 validation
+
+P1 lands only when every P0 pack has passed the validation criteria of §6 and the no-catalog rule of §7 is still respected.
+
+| Pack id | Anchors competence in | Persona anchor (inspiration only) |
+|---|---|---|
+| `x.klickd/work` | Professional / team competence: project management, stakeholder communication, deliverable discipline. | `02-chef-projet-pme-fr` |
+| `x.klickd/creator` | Media production competence: editorial responsibility, source/rights handling, RFC-001 `media_profile` discipline. | `04-createur-media-fr` |
+| `x.klickd/gaming` | Game competence: rule comprehension, opponent / NPC modelling, RFC-002 reversibility intuition (low-stakes proving ground). | `05-rpg-gamer-en` |
+| `x.klickd/bridge` | Cross-provider / multi-provider competence: provider-neutral prompting, capability negotiation, fallback discipline. | `student-multi-provider` |
+| `x.klickd/mission` | Mission / project-scoped competence: declaring objective, scope, deliverable, time-box, exit conditions. Distinct from `work` (mission ≠ job). | — (no current persona; first pack without a v4 anchor, intentionally) |
+
+P1 is **five packs**, bringing the long-run total to 11. Together with `x.klickd/user` always-on, the **per-session active set is capped at seven** (see §5.4) regardless of how many packs a carrier owns.
+
+## 5. Architecture
+
+### 5.1 Human authority invariant (normative intent)
+
+> **The human always wins.** A pack MAY declare defaults (gates, tools, escalation). The user's v4.0 veto, consent, and gates take precedence on every conflict. No pack can lower a user's gate; a pack MAY raise it. This invariant is non-negotiable and mirrors RFC-002 §6 + RFC-006 §6.
+
+### 5.2 Base transversal core
+
+A `.klickd v4.1` file always carries a **base transversal core** on top of v4.0: the small set of cross-pack competencies (literacy, numeracy, communication, basic digital, RFC-002-style gate reasoning, RFC-001 media-handling awareness). The base is implicit in `x.klickd/user` and is loaded even when no other pack is active. Packs MAY refine the base; they MUST NOT shadow it silently.
+
+### 5.3 Up to seven packs active per session
+
+A session's effective context = v4.0 base + base transversal core + **up to seven** active packs. Loading more than seven SHOULD trigger an explicit router decision (§5.5), not a silent truncation. Seven is a cost ceiling (see RFC-003 §"Chimera.klickd v4.1 — forward-looking extrapolation": `base_plus_seven` is the upper bound) and an attention ceiling.
+
+### 5.4 Temporary overlays
+
+A pack MAY be loaded as a **temporary overlay** (a single turn, a single artefact, a single project) without becoming part of the carrier's persistent active set. Overlays:
+
+- expire deterministically (turn / time / artefact boundary, declared at load),
+- never write back to the v4.0 memory unless the user explicitly accepts the write,
+- count against the seven-pack ceiling **while active**.
+
+Overlays exist so that "I need legal context for this one document" does not require permanently adopting `x.klickd/legal`.
+
+### 5.5 Decision router
+
+The router is the same conceptual component as RFC-007 §"in-session skill routing":
+
+- at first run, the router picks an initial active set from the carrier's declared `usage_profile`,
+- per turn, the router MAY swap packs in/out based on the user's prompt, the agent core's policy, and the seven-pack ceiling,
+- every swap is logged as a decision (RFC-003 `decisions[]`-shaped record), so the carrier can audit "why was `legal` active when I asked X".
+
+The router is **advisory**, not coercive: the user can pin or veto a pack at any time (§5.1).
+
+### 5.6 Extended structured memory
+
+v4.0's `memory[]` is one ordered list. v4.1 extends it (additively, no rewrite) with **pack-scoped memory slices** — a pack MAY append to its own slice without touching the user's main memory. The user's main memory remains the single source of truth for identity and consent; pack slices are competence trace, not persona.
+
+- A pack slice MUST be addressable as `memory.x_klickd.<pack>` (illustrative only — no schema in this RFC).
+- A reader that does not understand pack slices MUST preserve them verbatim on round-trip (SPEC §33.7 already covers this).
+
+### 5.7 ESCO / WEF / O\*NET + SKOS/JSON-LD offline backbone
+
+Pack competencies are anchored to **authoritative skill frameworks**, not to a homegrown Klickd taxonomy (the failure mode `DOMAIN_PROFILE_CATALOG.md` §0 named):
+
+- ESCO (EU) — primary occupational / skill backbone, multilingual, public licence.
+- WEF Future of Jobs taxonomy — transversal / "future skills" layer.
+- O\*NET (US) — cross-check for occupational depth where ESCO is sparse.
+- SKOS / JSON-LD — the wire shape: each competency carries a `skos:Concept`-shaped reference with `inScheme` (which framework), `prefLabel`, and a stable IRI.
+
+The backbone is **offline-capable**: a pack ships with the SKOS/JSON-LD subset it references, so a carrier that opens the file on an air-gapped machine sees full labels and definitions without a network call. This is also the constraint that keeps packs auditable: every claim about competence resolves to an external, dated framework reference.
+
+## 6. Persona anchors (inspiration only, NOT competency packs)
+
+The five `examples/v4/personas/*.klickd` files and the `student-multi-provider` walkthrough exist as v4-preview **persona / demo fixtures**. They are the right input to design competency packs against, and they are the wrong artefact to publish *as* competency packs. The mapping is:
+
+| Current v4 persona (anchor only) | Future Chimera pack (this RFC) | Track |
+|---|---|---|
+| `01-eleve-terminale-fr` | `x.klickd/student` | P0 |
+| `02-chef-projet-pme-fr` | `x.klickd/work` | P1 |
+| `03-fullstack-developer-en` | `x.klickd/coding` | P0 |
+| `04-createur-media-fr` | `x.klickd/creator` | P1 |
+| `05-rpg-gamer-en` | `x.klickd/gaming` | P1 |
+| `student-multi-provider` (demo walkthrough) | `x.klickd/bridge` | P1 |
+
+**Normative intent:** these personas MUST NOT be renamed, repackaged, or republished as `x.klickd/*` competency packs. They remain non-normative v4-preview examples per [`examples/v4/personas/README.md`](../../examples/v4/personas/README.md). When a real pack ships, it MUST be a new artefact derived from authoritative frameworks (§5.7), not a relabelled persona.
+
+## 7. No-catalog rule
+
+> **Until a real Chimera pack passes validation (§8), `/klickdskill` MUST NOT expose any "competency pack" catalog, listing, or download surface.**
+
+Concretely:
+
+- Current files under `examples/v4/personas/`, `examples/v4/student-walkthrough/`, `examples/`, and `registry/competencies/` are **not** competency packs and MUST NOT be re-served as such.
+- Any future catalog surface (web index, API endpoint, registry entry) is **out of scope until P0 validation passes**.
+- A pack is "real" only after it satisfies the validation criteria of §8 — relabelling, prettifying, or aggregating existing v4 fixtures does not satisfy those criteria.
+- No `latest` / `next` channel, no DOI, no IANA action, no npm / PyPI release of a "klickdskill" pack bundle is permitted under this RFC.
+
+The no-catalog rule exists because shipping a fake catalog locks the taxonomy before reviewers can audit it — exactly the surface-creep failure `DOMAIN_PROFILE_CATALOG.md` §0 warned about.
+
+## 8. Validation criteria (pre-promotion)
+
+A pack is **not** ready for catalog exposure (§7) until **all** of the following are satisfied. The criteria are docs-only and intentionally framework-anchored; they do not introduce new schema.
+
+1. **Framework anchor.** Every competency in the pack resolves to a SKOS/JSON-LD reference into ESCO, WEF, or O\*NET (§5.7). No homegrown competency without an external anchor.
+2. **Gates declared.** Every action the pack enables declares its RFC-002 `verification_gates` defaults and `human_veto_policy` posture. No silently bypassable action.
+3. **Evidence rules.** Every claim the pack lets the agent emit declares its grounding rule (RFC-002 §8b claim grounding, RFC-003 `verification_artifacts[]` shape). Packs that emit unsourced claims fail validation.
+4. **No PII.** A pack file is publisher-owned, not user-owned. It MUST NOT contain user PII, user memory, user sessions, or user consent (mirrors RFC-006 §6).
+5. **Round-trip safe.** A v4.0-only reader that ignores the pack MUST preserve it verbatim on round-trip and MUST NOT degrade v4.0 behaviour.
+6. **Offline-resolvable.** The pack ships its SKOS/JSON-LD subset; opening it on an air-gapped machine yields full labels and definitions (§5.7).
+7. **Router-priceable.** The pack publishes a deterministic token-cost estimate consistent with RFC-003's `chimera_v41_extrapolation()` shape, so router activation can be reasoned about.
+8. **Human-authority preserved.** No pack default lowers a user's v4.0 gate (§5.1). Static review of the pack MUST verify this.
+9. **No persona reuse.** The pack is not a renamed `examples/v4/personas/*` file (§6).
+
+A pack passing all nine is **eligible** for promotion to a real `x.klickd/<pack>` artefact via a future RFC + checklist gate. Passing validation does **not** trigger catalog exposure (§7); catalog exposure is its own decision.
+
+## 9. Composition with existing RFCs
+
+| Existing RFC | Relation to Chimera v4.1 |
+|---|---|
+| RFC-001 (`media_profile`) | A pack MAY refine `media_profile` defaults (e.g. `x.klickd/creator`). The pack's defaults compose under user veto (RFC-002). |
+| RFC-002 (`verification_gates`, `human_veto_policy`) | Foundation. Every pack declares gate defaults; user veto wins. |
+| RFC-003 (Context Cost Benchmark) | Chimera is the operational reading of `chimera_v41_extrapolation()`. The seven-pack ceiling (§5.3) matches `base_plus_seven`. |
+| RFC-004 (Migration) | A v4.0 → v4.1 migration is additive (`memory.x_klickd.*` and pack manifest fields are new keys); no break to v4.0 readers. |
+| RFC-006 (`agent_core`) | An agent core MAY import packs. Composition rule (`core` constrains, `pack` declares competence, `user` personalises) extends `DOMAIN_PROFILE_CATALOG.md` §1.1. |
+| RFC-007 (`usage_profile` & skill routing) | The router (§5.5) is the same component RFC-007 sketches; Chimera names its pack-aware behaviour. |
+| RFC-008 (`core_update_watch`) | Pack updates follow the same "veille → propose → user accepts" pattern; pack updates MUST NOT touch user memory (§5.6). |
+
+## 10. Out of scope (v1 of this RFC)
+
+- Concrete JSON Schema for `x.klickd/<pack>` files. Strict schema arrives only if and when the RFC promotes past `Proposed`.
+- The wire format of a `pack_manifest` block. Sketched conceptually here; normalised in a future RFC.
+- Catalog UX, discovery, marketplace, ratings, signing key infrastructure. (See §7 no-catalog.)
+- Concrete ESCO / WEF / O\*NET subset bundles per pack. Listed as a validation criterion (§8), not shipped here.
+- Any change to `v4.0.0` GA. v4.1 is strictly post-GA.
+
+## 11. Open decisions
+
+> Listed explicitly so reviewers can spot accidental assumptions (per `docs/rfcs/README.md` §"How to write one" #4).
+
+1. **`x.klickd/` namespace literal.** Is `x.` the right prefix (mirrors RFC IETF "experimental" convention), or should packs live under `pack.klickd/<name>` to mirror `core.<agent>.klickd` from RFC-006? Current draft: `x.klickd/<pack>`; open to either.
+2. **`mission` as P1, not P0.** `x.klickd/mission` is the first pack without a persona anchor. Should it move to P0 to make "scoped session" a first-class primitive? Current draft: keep P1, on the grounds that mission semantics ride on top of `user` + `work` competence.
+3. **Seven-pack ceiling.** Seven matches RFC-003's `base_plus_seven` cost study. Reviewers may prefer four or five if router-cost data argues for tighter activation; revisit after the first real benchmark run.
+4. **Offline SKOS/JSON-LD bundling.** Shipping the SKOS subset with each pack is auditable but duplicates label data across packs. A shared `frameworks/` registry might be cleaner; deferred.
+5. **Validation §8 owners.** Who runs the validation? Current draft: author + one independent reviewer per pack, mirroring `ACCEPTANCE_CHECKLIST_V4.md`. Open to a stricter rule.
+6. **Relation to `DOMAIN_PROFILE_CATALOG.md`.** That doc lists *domains*; this RFC lists *packs*. Should the next iteration of the catalog be rewritten in pack terms, or kept as a separate "domain seed list"? Current draft: keep separate until P0 validation passes.
+
+## 12. Status & next steps
+
+This RFC is **Draft**. It is **docs-only**. It does not change any current normative surface, schema, SDK, vector, or release artefact. Promotion to `Proposed` follows `ACCEPTANCE_CHECKLIST_V4.md`. Promotion to `Accepted` requires (at minimum) the open decisions of §11 to be resolved and one P0 pack draft to exist as a worked example demonstrating §8 is achievable.
+
+Companion doc: [`docs/rfcs/chimera/README.md`](./chimera/README.md) — pack scope table and validation criteria in summary form.
