@@ -20,10 +20,46 @@
 ## 0. TL;DR — what v4.1 is and is not
 
 - **v4.0.0 GA = portable persona / governance memory.** One `.klickd` file carries a human's identity, memory, preferences, growth, accessibility, ethics, gates, and human-veto policy. This is the format's normative core today (SPEC §33).
-- **v4.1 Chimera = real competency packs / portable competence architecture.** On top of the v4.0 base, a user (or an agent) MAY load up to **seven** signed competency packs (`x.klickd/<pack>`) that declare what the carrier *can do* in a domain: skills (mapped to ESCO / WEF / O\*NET via SKOS/JSON-LD), expected verifications, allowed tools, escalation gates, and evidence rules. The user keeps the soul; Chimera adds portable competence.
+- **v4.1 Chimera = real competency packs / portable competence architecture.** On top of the v4.0 base, a user (or an agent) MAY load up to **seven** signed `competency_pack`s (`x.klickd/<pack>`) that declare what the carrier *can do* in a domain: **competencies** (anchored to ESCO / WEF / O\*NET via SKOS/JSON-LD — note that those frameworks use the term "skill" for their entries; in Chimera vocabulary that is a *competency anchor*, not a `host_skill`), expected verifications, allowed tools, escalation gates, and evidence rules. The user keeps the soul; Chimera adds portable competence.
 - **Five things v4.1 does NOT do:** (1) it does not become a new envelope, (2) it does not redefine `agent_core` from RFC-006, (3) it does not introduce a public catalog, (4) it does not retire the v4 *personas* (those remain anchors / inspiration only — see §6), (5) it does not change human authority: the human always wins (§5.1).
-- **One thing v4.1 *adds* on top of v4.0 that didn't exist before:** the **carrier-vs-skill split** (§5.1.1). A pack carries the carrier's *state* in a domain; the matching *skill / method* (how to teach, how to review code, how to reason legally) lives **host-side** as a Klickd/Kai LLM skill — not in the user's file. This is the architectural rule that lets `x.klickd/student` be portable across tutors, exam tools, and parent dashboards.
+- **One thing v4.1 *adds* on top of v4.0 that didn't exist before:** the **carrier-vs-skill split** (§5.1.1). A `carrier_pack` (e.g. `x.klickd/student`) carries the carrier's *state* in a domain; the matching *method / behaviour* (how to teach, how to review code, how to reason legally) lives **host-side** as a `host_skill` — e.g. `skill.kai.tutor.socratic`, `skill.coding.assistant`, `skill.research.assistant` — not in the user's file. This is the architectural rule that lets `x.klickd/student` be portable across tutors, exam tools, and parent dashboards. Canonical Chimera vocabulary is fixed in §0.1.
 - **Clean-architecture invariant (§5.0).** v4.1 packs are **v4.1-native**. They are built from authoritative skill frameworks (ESCO / WEF / O\*NET / DigComp / EQF) under the SKOS/JSON-LD backbone, not adapted from v4-preview persona fixtures. There is **no compatibility path** by which an old `examples/v4/personas/*.klickd` block (or any legacy `knowledge.mastered[]` / `mastered_topics[]` / persona-shaped `subjects[].mastery` payload) becomes a Chimera pack. Personas remain v4-preview anchors / inspiration; packs are new artefacts. Reviewers MUST treat any "let this old persona key map to a pack field" proposal as a §8 validation failure.
+
+---
+
+## 0.1 Taxonomy (normative term table)
+
+The terms below are the **canonical Chimera v4.1 vocabulary**. Reviewers and implementers MUST use these terms when discussing artefacts under this RFC. Ambiguous phrases like "skill file", "student skill", "domain skill", or "competency skill" — when referring to a `.klickd` carrier artefact — are **forbidden**; use `competency_pack`, `domain_pack`, `carrier_pack`, or `host_skill` (whichever fits) instead.
+
+| Term | What it names | Side (carrier vs host) | Example |
+|---|---|---|---|
+| `base_transversal_core` | The small cross-pack competency layer (literacy, numeracy, communication, basic digital, gate reasoning) that every Chimera carrier loads, even when no other pack is active. Defined in §5.2. Authored against ESCO transversal + DigComp + EQF. | **Carrier** (always-on) | `x.klickd/user`'s base layer; ESCO `T1.1` reading comprehension. |
+| `carrier_pack` | The generic name for **any** `x.klickd/<name>` artefact loaded by a carrier (synonym superset of `competency_pack` + `domain_pack` + temporary overlay variants). Used when a statement applies to *all* `.klickd` packs regardless of subtype. | **Carrier** | Any `x.klickd/<name>` block. |
+| `competency_pack` | A `carrier_pack` whose role is to declare what the carrier **can do** in a domain — competencies, mastery, evidence rules, gates. All P0/P1 packs of §3 / §4 are competency packs. | **Carrier** | `x.klickd/student`, `x.klickd/coding`, `x.klickd/legal`. |
+| `domain_pack` | Synonymous with `competency_pack` when emphasising the **domain scope** (education, software, law, security, …). Use `domain_pack` when the surrounding sentence is about *which domain*; use `competency_pack` when it is about *what competence*. The two are the same artefact class. | **Carrier** | `x.klickd/legal` viewed as the legal **domain** pack. |
+| `temporary_overlay` | A `carrier_pack` loaded with a declared expiry (turn / time / artefact boundary) — see §5.4. Counts against the seven-pack ceiling **while active**, never writes back to v4.0 memory without explicit user consent. | **Carrier** (ephemeral) | `x.klickd/legal` loaded for one document review only. |
+| `host_skill` | A **host-side behaviour module** loaded by the LLM / agent (Klickd, Kai, or any other host). Carries method, pedagogy, tone, prompting strategy, scoring rubric, intervention policy. Names follow `skill.<host>.<domain>.<method>` (e.g. `skill.kai.tutor.socratic`, `skill.coding.assistant`, `skill.research.assistant`). A `host_skill` is **never** part of a `carrier_pack`. | **Host** | `skill.kai.tutor.socratic`, `skill.coding.assistant`, `skill.research.assistant`. |
+| `decision_router` | The conceptual component (same as RFC-007 §"in-session skill routing") that picks the initial active pack set from `usage_profile`, swaps packs in/out per turn, and logs each swap as a `decisions[]` record (§5.5). Advisory, not coercive — the user can pin or veto. | **Host** (advisory) | The runtime that activates `x.klickd/legal` when the user asks a contract question. |
+| `human_authority_layer` | The non-negotiable invariant of §5.1: the user always wins. Composed of v4.0 veto + consent + gates + (in Chimera) the per-pack `human_authority` block (§8.1). A pack MAY raise gates; it MUST NOT lower them. Mirrors RFC-002 §6 + RFC-006 §6. | **Carrier** (authoritative) | `final_decision_owner = "human_carrier"`; `raise_only: true`. |
+
+### 0.1.1 What is NOT a pack and NOT a skill
+
+- **Persona anchors / examples.** The five `examples/v4/personas/*.klickd` files and `student-multi-provider` are **persona anchors** (also referred to as "examples" or "v4-preview demo fixtures"). They are **neither** `carrier_pack`s **nor** `host_skill`s. They are inspiration material for pack authors. See §6 and [`examples/v4/personas/README.md`](../../examples/v4/personas/README.md).
+- **Framework "skills" (ESCO / WEF / O\*NET vocabulary).** When ESCO or WEF call a competency a "skill" (their term), that is **external framework vocabulary** the pack *anchors against*. It is not a `host_skill`. To avoid the ambiguity, this RFC uses **"competency"** when referring to the framework-anchored item inside a pack, and **`host_skill`** only for host-side behaviour modules.
+
+### 0.1.2 Forbidden ambiguous phrasings
+
+When discussing a `.klickd` carrier artefact, the following phrases MUST NOT be used; pick the precise term instead.
+
+| Forbidden phrase | Why ambiguous | Use instead |
+|---|---|---|
+| "skill file" (for a `.klickd` artefact) | Conflates host method with carrier state. | `carrier_pack` / `competency_pack` / `domain_pack` |
+| "student skill" (for `x.klickd/student`) | Implies the pack carries teacher method. | `x.klickd/student` competency pack, or "the student pack"; the Socratic tutor is `skill.kai.tutor.socratic` (a `host_skill`). |
+| "domain skill" (for `x.klickd/<domain>`) | Same conflation, domain-shaped. | `domain_pack` / `competency_pack` |
+| "competency skill" | Tautology + conflation. | `competency_pack` (the artefact) or "competency anchor" (the framework reference inside). |
+| "pack skill" | Self-contradictory under the carrier-vs-skill split. | `host_skill` (if host-side) or `competency_pack` (if carrier-side). |
+
+These forbidden phrasings are **docs-only style rules**; they do not introduce new normative fields and they do not change any schema.
 
 ---
 
@@ -105,22 +141,22 @@ Concretely:
 
 The invariant exists because every prior agent-context attempt that allowed legacy adapters ended up with the adapter shape locking the canonical shape. v4.1 ships clean or not at all.
 
-### 5.1 Human authority invariant (normative intent)
+### 5.1 Human authority invariant (normative intent) — the `human_authority_layer`
 
-> **The human always wins.** A pack MAY declare defaults (gates, tools, escalation). The user's v4.0 veto, consent, and gates take precedence on every conflict. No pack can lower a user's gate; a pack MAY raise it. This invariant is non-negotiable and mirrors RFC-002 §6 + RFC-006 §6.
+> **The human always wins.** A `carrier_pack` MAY declare defaults (gates, tools, escalation). The user's v4.0 veto, consent, and gates — together the `human_authority_layer` (§0.1) — take precedence on every conflict. No pack can lower a user's gate; a pack MAY raise it. This invariant is non-negotiable and mirrors RFC-002 §6 + RFC-006 §6.
 
 ### 5.1.1 Carrier-vs-skill rule (normative intent) — *new in v4.1*
 
 > **A pack describes what the *carrier* knows about itself, not what the *LLM* should do with the carrier.**
 >
-> A `.klickd v4.1` competency pack carries **state, not behaviour**: who the carrier is in this domain, what they have demonstrated, what they consent to, what gates apply. The matching **skill / behaviour / method** (how to *teach* a student, how to *review* code, how to *prosecute* a legal argument) lives on the LLM / agent side — typically as a Claude / Klickd / Kai *skill* loaded by the host.
+> A `.klickd v4.1` `competency_pack` carries **state, not behaviour**: who the carrier is in this domain, what they have demonstrated, what they consent to, what gates apply. The matching **`host_skill`** (how to *teach* a student, how to *review* code, how to *prosecute* a legal argument — names like `skill.kai.tutor.socratic`, `skill.coding.assistant`, `skill.research.assistant`) lives on the LLM / agent side, loaded by the host (Klickd, Kai, or any other runtime). Canonical vocabulary: §0.1.
 
 The split is hard:
 
 | Side | Carries | Owner | Example |
 |---|---|---|---|
-| **Pack (`x.klickd/<name>`)** | Carrier state, history, mastery, preferences, consent, gates, accessibility, exam/role targets. | The carrier (user). | A 17-year-old student's level in maths, exam target, accommodations, the chapters they've covered. |
-| **Skill (host-side)** | Method, pedagogy, tone, prompting strategy, scoring rubric, intervention policy. | The Klickd/Kai LLM, or any other host. | The Socratic tutoring skill that *uses* the student pack to ask the right next question. |
+| **`carrier_pack` (`x.klickd/<name>`)** — `competency_pack` / `domain_pack` / `temporary_overlay` | Carrier state, history, mastery, preferences, consent, gates, accessibility, exam/role targets. | The carrier (user). | A 17-year-old student's level in maths, exam target, accommodations, the chapters they've covered. |
+| **`host_skill` (host-side)** — `skill.<host>.<domain>.<method>` | Method, pedagogy, tone, prompting strategy, scoring rubric, intervention policy. | The Klickd/Kai LLM, or any other host. | `skill.kai.tutor.socratic` *uses* the student pack to ask the right next question; `skill.coding.assistant` consults `x.klickd/coding`; `skill.research.assistant` consults `x.klickd/research`. |
 
 #### Why this rule exists
 
@@ -133,22 +169,22 @@ If a student pack carried the teacher skill, then:
 #### Consequences
 
 - **`x.klickd/student` carries learner state** — identity, level, curriculum refs, subjects, competencies/mastery, preferences, accessibility, exam targets, history, gates, human authority. See [`chimera/packs/student.md`](./chimera/packs/student.md).
-- **The Socratic teacher/tutor skill is host-side** — Klickd/Kai's LLM side loads `skill.kai.tutor.socratic` (or any other tutor skill) and consults the student pack to personalise. The skill is *not* in the pack.
-- **All P0/P1 packs follow the same rule.** `x.klickd/coding` carries developer state (languages, projects, code-review history, gates), NOT a "code review skill". `x.klickd/legal` carries jurisdictional state and consent posture, NOT a "legal reasoning skill". And so on.
+- **The Socratic teacher/tutor `host_skill` is host-side** — Klickd/Kai's LLM side loads `skill.kai.tutor.socratic` (or any other tutor `host_skill`) and consults the student `competency_pack` to personalise. The `host_skill` is *not* in the pack. Other examples: `skill.coding.assistant` consults `x.klickd/coding`; `skill.research.assistant` consults `x.klickd/research`.
+- **All P0/P1 `competency_pack`s follow the same rule.** `x.klickd/coding` carries developer state (languages, projects, code-review history, gates), NOT a "code review skill". `x.klickd/legal` carries jurisdictional state and consent posture, NOT a "legal reasoning skill". The matching method is always a `host_skill`.
 - **Validation criterion §8.10 enforces it** (added to §8 below).
-- **Composition rule:** `host-skill` constrains *how to act*, `agent_core` (RFC-006) constrains *operating context*, `pack` declares *carrier state*, `user.klickd` (v4.0) *personalises*. Four layers, no overlap.
+- **Composition rule (the `human_authority_layer` always wins):** `host_skill` constrains *how to act*, `agent_core` (RFC-006) constrains *operating context*, `carrier_pack` declares *carrier state*, `user.klickd` (v4.0) *personalises*. Four layers, no overlap. See §0.1 for the canonical vocabulary.
 
-### 5.2 Base transversal core
+### 5.2 Base transversal core — `base_transversal_core`
 
-A `.klickd v4.1` file always carries a **base transversal core** on top of v4.0: the small set of cross-pack competencies (literacy, numeracy, communication, basic digital, RFC-002-style gate reasoning, RFC-001 media-handling awareness). The base is implicit in `x.klickd/user` and is loaded even when no other pack is active. Packs MAY refine the base; they MUST NOT shadow it silently.
+A `.klickd v4.1` file always carries a **`base_transversal_core`** (§0.1) on top of v4.0: the small set of cross-pack competencies (literacy, numeracy, communication, basic digital, RFC-002-style gate reasoning, RFC-001 media-handling awareness). The `base_transversal_core` is implicit in `x.klickd/user` and is loaded even when no other `carrier_pack` is active. Other `competency_pack`s MAY refine the `base_transversal_core`; they MUST NOT shadow it silently.
 
 ### 5.3 Up to seven packs active per session
 
 A session's effective context = v4.0 base + base transversal core + **up to seven** active packs. Loading more than seven SHOULD trigger an explicit router decision (§5.5), not a silent truncation. Seven is a cost ceiling (see RFC-003 §"Chimera.klickd v4.1 — forward-looking extrapolation": `base_plus_seven` is the upper bound) and an attention ceiling.
 
-### 5.4 Temporary overlays
+### 5.4 Temporary overlays — `temporary_overlay`
 
-A pack MAY be loaded as a **temporary overlay** (a single turn, a single artefact, a single project) without becoming part of the carrier's persistent active set. Overlays:
+A `carrier_pack` MAY be loaded as a **`temporary_overlay`** (§0.1) — a single turn, a single artefact, a single project — without becoming part of the carrier's persistent active set. A `temporary_overlay`:
 
 - expire deterministically (turn / time / artefact boundary, declared at load),
 - never write back to the v4.0 memory unless the user explicitly accepts the write,
@@ -156,15 +192,15 @@ A pack MAY be loaded as a **temporary overlay** (a single turn, a single artefac
 
 Overlays exist so that "I need legal context for this one document" does not require permanently adopting `x.klickd/legal`.
 
-### 5.5 Decision router
+### 5.5 Decision router — `decision_router`
 
-The router is the same conceptual component as RFC-007 §"in-session skill routing":
+The **`decision_router`** (§0.1) is the same conceptual component as RFC-007 §"in-session skill routing":
 
 - at first run, the router picks an initial active set from the carrier's declared `usage_profile`,
 - per turn, the router MAY swap packs in/out based on the user's prompt, the agent core's policy, and the seven-pack ceiling,
 - every swap is logged as a decision (RFC-003 `decisions[]`-shaped record), so the carrier can audit "why was `legal` active when I asked X".
 
-The router is **advisory**, not coercive: the user can pin or veto a pack at any time (§5.1).
+The `decision_router` is **advisory**, not coercive: the `human_authority_layer` (§5.1) lets the user pin or veto a pack at any time.
 
 ### 5.6 Extended structured memory
 
@@ -184,9 +220,9 @@ Pack competencies are anchored to **authoritative skill frameworks**, not to a h
 
 The backbone is **offline-capable**: a pack ships with the SKOS/JSON-LD subset it references, so a carrier that opens the file on an air-gapped machine sees full labels and definitions without a network call. This is also the constraint that keeps packs auditable: every claim about competence resolves to an external, dated framework reference.
 
-## 6. Persona anchors (inspiration only, NOT competency packs)
+## 6. Persona anchors (inspiration only, NOT `competency_pack`s and NOT `host_skill`s)
 
-The five `examples/v4/personas/*.klickd` files and the `student-multi-provider` walkthrough exist as v4-preview **persona / demo fixtures**. They are the right input to design competency packs against, and they are the wrong artefact to publish *as* competency packs. The mapping is:
+The five `examples/v4/personas/*.klickd` files and the `student-multi-provider` walkthrough exist as v4-preview **persona anchors / demo fixtures / examples** (§0.1.1). They are **neither** `carrier_pack`s **nor** `host_skill`s. They are the right input to design `competency_pack`s against, and they are the wrong artefact to publish *as* `competency_pack`s. The mapping is:
 
 | Current v4 persona (anchor only) | Future Chimera pack (this RFC) | Track |
 |---|---|---|

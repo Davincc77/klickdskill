@@ -6,20 +6,37 @@
 
 This document is a short, scannable reference for reviewers. The normative-intent prose lives in [RFC-009](../RFC-009-chimera-v4.1.md); this is the table-and-criteria view.
 
+## 0. Taxonomy (one-line restatement of RFC-009 §0.1)
+
+Canonical Chimera v4.1 vocabulary. **Use these terms; do not invent "skill file" / "student skill" / "domain skill" for `.klickd` artefacts.**
+
+| Term | Side | Means |
+|---|---|---|
+| `base_transversal_core` | carrier | Cross-pack competency floor; always-on. |
+| `carrier_pack` | carrier | Any `x.klickd/<name>` artefact (superset of the next three). |
+| `competency_pack` | carrier | A `carrier_pack` declaring competence in a domain (e.g. `x.klickd/student`). |
+| `domain_pack` | carrier | Same artefact class as `competency_pack`, emphasised by domain (e.g. `x.klickd/legal`). |
+| `temporary_overlay` | carrier | A `carrier_pack` loaded with declared expiry; counts vs the seven-pack ceiling while active. |
+| `host_skill` | host | Host-side behaviour module (e.g. `skill.kai.tutor.socratic`, `skill.coding.assistant`, `skill.research.assistant`). Never inside a `carrier_pack`. |
+| `decision_router` | host | Advisory router (RFC-007) that swaps packs in/out per turn under user veto. |
+| `human_authority_layer` | carrier | The invariant that the user always wins (v4.0 veto + consent + gates + pack `human_authority`). |
+
+Persona anchors (`examples/v4/personas/*.klickd`, `student-multi-provider`) are **neither** packs **nor** skills — they are examples / inspiration. See [RFC-009 §0.1, §6](../RFC-009-chimera-v4.1.md).
+
 ## 1. v4.0 vs v4.1 in one line
 
 - **v4.0.0** = portable persona / governance memory (who you are).
-- **v4.1 Chimera** = real competency packs on top of v4.0 (what you can do).
+- **v4.1 Chimera** = real `competency_pack`s on top of v4.0 (what you can do), consulted by `host_skill`s on the LLM side.
 
 The v4.0 surface is unchanged by v4.1. A v4.0-only reader MUST round-trip v4.1 fields verbatim (SPEC §33.7).
 
 ## 1.1 The carrier-vs-skill rule (one-line restatement)
 
-> **Packs carry state. Hosts carry skill.**
+> **`carrier_pack`s carry state. Hosts carry `host_skill`s.**
 >
-> An `x.klickd/<pack>` describes what the carrier *is* in a domain (learner state, developer state, …). The matching **method / pedagogy / behaviour** (how to *teach*, how to *review code*, how to *advise legally*) is loaded by the Klickd / Kai LLM as a **host skill**, never embedded in the pack.
+> A `carrier_pack` (`x.klickd/<name>`) describes what the carrier *is* in a domain (learner state, developer state, …). The matching **`host_skill`** — method / pedagogy / behaviour, named `skill.<host>.<domain>.<method>` — is loaded by the Klickd / Kai LLM (or any other host), never embedded in the `carrier_pack`.
 
-Worked example: `x.klickd/student` carries learner state; the Socratic tutor skill (`skill.kai.tutor.socratic`) lives host-side. See [`packs/student.md`](./packs/student.md) and [RFC-009 §5.1.1](../RFC-009-chimera-v4.1.md).
+Worked examples: `x.klickd/student` (a `competency_pack`) carries learner state; the Socratic tutor `host_skill` `skill.kai.tutor.socratic` lives host-side. Similarly, `x.klickd/coding` is consulted by `skill.coding.assistant`; `x.klickd/research` by `skill.research.assistant`. See [`packs/student.md`](./packs/student.md) and [RFC-009 §0.1, §5.1.1](../RFC-009-chimera-v4.1.md).
 
 ## 1.2 Clean-architecture invariant (one-line restatement)
 
@@ -90,13 +107,13 @@ See [`packs/README.md`](./packs/README.md) for the full index, no-fake-catalog r
 
 ## 5. Architecture quick-reference
 
-- **Human authority invariant** — the user always wins; pack defaults compose under user veto.
-- **Base transversal core** — small cross-pack competency layer (literacy, numeracy, communication, basic digital, gate reasoning) loaded even when no pack is active.
-- **Up to seven active packs** per session (matches RFC-003 `base_plus_seven` cost ceiling).
-- **Temporary overlays** — load a pack for one turn / artefact / project without persistent adoption.
-- **Decision router** — same component as RFC-007 in-session skill routing; logs each swap as a `decisions[]` record.
+- **`human_authority_layer`** — the user always wins; `carrier_pack` defaults compose under user veto.
+- **`base_transversal_core`** — small cross-pack competency layer (literacy, numeracy, communication, basic digital, gate reasoning) loaded even when no other `carrier_pack` is active.
+- **Up to seven active `carrier_pack`s** per session (matches RFC-003 `base_plus_seven` cost ceiling).
+- **`temporary_overlay`** — load a `carrier_pack` for one turn / artefact / project without persistent adoption.
+- **`decision_router`** — same component as RFC-007 in-session skill routing; logs each swap as a `decisions[]` record.
 - **Extended structured memory** — pack-scoped slices (`memory.x_klickd.<pack>`) addable without touching user main memory.
-- **Offline backbone** — ESCO / WEF / O\*NET via SKOS/JSON-LD, bundled per pack.
+- **Offline backbone** — ESCO / WEF / O\*NET via SKOS/JSON-LD, bundled per `carrier_pack`. (Framework "skills" in ESCO/WEF vocabulary are *competency anchors*, never `host_skill`s.)
 
 ## 6. Pointers
 

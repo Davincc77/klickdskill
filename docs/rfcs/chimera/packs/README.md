@@ -1,19 +1,21 @@
-# `docs/rfcs/chimera/packs/` — concrete `x.klickd/<pack>` scaffolds
+# `docs/rfcs/chimera/packs/` — concrete `carrier_pack` scaffolds
 
 > **Status:** Draft · NON-NORMATIVE · scaffolds only.
 > **Track:** `.klickd v4.1` Chimera (see [RFC-009](../../RFC-009-chimera-v4.1.md)).
 > **Triggers no release.** No schema, no SDK, no tag, no `latest` on npm/PyPI, **no Zenodo DOI**, no IANA action, no `klickd-ai/site` change.
 
-This directory is where concrete per-pack specs live. They are **scaffolds**, not catalogs: each file describes the **shape** of one `x.klickd/<pack>`, exercises the carrier-vs-skill rule ([RFC-009 §5.1.1](../../RFC-009-chimera-v4.1.md)), and lists what is missing before the pack is real.
+This directory is where concrete per-pack specs live. They are **scaffolds**, not catalogs: each file describes the **shape** of one `x.klickd/<name>` `carrier_pack` (a `competency_pack` / `domain_pack`), exercises the carrier-vs-skill rule ([RFC-009 §5.1.1](../../RFC-009-chimera-v4.1.md)), and lists what is missing before the pack is real.
+
+> **Canonical vocabulary:** see [RFC-009 §0.1](../../RFC-009-chimera-v4.1.md). A `carrier_pack` is a `.klickd` artefact (the file in this directory). A `host_skill` (`skill.<host>.<domain>.<method>`, e.g. `skill.kai.tutor.socratic`, `skill.coding.assistant`, `skill.research.assistant`) is a host-side behaviour module and is **never** part of a pack. Persona anchors under `examples/v4/personas/` are **neither** packs **nor** skills — they are examples.
 
 ## 1. Index
 
-| Pack | Spec | Track | Status | Companion host skill (NOT in pack) |
+| `carrier_pack` | Spec | Track | Status | Companion `host_skill` (NOT in pack) |
 |---|---|---|---|---|
 | `x.klickd/student` | [`student.md`](./student.md) | P0 | **Draft scaffold** (2026-05-26) | `skill.kai.tutor.socratic` |
 | `x.klickd/user` | — | P0 | Not yet scaffolded | `skill.kai.assistant.base` (TBD) |
-| `x.klickd/coding` | — | P0 | Not yet scaffolded | `skill.kai.dev.review` (TBD) |
-| `x.klickd/research` | — | P0 | Not yet scaffolded | `skill.kai.research.ground` (TBD) |
+| `x.klickd/coding` | — | P0 | Not yet scaffolded | `skill.coding.assistant` / `skill.kai.dev.review` (TBD) |
+| `x.klickd/research` | — | P0 | Not yet scaffolded | `skill.research.assistant` / `skill.kai.research.ground` (TBD) |
 | `x.klickd/security` | — | P0 | Not yet scaffolded | `skill.kai.security.threatmodel` (TBD) |
 | `x.klickd/legal` | — | P0 | Not yet scaffolded | `skill.kai.legal.advise` (TBD) |
 | `x.klickd/work` | — | P1 | Not yet scaffolded (P0 must pass first) | TBD |
@@ -22,17 +24,17 @@ This directory is where concrete per-pack specs live. They are **scaffolds**, no
 | `x.klickd/bridge` | — | P1 | Not yet scaffolded (P0 must pass first) | TBD |
 | `x.klickd/mission` | — | P1 | Not yet scaffolded (P0 must pass first) | TBD |
 
-> "Companion host skill" is the **method** the LLM / agent applies *on top of* the pack. It is **not** part of the pack. See [RFC-009 §5.1.1](../../RFC-009-chimera-v4.1.md) and `student.md` §3 for what is forbidden inside a pack.
+> The "Companion `host_skill`" column lists the **method** the LLM / agent applies *on top of* the pack. It is **not** part of the pack. See [RFC-009 §0.1, §5.1.1](../../RFC-009-chimera-v4.1.md) and `student.md` §3 for what is forbidden inside a pack.
 
 ## 2. The two architectural rules
 
 ### 2.1 Carrier-vs-skill (Rule 1)
 
-> **Packs carry state. Hosts carry skill.**
+> **`carrier_pack`s carry state. Hosts carry `host_skill`s.**
 >
-> A pack describes what the carrier *is* in a domain (learner, developer, researcher, …). The matching pedagogy / method / behaviour (how to *teach*, *review*, *prosecute*, *coach*) is loaded host-side as a Klickd/Kai skill, never embedded in the pack.
+> A `carrier_pack` describes what the carrier *is* in a domain (learner, developer, researcher, …). The matching pedagogy / method / behaviour (how to *teach*, *review*, *prosecute*, *coach*) is loaded host-side as a `host_skill` (e.g. `skill.kai.tutor.socratic`, `skill.coding.assistant`, `skill.research.assistant`), never embedded in the pack.
 
-This separation is what makes packs portable across hosts and what lets pedagogy improve without touching user files.
+This separation is what makes `carrier_pack`s portable across hosts and what lets `host_skill` pedagogy improve without touching user files.
 
 ### 2.2 v4.1-native, no legacy adapter (Rule 2)
 

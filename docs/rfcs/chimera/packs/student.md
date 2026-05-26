@@ -1,23 +1,24 @@
-# `x.klickd/student` — concrete pack spec scaffold
+# `x.klickd/student` — concrete `competency_pack` scaffold
 
 | | |
 |---|---|
-| **Pack id** | `x.klickd/student` |
+| **`carrier_pack` id** | `x.klickd/student` |
+| **Taxonomy class** | `competency_pack` / `domain_pack` (carrier-side); see [RFC-009 §0.1](../../RFC-009-chimera-v4.1.md) |
 | **Track** | `.klickd v4.1` — Chimera P0 (see [RFC-009](../../RFC-009-chimera-v4.1.md)) |
 | **Status** | **Draft scaffold** · NON-NORMATIVE · shape sketch (no JSON Schema yet) |
 | **Carrier** | A learner (typically a human student; equally usable for any self-directed learner) |
-| **Persona anchor** | `examples/v4/personas/01-eleve-terminale-fr.klickd` — *inspiration only, NOT a competency pack* |
-| **Companion (host-side) skill** | `skill.kai.tutor.socratic` (loaded by Klickd / Kai LLM, not in the pack) |
+| **Persona anchor** | `examples/v4/personas/01-eleve-terminale-fr.klickd` — *example / inspiration only, NEITHER a `competency_pack` NOR a `host_skill`* |
+| **Companion `host_skill`** | `skill.kai.tutor.socratic` (loaded by Klickd / Kai LLM as a `host_skill`, NOT in the pack) |
 | **Created** | 2026-05-26 |
 | **Triggers no release** | No schema, no SDK, no tag, no `latest` on npm/PyPI, **no Zenodo DOI**, no IANA action. |
 
-> This is the **first concrete `x.klickd/<pack>` scaffold** under v4.1 Chimera. It demonstrates the carrier-vs-skill rule of [RFC-009 §5.1.1](../../RFC-009-chimera-v4.1.md): a pack carries the **learner's state**, never the teacher's method.
+> This is the **first concrete `competency_pack` scaffold** under v4.1 Chimera. It demonstrates the carrier-vs-skill rule of [RFC-009 §5.1.1](../../RFC-009-chimera-v4.1.md): a `carrier_pack` carries the **learner's state**, never the teacher's method (which lives in a `host_skill`).
 
 ---
 
 ## 0. The two rules
 
-> **Rule 1 — carrier-vs-skill.** `x.klickd/student` carries learner state. It does NOT carry teacher skill. The Socratic teacher / tutor skill is loaded by the **Klickd / Kai LLM** side (or any other host) as a host skill (`skill.kai.tutor.socratic`), not by the pack. The pack is what the LLM *consults*; the skill is what the LLM *applies*. Enforced by [RFC-009 §5.1.1](../../RFC-009-chimera-v4.1.md) + §8.10.
+> **Rule 1 — carrier-vs-skill.** `x.klickd/student` is a `competency_pack` that carries learner state. It does NOT carry teacher method. The Socratic teacher / tutor method is loaded by the **Klickd / Kai LLM** side (or any other host) as a `host_skill` named `skill.kai.tutor.socratic` — not by the pack. The `competency_pack` is what the LLM *consults*; the `host_skill` is what the LLM *applies*. Enforced by [RFC-009 §5.1.1](../../RFC-009-chimera-v4.1.md) + §8.10. Canonical vocabulary: [RFC-009 §0.1](../../RFC-009-chimera-v4.1.md).
 >
 > **Rule 2 — v4.1-native, no legacy adapter.** This pack is built from authoritative frameworks (ESCO / DigComp / EQF, optionally O\*NET / WEF) under the SKOS/JSON-LD backbone of RFC-009 §5.7. It does **not** accept v4-preview persona fields (`knowledge.mastered[]`, `mastered_topics[]`, free-text `subjects[].mastery`, narrative `level: "advanced"` strings) as input. The persona `01-eleve-terminale-fr.klickd` is a **design anchor**, not a compatibility source. Enforced by [RFC-009 §5.0](../../RFC-009-chimera-v4.1.md) + §8.9.
 
@@ -35,7 +36,7 @@ Twelve sections. All are **carrier state**. None are teacher behaviour. All comp
 
 ### 2.0 `base_transversal_core` (mandatory, v4.1-native)
 
-Every Chimera pack — `student` included — carries the **base transversal core**: a small cross-pack competency layer composed only of framework-anchored references. The base is what survives even when no other pack is active (RFC-009 §5.2).
+Every Chimera `carrier_pack` — `student` included — carries the **`base_transversal_core`** (canonical term, see [RFC-009 §0.1](../../RFC-009-chimera-v4.1.md)): a small cross-pack competency layer composed only of framework-anchored references. The `base_transversal_core` is what survives even when no other pack is active (RFC-009 §5.2).
 
 For `x.klickd/student`, the base anchors are:
 
@@ -124,7 +125,7 @@ The carrier's accessibility needs and accommodations. **Carrier-owned, never hos
 - `accommodations[]` — official accommodations granted (e.g. `"tier_amenage_30pc"`, `"reader_software"`).
 - `consent_to_disclose_to_agent` — boolean, `false` by default.
 
-If `consent_to_disclose_to_agent` is `false`, the host skill MUST treat `accessibility` as **gated** (not injectable into the prompt verbatim).
+If `consent_to_disclose_to_agent` is `false`, the `host_skill` MUST treat `accessibility` as **gated** (not injectable into the prompt verbatim).
 
 ### 2.8 `exam_targets[]`
 What the carrier is preparing for.
@@ -146,7 +147,7 @@ Pack-default `verification_gates` (RFC-002 v1) and `human_veto_policy` for stude
 - Gates here MAY only **raise** the user's v4.0 gates, never lower them (RFC-009 §5.1).
 
 ### 2.11 `human_authority`
-The pack-local restatement of [RFC-009 §5.1](../../RFC-009-chimera-v4.1.md).
+The pack-local restatement of the `human_authority_layer` ([RFC-009 §0.1, §5.1](../../RFC-009-chimera-v4.1.md)).
 
 - `final_decision_owner` — MUST be `"human_carrier"` (or `"human_carrier_with_guardian"` for minors).
 - `agent_role` — fixed value `"advisory"`. An agent MAY suggest pedagogy, NEVER decide enrolment, accommodations, or exam-target changes.
@@ -156,14 +157,14 @@ The pack-local restatement of [RFC-009 §5.1](../../RFC-009-chimera-v4.1.md).
 
 ### 3.1 Forbidden host-side fields (Rule 1)
 
-Explicitly **not** in this pack. These belong host-side (skill or agent core).
+Explicitly **not** in this `competency_pack`. These belong host-side (in a `host_skill` or `agent_core`).
 
 | Forbidden in pack | Lives where | Why |
 |---|---|---|
-| `pedagogy`, `teaching_method`, `socratic_steps`, `lesson_plan_template` | `skill.kai.tutor.socratic` (host) | Method changes faster than student state; portability requires the student carry only their own state. |
-| `prompt_strategy`, `system_prompt_overrides` | host skill or `agent_core` (RFC-006) | Prompting is host policy, not user state. |
-| `scoring_rubric`, `grading_curve` | host skill or external rubric ref | A pack can *cite* a rubric (`scale_ref`), never *define* one. |
-| `intervention_policy`, `when_to_correct`, `when_to_praise` | host skill | Behaviour belongs with the actor; the pack is not an actor. |
+| `pedagogy`, `teaching_method`, `socratic_steps`, `lesson_plan_template` | `skill.kai.tutor.socratic` (a `host_skill`) | Method changes faster than student state; portability requires the student carry only their own state. |
+| `prompt_strategy`, `system_prompt_overrides` | `host_skill` or `agent_core` (RFC-006) | Prompting is host policy, not user state. |
+| `scoring_rubric`, `grading_curve` | `host_skill` or external rubric ref | A pack can *cite* a rubric (`scale_ref`), never *define* one. |
+| `intervention_policy`, `when_to_correct`, `when_to_praise` | `host_skill` | Behaviour belongs with the actor; the pack is not an actor. |
 | `tone_rules`, `persona_voice` | `agent_core` (RFC-006) | Already the agent core's job. |
 | Hidden curriculum claims, predictive grades | nowhere (not allowed) | Predictions about the student must be agent-emitted with RFC-002 §8b grounding, not pack-asserted. |
 
@@ -182,16 +183,16 @@ Also explicitly **not** in this pack. These are v4-preview persona shapes; v4.1 
 
 A reader MUST NOT silently map a legacy key into a pack field. If a `examples/v4/personas/01-eleve-terminale-fr.klickd` block appears next to a `x.klickd/student` block, the persona stays a persona — it is not harvested into the pack. There is **no migration tool**, and writing one is out of scope for v4.1.
 
-## 4. Companion host skill — `skill.kai.tutor.socratic`
+## 4. Companion `host_skill` — `skill.kai.tutor.socratic`
 
-The Socratic tutor skill is **host-side**. This pack does **not** ship it. A sketch of what it would carry, in a separate artefact (Klickd / Kai repo, not here):
+The Socratic tutor `host_skill` is **host-side**. This `competency_pack` does **not** ship it. A sketch of what it would carry, in a separate artefact (Klickd / Kai repo, not here):
 
 - Socratic question templates parameterised by `subject_ref` + `current_chapter_ref` from the pack.
 - Backoff policy when the student's `pace_preference = "slow_with_examples"`.
 - Accessibility adaptations triggered by `accessibility.needs[]` (only if `consent_to_disclose_to_agent = true`).
 - Output rubric the skill itself satisfies (RFC-002 §8b verification artefacts referenced from the *agent*'s side, not the student's).
 
-The pack and the skill are versioned independently. A student keeps their pack across tutor-skill upgrades. A tutor skill keeps its pedagogy across student additions / removals.
+The `competency_pack` and the `host_skill` are versioned independently. A student keeps their pack across `host_skill` upgrades. A tutor `host_skill` keeps its pedagogy across student additions / removals.
 
 ## 5. Illustrative shape sketch (NOT a JSON Schema)
 
@@ -377,8 +378,8 @@ Notes for the `klickd.app` side; this file is the spec, not the implementation.
 
 1. **Onboarding (R4-P0-1 wizard) MAY produce a `x.klickd/student` block** alongside the v4.0 user payload, only if the carrier opts into Chimera v4.1. Default for v4.0.0 GA users is **no pack** — opt-in only.
 2. **Round-trip:** a v4.0-only reader (e.g. third-party agent that only speaks v4.0.0 GA) MUST preserve the `x.klickd/student` block verbatim and not degrade behaviour. Tested by the existing `roundtrip_v30.json` extended path once strict schema lands.
-3. **Tutor skill loading:** `klickd.app` loads `skill.kai.tutor.socratic` from the Klickd/Kai skill registry (host-side). The skill reads the student pack but never writes the pack except via the user's explicit acceptance of a write (RFC-008-style proposal flow).
-4. **Multi-host portability:** the same `x.klickd/student` payload, loaded by a non-Klickd host (e.g. a school's revision tool), MUST yield comparable behaviour with that host's own pedagogical skill. The pack is portable; the skill is not.
+3. **`host_skill` loading:** `klickd.app` loads `skill.kai.tutor.socratic` from the Klickd/Kai `host_skill` registry (host-side). The `host_skill` reads the student `competency_pack` but never writes the pack except via the user's explicit acceptance of a write (RFC-008-style proposal flow).
+4. **Multi-host portability:** the same `x.klickd/student` payload, loaded by a non-Klickd host (e.g. a school's revision tool), MUST yield comparable behaviour with that host's own pedagogical `host_skill`. The `competency_pack` is portable; the `host_skill` is not.
 5. **`/klickdskill` catalog:** see [`../packs/README.md`](./README.md) for the explicit no-fake-catalog rule. This scaffold MUST NOT be served as a downloadable pack until §6 fully passes.
 
 ## 8. Open decisions (specific to this pack)
@@ -410,4 +411,4 @@ Notes for the `klickd.app` side; this file is the spec, not the implementation.
 - [`../../../use-cases/DOMAIN_PROFILE_CATALOG.md`](../../../use-cases/DOMAIN_PROFILE_CATALOG.md) — domain taxonomy precursor.
 - [`../../RFC-006-agent-core.md`](../../RFC-006-agent-core.md) — `agent_core` composition rule.
 - [`../../RFC-007-usage-profile-skill-routing.md`](../../RFC-007-usage-profile-skill-routing.md) — in-session skill routing.
-- [`../../../../examples/v4/personas/01-eleve-terminale-fr.klickd`](../../../../examples/v4/personas/01-eleve-terminale-fr.klickd) — the anchor persona (inspiration only, not a competency pack).
+- [`../../../../examples/v4/personas/01-eleve-terminale-fr.klickd`](../../../../examples/v4/personas/01-eleve-terminale-fr.klickd) — the anchor persona / example (inspiration only — **neither a `competency_pack` nor a `host_skill`**; see [RFC-009 §0.1, §6](../../RFC-009-chimera-v4.1.md)).
