@@ -1,0 +1,432 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://klickd.app/schemas/rfc-009/x.klickd.student.schema.json",
+  "title": "x.klickd/student — Chimera v4.1 competency_pack manifest (NON-NORMATIVE schema fragment)",
+  "description": "Strict Draft 2020-12 JSON Schema fragment for the x.klickd/student carrier_pack manifest under RFC-009 (.klickd v4.1 Chimera). This schema is a non-normative DRAFT scaffold companion to docs/rfcs/RFC-009-chimera-v4.1.md and docs/rfcs/chimera/packs/student.md. It is NOT a release artefact: shipping this schema does NOT change klickd-payload-v4.schema.json, does NOT change klickd-payload-v4-preview.schema.json, does NOT bump any SDK, and does NOT trigger a tag / npm latest / PyPI release / Zenodo DOI / IANA action. It validates the SHAPE of a pack manifest only; it does NOT mandate that any v4.0 GA file contain a pack. Round-trip safety against v4.0-only readers is guaranteed because v4.0 readers preserve unknown blocks verbatim per SPEC §33.7. Enforces: carrier-vs-skill split via forbidden_fields literal and additionalProperties:false on the top-level object (RFC-009 §5.1.1, §8.10); no legacy adapter via forbidden_top_level pattern enforcement (RFC-009 §5.0, §8.9); framework anchoring via competency_ref prefix patterns matching declared frameworks[] schemes (RFC-009 §8.1); human authority preserved via closed enums on final_decision_owner and agent_role (RFC-009 §5.1, §8.8); evidence pointer-only invariant via evidence_policy.pointer_only enum [true] (RFC-009 §8.3); deterministic router cost via router_cost.tokens_estimate non-null integer (RFC-009 §8.7).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "pack",
+    "pack_version",
+    "spec_ref",
+    "publisher",
+    "frameworks",
+    "base_transversal_core",
+    "identity",
+    "levels",
+    "subjects",
+    "competencies",
+    "preferences",
+    "accessibility",
+    "exam_targets",
+    "history",
+    "gates",
+    "human_authority",
+    "memory_scope",
+    "evidence_policy",
+    "source_policy",
+    "router_cost",
+    "forbidden_fields"
+  ],
+  "$defs": {
+    "iso_date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "iso_datetime": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "scheme_id": {
+      "type": "string",
+      "enum": ["esco", "digcomp", "lifecomp", "eqf", "cefr", "wef", "onet", "nice", "enisa", "cis", "sfia"]
+    },
+    "competency_ref": {
+      "description": "Prefix-shortened IRI of the form `<scheme>:<notation>` where <scheme> is a registered framework id (see ../frameworks/README.md §1) and <notation> matches the framework's published code shape. Free-text strings rejected (RFC-009 §5.0).",
+      "type": "string",
+      "pattern": "^(esco|digcomp|lifecomp|eqf|cefr|wef|onet|nice|enisa|cis|sfia):[A-Za-z0-9][A-Za-z0-9._/-]*$"
+    },
+    "framework_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scheme", "version", "iri_prefix", "canonical_url"],
+      "properties": {
+        "scheme": { "$ref": "#/$defs/scheme_id" },
+        "version": { "type": "string", "minLength": 1 },
+        "iri_prefix": { "type": "string", "format": "uri", "pattern": "^https?://" },
+        "canonical_url": { "type": "string", "format": "uri", "pattern": "^https?://" },
+        "distribution_url": { "type": "string", "format": "uri", "pattern": "^https?://" },
+        "distribution_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^([a-f0-9]{64}|TBD-at-bundle-generation)$"
+        }
+      }
+    },
+    "transversal_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["competency_ref", "scheme", "prefLabel"],
+      "properties": {
+        "competency_ref": { "$ref": "#/$defs/competency_ref" },
+        "scheme": { "$ref": "#/$defs/scheme_id" },
+        "prefLabel": { "type": "string", "minLength": 1 }
+      }
+    },
+    "competency_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["competency_ref", "prefLabel", "scheme"],
+      "properties": {
+        "competency_ref": { "$ref": "#/$defs/competency_ref" },
+        "prefLabel": { "type": "string", "minLength": 1 },
+        "scheme": { "$ref": "#/$defs/scheme_id" },
+        "acquired_at": { "anyOf": [ { "$ref": "#/$defs/iso_date" }, { "type": "null" } ] }
+      }
+    },
+    "mastery_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["competency_ref", "mastery_level", "scale_ref", "evidence_refs", "assessed_at", "assessed_by_ref"],
+      "properties": {
+        "competency_ref": { "$ref": "#/$defs/competency_ref" },
+        "mastery_level": { "type": "integer", "minimum": 0, "maximum": 6 },
+        "scale_ref": {
+          "type": "string",
+          "pattern": "^(digcomp:2\\.2/scale|eqf:2017/scale|bloom:1956/scale|cefr:2020/scale)$"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "assessed_at": { "$ref": "#/$defs/iso_date" },
+        "assessed_by_ref": {
+          "type": "string",
+          "pattern": "^(teacher|self|peer|agent|external):[A-Za-z0-9][A-Za-z0-9._/:-]*$"
+        }
+      }
+    },
+    "level_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["framework_ref", "level_label", "effective_at"],
+      "properties": {
+        "framework_ref": { "type": "string", "format": "uri", "pattern": "^https?://" },
+        "level_label": {
+          "type": "string",
+          "pattern": "^EQF level [1-8]$"
+        },
+        "effective_at": { "$ref": "#/$defs/iso_date" }
+      }
+    },
+    "language_proficiency_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["language_tag", "cefr_level", "scheme_ref"],
+      "properties": {
+        "language_tag": { "type": "string", "pattern": "^[a-z]{2}(?:-[A-Z]{2})?$" },
+        "cefr_level": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+        "scheme_ref": { "type": "string", "format": "uri" }
+      }
+    },
+    "subject_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_ref", "prefLabel", "started_at"],
+      "properties": {
+        "subject_ref": { "type": "string", "format": "uri" },
+        "prefLabel": { "type": "string", "minLength": 1 },
+        "started_at": { "$ref": "#/$defs/iso_date" },
+        "current_chapter_ref": { "type": ["string", "null"] },
+        "coursework_pointer": { "type": ["string", "null"] }
+      }
+    },
+    "curriculum_ref_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["curriculum_id", "jurisdiction", "track", "as_of"],
+      "properties": {
+        "curriculum_id": { "type": "string", "format": "uri" },
+        "jurisdiction": { "type": "string", "minLength": 1 },
+        "track": { "type": "string", "minLength": 1 },
+        "as_of": { "$ref": "#/$defs/iso_date" }
+      }
+    },
+    "exam_target_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exam_ref", "target_date", "consent_to_share_grade"],
+      "properties": {
+        "exam_ref": { "type": "string", "minLength": 1 },
+        "target_date": { "$ref": "#/$defs/iso_date" },
+        "target_grade": { "type": ["string", "number", "null"] },
+        "consent_to_share_grade": { "type": "boolean" },
+        "mock_history": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "history_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at", "kind", "ref"],
+      "properties": {
+        "at": { "$ref": "#/$defs/iso_datetime" },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "chapter_completed",
+            "exercise_completed",
+            "mock_taken",
+            "feedback_received",
+            "self_reflection",
+            "competency_acquired",
+            "level_change",
+            "evidence_added"
+          ]
+        },
+        "ref": { "type": "string", "minLength": 1 },
+        "mastery_delta": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["competency_ref", "before", "after"],
+              "properties": {
+                "competency_ref": { "$ref": "#/$defs/competency_ref" },
+                "before": { "type": "integer", "minimum": 0, "maximum": 6 },
+                "after": { "type": "integer", "minimum": 0, "maximum": 6 }
+              }
+            }
+          ]
+        },
+        "agent_ref": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "properties": {
+    "pack": {
+      "type": "string",
+      "const": "x.klickd/student",
+      "description": "MUST equal `x.klickd/student` for this schema fragment. Other pack ids use their own schemas (RFC-009 §3, §4)."
+    },
+    "pack_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "spec_ref": {
+      "type": "string",
+      "const": "docs/rfcs/chimera/packs/student.md"
+    },
+    "publisher": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "ref"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "ref": { "type": "string", "format": "uri", "pattern": "^https?://" }
+      }
+    },
+    "frameworks": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/framework_entry" }
+    },
+    "base_transversal_core": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frameworks", "transversal_refs"],
+      "properties": {
+        "frameworks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/framework_entry" }
+        },
+        "transversal_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/transversal_ref" }
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pack_role"],
+      "properties": {
+        "pack_role": { "type": "string", "const": "student" },
+        "display_name": { "type": ["string", "null"] },
+        "school_or_institution_ref": { "type": ["string", "null"] },
+        "enrolment_period": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{4}$" }
+      }
+    },
+    "levels": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/level_entry" }
+    },
+    "language_proficiency": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/language_proficiency_entry" }
+    },
+    "curriculum_refs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/curriculum_ref_entry" }
+    },
+    "subjects": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/subject_entry" }
+    },
+    "competencies": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/competency_entry" }
+    },
+    "mastery": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/mastery_entry" }
+    },
+    "preferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preferred_languages"],
+      "properties": {
+        "preferred_languages": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z]{2}(?:-[A-Z]{2})?$" }
+        },
+        "pace_preference": { "type": ["string", "null"] },
+        "modality_preference": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["text", "diagram", "audio", "video", "code", "math"] }
+        },
+        "feedback_cadence_preference": { "type": ["string", "null"] },
+        "time_budget_per_week_minutes": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["needs", "accommodations", "consent_to_disclose_to_agent"],
+      "properties": {
+        "needs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "accommodations": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "consent_to_disclose_to_agent": { "type": "boolean" }
+      }
+    },
+    "exam_targets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/exam_target_entry" }
+    },
+    "history": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/history_entry" }
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verification_gates_default", "human_veto_policy"],
+      "properties": {
+        "verification_gates_default": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["raise_only", "claim_grounding_required"],
+          "properties": {
+            "raise_only": { "type": "boolean", "const": true },
+            "claim_grounding_required": { "type": "boolean" },
+            "reversibility_threshold": { "type": ["string", "null"], "enum": ["low", "medium", "high", null] }
+          }
+        },
+        "human_veto_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["owner", "scope"],
+          "properties": {
+            "owner": { "type": "string", "enum": ["human_carrier", "human_carrier_with_guardian"] },
+            "scope": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+          }
+        }
+      }
+    },
+    "human_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["final_decision_owner", "agent_role", "escalation"],
+      "properties": {
+        "final_decision_owner": {
+          "type": "string",
+          "enum": ["human_carrier", "human_carrier_with_guardian"]
+        },
+        "agent_role": { "type": "string", "const": "advisory" },
+        "escalation": {
+          "type": "string",
+          "enum": ["self", "guardian_then_school", "school_only", "professional_then_self", "operator_then_self"]
+        }
+      }
+    },
+    "memory_scope": {
+      "type": "string",
+      "const": "memory.x_klickd.student"
+    },
+    "evidence_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_for_claims", "pointer_only", "attestation_shape_ref"],
+      "properties": {
+        "required_for_claims": { "type": "boolean", "const": true },
+        "pointer_only": { "type": "boolean", "const": true },
+        "attestation_shape_ref": { "type": "string", "const": "rfc-002#8b" }
+      }
+    },
+    "source_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frameworks_offline_bundle", "allow_inline_definitions", "language_tags"],
+      "properties": {
+        "frameworks_offline_bundle": { "type": "string", "minLength": 1 },
+        "allow_inline_definitions": { "type": "boolean" },
+        "language_tags": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[a-z]{2}(?:-[A-Z]{2})?$" }
+        }
+      }
+    },
+    "router_cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tokens_estimate", "baseline", "source_row"],
+      "properties": {
+        "tokens_estimate": { "type": "integer", "minimum": 1 },
+        "baseline": { "type": "string", "enum": ["base", "base_plus_one", "base_plus_seven"] },
+        "source_row": { "type": "string", "minLength": 1 },
+        "pack_token_costs_entry": { "type": ["string", "null"] }
+      }
+    },
+    "forbidden_fields": {
+      "type": "array",
+      "minItems": 10,
+      "uniqueItems": true,
+      "allOf": [
+        { "contains": { "const": "pedagogy" } },
+        { "contains": { "const": "teaching_method" } },
+        { "contains": { "const": "socratic_steps" } },
+        { "contains": { "const": "prompt_strategy" } },
+        { "contains": { "const": "scoring_rubric" } },
+        { "contains": { "const": "intervention_policy" } },
+        { "contains": { "const": "tone_rules" } },
+        { "contains": { "const": "system_prompt_overrides" } },
+        { "contains": { "const": "knowledge.mastered" } },
+        { "contains": { "const": "mastered_topics" } }
+      ],
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "notes": [
+    "additionalProperties:false at the top level enforces RFC-009 §5.1.1 (carrier-vs-skill) and §5.0 (no legacy adapter) by structurally rejecting any key not listed in `properties`. Forbidden literals such as `pedagogy`, `mastered_topics`, `knowledge`, `prompt_strategy`, `pedagogy.method`, etc. all fail validation at the structural level before any keyword-level enforcement runs.",
+    "Every `competency_ref` field uses the `competency_ref` $def whose pattern restricts the scheme prefix to the registered framework list (RFC-009 §5.7); a homegrown competency prefix such as `klickd:custom` is rejected.",
+    "`forbidden_fields` is itself an array on the manifest (RFC-009 §8.1, §5.1.1). The schema additionally requires the array to contain — via repeated `contains` clauses — each of the ten frozen literals. A pack that omits any of these from `forbidden_fields` fails validation.",
+    "`evidence_policy.pointer_only` const:true enforces RFC-009 §8.3 (no inline copies of carrier work).",
+    "`gates.verification_gates_default.raise_only` const:true enforces RFC-009 §5.1 / §8.8 (human-authority preserved — a pack default MUST NOT lower the user's v4.0 gate).",
+    "`human_authority.agent_role` const:advisory enforces the §5.1 invariant that an agent NEVER decides on the carrier's behalf.",
+    "This schema is shipped under docs/rfcs/chimera/schema-fragments/ DELIBERATELY, NOT under schemas/. Files under schemas/ are normative release artefacts; this file is a non-normative Draft scaffold companion to RFC-009. Promotion to schemas/ requires the RFC to reach Accepted status."
+  ]
+}
