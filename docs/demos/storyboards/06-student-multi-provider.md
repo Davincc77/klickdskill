@@ -19,12 +19,21 @@ takes cut together.
 
 ## Recording notes
 
-- Run the four calls live with the snippets in
-  [`examples/v4/student-walkthrough/README.md`](../../../examples/v4/student-walkthrough/README.md).
+- Two recording modes — both build the system prompt deterministically
+  from the same `.klickd` file:
+  - **Dry-run (recommended for first takes / talks / CI):** run
+    `python examples/v4/student-walkthrough/demo_dry_run.py` — prints
+    the exact request payload each provider SDK would send, with no
+    network calls and no API keys. The headline ("one profile, four
+    providers") is provable on the prompt alone.
+  - **Live:** run the four snippets in
+    [`examples/v4/student-walkthrough/README.md`](../../../examples/v4/student-walkthrough/README.md)
+    if you also want to show the model replies. Use a throwaway billing
+    profile when possible.
 - Use **wordmark text only** for provider names — no logos unless
   authorised by the vendor.
 - All four model outputs may legitimately differ in tone and quality.
   Do **not** edit them for parity; the demo is "all four follow the
   Socratic instruction", not "all four sound identical."
-- API keys: `export OPENAI_API_KEY=… ANTHROPIC_API_KEY=… GROQ_API_KEY=… XAI_API_KEY=…`
+- API keys (live mode only): `export OPENAI_API_KEY=… ANTHROPIC_API_KEY=… GROQ_API_KEY=… XAI_API_KEY=…`
   off-camera. Confirm no key is visible in any terminal pane before recording.

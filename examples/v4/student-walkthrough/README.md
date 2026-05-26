@@ -28,6 +28,31 @@ pip install klickd==4.0.0 openai anthropic groq
 
 xAI uses the OpenAI client (`pip install openai>=1.0`).
 
+## Dry-run (no API keys, no network)
+
+Use this when recording the demo, running it in CI, or showing it at a
+talk without spending credits. It prints the exact request payload each
+provider SDK would send — built from the same `.klickd` file — and
+opens no sockets:
+
+```bash
+PYTHONPATH=packages/pypi/klickd/src \
+    python examples/v4/student-walkthrough/demo_dry_run.py
+```
+
+Pick one provider, change the user message, or emit JSON for piping:
+
+```bash
+python examples/v4/student-walkthrough/demo_dry_run.py --provider anthropic
+python examples/v4/student-walkthrough/demo_dry_run.py --user "Explain the chain rule"
+python examples/v4/student-walkthrough/demo_dry_run.py --json | jq '.providers | keys'
+```
+
+The OpenAI-shaped providers (OpenAI, Groq, xAI) get a `messages` array
+with a `system` message; Anthropic gets a top-level `system` string and
+a `messages` array of user turns — the same shape each official SDK
+sends. No SDK is imported and no environment variable is read.
+
 ## 4 providers, same `.klickd`
 
 ```python
