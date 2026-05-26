@@ -1,0 +1,22 @@
+{
+  "name": "klickd-copilot-bridge",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Reference TypeScript CLI bridge: load a local .klickd v4 profile and export a sanitized system/context block for user-mediated paste into GitHub / M365 Copilot Chat.",
+  "type": "module",
+  "license": "CC0-1.0",
+  "bin": {
+    "klickd-copilot-bridge": "./dist/klickdCopilotBridge.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node --experimental-strip-types klickdCopilotBridge.ts"
+  },
+  "dependencies": {
+    "@klickd/core": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}

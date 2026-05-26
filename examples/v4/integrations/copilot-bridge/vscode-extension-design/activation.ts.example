@@ -1,0 +1,152 @@
+// Sketch only — not a working extension. See EXTENSION_DESIGN.md.
+//
+// This file shows the activation skeleton an implementer would start
+// from. It reuses `buildContextBlock` from the CLI's TypeScript bridge
+// and `loadKlickd` from `@klickd/core` v4. No `decryptKlickd` (retired
+// v3 name) anywhere.
+//
+// SPDX-License-Identifier: CC0-1.0
+
+import * as vscode from 'vscode';
+import { readFile, writeFile } from 'node:fs/promises';
+import { loadKlickd } from '@klickd/core';
+import { buildContextBlock, type KlickdRecord } from '../typescript/contextBuilder.js';
+
+const COPILOT_CHAT_OPEN = 'workbench.action.chat.open';
+
+async function pickProfile(): Promise<vscode.Uri | undefined> {
+  const cfg = vscode.workspace.getConfiguration('klickd.copilot');
+  const fallback = cfg.get<string>('defaultProfile');
+  if (fallback) return vscode.Uri.file(fallback);
+  const uris = await vscode.window.showOpenDialog({
+    canSelectMany: false,
+    filters: { 'klickd profile': ['klickd', 'json'] },
+    openLabel: 'Load .klickd profile',
+  });
+  return uris?.[0];
+}
+
+async function decodeProfile(uri: vscode.Uri): Promise<KlickdRecord> {
+  const bytes = await readFile(uri.fsPath);
+  const envelope = JSON.parse(bytes.toString('utf-8')) as KlickdRecord;
+  if (envelope.encrypted !== true && !('ciphertext' in envelope)) {
+    return envelope;
+  }
+  const passphrase = await vscode.window.showInputBox({
+    prompt: `Passphrase for ${uri.fsPath}`,
+    password: true,
+    ignoreFocusOut: true,
+  });
+  if (!passphrase) throw new Error('passphrase entry cancelled');
+  try {
+    return (await loadKlickd(new Uint8Array(bytes), { passphrase })) as KlickdRecord;
+  } finally {
+    // Best-effort drop. JS strings are immutable; this just clears the binding.
+    // Do NOT cache the passphrase anywhere else.
+  }
+}
+
+async function confirm(preview: string): Promise<boolean> {
+  const cfg = vscode.workspace.getConfiguration('klickd.copilot');
+  if (!cfg.get<boolean>('askBeforeInjecting', true)) return true;
+  const doc = await vscode.workspace.openTextDocument({
+    content: preview,
+    language: 'markdown',
+  });
+  await vscode.window.showTextDocument(doc, { preview: true });
+  const choice = await vscode.window.showInformationMessage(
+    'Inject this sanitized context into Copilot Chat?',
+    { modal: true },
+    'Inject',
+    'Cancel',
+  );
+  return choice === 'Inject';
+}
+
+async function injectIntoCopilot(block: string): Promise<void> {
+  try {
+    await vscode.commands.executeCommand(COPILOT_CHAT_OPEN, { query: block });
+    vscode.window.showInformationMessage('.klickd context injected into Copilot Chat.');
+  } catch {
+    await vscode.env.clipboard.writeText(block);
+    vscode.window.showInformationMessage(
+      '.klickd context copied to clipboard — paste it into Copilot Chat.',
+    );
+  }
+}
+
+async function loadProfileCommand(): Promise<void> {
+  const uri = await pickProfile();
+  if (!uri) return;
+  let payload: KlickdRecord;
+  try {
+    payload = await decodeProfile(uri);
+  } catch (exc) {
+    vscode.window.showErrorMessage(`Failed to load profile: ${(exc as Error).message}`);
+    return;
+  }
+  const block = buildContextBlock(payload);
+  if (!(await confirm(block))) return;
+  await injectIntoCopilot(block);
+}
+
+async function exportToClipboardCommand(): Promise<void> {
+  const uri = await pickProfile();
+  if (!uri) return;
+  const payload = await decodeProfile(uri);
+  await vscode.env.clipboard.writeText(buildContextBlock(payload));
+  vscode.window.showInformationMessage('.klickd context copied to clipboard.');
+}
+
+async function exportToFileCommand(): Promise<void> {
+  const uri = await pickProfile();
+  if (!uri) return;
+  const payload = await decodeProfile(uri);
+  const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  if (!root) {
+    vscode.window.showErrorMessage('No workspace folder open.');
+    return;
+  }
+  const target = `${root}/.copilot-context.md`;
+  await writeFile(target, buildContextBlock(payload), 'utf-8');
+  vscode.window.showInformationMessage(`Wrote .klickd context to ${target}`);
+}
+
+async function dryRunRedactionCommand(): Promise<void> {
+  const uri = await pickProfile();
+  if (!uri) return;
+  const bytes = await readFile(uri.fsPath);
+  const envelope = JSON.parse(bytes.toString('utf-8')) as KlickdRecord;
+  if (envelope.encrypted === true) {
+    delete envelope.ciphertext;
+    delete envelope.kdf;
+    delete envelope.cipher;
+    envelope.user_preferences =
+      '[dry-run] encrypted payload not decoded; only envelope metadata shown.';
+  }
+  const doc = await vscode.workspace.openTextDocument({
+    content: buildContextBlock(envelope),
+    language: 'markdown',
+  });
+  await vscode.window.showTextDocument(doc, { preview: true });
+}
+
+function forgetSessionCommand(): void {
+  vscode.window.showInformationMessage(
+    '.klickd bridge holds no persistent state. Nothing to forget.',
+  );
+}
+
+export function activate(ctx: vscode.ExtensionContext): void {
+  ctx.subscriptions.push(
+    vscode.commands.registerCommand('klickd.copilot.loadProfile',              loadProfileCommand),
+    vscode.commands.registerCommand('klickd.copilot.exportContextToClipboard', exportToClipboardCommand),
+    vscode.commands.registerCommand('klickd.copilot.exportContextToFile',      exportToFileCommand),
+    vscode.commands.registerCommand('klickd.copilot.dryRunRedaction',          dryRunRedactionCommand),
+    vscode.commands.registerCommand('klickd.copilot.forgetSession',            forgetSessionCommand),
+  );
+}
+
+export function deactivate(): void {
+  // No persistent state to clean up.
+}

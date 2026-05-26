@@ -1,0 +1,51 @@
+{
+  "klickd_version": "4.0.0",
+  "payload_schema_version": "4.0.0",
+  "encrypted": false,
+  "domain": "education",
+  "profile_kind": "learner",
+  "created_at": "2026-05-26T00:00:00Z",
+  "identity": {
+    "display_name": "Alex",
+    "language": "en",
+    "timezone": "Europe/Luxembourg",
+    "email": "should-not-appear@example.com",
+    "phone": "+000000000",
+    "_internal_id": "should-not-appear"
+  },
+  "user_preferences": "Resume the calculus session. Keep explanations concise and concrete.",
+  "context": {
+    "current_project": "calc-101 refresher",
+    "current_state": "halfway through derivatives chapter",
+    "resume_trigger": "user says 'continue'"
+  },
+  "decisions_locked": [
+    {"title": "naming", "decision": "stick with 'function' not 'mapping'"},
+    "Prefer SI units throughout"
+  ],
+  "verification_gates": {
+    "factual_claim_about_person": "block",
+    "public_post": "confirm",
+    "casual_media_generation": "silent",
+    "_debug_gate": "ignored"
+  },
+  "human_veto_policy": "User can override any agent action by saying 'veto'. Stop immediately and ask.",
+  "agent_instructions": "Be concise. Show worked examples before formal definitions.",
+  "memory": [
+    {
+      "id": "00000000-0000-4000-a000-000000000001",
+      "ts": "2026-05-26T00:00:00Z",
+      "role": "user",
+      "content": "I struggle with chain rule.",
+      "modality": "text"
+    },
+    {
+      "id": "00000000-0000-4000-a000-000000000002",
+      "ts": "2026-05-26T00:05:00Z",
+      "role": "assistant",
+      "content": "Noted. We will revisit chain rule with a concrete example next.",
+      "modality": "text"
+    }
+  ],
+  "_bench": {"tokens_in": 0, "tokens_out": 0}
+}
