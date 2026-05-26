@@ -318,17 +318,46 @@ Notes:
 ## 11. Open decisions
 
 > Listed explicitly so reviewers can spot accidental assumptions (per `docs/rfcs/README.md` §"How to write one" #4).
+>
+> Each item below is annotated **Resolved**, **Resolved (narrowed)**, or **Non-blocking** so reviewers can see at a glance whether it gates promotion past `Draft`. Items marked **Non-blocking** are explicitly tracked here with a current-draft answer and a rationale for why deferring them does not block `Draft → Proposed`; they remain open for the `Proposed → Accepted` step or for a future RFC.
 
-1. **`x.klickd/` namespace literal.** Is `x.` the right prefix (mirrors RFC IETF "experimental" convention), or should packs live under `pack.klickd/<name>` to mirror `core.<agent>.klickd` from RFC-006? Current draft: `x.klickd/<pack>`; open to either.
-2. **`mission` as P1, not P0.** `x.klickd/mission` is the first pack without a persona anchor. Should it move to P0 to make "scoped session" a first-class primitive? Current draft: keep P1, on the grounds that mission semantics ride on top of `user` + `work` competence.
-3. **Seven-pack ceiling.** Seven matches RFC-003's `base_plus_seven` cost study. Reviewers may prefer four or five if router-cost data argues for tighter activation; revisit after the first real benchmark run.
-4. **Offline SKOS/JSON-LD bundling.** Shipping the SKOS subset with each pack is auditable but duplicates label data across packs. A shared `frameworks/` registry might be cleaner; deferred.
-5. **Validation §8 owners.** Who runs the validation? Current draft: author + one independent reviewer per pack, mirroring `ACCEPTANCE_CHECKLIST_V4.md`. Open to a stricter rule.
-6. **Relation to `DOMAIN_PROFILE_CATALOG.md`.** That doc lists *domains*; this RFC lists *packs*. Should the next iteration of the catalog be rewritten in pack terms, or kept as a separate "domain seed list"? Current draft: keep separate until P0 validation passes.
+1. **`x.klickd/` namespace literal.** Is `x.` the right prefix (mirrors RFC IETF "experimental" convention), or should packs live under `pack.klickd/<name>` to mirror `core.<agent>.klickd` from RFC-006?
+   - **Resolved: `x.klickd/<pack>`.** `x.` aligns with IETF "experimental / private-use" prefix convention (RFC 6648 spirit) and reads naturally as a *carrier-side* namespace, while `core.<agent>.klickd` from RFC-006 is host-side (the carrier-vs-skill axis of §5.1.1). Keeping the two prefixes distinct enforces the taxonomy at the name level.
+   - **Why non-disruptive:** the pack id is opaque to v4.0 readers (round-tripped verbatim under SPEC §33.7); changing it later would only require a one-time rename, not a schema migration.
+2. **`mission` as P1, not P0.** `x.klickd/mission` is the first pack without a persona anchor. Should it move to P0?
+   - **Resolved: keep P1.** Mission semantics ride on top of `user` + `work` competence; promoting `mission` to P0 before either of those is validated would invert the layering. P0 stays at the six packs of §3 (`user`, `student`, `coding`, `research`, `security`, `legal`).
+   - **Revisit trigger:** after at least one P0 pack passes §8 validation and `usage_profile = "mission"` shows up in real router-cost traces (RFC-003).
+3. **Seven-pack ceiling.** Seven matches RFC-003's `base_plus_seven` cost study. Reviewers may prefer four or five if router-cost data argues for tighter activation.
+   - **Non-blocking (current draft: seven).** The ceiling is a *cost* signal (RFC-003 §"Chimera.klickd v4.1 — forward-looking extrapolation"), not a normative invariant. Tightening it later from seven to five does not break any v4.1-native field; it only changes the `decision_router` budget. Pack authors writing against this RFC do not encode the number `7` anywhere in the pack manifest, so a downward revision is purely router-side.
+   - **Revisit trigger:** after the first measured `base_plus_N` benchmark on real provider tokenisation (currently RFC-003 ships a deterministic heuristic only).
+4. **Offline SKOS/JSON-LD bundling — per-pack vs shared registry.** Shipping the SKOS subset with each pack is auditable but duplicates label data across packs. A shared `frameworks/` registry might be cleaner.
+   - **Resolved (narrowed): per-pack subset, with a shared canonical registry definition in [`./chimera/frameworks/`](./chimera/frameworks/).** Each pack ships only the framework concepts it references plus their `skos:broader` ancestors (see [`./chimera/frameworks/README.md`](./chimera/frameworks/README.md) §3); the *registry definition* of which schemes are authoritative and their stable URLs / hashes is centralised in that directory and in [`./chimera/frameworks/base_transversal_core.bundle.json`](./chimera/frameworks/base_transversal_core.bundle.json) + [`./chimera/frameworks/x.klickd.student.bundle.json`](./chimera/frameworks/x.klickd.student.bundle.json) (this RFC ships those two as the first physical bundle artefacts).
+   - **Why non-disruptive going forward:** packs declare the bundle they need by pointing at the registry; a future move to a fully shared registry only changes resolution, not authoring.
+5. **Validation §8 owners.** Who runs the validation?
+   - **Resolved: author + one independent reviewer per pack, mirroring `ACCEPTANCE_CHECKLIST_V4.md`.** Static checks (§8.9, §8.10, the `forbidden_fields` literal) are mechanically verifiable; substantive criteria (§8.1 framework anchor, §8.6 offline-resolvable, §8.7 router-priceable) need a human reviewer who has read the framework registry. The pair-reviewer rule is the same gate v4.0.0 GA uses.
+   - **Non-blocking escalation:** a stricter rule (e.g. *two* independent reviewers for `security` / `legal` packs because they touch compliance) is a future option, not a gate on this RFC.
+6. **Relation to `DOMAIN_PROFILE_CATALOG.md`.** That doc lists *domains*; this RFC lists *packs*.
+   - **Resolved: keep separate until P0 validation passes.** `DOMAIN_PROFILE_CATALOG.md` is a *domain seed list* (one row per addressable use-case domain); v4.1 packs are *carrier_pack* artefacts that compose with `agent_core` (RFC-006). The two lists are connected by the §6 anchor-only table in this RFC, not by aliasing. Rewriting the catalog in pack terms before any P0 pack passes §8 would be premature and would risk Vince's previously-rejected "fake catalog" shape.
+   - **Revisit trigger:** after at least one P0 pack passes §8 validation; rewriting the catalog in pack terms is a follow-up RFC, not a blocker for this RFC.
 
 ## 12. Status & next steps
 
-This RFC is **Draft**. It is **docs-only**. It does not change any current normative surface, schema, SDK, vector, or release artefact. Promotion to `Proposed` follows `ACCEPTANCE_CHECKLIST_V4.md`. Promotion to `Accepted` requires (at minimum) the open decisions of §11 to be resolved and one P0 pack draft to exist as a worked example demonstrating §8 is achievable.
+This RFC is **Draft**. It is **docs-only**. It does not change any current normative surface, schema, SDK, vector, or release artefact. Promotion to `Proposed` follows `ACCEPTANCE_CHECKLIST_V4.md`.
+
+**Open-decision status (§11 above):**
+
+| # | Topic | Status |
+|---|---|---|
+| 1 | `x.klickd/` namespace literal | **Resolved** — keep `x.klickd/<pack>`. |
+| 2 | `mission` as P1 vs P0 | **Resolved** — keep P1. |
+| 3 | Seven-pack ceiling | **Non-blocking** — current draft seven; revisit after real router-cost data. |
+| 4 | Offline SKOS bundling per-pack vs shared | **Resolved (narrowed)** — per-pack subset, shared registry definition; first physical bundles ship in [`./chimera/frameworks/`](./chimera/frameworks/). |
+| 5 | Validation §8 owners | **Resolved** — author + 1 independent reviewer. Stricter (2 for security/legal) is a non-blocking future option. |
+| 6 | Relation to `DOMAIN_PROFILE_CATALOG.md` | **Resolved** — keep separate until first P0 pack passes §8. |
+
+All six RFC-level open decisions are now either resolved or explicitly non-blocking with a documented current-draft answer and a revisit trigger. Pack-level open decisions (specific to `x.klickd/student`) follow the same convention in [`./chimera/packs/student.md`](./chimera/packs/student.md) §8.
+
+Promotion to `Accepted` requires (at minimum) one P0 pack to demonstrate §8 is achievable end-to-end (offline bundle bytes + strict schema + round-trip vector); the spec-level shape is already pinned by this RFC plus the companion docs below and the physical artefacts under [`./chimera/frameworks/`](./chimera/frameworks/), [`./chimera/schema-fragments/`](./chimera/schema-fragments/), and [`./chimera/packs/fixtures/`](./chimera/packs/fixtures/).
 
 **Worked-example pack (concrete scaffold, ships with this RFC):** [`docs/rfcs/chimera/packs/student.md`](./chimera/packs/student.md) — `x.klickd/student`. Demonstrates the carrier-vs-skill rule (§5.1.1) by carrying learner state only; the Socratic tutor skill lives host-side.
 
@@ -339,3 +368,8 @@ This RFC is **Draft**. It is **docs-only**. It does not change any current norma
 - [`docs/rfcs/chimera/frameworks/README.md`](./chimera/frameworks/README.md) — canonical framework registry (ESCO v1.1.1, DigComp 2.2, LifeComp 2020, EQF 2017, CEFR 2020, WEF, O\*NET, NICE, ENISA, CIS, SFIA) with stable URLs / IRI prefixes / distribution URLs / SHA-256 placeholders, plus the offline SKOS/JSON-LD bundle shape.
 - [`docs/rfcs/chimera/schema-fragments/README.md`](./chimera/schema-fragments/README.md) — schema-intent fragments (NOT a JSON Schema) for the pack manifest, `base_transversal_core`, `competencies`, `mastery`, `levels`, `language_proficiency`, `evidence_policy`, `source_policy`, `gates`, `human_authority`, structured memory, `router_cost`, `forbidden_fields`.
 - [`docs/rfcs/chimera/packs/router_cost.md`](./chimera/packs/router_cost.md) — deterministic heuristic token-cost rows for `x.klickd/user` and `x.klickd/student`, compatible with RFC-003 `chimera_v41_extrapolation()`.
+- [`docs/rfcs/chimera/frameworks/base_transversal_core.bundle.json`](./chimera/frameworks/base_transversal_core.bundle.json) — physical SKOS/JSON-LD subset for `base_transversal_core` (ESCO transversal + DigComp + LifeComp + EQF), small curated subset with stable IRIs and a SHA-256 over the bundle's own canonical bytes.
+- [`docs/rfcs/chimera/frameworks/x.klickd.student.bundle.json`](./chimera/frameworks/x.klickd.student.bundle.json) — physical SKOS/JSON-LD subset for `x.klickd/student` (adds ISCED-F subject anchors, DigComp 3.1 / CEFR pillars).
+- [`docs/rfcs/chimera/schema-fragments/x.klickd.student.schema.json`](./chimera/schema-fragments/x.klickd.student.schema.json) — strict Draft 2020-12 JSON Schema fragment for the `x.klickd/student` pack manifest. **Non-normative** (NOT a release artefact; explicitly scoped to RFC-009 Draft).
+- [`docs/rfcs/chimera/packs/fixtures/x.klickd.student.example.json`](./chimera/packs/fixtures/x.klickd.student.example.json) — round-trip fixture for `x.klickd/student` that validates against the schema fragment above and exercises the framework references in the SKOS bundle.
+- [`docs/rfcs/chimera/packs/fixtures/README.md`](./chimera/packs/fixtures/README.md) — validation instructions for the fixture (`jsonschema` CLI / Python; offline-only; no provider calls).

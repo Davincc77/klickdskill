@@ -1,0 +1,226 @@
+{
+  "pack": "x.klickd/student",
+  "pack_version": "0.1.0-draft",
+  "spec_ref": "docs/rfcs/chimera/packs/student.md",
+  "publisher": {
+    "name": "klickd",
+    "ref": "https://klickd.app"
+  },
+  "frameworks": [
+    {
+      "scheme": "esco",
+      "version": "v1.1.1",
+      "iri_prefix": "http://data.europa.eu/esco/skill/",
+      "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main",
+      "distribution_url": "https://esco.ec.europa.eu/en/use-esco/download",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "digcomp",
+      "version": "2.2",
+      "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+      "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en",
+      "distribution_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC128415",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "lifecomp",
+      "version": "2020",
+      "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/",
+      "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en",
+      "distribution_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC120911",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "eqf",
+      "version": "2017",
+      "iri_prefix": "https://europa.eu/europass/eqf/",
+      "canonical_url": "https://europa.eu/europass/en/europass-tools/european-qualifications-framework",
+      "distribution_url": "https://europa.eu/europass/en/description-eight-eqf-levels",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "cefr",
+      "version": "2020",
+      "iri_prefix": "https://www.coe.int/cefr/",
+      "canonical_url": "https://www.coe.int/en/web/common-european-framework-reference-languages",
+      "distribution_url": "https://rm.coe.int/common-european-framework-of-reference-for-languages-learning-teaching/16809ea0d4",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    }
+  ],
+  "base_transversal_core": {
+    "frameworks": [
+      {
+        "scheme": "esco",
+        "version": "v1.1.1",
+        "iri_prefix": "http://data.europa.eu/esco/skill/",
+        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
+      },
+      {
+        "scheme": "digcomp",
+        "version": "2.2",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"
+      },
+      {
+        "scheme": "lifecomp",
+        "version": "2020",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en"
+      },
+      {
+        "scheme": "eqf",
+        "version": "2017",
+        "iri_prefix": "https://europa.eu/europass/eqf/",
+        "canonical_url": "https://europa.eu/europass/en/europass-tools/european-qualifications-framework"
+      }
+    ],
+    "transversal_refs": [
+      { "competency_ref": "esco:S1",     "scheme": "esco",     "prefLabel": "communication, collaboration and creativity" },
+      { "competency_ref": "esco:S2",     "scheme": "esco",     "prefLabel": "information skills" },
+      { "competency_ref": "esco:S5",     "scheme": "esco",     "prefLabel": "working with computers" },
+      { "competency_ref": "digcomp:1.1", "scheme": "digcomp",  "prefLabel": "Browsing, searching, filtering data, information and digital content" },
+      { "competency_ref": "digcomp:1.2", "scheme": "digcomp",  "prefLabel": "Evaluating data, information and digital content" },
+      { "competency_ref": "lifecomp:L2", "scheme": "lifecomp", "prefLabel": "Critical thinking" },
+      { "competency_ref": "lifecomp:L3", "scheme": "lifecomp", "prefLabel": "Managing learning" }
+    ]
+  },
+  "identity": {
+    "pack_role": "student",
+    "display_name": null,
+    "school_or_institution_ref": null,
+    "enrolment_period": "2025-2026"
+  },
+  "levels": [
+    {
+      "framework_ref": "https://europa.eu/europass/eqf/level/4",
+      "level_label": "EQF level 4",
+      "effective_at": "2026-05-26"
+    }
+  ],
+  "language_proficiency": [
+    {
+      "language_tag": "fr",
+      "cefr_level": "C2",
+      "scheme_ref": "https://www.coe.int/en/web/common-european-framework-reference-languages"
+    },
+    {
+      "language_tag": "en",
+      "cefr_level": "B2",
+      "scheme_ref": "https://www.coe.int/en/web/common-european-framework-reference-languages"
+    }
+  ],
+  "curriculum_refs": [
+    {
+      "curriculum_id": "https://eduscol.education.fr/programme/bac/spe-mathematiques",
+      "jurisdiction": "FR",
+      "track": "baccalaureat-general-spe-mathematiques",
+      "as_of": "2025-09-01"
+    }
+  ],
+  "subjects": [
+    {
+      "subject_ref": "http://data.europa.eu/esco/isced-f/0541",
+      "prefLabel": "Mathematics",
+      "started_at": "2025-09-01",
+      "current_chapter_ref": null,
+      "coursework_pointer": null
+    },
+    {
+      "subject_ref": "http://data.europa.eu/esco/isced-f/0533",
+      "prefLabel": "Physics",
+      "started_at": "2025-09-01",
+      "current_chapter_ref": null,
+      "coursework_pointer": null
+    }
+  ],
+  "competencies": [
+    { "competency_ref": "esco:S2",      "scheme": "esco",    "prefLabel": "information skills",                                                       "acquired_at": null },
+    { "competency_ref": "digcomp:1.2",  "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content",                          "acquired_at": null },
+    { "competency_ref": "digcomp:3.1",  "scheme": "digcomp", "prefLabel": "Developing digital content",                                                "acquired_at": null }
+  ],
+  "mastery": [
+    {
+      "competency_ref": "digcomp:1.2",
+      "mastery_level": 3,
+      "scale_ref": "digcomp:2.2/scale",
+      "evidence_refs": ["urn:klickd:evidence:assignment:chap-3-quiz#a17"],
+      "assessed_at": "2026-04-12",
+      "assessed_by_ref": "teacher:lycee-x"
+    }
+  ],
+  "preferences": {
+    "preferred_languages": ["fr", "en"],
+    "pace_preference": "slow_with_examples",
+    "modality_preference": ["text", "diagram"],
+    "feedback_cadence_preference": "after_each_exercise",
+    "time_budget_per_week_minutes": null
+  },
+  "accessibility": {
+    "needs": [],
+    "accommodations": [],
+    "consent_to_disclose_to_agent": false
+  },
+  "exam_targets": [
+    {
+      "exam_ref": "fr:bac-2026:mathematiques",
+      "target_date": "2026-06-15",
+      "target_grade": null,
+      "consent_to_share_grade": false
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-05-20T18:00:00Z",
+      "kind": "chapter_completed",
+      "ref": "mathematiques/derivees",
+      "mastery_delta": null,
+      "agent_ref": null
+    }
+  ],
+  "gates": {
+    "verification_gates_default": {
+      "raise_only": true,
+      "claim_grounding_required": true,
+      "reversibility_threshold": "medium"
+    },
+    "human_veto_policy": {
+      "owner": "human_carrier",
+      "scope": ["mastery_writes", "exam_target_changes", "accommodations_changes"]
+    }
+  },
+  "human_authority": {
+    "final_decision_owner": "human_carrier",
+    "agent_role": "advisory",
+    "escalation": "guardian_then_school"
+  },
+  "memory_scope": "memory.x_klickd.student",
+  "evidence_policy": {
+    "required_for_claims": true,
+    "pointer_only": true,
+    "attestation_shape_ref": "rfc-002#8b"
+  },
+  "source_policy": {
+    "frameworks_offline_bundle": "docs/rfcs/chimera/frameworks/x.klickd.student.bundle.json",
+    "allow_inline_definitions": false,
+    "language_tags": ["fr", "en"]
+  },
+  "router_cost": {
+    "tokens_estimate": 850,
+    "baseline": "base_plus_one",
+    "source_row": "docs/rfcs/chimera/packs/router_cost.md#32-xklickdstudent-derivation",
+    "pack_token_costs_entry": "core.Edu"
+  },
+  "forbidden_fields": [
+    "pedagogy",
+    "teaching_method",
+    "socratic_steps",
+    "prompt_strategy",
+    "scoring_rubric",
+    "intervention_policy",
+    "tone_rules",
+    "system_prompt_overrides",
+    "knowledge.mastered",
+    "mastered_topics"
+  ]
+}

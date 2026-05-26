@@ -1,0 +1,320 @@
+{
+  "$schema_intent": "non-normative; SKOS/JSON-LD subset bundle for base_transversal_core per RFC-009 §5.2, §5.7, §8.6 and ../frameworks/README.md §3",
+  "bundle_kind": "base_transversal_core",
+  "bundle_version": "0.1.0-draft",
+  "generated_for": "RFC-009 .klickd v4.1 Chimera Draft scaffold",
+  "generated_at": "2026-05-26",
+  "generator_ref": "docs/rfcs/chimera/frameworks/README.md#3",
+  "release_status": {
+    "is_release_artefact": false,
+    "no_tag": true,
+    "no_npm_pypi_latest": true,
+    "no_zenodo_doi": true,
+    "no_iana_action": true
+  },
+  "frameworks": [
+    {
+      "scheme": "esco",
+      "version": "v1.1.1",
+      "iri_prefix": "http://data.europa.eu/esco/skill/",
+      "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main",
+      "distribution_url": "https://esco.ec.europa.eu/en/use-esco/download",
+      "concept_scheme_iri": "http://data.europa.eu/esco/concept-scheme/skills",
+      "licence_ref": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "concepts_count": 7
+    },
+    {
+      "scheme": "digcomp",
+      "version": "2.2",
+      "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+      "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en",
+      "distribution_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC128415",
+      "concept_scheme_iri": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/concept-scheme",
+      "licence_ref": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "concepts_count": 5
+    },
+    {
+      "scheme": "lifecomp",
+      "version": "2020",
+      "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/",
+      "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en",
+      "distribution_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC120911",
+      "concept_scheme_iri": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/concept-scheme",
+      "licence_ref": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "concepts_count": 5
+    },
+    {
+      "scheme": "eqf",
+      "version": "2017",
+      "iri_prefix": "https://europa.eu/europass/eqf/",
+      "canonical_url": "https://europa.eu/europass/en/europass-tools/european-qualifications-framework",
+      "distribution_url": "https://europa.eu/europass/en/description-eight-eqf-levels",
+      "concept_scheme_iri": "https://europa.eu/europass/eqf/concept-scheme",
+      "licence_ref": "EU public-sector reuse (Decision 2011/833/EU)",
+      "licence_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32011D0833",
+      "concepts_count": 8
+    }
+  ],
+  "concepts": {
+    "@context": {
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "dct": "http://purl.org/dc/terms/",
+      "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "@graph": [
+      {
+        "@id": "http://data.europa.eu/esco/concept-scheme/skills",
+        "@type": "skos:ConceptScheme",
+        "skos:prefLabel": [
+          { "@value": "ESCO Skills Pillar", "@language": "en" }
+        ],
+        "dct:hasVersion": "v1.1.1",
+        "dct:source": "https://esco.ec.europa.eu/en/use-esco/download"
+      },
+      {
+        "@id": "http://data.europa.eu/esco/skill/S1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "http://data.europa.eu/esco/concept-scheme/skills",
+        "skos:notation": "S1",
+        "skos:prefLabel": [
+          { "@value": "communication, collaboration and creativity", "@language": "en" }
+        ],
+        "skos:broader": null
+      },
+      {
+        "@id": "http://data.europa.eu/esco/skill/S1.1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "http://data.europa.eu/esco/concept-scheme/skills",
+        "skos:notation": "S1.1",
+        "skos:prefLabel": [
+          { "@value": "communicating", "@language": "en" }
+        ],
+        "skos:broader": { "@id": "http://data.europa.eu/esco/skill/S1" }
+      },
+      {
+        "@id": "http://data.europa.eu/esco/skill/S1.4",
+        "@type": "skos:Concept",
+        "skos:inScheme": "http://data.europa.eu/esco/concept-scheme/skills",
+        "skos:notation": "S1.4",
+        "skos:prefLabel": [
+          { "@value": "working with others", "@language": "en" }
+        ],
+        "skos:broader": { "@id": "http://data.europa.eu/esco/skill/S1" }
+      },
+      {
+        "@id": "http://data.europa.eu/esco/skill/S2",
+        "@type": "skos:Concept",
+        "skos:inScheme": "http://data.europa.eu/esco/concept-scheme/skills",
+        "skos:notation": "S2",
+        "skos:prefLabel": [
+          { "@value": "information skills", "@language": "en" }
+        ],
+        "skos:broader": null
+      },
+      {
+        "@id": "http://data.europa.eu/esco/skill/S4",
+        "@type": "skos:Concept",
+        "skos:inScheme": "http://data.europa.eu/esco/concept-scheme/skills",
+        "skos:notation": "S4",
+        "skos:prefLabel": [
+          { "@value": "management skills", "@language": "en" }
+        ],
+        "skos:broader": null
+      },
+      {
+        "@id": "http://data.europa.eu/esco/skill/S5",
+        "@type": "skos:Concept",
+        "skos:inScheme": "http://data.europa.eu/esco/concept-scheme/skills",
+        "skos:notation": "S5",
+        "skos:prefLabel": [
+          { "@value": "working with computers", "@language": "en" }
+        ],
+        "skos:broader": null
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/concept-scheme",
+        "@type": "skos:ConceptScheme",
+        "skos:prefLabel": [
+          { "@value": "DigComp 2.2 — European Digital Competence Framework", "@language": "en" }
+        ],
+        "dct:hasVersion": "2.2",
+        "dct:source": "https://publications.jrc.ec.europa.eu/repository/handle/JRC128415"
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/1.1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/concept-scheme",
+        "skos:notation": "1.1",
+        "skos:prefLabel": [
+          { "@value": "Browsing, searching, filtering data, information and digital content", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/1.2",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/concept-scheme",
+        "skos:notation": "1.2",
+        "skos:prefLabel": [
+          { "@value": "Evaluating data, information and digital content", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/2.1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/concept-scheme",
+        "skos:notation": "2.1",
+        "skos:prefLabel": [
+          { "@value": "Interacting through digital technologies", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/4.1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/concept-scheme",
+        "skos:notation": "4.1",
+        "skos:prefLabel": [
+          { "@value": "Protecting devices", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/5.1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/concept-scheme",
+        "skos:notation": "5.1",
+        "skos:prefLabel": [
+          { "@value": "Solving technical problems", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/concept-scheme",
+        "@type": "skos:ConceptScheme",
+        "skos:prefLabel": [
+          { "@value": "LifeComp — Personal, Social and Learning to Learn Key Competence", "@language": "en" }
+        ],
+        "dct:hasVersion": "2020",
+        "dct:source": "https://publications.jrc.ec.europa.eu/repository/handle/JRC120911"
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/P1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/concept-scheme",
+        "skos:notation": "P1",
+        "skos:prefLabel": [
+          { "@value": "Self-regulation", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/P2",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/concept-scheme",
+        "skos:notation": "P2",
+        "skos:prefLabel": [
+          { "@value": "Flexibility", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/L1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/concept-scheme",
+        "skos:notation": "L1",
+        "skos:prefLabel": [
+          { "@value": "Growth mindset", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/L2",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/concept-scheme",
+        "skos:notation": "L2",
+        "skos:prefLabel": [
+          { "@value": "Critical thinking", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/L3",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/concept-scheme",
+        "skos:notation": "L3",
+        "skos:prefLabel": [
+          { "@value": "Managing learning", "@language": "en" }
+        ]
+      },
+      {
+        "@id": "https://europa.eu/europass/eqf/concept-scheme",
+        "@type": "skos:ConceptScheme",
+        "skos:prefLabel": [
+          { "@value": "European Qualifications Framework (EQF) — 8 levels", "@language": "en" }
+        ],
+        "dct:hasVersion": "2017",
+        "dct:source": "https://europa.eu/europass/en/description-eight-eqf-levels"
+      },
+      {
+        "@id": "https://europa.eu/europass/eqf/level/1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://europa.eu/europass/eqf/concept-scheme",
+        "skos:notation": "1",
+        "skos:prefLabel": [{ "@value": "EQF level 1", "@language": "en" }]
+      },
+      {
+        "@id": "https://europa.eu/europass/eqf/level/2",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://europa.eu/europass/eqf/concept-scheme",
+        "skos:notation": "2",
+        "skos:prefLabel": [{ "@value": "EQF level 2", "@language": "en" }]
+      },
+      {
+        "@id": "https://europa.eu/europass/eqf/level/3",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://europa.eu/europass/eqf/concept-scheme",
+        "skos:notation": "3",
+        "skos:prefLabel": [{ "@value": "EQF level 3", "@language": "en" }]
+      },
+      {
+        "@id": "https://europa.eu/europass/eqf/level/4",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://europa.eu/europass/eqf/concept-scheme",
+        "skos:notation": "4",
+        "skos:prefLabel": [{ "@value": "EQF level 4", "@language": "en" }]
+      },
+      {
+        "@id": "https://europa.eu/europass/eqf/level/5",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://europa.eu/europass/eqf/concept-scheme",
+        "skos:notation": "5",
+        "skos:prefLabel": [{ "@value": "EQF level 5", "@language": "en" }]
+      },
+      {
+        "@id": "https://europa.eu/europass/eqf/level/6",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://europa.eu/europass/eqf/concept-scheme",
+        "skos:notation": "6",
+        "skos:prefLabel": [{ "@value": "EQF level 6", "@language": "en" }]
+      },
+      {
+        "@id": "https://europa.eu/europass/eqf/level/7",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://europa.eu/europass/eqf/concept-scheme",
+        "skos:notation": "7",
+        "skos:prefLabel": [{ "@value": "EQF level 7", "@language": "en" }]
+      },
+      {
+        "@id": "https://europa.eu/europass/eqf/level/8",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://europa.eu/europass/eqf/concept-scheme",
+        "skos:notation": "8",
+        "skos:prefLabel": [{ "@value": "EQF level 8", "@language": "en" }]
+      }
+    ]
+  },
+  "notes": [
+    "Concept IRIs above are stable framework IDs published by ESCO (data.europa.eu), the EU JRC (DigComp 2.2, LifeComp 2020), and the Europass EQF service. They are NOT invented surrogates.",
+    "ESCO concept IRIs use the canonical 'http://data.europa.eu/esco/skill/<notation>' pattern (notations like 'S1', 'S1.1', 'S2', 'S4', 'S5' are real top-level skill-pillar nodes in ESCO v1.1.1).",
+    "DigComp 2.2 / LifeComp 2020 concept IRIs are prefix-stable under the JRC publication URL; the notations (DigComp '1.1', '1.2', '2.1', '4.1', '5.1' and LifeComp 'P1', 'P2', 'L1', 'L2', 'L3') match the published framework annexes.",
+    "EQF level descriptors use Europass's stable level URL pattern; the descriptor pages live at https://europa.eu/europass/en/description-eight-eqf-levels.",
+    "This bundle is a SMALL curated subset. It is NOT a complete dump of any framework. Adding concepts requires updating this file with the same `iri_prefix` + `notation` shape; no new framework prefixes may be invented (RFC-009 §5.7, §8.1).",
+    "Bundle integrity hash: see ./bundle-manifest.json (computed over the canonical serialisations of base_transversal_core.bundle.json and x.klickd.student.bundle.json)."
+  ]
+}

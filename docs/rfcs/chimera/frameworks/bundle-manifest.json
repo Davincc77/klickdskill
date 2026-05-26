@@ -1,0 +1,44 @@
+{
+  "$schema_intent": "non-normative; manifest of physical SKOS/JSON-LD bundles shipped under RFC-009 §5.7 + §8.6 + ./README.md §3",
+  "manifest_version": "0.1.0-draft",
+  "rfc_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
+  "generated_for": "RFC-009 .klickd v4.1 Chimera Draft scaffold",
+  "generated_at": "2026-05-26",
+  "release_status": {
+    "is_release_artefact": false,
+    "no_tag": true,
+    "no_npm_pypi_latest": true,
+    "no_zenodo_doi": true,
+    "no_iana_action": true
+  },
+  "bundles": [
+    {
+      "kind": "base_transversal_core",
+      "path": "docs/rfcs/chimera/frameworks/base_transversal_core.bundle.json",
+      "bytes": 14031,
+      "sha256": "007199597e865a93bab8eeae9c6f8f3ca1b8451b39dc7ea31d680978a63594a2",
+      "covers": ["esco:S1", "esco:S1.1", "esco:S1.4", "esco:S2", "esco:S4", "esco:S5", "digcomp:1.1", "digcomp:1.2", "digcomp:2.1", "digcomp:4.1", "digcomp:5.1", "lifecomp:P1", "lifecomp:P2", "lifecomp:L1", "lifecomp:L2", "lifecomp:L3", "eqf:level/1..8"],
+      "notes": "Always-on base layer per RFC-009 §5.2."
+    },
+    {
+      "kind": "pack",
+      "pack_ref": "x.klickd/student",
+      "path": "docs/rfcs/chimera/frameworks/x.klickd.student.bundle.json",
+      "bytes": 7333,
+      "sha256": "3d0beca904d7876e7e2b035d9bee78cbc2d50ba525535cecc7099184cc83652a",
+      "covers": ["isced-f:0541 (Mathematics)", "isced-f:0533 (Physics)", "digcomp:3.1", "cefr:A1..C2"],
+      "depends_on": ["base_transversal_core"],
+      "notes": "Additive to base_transversal_core; together they resolve every reference in docs/rfcs/chimera/packs/fixtures/x.klickd.student.example.json."
+    }
+  ],
+  "verification": {
+    "command_python": "python3 -c \"import hashlib, sys; data=open(sys.argv[1],'rb').read(); print(hashlib.sha256(data).hexdigest())\" <path>",
+    "command_shasum": "shasum -a 256 <path>",
+    "regenerate_manifest": "python3 docs/rfcs/chimera/tests/check_bundles.py --regenerate-manifest"
+  },
+  "notes": [
+    "Hashes above are SHA-256 over the literal on-disk bytes of each bundle file (NOT a canonicalised form). Changing whitespace will change the hash; this is intentional — the manifest pins the artefact byte-exactly.",
+    "Hashes are stability anchors for the Draft scaffold. They are NOT a release signature, NOT a DOI, NOT an IANA action.",
+    "If a bundle file is edited, regenerate this manifest in the same PR; the round-trip test in docs/rfcs/chimera/tests/check_bundles.py asserts manifest hashes match disk content."
+  ]
+}

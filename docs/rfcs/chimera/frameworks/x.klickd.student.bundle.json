@@ -1,0 +1,155 @@
+{
+  "$schema_intent": "non-normative; SKOS/JSON-LD subset bundle for x.klickd/student per RFC-009 §5.7, §8.6 and ../frameworks/README.md §3",
+  "bundle_kind": "pack",
+  "pack_ref": "x.klickd/student",
+  "pack_version": "0.1.0-draft",
+  "bundle_version": "0.1.0-draft",
+  "generated_for": "RFC-009 .klickd v4.1 Chimera Draft scaffold",
+  "generated_at": "2026-05-26",
+  "generator_ref": "docs/rfcs/chimera/frameworks/README.md#3",
+  "release_status": {
+    "is_release_artefact": false,
+    "no_tag": true,
+    "no_npm_pypi_latest": true,
+    "no_zenodo_doi": true,
+    "no_iana_action": true
+  },
+  "inherits": {
+    "base_transversal_core_bundle": "docs/rfcs/chimera/frameworks/base_transversal_core.bundle.json",
+    "rationale": "x.klickd/student carries the base_transversal_core (RFC-009 §5.2). This pack-specific bundle adds only the concepts beyond the base."
+  },
+  "frameworks": [
+    {
+      "scheme": "esco",
+      "version": "v1.1.1",
+      "iri_prefix": "http://data.europa.eu/esco/isced-f/",
+      "canonical_url": "https://esco.ec.europa.eu/en/classification/isced-f",
+      "distribution_url": "https://esco.ec.europa.eu/en/use-esco/download",
+      "concept_scheme_iri": "http://data.europa.eu/esco/concept-scheme/isced-f",
+      "licence_ref": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "concepts_count": 2,
+      "notes": "ISCED-F 2013 fields-of-education codes as exposed through ESCO. Used by x.klickd/student.subjects[]."
+    },
+    {
+      "scheme": "digcomp",
+      "version": "2.2",
+      "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+      "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en",
+      "distribution_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC128415",
+      "concept_scheme_iri": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/concept-scheme",
+      "licence_ref": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "concepts_count": 1
+    },
+    {
+      "scheme": "cefr",
+      "version": "2020",
+      "iri_prefix": "https://www.coe.int/cefr/level/",
+      "canonical_url": "https://www.coe.int/en/web/common-european-framework-reference-languages",
+      "distribution_url": "https://rm.coe.int/common-european-framework-of-reference-for-languages-learning-teaching/16809ea0d4",
+      "concept_scheme_iri": "https://www.coe.int/cefr/concept-scheme",
+      "licence_ref": "Council of Europe terms — id + URL inline only by default (see frameworks/README.md §3.4)",
+      "concepts_count": 6
+    }
+  ],
+  "concepts": {
+    "@context": {
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "dct": "http://purl.org/dc/terms/"
+    },
+    "@graph": [
+      {
+        "@id": "http://data.europa.eu/esco/concept-scheme/isced-f",
+        "@type": "skos:ConceptScheme",
+        "skos:prefLabel": [{ "@value": "ISCED-F 2013 fields of education", "@language": "en" }],
+        "dct:hasVersion": "2013 (ESCO mapping v1.1.1)",
+        "dct:source": "https://esco.ec.europa.eu/en/classification/isced-f"
+      },
+      {
+        "@id": "http://data.europa.eu/esco/isced-f/0541",
+        "@type": "skos:Concept",
+        "skos:inScheme": "http://data.europa.eu/esco/concept-scheme/isced-f",
+        "skos:notation": "0541",
+        "skos:prefLabel": [{ "@value": "Mathematics", "@language": "en" }]
+      },
+      {
+        "@id": "http://data.europa.eu/esco/isced-f/0533",
+        "@type": "skos:Concept",
+        "skos:inScheme": "http://data.europa.eu/esco/concept-scheme/isced-f",
+        "skos:notation": "0533",
+        "skos:prefLabel": [{ "@value": "Physics", "@language": "en" }]
+      },
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/3.1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/concept-scheme",
+        "skos:notation": "3.1",
+        "skos:prefLabel": [{ "@value": "Developing digital content", "@language": "en" }]
+      },
+      {
+        "@id": "https://www.coe.int/cefr/concept-scheme",
+        "@type": "skos:ConceptScheme",
+        "skos:prefLabel": [{ "@value": "CEFR Companion Volume 2020 — language levels", "@language": "en" }],
+        "dct:hasVersion": "2020 Companion Volume",
+        "dct:source": "https://rm.coe.int/common-european-framework-of-reference-for-languages-learning-teaching/16809ea0d4"
+      },
+      {
+        "@id": "https://www.coe.int/cefr/level/A1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://www.coe.int/cefr/concept-scheme",
+        "skos:notation": "A1",
+        "skos:prefLabel": [{ "@value": "CEFR A1 — Breakthrough", "@language": "en" }]
+      },
+      {
+        "@id": "https://www.coe.int/cefr/level/A2",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://www.coe.int/cefr/concept-scheme",
+        "skos:notation": "A2",
+        "skos:prefLabel": [{ "@value": "CEFR A2 — Waystage", "@language": "en" }]
+      },
+      {
+        "@id": "https://www.coe.int/cefr/level/B1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://www.coe.int/cefr/concept-scheme",
+        "skos:notation": "B1",
+        "skos:prefLabel": [{ "@value": "CEFR B1 — Threshold", "@language": "en" }]
+      },
+      {
+        "@id": "https://www.coe.int/cefr/level/B2",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://www.coe.int/cefr/concept-scheme",
+        "skos:notation": "B2",
+        "skos:prefLabel": [{ "@value": "CEFR B2 — Vantage", "@language": "en" }]
+      },
+      {
+        "@id": "https://www.coe.int/cefr/level/C1",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://www.coe.int/cefr/concept-scheme",
+        "skos:notation": "C1",
+        "skos:prefLabel": [{ "@value": "CEFR C1 — Effective Operational Proficiency", "@language": "en" }]
+      },
+      {
+        "@id": "https://www.coe.int/cefr/level/C2",
+        "@type": "skos:Concept",
+        "skos:inScheme": "https://www.coe.int/cefr/concept-scheme",
+        "skos:notation": "C2",
+        "skos:prefLabel": [{ "@value": "CEFR C2 — Mastery", "@language": "en" }]
+      }
+    ]
+  },
+  "crosswalk": {
+    "@context": { "skos": "http://www.w3.org/2004/02/skos/core#" },
+    "@graph": [
+      {
+        "@id": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/5.1",
+        "skos:closeMatch": [{ "@id": "http://data.europa.eu/esco/skill/S1" }]
+      }
+    ]
+  },
+  "notes": [
+    "This bundle covers ONLY the additional concepts x.klickd/student references on top of base_transversal_core.bundle.json (RFC-009 §5.2): two ISCED-F subjects (Mathematics 0541, Physics 0533), one DigComp 2.2 competence (3.1 Developing digital content), and the six CEFR Companion Volume 2020 level descriptors used by language_proficiency[].",
+    "Combined with base_transversal_core.bundle.json, every competency_ref / level_ref / cefr_level used by the round-trip fixture in ../packs/fixtures/x.klickd.student.example.json resolves to an inline prefLabel without any network call (RFC-009 §8.6).",
+    "CEFR text is short id+label only; this satisfies the §3.4 licensing rule (id + URL only by default for Council of Europe content).",
+    "No homegrown competency IRIs (RFC-009 §5.7, §8.1)."
+  ]
+}
