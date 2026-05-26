@@ -12,8 +12,8 @@ This directory is where concrete per-pack specs live. They are **scaffolds**, no
 
 | `carrier_pack` | Spec | Track | Status | Companion `host_skill` (NOT in pack) |
 |---|---|---|---|---|
-| `x.klickd/student` | [`student.md`](./student.md) | P0 | **Draft scaffold** (2026-05-26) | `skill.kai.tutor.socratic` |
-| `x.klickd/user` | — | P0 | Not yet scaffolded | `skill.kai.assistant.base` (TBD) |
+| `x.klickd/student` | [`student.md`](./student.md) | P0 | **Draft scaffold (all ten criteria satisfied at spec / shape level)** (2026-05-26) | `skill.kai.tutor.socratic` |
+| `x.klickd/user` | — (router-cost row in [`router_cost.md`](./router_cost.md)) | P0 | Not yet scaffolded; router-cost row published | `skill.kai.assistant.base` (TBD) |
 | `x.klickd/coding` | — | P0 | Not yet scaffolded | `skill.coding.assistant` / `skill.kai.dev.review` (TBD) |
 | `x.klickd/research` | — | P0 | Not yet scaffolded | `skill.research.assistant` / `skill.kai.research.ground` (TBD) |
 | `x.klickd/security` | — | P0 | Not yet scaffolded | `skill.kai.security.threatmodel` (TBD) |
@@ -57,9 +57,9 @@ A scaffold becomes a **real** pack only after satisfying all **ten** criteria of
 9. No persona reuse (`examples/v4/personas/*` files stay anchors).
 10. Carrier-vs-skill separation (no method / pedagogy / prompting / scoring rubric / intervention policy in the pack).
 
-A scaffold that satisfies the rule and the shape but lacks the resolved framework refs, the SKOS bundle, the cost estimate, or the offline-resolvable subset is **not** a real pack. The `student.md` scaffold is in that state today: shape and both rules are clean; substance (real ESCO/EQF/DigComp IRIs, SKOS offline bundle, router-cost row) is explicitly TODO.
+A scaffold that satisfies the rule and the shape but lacks the resolved framework refs, the SKOS bundle, the cost estimate, or the offline-resolvable subset is **not** a real pack. The `student.md` scaffold now satisfies **all ten criteria at spec / shape level**: real framework refs (ESCO v1.1.1 + DigComp 2.2 + LifeComp 2020 + EQF 2017 + CEFR 2020) with stable URLs, offline bundle shape pinned in [`../frameworks/`](../frameworks/), router-cost row published in [`./router_cost.md`](./router_cost.md). The remaining substance blockers are: (1) physical SKOS bundle bytes, (2) strict JSON Schema, (3) round-trip vector.
 
-For the v4.1-native shape contract (top-level fields, types, required, framework anchoring, frozen `forbidden_fields` list), see [RFC-009 §8.1](../../RFC-009-chimera-v4.1.md). A candidate pack is reviewed against that table.
+For the v4.1-native shape contract (top-level fields, types, required, framework anchoring, frozen `forbidden_fields` list), see [RFC-009 §8.1](../../RFC-009-chimera-v4.1.md) and the schema-intent fragments under [`../schema-fragments/`](../schema-fragments/). A candidate pack is reviewed against both.
 
 ## 4. The no-fake-catalog rule (explicit)
 
@@ -110,4 +110,7 @@ Anchor ≠ pack. A pack is built **from authoritative frameworks**, not from a r
 - [`../../RFC-009-chimera-v4.1.md`](../../RFC-009-chimera-v4.1.md) — Chimera RFC (carrier-vs-skill in §5.1.1, validation in §8, no-catalog in §7).
 - [`../README.md`](../README.md) — Chimera companion summary.
 - [`./student.md`](./student.md) — first concrete pack scaffold.
+- [`./router_cost.md`](./router_cost.md) — deterministic heuristic token-cost rows for `x.klickd/user` and `x.klickd/student`, RFC-003-compatible.
+- [`../frameworks/README.md`](../frameworks/README.md) — canonical framework registry + offline SKOS/JSON-LD bundle shape.
+- [`../schema-fragments/README.md`](../schema-fragments/README.md) — schema-intent fragments for the pack manifest and its constituent blocks.
 - [`../../../use-cases/DOMAIN_PROFILE_CATALOG.md`](../../../use-cases/DOMAIN_PROFILE_CATALOG.md) — domain taxonomy precursor (not a catalog).

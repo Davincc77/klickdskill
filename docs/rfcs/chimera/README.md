@@ -101,9 +101,16 @@ For the actual per-field validation contract (top-level keys, types, required, f
 
 | Pack | Spec | Status against §4 |
 |---|---|---|
-| `x.klickd/student` | [`packs/student.md`](./packs/student.md) | Carrier-vs-skill rule satisfied; gates/evidence/no-PII/no-persona-reuse satisfied; framework IRIs, SKOS bundle, router-cost row deferred (explicitly TODO). |
+| `x.klickd/student` | [`packs/student.md`](./packs/student.md) | **All ten criteria satisfied at spec / shape level.** Concrete ESCO v1.1.1 + DigComp 2.2 + LifeComp 2020 + EQF 2017 + CEFR 2020 framework refs; offline SKOS/JSON-LD bundle shape pinned (bytes TODO); deterministic router-cost row published. Remaining blockers: physical bundle bytes, strict JSON Schema, round-trip vector. |
+| `x.klickd/user` | — (scaffold pending) | Router-cost row published in [`packs/router_cost.md`](./packs/router_cost.md). Full scaffold is a follow-up PR. |
 
-See [`packs/README.md`](./packs/README.md) for the full index, no-fake-catalog reminder, and `/klickdskill` later-notes.
+Companion files shipped under this PR:
+
+- [`frameworks/README.md`](./frameworks/README.md) — canonical framework registry (ESCO, DigComp, LifeComp, EQF, CEFR, WEF, O\*NET, NICE, ENISA, CIS, SFIA) with stable URLs / IRI prefixes / distribution URLs / SHA-256 placeholders + offline bundle shape.
+- [`schema-fragments/README.md`](./schema-fragments/README.md) — schema-intent fragments for the pack manifest, `base_transversal_core`, `competencies`, `mastery`, `levels`, `language_proficiency`, `evidence_policy`, `source_policy`, `gates`, `human_authority`, structured memory, `router_cost`, `forbidden_fields`.
+- [`packs/router_cost.md`](./packs/router_cost.md) — deterministic heuristic token-cost rows for `x.klickd/user` and `x.klickd/student`, compatible with RFC-003 `chimera_v41_extrapolation()`.
+
+See [`packs/README.md`](./packs/README.md) for the full pack index, no-fake-catalog reminder, and `/klickdskill` later-notes.
 
 ## 5. Architecture quick-reference
 

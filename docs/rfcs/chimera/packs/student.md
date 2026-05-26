@@ -38,28 +38,66 @@ Twelve sections. All are **carrier state**. None are teacher behaviour. All comp
 
 Every Chimera `carrier_pack` — `student` included — carries the **`base_transversal_core`** (canonical term, see [RFC-009 §0.1](../../RFC-009-chimera-v4.1.md)): a small cross-pack competency layer composed only of framework-anchored references. The `base_transversal_core` is what survives even when no other pack is active (RFC-009 §5.2).
 
-For `x.klickd/student`, the base anchors are:
+For `x.klickd/student`, the base anchors are pinned to the canonical Chimera framework registry — see [`../frameworks/README.md`](../frameworks/README.md) §1 and §2.1 for the per-scheme stable URLs and the full `base_transversal_core` default set:
 
-- **ESCO transversal skills** — communication, literacy, numeracy, problem solving, planning.
-- **DigComp 2.2** — basic digital competence (information literacy, communication, content creation, safety, problem solving).
-- **EQF** — qualifications framework, used for `level_label` resolution.
+- **ESCO v1.1.1 transversal skills** — IRI prefix `http://data.europa.eu/esco/skill/`, canonical URL `https://esco.ec.europa.eu/en`, distribution `https://esco.ec.europa.eu/en/use-esco/download`. Covers communication, literacy, numeracy, problem solving, planning (anchors include `esco:S1.0.0` "Communication, collaboration and creativity", `esco:S2.0.0` "Information skills", `esco:S5.0.0` "Working with computers").
+- **DigComp 2.2** — IRI prefix `https://joint-research-centre.ec.europa.eu/digcomp/2.2/`, canonical URL `https://joint-research-centre.ec.europa.eu/digcomp_en`, distribution `https://publications.jrc.ec.europa.eu/repository/handle/JRC128415`. 5 areas × 21 competences (`digcomp:1.1` .. `digcomp:5.4`).
+- **LifeComp 2020** — IRI prefix `https://joint-research-centre.ec.europa.eu/lifecomp/2020/`, canonical URL `https://joint-research-centre.ec.europa.eu/lifecomp_en`, distribution `https://publications.jrc.ec.europa.eu/repository/handle/JRC120911`. Personal / Social / Learning-to-learn (`lifecomp:P1`, `lifecomp:L1`, `lifecomp:L2`).
+- **EQF 2017 (current consolidated)** — IRI prefix `https://europa.eu/europass/eqf/`, canonical URL `https://europa.eu/europass/en/europass-tools/european-qualifications-framework`, level descriptors at `https://europa.eu/europass/en/description-eight-eqf-levels`. Used for `level.level_label` resolution.
+- **CEFR Companion Volume 2020** — canonical URL `https://www.coe.int/en/web/common-european-framework-reference-languages`, distribution `https://rm.coe.int/common-european-framework-of-reference-for-languages-learning-teaching/16809ea0d4`. Used by `language_proficiency[]` (separate from EQF qualification level).
 
-Wire-shape (illustrative):
+Wire-shape (illustrative; mirrors [`../frameworks/README.md`](../frameworks/README.md) §2.1):
 
 ```jsonc
 "base_transversal_core": {
   "frameworks": [
-    { "scheme": "esco",    "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/" },
-    { "scheme": "digcomp", "version": "2.2",    "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/" },
-    { "scheme": "eqf",     "version": "2017",   "iri_prefix": "https://europa.eu/europass/eqf/" }
+    {
+      "scheme": "esco",
+      "version": "v1.1.1",
+      "iri_prefix": "http://data.europa.eu/esco/skill/",
+      "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main",
+      "distribution_url": "https://esco.ec.europa.eu/en/use-esco/download",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "digcomp",
+      "version": "2.2",
+      "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+      "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en",
+      "distribution_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC128415",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "lifecomp",
+      "version": "2020",
+      "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/",
+      "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en",
+      "distribution_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC120911",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "eqf",
+      "version": "2017",
+      "iri_prefix": "https://europa.eu/europass/eqf/",
+      "canonical_url": "https://europa.eu/europass/en/europass-tools/european-qualifications-framework",
+      "distribution_url": "https://europa.eu/europass/en/description-eight-eqf-levels",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    }
   ],
   "transversal_refs": [
-    { "competency_ref": "esco:T1.1", "prefLabel": "Reading comprehension",      "scheme": "esco" },
-    { "competency_ref": "esco:T2.3", "prefLabel": "Mathematical reasoning",     "scheme": "esco" },
-    { "competency_ref": "digcomp:1.1", "prefLabel": "Browsing/searching/filtering data, information and digital content", "scheme": "digcomp" }
+    { "competency_ref": "esco:S1.0.0",  "scheme": "esco",     "prefLabel": "Communication, collaboration and creativity" },
+    { "competency_ref": "esco:S2.0.0",  "scheme": "esco",     "prefLabel": "Information skills" },
+    { "competency_ref": "esco:S5.0.0",  "scheme": "esco",     "prefLabel": "Working with computers" },
+    { "competency_ref": "digcomp:1.1",  "scheme": "digcomp",  "prefLabel": "Browsing, searching, filtering data, information and digital content" },
+    { "competency_ref": "digcomp:1.2",  "scheme": "digcomp",  "prefLabel": "Evaluating data, information and digital content" },
+    { "competency_ref": "lifecomp:L1",  "scheme": "lifecomp", "prefLabel": "Growth mindset" },
+    { "competency_ref": "lifecomp:L2",  "scheme": "lifecomp", "prefLabel": "Critical thinking" },
+    { "competency_ref": "lifecomp:L3",  "scheme": "lifecomp", "prefLabel": "Managing learning" }
   ]
 }
 ```
+
+The IRIs above are **stable framework IDs**, not invented surrogates. `S1.0.0`, `S2.0.0`, `S5.0.0` are the top-level ESCO skill-pillar codes; `digcomp:1.1`, `digcomp:1.2` are the actual DigComp 2.2 competence codes; `lifecomp:L1..L3` are the published LifeComp 2020 Learning-to-learn codes. `distribution_sha256` is the literal placeholder `"TBD-at-bundle-generation"` because no offline bundle ships under this RFC (only the shape; see [`../frameworks/README.md`](../frameworks/README.md) §1.1).
 
 The base is **not** harvested from a persona's narrative description; it is declared against frameworks. A pack with an empty `base_transversal_core` fails RFC-009 §8.1 (top-level `frameworks[]` required).
 
@@ -71,12 +109,14 @@ Minimal identification *within* the learning context, **distinct** from v4.0 `us
 - `school_or_institution_ref` — optional, opaque institution reference.
 - `enrolment_period` — e.g. `"2025-2026"`.
 
-### 2.2 `level`
+### 2.2 `level` (and `language_proficiency[]`)
 Where the carrier is, *measured against an external framework* (never homegrown).
 
-- `framework_ref` — e.g. ESCO / DigComp / EQF / national framework IRI.
-- `level_label` — e.g. `"EQF level 4"` / `"Terminale (FR)"` / `"Year 13 (UK)"`.
+- `framework_ref` — stable IRI in a declared `frameworks[]` scheme; for qualification level this is typically EQF (`https://europa.eu/europass/eqf/` prefix), with the level descriptor at `https://europa.eu/europass/en/description-eight-eqf-levels`.
+- `level_label` — a value from the cited framework. EQF levels are the closed set `"EQF level 1"` .. `"EQF level 8"`. National-framework equivalents (`"Terminale (FR)"`, `"Year 13 (UK)"`) are accepted only if the cited `framework_ref` is a national qualifications framework registered against EQF.
 - `effective_at` — ISO-8601 date the level was last assessed.
+
+Language proficiency is **separate** from qualification level and is anchored to CEFR (`https://www.coe.int/en/web/common-european-framework-reference-languages`, Companion Volume 2020). A learner may be EQF-4 with French C2 and English B2 simultaneously. See [`../schema-fragments/README.md`](../schema-fragments/README.md) §7 (`language_proficiency_array`).
 
 ### 2.3 `curriculum_refs[]`
 References to the external curriculum the carrier is following. **Refs, not copies.**
@@ -196,7 +236,7 @@ The `competency_pack` and the `host_skill` are versioned independently. A studen
 
 ## 5. Illustrative shape sketch (NOT a JSON Schema)
 
-Non-normative. Field names illustrative. **No additionalProperties contract** declared here — that arrives only when the RFC promotes past `Proposed`.
+Non-normative. Field names illustrative. **No additionalProperties contract** declared here — that arrives only when the RFC promotes past `Proposed`. For the schema-intent companion fragments (per-block `required` / `forbidden` keys), see [`../schema-fragments/README.md`](../schema-fragments/README.md).
 
 ```jsonc
 {
@@ -205,19 +245,67 @@ Non-normative. Field names illustrative. **No additionalProperties contract** de
   "spec_ref": "docs/rfcs/chimera/packs/student.md",
   "publisher": { "name": "klickd", "ref": "https://klickd.app" },
 
-  // v4.1-native required: declared frameworks (RFC-009 §8.1)
+  // v4.1-native required: declared frameworks (RFC-009 §8.1). Stable URLs from
+  // docs/rfcs/chimera/frameworks/README.md §1.
   "frameworks": [
-    { "scheme": "esco",    "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/" },
-    { "scheme": "digcomp", "version": "2.2",    "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/" },
-    { "scheme": "eqf",     "version": "2017",   "iri_prefix": "https://europa.eu/europass/eqf/" }
+    {
+      "scheme": "esco",
+      "version": "v1.1.1",
+      "iri_prefix": "http://data.europa.eu/esco/skill/",
+      "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main",
+      "distribution_url": "https://esco.ec.europa.eu/en/use-esco/download",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "digcomp",
+      "version": "2.2",
+      "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+      "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en",
+      "distribution_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC128415",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "lifecomp",
+      "version": "2020",
+      "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/",
+      "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en",
+      "distribution_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC120911",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "eqf",
+      "version": "2017",
+      "iri_prefix": "https://europa.eu/europass/eqf/",
+      "canonical_url": "https://europa.eu/europass/en/europass-tools/european-qualifications-framework",
+      "distribution_url": "https://europa.eu/europass/en/description-eight-eqf-levels",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    },
+    {
+      "scheme": "cefr",
+      "version": "2020",
+      "iri_prefix": "https://www.coe.int/cefr/",
+      "canonical_url": "https://www.coe.int/en/web/common-european-framework-reference-languages",
+      "distribution_url": "https://rm.coe.int/common-european-framework-of-reference-for-languages-learning-teaching/16809ea0d4",
+      "distribution_sha256": "TBD-at-bundle-generation"
+    }
   ],
 
   // RFC-009 §5.2 + this pack §2.0
   "base_transversal_core": {
+    "frameworks": [
+      { "scheme": "esco",     "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/" },
+      { "scheme": "digcomp",  "version": "2.2",    "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/" },
+      { "scheme": "lifecomp", "version": "2020",   "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/" },
+      { "scheme": "eqf",      "version": "2017",   "iri_prefix": "https://europa.eu/europass/eqf/" }
+    ],
     "transversal_refs": [
-      { "competency_ref": "esco:T1.1",   "prefLabel": "Reading comprehension",  "scheme": "esco" },
-      { "competency_ref": "esco:T2.3",   "prefLabel": "Mathematical reasoning", "scheme": "esco" },
-      { "competency_ref": "digcomp:1.1", "prefLabel": "Information literacy",   "scheme": "digcomp" }
+      { "competency_ref": "esco:S1.0.0",  "scheme": "esco",     "prefLabel": "Communication, collaboration and creativity" },
+      { "competency_ref": "esco:S2.0.0",  "scheme": "esco",     "prefLabel": "Information skills" },
+      { "competency_ref": "esco:S5.0.0",  "scheme": "esco",     "prefLabel": "Working with computers" },
+      { "competency_ref": "digcomp:1.1",  "scheme": "digcomp",  "prefLabel": "Browsing, searching, filtering data, information and digital content" },
+      { "competency_ref": "digcomp:1.2",  "scheme": "digcomp",  "prefLabel": "Evaluating data, information and digital content" },
+      { "competency_ref": "lifecomp:L2",  "scheme": "lifecomp", "prefLabel": "Critical thinking" },
+      { "competency_ref": "lifecomp:L3",  "scheme": "lifecomp", "prefLabel": "Managing learning" }
     ]
   },
 
@@ -228,15 +316,30 @@ Non-normative. Field names illustrative. **No additionalProperties contract** de
     "enrolment_period": "2025-2026"
   },
 
-  "level": {
-    "framework_ref": "https://ec.europa.eu/esco/...",  // illustrative
-    "level_label": "EQF level 4",
-    "effective_at": "2026-05-26"
-  },
+  "levels": [
+    {
+      "framework_ref": "https://europa.eu/europass/eqf/level/4",
+      "level_label": "EQF level 4",
+      "effective_at": "2026-05-26"
+    }
+  ],
+
+  "language_proficiency": [
+    {
+      "language_tag": "fr",
+      "cefr_level": "C2",
+      "scheme_ref": "https://www.coe.int/en/web/common-european-framework-reference-languages"
+    },
+    {
+      "language_tag": "en",
+      "cefr_level": "B2",
+      "scheme_ref": "https://www.coe.int/en/web/common-european-framework-reference-languages"
+    }
+  ],
 
   "curriculum_refs": [
     {
-      "curriculum_id": "https://eduscol.education.fr/...",
+      "curriculum_id": "https://eduscol.education.fr/programme/bac/spe-mathematiques",
       "jurisdiction": "FR",
       "track": "baccalaureat-general-spe-mathematiques",
       "as_of": "2025-09-01"
@@ -244,19 +347,30 @@ Non-normative. Field names illustrative. **No additionalProperties contract** de
   ],
 
   "subjects": [
-    { "subject_ref": "esco:mathematics",  "prefLabel": "Mathématiques", "started_at": "2025-09-01" },
-    { "subject_ref": "esco:physics",      "prefLabel": "Physique-Chimie", "started_at": "2025-09-01" }
+    {
+      "subject_ref": "http://data.europa.eu/esco/isced-f/0541",
+      "prefLabel": "Mathematics",
+      "started_at": "2025-09-01"
+    },
+    {
+      "subject_ref": "http://data.europa.eu/esco/isced-f/0533",
+      "prefLabel": "Physics",
+      "started_at": "2025-09-01"
+    }
   ],
 
+  // Anchored against ESCO + DigComp. Competency IRIs are stable framework codes.
   "competencies": [
-    { "competency_ref": "esco:S1.2.3", "prefLabel": "Solving quadratic equations" }
+    { "competency_ref": "esco:S2.0.0",  "scheme": "esco",     "prefLabel": "Information skills" },
+    { "competency_ref": "digcomp:1.2",  "scheme": "digcomp",  "prefLabel": "Evaluating data, information and digital content" },
+    { "competency_ref": "digcomp:3.1",  "scheme": "digcomp",  "prefLabel": "Developing digital content" }
   ],
   "mastery": [
     {
-      "competency_ref": "esco:S1.2.3",
-      "mastery_level": 2,
+      "competency_ref": "digcomp:1.2",
+      "mastery_level": 3,
       "scale_ref": "digcomp:2.2/scale",
-      "evidence_refs": ["assignment:chap-3-quiz#a17"],
+      "evidence_refs": ["urn:klickd:evidence:assignment:chap-3-quiz#a17"],
       "assessed_at": "2026-04-12",
       "assessed_by_ref": "teacher:lycee-x"
     }
@@ -289,7 +403,7 @@ Non-normative. Field names illustrative. **No additionalProperties contract** de
   ],
 
   "gates": {
-    "verification_gates_default": { "raise_only": true, "claim_grounding_required": true },
+    "verification_gates_default": { "raise_only": true, "claim_grounding_required": true, "reversibility_threshold": "medium" },
     "human_veto_policy": { "owner": "human_carrier", "scope": ["mastery_writes", "exam_target_changes", "accommodations_changes"] }
   },
 
@@ -309,16 +423,18 @@ Non-normative. Field names illustrative. **No additionalProperties contract** de
     "attestation_shape_ref": "rfc-002#8b"
   },
   "source_policy": {
-    "frameworks_offline_bundle": "TODO: bundle ESCO+DigComp+EQF SKOS subset (criterion §8.6)",
+    "frameworks_offline_bundle": "docs/rfcs/chimera/frameworks/README.md#3",
     "allow_inline_definitions": false,
     "language_tags": ["fr", "en"]
   },
 
-  // RFC-009 §8.7 — deterministic token-cost estimate (RFC-003 chimera_v41_extrapolation())
+  // RFC-009 §8.7 — deterministic token-cost estimate (RFC-003 chimera_v41_extrapolation()).
+  // Heuristic = len(canonical_json)//4. See ./router_cost.md §3.2 for the derivation.
   "router_cost": {
-    "tokens_estimate": null,           // TODO: fill from chimera_v41_extrapolation() row
+    "tokens_estimate": 850,
     "baseline": "base_plus_one",
-    "source_row": "TODO: benchmarks/context_cost/README.md#chimera_v41"
+    "source_row": "docs/rfcs/chimera/packs/router_cost.md#32-xklickdstudent-derivation",
+    "pack_token_costs_entry": "core.Edu"
   },
 
   // RFC-009 §5.0 + §5.1.1 — frozen literal list; presence of any of these as a TOP-LEVEL key fails validation
@@ -333,22 +449,28 @@ Non-normative. Field names illustrative. **No additionalProperties contract** de
 
 ## 6. Validation against RFC-009 §8
 
-The scaffold above satisfies all ten validation criteria *in shape*. It does not yet satisfy them *in substance* (no real ESCO IRIs resolved, no SKOS bundle attached, no token-cost projection). Below is the checklist against which a real `x.klickd/student` MUST pass before any catalog exposure:
+The scaffold above satisfies all ten validation criteria **at spec / shape level**. The remaining gap is substance: physically generating and shipping the offline SKOS bundle. Below is the checklist against which a real `x.klickd/student` MUST pass before any catalog exposure:
 
 | # | Criterion (RFC-009 §8) | Status for this scaffold |
 |---|---|---|
-| 1 | Framework anchor (SKOS/JSON-LD into ESCO / WEF / O\*NET) | **Partial** — top-level `frameworks[]` declares ESCO + DigComp + EQF; per-competency IRIs still placeholders (`esco:S1.2.3`, `digcomp:1.1`). Real ESCO/EQF/DigComp IRIs are the remaining substance gap. |
-| 2 | Gates declared (RFC-002 defaults + veto posture) | **Yes** in `gates` and `human_authority`. |
-| 3 | Evidence rules (RFC-002 §8b grounding) | **Yes** — top-level `evidence_policy` (`pointer_only: true`) + `mastery[].evidence_refs[]` enforce pointer-based attestation. |
-| 4 | No PII (publisher-owned, not user-owned) | **Yes** — `identity` is role-shaped; user PII stays in `user.klickd` v4.0. |
-| 5 | Round-trip safe with v4.0-only readers | **Pending** — depends on final wire format; pack-scoped fields under `memory.x_klickd.student` (`memory_scope`) satisfy SPEC §33.7. |
-| 6 | Offline-resolvable (SKOS subset bundled) | **TODO** — `source_policy.frameworks_offline_bundle` names the bundle; physical SKOS subset deferred to first real release. |
-| 7 | Router-priceable (deterministic token-cost estimate) | **TODO** — `router_cost` block present with `tokens_estimate: null`; needs an actual `chimera_v41_extrapolation()` row. |
-| 8 | Human-authority preserved (no pack default lowers user v4.0 gate) | **Yes** — `gates.verification_gates_default.raise_only: true`. |
-| 9 | No persona reuse / no legacy adapter (RFC-009 §5.0) | **Yes** — §3.2 above lists rejected legacy keys (`knowledge.mastered[]`, `mastered_topics`, narrative `level`, …); persona `01-eleve-terminale-fr.klickd` is anchor-only, not a compatibility input. |
-| 10 | Carrier-vs-skill separation (§5.1.1) | **Yes** — §3.1 lists forbidden host-side fields; `forbidden_fields` literal block makes the check mechanical; Socratic tutor skill lives host-side as `skill.kai.tutor.socratic`. |
+| 1 | Framework anchor (SKOS/JSON-LD into ESCO / WEF / O\*NET) | **Satisfied at spec level** — top-level `frameworks[]` declares ESCO v1.1.1 + DigComp 2.2 + LifeComp 2020 + EQF 2017 + CEFR 2020 with stable URL prefixes; per-competency IRIs use real framework codes (`esco:S2.0.0`, `digcomp:1.2`, `digcomp:3.1`, `lifecomp:L2`, `lifecomp:L3`). Concrete distribution URLs and `distribution_sha256` placeholders documented in [`../frameworks/README.md`](../frameworks/README.md) §1. |
+| 2 | Gates declared (RFC-002 defaults + veto posture) | **Satisfied** in `gates` and `human_authority`. |
+| 3 | Evidence rules (RFC-002 §8b grounding) | **Satisfied** — top-level `evidence_policy` (`required_for_claims: true`, `pointer_only: true`, `attestation_shape_ref: "rfc-002#8b"`) + `mastery[].evidence_refs[]` enforce pointer-based attestation. Schema-intent fragment: [`../schema-fragments/README.md`](../schema-fragments/README.md) §11. |
+| 4 | No PII (publisher-owned, not user-owned) | **Satisfied** — `identity` is role-shaped; user PII stays in `user.klickd` v4.0. |
+| 5 | Round-trip safe with v4.0-only readers | **Satisfied at spec level** — `memory_scope` uses the `memory.x_klickd.student` slice shape; a v4.0 reader preserves the pack manifest verbatim per SPEC §33.7. Final confirmation requires a v4.0-vs-v4.1 round-trip vector, deferred to the schema-promotion PR. |
+| 6 | Offline-resolvable (SKOS subset bundled) | **Satisfied at spec level** — `source_policy.frameworks_offline_bundle` points at [`../frameworks/README.md#3`](../frameworks/README.md#3-offline-bundle-shape-per-pack), which pins the directory layout, `manifest.json` shape, per-scheme `concepts.jsonld` shape, crosswalk, and licensing rules. **Substance TODO:** generate the physical bundle bytes (out of scope for this RFC; explicitly listed as a substance follow-up). |
+| 7 | Router-priceable (deterministic token-cost estimate) | **Satisfied at spec level** — `router_cost.tokens_estimate = 850` for `x.klickd/student`, baseline `base_plus_one`, derivation row in [`./router_cost.md` §3.2](./router_cost.md#32-xklickdstudent-derivation). Compatible with `chimera_v41_extrapolation(pack_token_costs={...})` in `benchmarks/context_cost/runner.py`. |
+| 8 | Human-authority preserved (no pack default lowers user v4.0 gate) | **Satisfied** — `gates.verification_gates_default.raise_only: true`; `human_authority.final_decision_owner = "human_carrier"`; `agent_role = "advisory"`. |
+| 9 | No persona reuse / no legacy adapter (RFC-009 §5.0) | **Satisfied** — §3.2 above lists rejected legacy keys (`knowledge.mastered[]`, `mastered_topics`, narrative `level`, …); persona `01-eleve-terminale-fr.klickd` is anchor-only, not a compatibility input. |
+| 10 | Carrier-vs-skill separation (§5.1.1) | **Satisfied** — §3.1 lists forbidden host-side fields; `forbidden_fields` literal block makes the check mechanical; Socratic tutor skill lives host-side as `skill.kai.tutor.socratic`. |
 
-Seven of ten satisfied in shape; three `TODO` items (real IRIs, SKOS offline bundle, router-cost row) are the substance gap and are explicitly tracked.
+**Ten of ten satisfied at spec / shape level.** Remaining blockers, honestly tracked:
+
+- **Substance — offline bundle bytes.** The directory layout, `manifest.json` shape, `concepts.jsonld` shape, and per-scheme licensing are pinned in [`../frameworks/README.md`](../frameworks/README.md). Physically generating the SKOS subset from upstream ESCO RDF / DigComp annex / LifeComp annex / EQF descriptors / CEFR Companion Volume is a substance follow-up. `distribution_sha256` remains the literal `"TBD-at-bundle-generation"` until that PR lands.
+- **Substance — round-trip vector.** A v4.0-vs-v4.1 round-trip test vector (extending `verify_vectors.py` / `verify_vectors.mjs`) lands with the schema-promotion PR, not under this Draft.
+- **Substance — JSON Schema.** A strict schema (with `$schema`, `$id`, `additionalProperties`) lands only when the RFC promotes past `Proposed` (RFC-009 §10). The schema-intent fragments under [`../schema-fragments/`](../schema-fragments/) are the bridge until then.
+
+These three are **substance gaps under known shapes**, not unresolved design questions.
 
 ### 6.1 Compliance against the v4.1-native shape table (RFC-009 §8.1)
 
@@ -360,16 +482,17 @@ Cross-check of top-level fields the v4.1-native shape table mandates:
 | `pack_version` | ✅ `"0.1.0-draft"` | Pre-release tag; no release implied. |
 | `spec_ref` | ✅ Points at this file. | — |
 | `publisher` | ✅ `{name, ref}` | No PII. |
-| `frameworks[]` | ✅ ESCO + DigComp + EQF declared. | Per-IRI resolution still TODO (criterion §8.1 schema). |
-| `competencies[]` | ✅ Present (placeholder IRI). | Real IRIs TODO. |
+| `frameworks[]` | ✅ ESCO v1.1.1 + DigComp 2.2 + LifeComp 2020 + EQF 2017 + CEFR 2020 declared with stable URLs. | Distribution URLs + `distribution_sha256` placeholders per [`../frameworks/README.md`](../frameworks/README.md) §1. |
+| `competencies[]` | ✅ Present with real framework IRIs (`esco:S2.0.0`, `digcomp:1.2`, `digcomp:3.1`). | No homegrown competency. |
 | `mastery[]` | ✅ Present, scale-anchored. | `scale_ref: "digcomp:2.2/scale"` cited; no legacy `mastered_topics`. |
-| `levels[]` (≈ `level` here) | ✅ Single-level object today. | Open decision §8.4 of this file may make it an array for multi-track learners. |
-| `gates` | ✅ `raise_only: true`. | — |
-| `human_authority` | ✅ `human_carrier` + `advisory`. | — |
+| `levels[]` | ✅ Array shape (single EQF level entry today). | Schema fragment [`../schema-fragments/README.md`](../schema-fragments/README.md) §6 confirms array form for future multi-framework cases. |
+| `language_proficiency[]` | ✅ Optional, CEFR-anchored (`fr` C2, `en` B2). | Separate from `levels[]`. |
+| `gates` | ✅ `raise_only: true`, `reversibility_threshold: "medium"`. | — |
+| `human_authority` | ✅ `human_carrier` + `advisory` + `guardian_then_school`. | Closed enum (see §8.3 below). |
 | `memory_scope` | ✅ `"memory.x_klickd.student"`. | — |
-| `evidence_policy` | ✅ `pointer_only: true`, attestation ref. | — |
-| `source_policy` | ✅ Declared (bundle TODO). | — |
-| `router_cost` | ✅ Block present; `tokens_estimate: null`. | Substance TODO. |
+| `evidence_policy` | ✅ `required_for_claims: true`, `pointer_only: true`, `attestation_shape_ref: "rfc-002#8b"`. | — |
+| `source_policy` | ✅ Declared; bundle pointer is `docs/rfcs/chimera/frameworks/README.md#3`. | Spec-level satisfied; physical bundle bytes are substance TODO. |
+| `router_cost` | ✅ `tokens_estimate: 850`, `baseline: "base_plus_one"`, `source_row` named. | See [`./router_cost.md` §3.2](./router_cost.md#32-xklickdstudent-derivation). |
 | `forbidden_fields` | ✅ Literal frozen list. | Used by the §3.1 / §3.2 static check. |
 
 ## 7. Integration with `klickd.app`
@@ -384,31 +507,45 @@ Notes for the `klickd.app` side; this file is the spec, not the implementation.
 
 ## 8. Open decisions (specific to this pack)
 
-> Reviewers should treat these as gates on promoting `x.klickd/student` past `Draft scaffold`.
+> Several decisions previously open in this list are now **narrowed** by the schema-intent fragments under [`../schema-fragments/`](../schema-fragments/), the framework registry under [`../frameworks/`](../frameworks/), and the router-cost rows under [`./router_cost.md`](./router_cost.md). What remains is genuinely open and gates promotion past `Draft scaffold`.
 
-1. **`mastery[].scale_ref` mandatory or optional?** Current draft: required. Alternative: optional with a documented default rubric.
-2. **`history[]` retention.** Bound by what? Calendar window, event-count cap, or compaction policy (RFC-005)?
-3. **Minor / adult split.** Should `human_authority.escalation` be a closed enum (`guardian_then_school | self | school_only`) or open string with guidance?
-4. **Multi-track learners** (e.g. a student following two curricula simultaneously). Does `curriculum_refs[]` length need a soft cap, or do we expect compositional packs (`x.klickd/student@FR` + `x.klickd/student@UK`)?
-5. **Evidence storage.** Are `evidence_refs[]` always external pointers, or do we allow inline small attestations? Current draft: pointers only, to prevent the pack from growing unbounded.
-6. **Relationship to `usage_profile`** (RFC-007). Does `x.klickd/student` *replace* `usage_profile: "learning"`, *compose with* it, or *imply* it? Current draft: composes; the router uses both.
+### 8.1 Narrowed (resolved at spec level)
+
+1. **`mastery[].scale_ref` mandatory or optional?** **Resolved: required.** Pack `mastery[]` entries MUST cite a `scale_ref` (`digcomp:2.2/scale`, `eqf:2017/scale`, `bloom:1956/scale`). Free-form rubrics rejected. See [`../schema-fragments/README.md`](../schema-fragments/README.md) §5.
+2. **Evidence storage.** **Resolved: pointers only.** `evidence_policy.pointer_only: true` is required for v4.1-native packs. Inline attestations forbidden (size + privacy). See [`../schema-fragments/README.md`](../schema-fragments/README.md) §11.
+3. **Minor / adult split.** **Resolved (narrowed):** `human_authority.escalation` is a **closed enum** with values `self | guardian_then_school | school_only | professional_then_self | operator_then_self`. New values require an RFC bump. See [`../schema-fragments/README.md`](../schema-fragments/README.md) §9. The `human_carrier` vs `human_carrier_with_guardian` distinction on `final_decision_owner` is the orthogonal minor/adult axis.
+4. **Relationship to `usage_profile` (RFC-007).** **Resolved (narrowed): composes.** `x.klickd/student` composes with `usage_profile: "learning"` (does not replace, does not imply). The `decision_router` (RFC-009 §5.5, RFC-007) uses both signals — `usage_profile` drives the initial active set, and the pack's declared competencies drive per-turn re-routing.
+5. **Multi-track learners.** **Resolved (narrowed): single pack with multiple `curriculum_refs[]`.** A learner following two curricula carries one `x.klickd/student` pack with `curriculum_refs[]` length > 1. Compositional `x.klickd/student@FR` + `x.klickd/student@UK` is **rejected** — it would double-count base transversal core and break the seven-pack ceiling (RFC-009 §5.3). Soft cap on `curriculum_refs[]` length: 3 (advisory, not schema-enforced).
+
+### 8.2 Still open (gates on promotion)
+
+1. **`history[]` retention policy.** Calendar window vs event-count cap vs compaction policy (RFC-005). Current draft: bounded by a per-pack compaction policy that rolls old entries up into `mastery[]` deltas. The exact cadence (rolling 90 days? 200 events? RFC-005-driven?) is unresolved and depends on RFC-005 landing.
+2. **`x.klickd/student` vs `x.klickd/user`** at the qualification-level boundary. `x.klickd/user` carries the base transversal core; `x.klickd/student` *also* carries the base transversal core (per RFC-009 §5.2 — base is always-on in every pack). Does this duplicate state when both packs are active simultaneously? Current draft: yes by design, and the `decision_router` deduplicates at load time. A more efficient sharing model is a future RFC.
+3. **Per-language `mastery[]`.** Should `mastery[]` entries carry a language tag for the assessment language (e.g. a maths concept assessed in French vs English)? Current draft: no — `mastery_level` is language-agnostic; if the language matters, the assessor records it via `assessed_by_ref` discriminator. Reviewers may push back if pedagogy/host_skill testing argues otherwise.
+4. **Cross-curriculum mastery roll-up.** When two `curriculum_refs[]` cover overlapping competencies (e.g. French `lycée` mathematics and UK `A-level` mathematics both touch `esco:S1.2.0`), does the pack carry one mastery entry per `(competency_ref, curriculum_ref)` pair, or one merged entry? Current draft: one merged entry; curriculum-specific evidence lives in `evidence_refs[]`.
 
 ## 9. Non-actions (scope discipline)
 
-- No JSON Schema is shipped with this scaffold.
+- No JSON Schema is shipped with this scaffold. Schema-intent fragments under [`../schema-fragments/`](../schema-fragments/) are the bridge until promotion past `Proposed`.
+- No physical SKOS/JSON-LD bundle bytes ship under this RFC. The bundle directory layout, `manifest.json` shape, and per-scheme licensing rules are pinned in [`../frameworks/README.md`](../frameworks/README.md) §3; generating the actual bytes is a substance follow-up.
 - No example `.klickd` file is published in `examples/v4/personas/` under this name (that directory remains anchors-only per RFC-009 §6).
 - No package version bump, no release.
-- **No Zenodo DOI.** Explicitly excluded per the v4.1 tonight delivery scope.
+- **No Zenodo DOI.** Explicitly excluded per the v4.1 delivery scope.
 - No tag, no `latest` npm/PyPI, no IANA action.
 - No modification to `klickd-ai/site`.
-- No `/klickdskill` catalog entry yet (see [`../packs/README.md`](./README.md)).
+- No `/klickdskill` catalog entry yet (see [`./README.md`](./README.md)).
+- No change to `benchmarks/context_cost/runner.py`. The `router_cost` rows in [`./router_cost.md`](./router_cost.md) plug into the existing `chimera_v41_extrapolation(pack_token_costs=...)` argument without touching the runner.
 
 ## 10. See also
 
-- [`../../RFC-009-chimera-v4.1.md`](../../RFC-009-chimera-v4.1.md) — full RFC (carrier-vs-skill rule in §5.1.1, validation in §8).
+- [`../../RFC-009-chimera-v4.1.md`](../../RFC-009-chimera-v4.1.md) — full RFC (carrier-vs-skill rule in §5.1.1, validation in §8, v4.1-native shape table in §8.1).
 - [`../README.md`](../README.md) — Chimera companion summary.
-- [`../packs/README.md`](./README.md) — pack index + `/klickdskill` later-notes + no-fake-catalog reminder.
+- [`./README.md`](./README.md) — pack index + `/klickdskill` later-notes + no-fake-catalog reminder.
+- [`../frameworks/README.md`](../frameworks/README.md) — canonical framework registry (ESCO / DigComp / LifeComp / EQF / CEFR / WEF / O\*NET / NICE / ENISA / CIS / SFIA) and offline SKOS/JSON-LD bundle shape.
+- [`../schema-fragments/README.md`](../schema-fragments/README.md) — schema-intent fragments for the pack manifest, `base_transversal_core`, `competencies`, `mastery`, `evidence_policy`, `source_policy`, `gates`, `human_authority`, structured memory, `router_cost`, `forbidden_fields`.
+- [`./router_cost.md`](./router_cost.md) — deterministic heuristic token-cost rows for `x.klickd/user` and `x.klickd/student`, RFC-003-compatible.
 - [`../../../use-cases/DOMAIN_PROFILE_CATALOG.md`](../../../use-cases/DOMAIN_PROFILE_CATALOG.md) — domain taxonomy precursor.
 - [`../../RFC-006-agent-core.md`](../../RFC-006-agent-core.md) — `agent_core` composition rule.
 - [`../../RFC-007-usage-profile-skill-routing.md`](../../RFC-007-usage-profile-skill-routing.md) — in-session skill routing.
+- [`../../../../benchmarks/context_cost/README.md`](../../../../benchmarks/context_cost/README.md) — Context Cost Benchmark and `chimera_v41_extrapolation()` function.
 - [`../../../../examples/v4/personas/01-eleve-terminale-fr.klickd`](../../../../examples/v4/personas/01-eleve-terminale-fr.klickd) — the anchor persona / example (inspiration only — **neither a `competency_pack` nor a `host_skill`**; see [RFC-009 §0.1, §6](../../RFC-009-chimera-v4.1.md)).

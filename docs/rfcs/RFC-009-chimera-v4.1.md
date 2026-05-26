@@ -336,3 +336,6 @@ This RFC is **Draft**. It is **docs-only**. It does not change any current norma
 
 - [`docs/rfcs/chimera/README.md`](./chimera/README.md) — pack scope table and validation criteria summary.
 - [`docs/rfcs/chimera/packs/README.md`](./chimera/packs/README.md) — concrete pack index, `/klickdskill` later-notes, no-fake-catalog reminder.
+- [`docs/rfcs/chimera/frameworks/README.md`](./chimera/frameworks/README.md) — canonical framework registry (ESCO v1.1.1, DigComp 2.2, LifeComp 2020, EQF 2017, CEFR 2020, WEF, O\*NET, NICE, ENISA, CIS, SFIA) with stable URLs / IRI prefixes / distribution URLs / SHA-256 placeholders, plus the offline SKOS/JSON-LD bundle shape.
+- [`docs/rfcs/chimera/schema-fragments/README.md`](./chimera/schema-fragments/README.md) — schema-intent fragments (NOT a JSON Schema) for the pack manifest, `base_transversal_core`, `competencies`, `mastery`, `levels`, `language_proficiency`, `evidence_policy`, `source_policy`, `gates`, `human_authority`, structured memory, `router_cost`, `forbidden_fields`.
+- [`docs/rfcs/chimera/packs/router_cost.md`](./chimera/packs/router_cost.md) — deterministic heuristic token-cost rows for `x.klickd/user` and `x.klickd/student`, compatible with RFC-003 `chimera_v41_extrapolation()`.
