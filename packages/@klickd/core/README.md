@@ -110,6 +110,19 @@ const recovered = await loadKlickd(
 
 See `SPEC.md §33` and `examples/v4-preview/` for preview-track details.
 
+### Starter `.klickd` skills (v4.0 envelope — non-normative)
+
+Four real, structured, downloadable starter `.klickd` skills ship under [`examples/v4/starter-skills/`](https://github.com/Davincc77/klickdskill/tree/main/examples/v4/starter-skills):
+
+- [`user.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/user.klickd) — `x.klickd/user` (transversal base)
+- [`student.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/student.klickd) — `x.klickd/student` (education)
+- [`research.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/research.klickd) — `x.klickd/research` (research / evidence discipline)
+- [`coding.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/coding.klickd) — `x.klickd/coding` (software engineering)
+
+Each skill carries `base_transversal_core`, framework-anchored `competencies[]` (ESCO / DigComp / LifeComp / EQF / CEFR / SFIA), `levels[]`, `mastery[]` (pointer-only), `source_policy`, `evidence_policy`, `verification_gates`, `human_authority`, and a `structured_memory` slice scoped to `memory.x_klickd.<pack>`. They are **non-normative**, **do not claim v4.1 GA**, and trigger **no release**. SHA-256 manifest in [`manifest.json`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/manifest.json); offline verifier `scripts/verify_starter_skills.py`.
+
+> These starter skills are **not yet included as npm package data**. Updating this live npm page to include them as `package.json#files` will require a future patch release of `@klickd/core`. Until then, fetch them directly from the GitHub source above.
+
 ---
 
 ## Cryptographic specification (v3.0)

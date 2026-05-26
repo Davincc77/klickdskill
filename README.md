@@ -148,6 +148,7 @@ npm install @klickd/core
 | [`examples/v4/cli/`](examples/v4/cli/) | Python CLI: `pip install klickd==4.0.0` + a path-based `load_klickd` walkthrough |
 | [`examples/v4/web-dropzone/`](examples/v4/web-dropzone/) | Browser drag-and-drop, zero install, local-only parse |
 | [`examples/v4/student-walkthrough/`](examples/v4/student-walkthrough/) | One student profile, four providers (OpenAI · Anthropic · Groq · xAI Grok) |
+| [`examples/v4/starter-skills/`](examples/v4/starter-skills/) | Four downloadable starter `.klickd` skills on the v4.0 envelope ([`user.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/user.klickd), [`student.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/student.klickd), [`research.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/research.klickd), [`coding.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/coding.klickd)) — non-normative, not v4.1 GA, with sha256 manifest and offline verifier (`scripts/verify_starter_skills.py`, `tests/test_starter_skills.py`). |
 | [`docs/demos/storyboards/`](docs/demos/storyboards/) | 30–60s recording scripts for each integration (text only, no video) |
 
 ---

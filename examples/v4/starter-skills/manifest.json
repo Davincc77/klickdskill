@@ -1,0 +1,45 @@
+{
+  "manifest_version": "1.0",
+  "kind": "klickd_starter_skill_manifest",
+  "non_normative": true,
+  "claims_v41_ga": false,
+  "spec_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
+  "see_readme": "examples/v4/starter-skills/README.md",
+  "generated_at": "2026-05-26T00:00:00Z",
+  "hash_algo": "sha256",
+  "note": "Hashes are reproducible offline. sha256_file is over the raw bytes of the file as stored. sha256_canonical_json is over json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8') and is stable across whitespace-only edits to the source file.",
+  "packs": [
+    {
+      "id": "x.klickd/user",
+      "file": "user.klickd",
+      "pack_version": "0.1.0-starter",
+      "bytes": 6020,
+      "sha256_file": "19121af045f6dd3537aa9bd4372edfaed5097b8436f026a8e9c585abbac6c80a",
+      "sha256_canonical_json": "09dfb1f9af44ac2e25d37ad87139388ea714f7b1d8ab79b5bc9ecf8f130cb1c6"
+    },
+    {
+      "id": "x.klickd/student",
+      "file": "student.klickd",
+      "pack_version": "0.1.0-starter",
+      "bytes": 6554,
+      "sha256_file": "ffea74552ecedc9076d6468cb10214586632163f073a8c7975642e272464dba4",
+      "sha256_canonical_json": "72c542ae92db5bf8ba76c8b5449eb99dfceb4ab6886c944414473ba8b99fcd0e"
+    },
+    {
+      "id": "x.klickd/research",
+      "file": "research.klickd",
+      "pack_version": "0.1.0-starter",
+      "bytes": 6274,
+      "sha256_file": "571bd07773caff23d08fe6857bbf696dd6e49f701aab750fa7b261345285ce63",
+      "sha256_canonical_json": "f668a1069b9bf85cbe190052f029ac7430910ca2bf0caf2cf28035542b1e2d9c"
+    },
+    {
+      "id": "x.klickd/coding",
+      "file": "coding.klickd",
+      "pack_version": "0.1.0-starter",
+      "bytes": 6305,
+      "sha256_file": "1aab06122d8b6c7ed45737aa3b6becad3ae33badb5ad893cc7788ad6dd1481f4",
+      "sha256_canonical_json": "b1ae3d57998c69ec41ad2fe88fa2b1920e31ab64cab71c38a7661edc3b14c38c"
+    }
+  ]
+}
