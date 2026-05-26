@@ -240,3 +240,72 @@ def test_readme_links_new_resources():
     assert "docs/integrations/langchain.md" in readme
     assert "docs/integrations/llamaindex.md" in readme
     assert "docs/integrations/xai_grok.md" in readme
+
+
+# --------------------------------------------------------------------------- #
+# 6. Dry-run demo for the four-provider recording                              #
+# --------------------------------------------------------------------------- #
+
+def test_dry_run_emits_all_four_providers(capsys):
+    demo = _import_path(
+        "demo_dry_run", EXAMPLES / "student-walkthrough" / "demo_dry_run.py"
+    )
+    rc = demo.main(["--json"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    parsed = json.loads(out[out.index("{"):])
+    assert set(parsed["providers"].keys()) == {"openai", "anthropic", "groq", "xai"}
+    # Same system_prompt used for every provider.
+    sp = parsed["system_prompt"]
+    assert "Socratic" in sp
+    # OpenAI-shaped providers carry messages with a system message.
+    for name in ("openai", "groq", "xai"):
+        req = parsed["providers"][name]["request"]
+        assert req["messages"][0] == {"role": "system", "content": sp}
+        assert req["messages"][1]["role"] == "user"
+    # Anthropic shape: top-level `system`, only user turn in messages.
+    anth = parsed["providers"]["anthropic"]["request"]
+    assert anth["system"] == sp
+    assert anth["messages"][0]["role"] == "user"
+    assert all(m["role"] != "system" for m in anth["messages"])
+
+
+def test_dry_run_single_provider(capsys):
+    demo = _import_path(
+        "demo_dry_run_one", EXAMPLES / "student-walkthrough" / "demo_dry_run.py"
+    )
+    rc = demo.main(["--provider", "anthropic", "--json"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    parsed = json.loads(out[out.index("{"):])
+    assert list(parsed["providers"].keys()) == ["anthropic"]
+
+
+def test_dry_run_no_sdk_imports():
+    # The script must not import openai / anthropic / groq / langchain at
+    # module load time — that is the whole point of the dry-run path.
+    sentinel_mods = ("openai", "anthropic", "groq", "langchain", "langchain_openai")
+    before = {m: sys.modules.get(m) for m in sentinel_mods}
+    try:
+        _import_path("demo_dry_run_no_sdk", EXAMPLES / "student-walkthrough" / "demo_dry_run.py")
+        for m in sentinel_mods:
+            assert sys.modules.get(m) is before[m], (
+                f"dry-run import unexpectedly pulled in {m!r}"
+            )
+    finally:
+        # Don't leak the helper module across tests.
+        sys.modules.pop("demo_dry_run_no_sdk", None)
+
+
+def test_dry_run_does_not_read_api_key_envs(monkeypatch, capsys):
+    for var in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GROQ_API_KEY", "XAI_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
+    demo = _import_path(
+        "demo_dry_run_envs", EXAMPLES / "student-walkthrough" / "demo_dry_run.py"
+    )
+    rc = demo.main([])
+    assert rc == 0
+    out = capsys.readouterr().out
+    # The student profile contains no secrets; sanity-check nothing key-like leaks.
+    for needle in ("sk-", "xai-", "Bearer "):
+        assert needle not in out
