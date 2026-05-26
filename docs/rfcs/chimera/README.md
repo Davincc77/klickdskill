@@ -13,6 +13,14 @@ This document is a short, scannable reference for reviewers. The normative-inten
 
 The v4.0 surface is unchanged by v4.1. A v4.0-only reader MUST round-trip v4.1 fields verbatim (SPEC §33.7).
 
+## 1.1 The carrier-vs-skill rule (one-line restatement)
+
+> **Packs carry state. Hosts carry skill.**
+>
+> An `x.klickd/<pack>` describes what the carrier *is* in a domain (learner state, developer state, …). The matching **method / pedagogy / behaviour** (how to *teach*, how to *review code*, how to *advise legally*) is loaded by the Klickd / Kai LLM as a **host skill**, never embedded in the pack.
+
+Worked example: `x.klickd/student` carries learner state; the Socratic tutor skill (`skill.kai.tutor.socratic`) lives host-side. See [`packs/student.md`](./packs/student.md) and [RFC-009 §5.1.1](../RFC-009-chimera-v4.1.md).
+
 ## 2. Pack scope table
 
 ### P0 — six packs (must ship together; no catalog before all six validate)
@@ -47,7 +55,7 @@ The v4.0 surface is unchanged by v4.1. A v4.0-only reader MUST round-trip v4.1 f
 
 ## 4. Validation criteria (pre-catalog)
 
-A pack is **not** ready for catalog exposure until **all nine** criteria below are satisfied (mirrors RFC-009 §8):
+A pack is **not** ready for catalog exposure until **all ten** criteria below are satisfied (mirrors RFC-009 §8):
 
 1. **Framework anchor.** Every competency resolves to a SKOS/JSON-LD reference into ESCO / WEF / O\*NET. No homegrown competency without an external anchor.
 2. **Gates declared.** Every action declares RFC-002 `verification_gates` defaults and `human_veto_policy` posture.
@@ -58,8 +66,17 @@ A pack is **not** ready for catalog exposure until **all nine** criteria below a
 7. **Router-priceable.** Pack publishes a deterministic token-cost estimate consistent with RFC-003 `chimera_v41_extrapolation()`.
 8. **Human-authority preserved.** No pack default lowers a user's v4.0 gate. Static review verifies this.
 9. **No persona reuse.** Pack is not a renamed `examples/v4/personas/*` file.
+10. **Carrier-vs-skill separation.** The pack carries **state, not behaviour**. No `pedagogy`, `prompt_strategy`, `scoring_rubric`, `intervention_policy`, or `tone_rules` fields. The matching method lives host-side as a Klickd/Kai skill.
 
-A pack passing all nine is eligible for a future promotion RFC + checklist gate. Passing validation does **not** trigger catalog exposure — that is a separate decision.
+A pack passing all ten is eligible for a future promotion RFC + checklist gate. Passing validation does **not** trigger catalog exposure — that is a separate decision.
+
+## 4.1 Concrete scaffolds shipped with this RFC
+
+| Pack | Spec | Status against §4 |
+|---|---|---|
+| `x.klickd/student` | [`packs/student.md`](./packs/student.md) | Carrier-vs-skill rule satisfied; gates/evidence/no-PII/no-persona-reuse satisfied; framework IRIs, SKOS bundle, router-cost row deferred (explicitly TODO). |
+
+See [`packs/README.md`](./packs/README.md) for the full index, no-fake-catalog reminder, and `/klickdskill` later-notes.
 
 ## 5. Architecture quick-reference
 
@@ -74,6 +91,8 @@ A pack passing all nine is eligible for a future promotion RFC + checklist gate.
 ## 6. Pointers
 
 - Full RFC: [`docs/rfcs/RFC-009-chimera-v4.1.md`](../RFC-009-chimera-v4.1.md)
+- Concrete pack scaffolds: [`packs/`](./packs/) (index: [`packs/README.md`](./packs/README.md))
+- First concrete pack: [`packs/student.md`](./packs/student.md) — `x.klickd/student`
 - Cost projection that names v4.1: [`benchmarks/context_cost/README.md`](../../../benchmarks/context_cost/README.md) §"Chimera.klickd v4.1 — forward-looking extrapolation"
 - Persona anchors (NOT packs): [`examples/v4/personas/README.md`](../../../examples/v4/personas/README.md)
 - Domain taxonomy precursor: [`docs/use-cases/DOMAIN_PROFILE_CATALOG.md`](../../use-cases/DOMAIN_PROFILE_CATALOG.md)

@@ -21,7 +21,8 @@
 
 - **v4.0.0 GA = portable persona / governance memory.** One `.klickd` file carries a human's identity, memory, preferences, growth, accessibility, ethics, gates, and human-veto policy. This is the format's normative core today (SPEC §33).
 - **v4.1 Chimera = real competency packs / portable competence architecture.** On top of the v4.0 base, a user (or an agent) MAY load up to **seven** signed competency packs (`x.klickd/<pack>`) that declare what the carrier *can do* in a domain: skills (mapped to ESCO / WEF / O\*NET via SKOS/JSON-LD), expected verifications, allowed tools, escalation gates, and evidence rules. The user keeps the soul; Chimera adds portable competence.
-- **Five things v4.1 does NOT do:** (1) it does not become a new envelope, (2) it does not redefine `agent_core` from RFC-006, (3) it does not introduce a public catalog, (4) it does not retire the v4 *personas* (those remain anchors / inspiration only — see §4), (5) it does not change human authority: the human always wins (§5.1).
+- **Five things v4.1 does NOT do:** (1) it does not become a new envelope, (2) it does not redefine `agent_core` from RFC-006, (3) it does not introduce a public catalog, (4) it does not retire the v4 *personas* (those remain anchors / inspiration only — see §6), (5) it does not change human authority: the human always wins (§5.1).
+- **One thing v4.1 *adds* on top of v4.0 that didn't exist before:** the **carrier-vs-skill split** (§5.1.1). A pack carries the carrier's *state* in a domain; the matching *skill / method* (how to teach, how to review code, how to reason legally) lives **host-side** as a Klickd/Kai LLM skill — not in the user's file. This is the architectural rule that lets `x.klickd/student` be portable across tutors, exam tools, and parent dashboards.
 
 ---
 
@@ -61,7 +62,7 @@ Per Vince's review, the v4.1 P0 set covers the **minimum surface a real user nee
 | Pack id | Anchors competence in | Why P0 |
 |---|---|---|
 | `x.klickd/user` | The carrier as a *competent autonomous human* (literacy, numeracy, communication, basic digital, civic, transversal soft skills). | Every other pack composes on top of this. Maps to ESCO transversal skills + DigComp 2.2. |
-| `x.klickd/student` | Learner competence: study skills, source evaluation, exam discipline, self-assessment, FR/LU/EU school context. | Largest single user segment; anchor persona `01-eleve-terminale-fr` already validates the shape (anchor only — see §4). |
+| `x.klickd/student` | **Learner state**: identity, level, curriculum refs, subjects, competencies + mastery, preferences, accessibility, exam targets, history, gates, human authority. **NOT teacher skill** (see §5.1.1 carrier-vs-skill rule). Concrete spec: [`chimera/packs/student.md`](./chimera/packs/student.md). | Largest single user segment; anchor persona `01-eleve-terminale-fr` already validates the shape (anchor only — see §4 / §6). |
 | `x.klickd/coding` | Software engineering competence: language fluency, code review discipline, test/typecheck rigour, security hygiene, supply-chain awareness. | Anchored by `03-fullstack-developer-en`; this is also the pack `.klickd` itself eats — Chimera must work for the people building it. |
 | `x.klickd/research` | Evidence-handling competence: claim grounding, citation, replication, falsifiability, RFC-002 §8b verification artefact discipline. | The pack that disambiguates "the model said so" from "the carrier verified it"; required by RFC-003 §1.2. |
 | `x.klickd/security` | Threat modelling, blast-radius reasoning, secrets hygiene, reversibility awareness, escalation defaults. | Cuts across every other P0 pack; declaring it as P0 prevents it from being "optional security" later. Maps to NICE + ENISA + CIS frameworks. |
@@ -92,6 +93,35 @@ P1 is **five packs**, bringing the long-run total to 11. Together with `x.klickd
 ### 5.1 Human authority invariant (normative intent)
 
 > **The human always wins.** A pack MAY declare defaults (gates, tools, escalation). The user's v4.0 veto, consent, and gates take precedence on every conflict. No pack can lower a user's gate; a pack MAY raise it. This invariant is non-negotiable and mirrors RFC-002 §6 + RFC-006 §6.
+
+### 5.1.1 Carrier-vs-skill rule (normative intent) — *new in v4.1*
+
+> **A pack describes what the *carrier* knows about itself, not what the *LLM* should do with the carrier.**
+>
+> A `.klickd v4.1` competency pack carries **state, not behaviour**: who the carrier is in this domain, what they have demonstrated, what they consent to, what gates apply. The matching **skill / behaviour / method** (how to *teach* a student, how to *review* code, how to *prosecute* a legal argument) lives on the LLM / agent side — typically as a Claude / Klickd / Kai *skill* loaded by the host.
+
+The split is hard:
+
+| Side | Carries | Owner | Example |
+|---|---|---|---|
+| **Pack (`x.klickd/<name>`)** | Carrier state, history, mastery, preferences, consent, gates, accessibility, exam/role targets. | The carrier (user). | A 17-year-old student's level in maths, exam target, accommodations, the chapters they've covered. |
+| **Skill (host-side)** | Method, pedagogy, tone, prompting strategy, scoring rubric, intervention policy. | The Klickd/Kai LLM, or any other host. | The Socratic tutoring skill that *uses* the student pack to ask the right next question. |
+
+#### Why this rule exists
+
+If a student pack carried the teacher skill, then:
+
+1. Every student would walk around with a "how to teach me" payload that the LLM might over-trust ("the pack told me to teach this way"). That collapses pedagogy into the user's file and locks it out of update by the platform.
+2. Teacher quality would be fixed at whatever the pack author shipped, with no way for Klickd/Kai to improve pedagogy without touching every user file.
+3. The user could no longer take the same pack to a different agent (an exam-board tool, a parent-side dashboard, a different tutor) and have *that* agent apply its own appropriate skill on top of the same learner state. Portability dies.
+
+#### Consequences
+
+- **`x.klickd/student` carries learner state** — identity, level, curriculum refs, subjects, competencies/mastery, preferences, accessibility, exam targets, history, gates, human authority. See [`chimera/packs/student.md`](./chimera/packs/student.md).
+- **The Socratic teacher/tutor skill is host-side** — Klickd/Kai's LLM side loads `skill.kai.tutor.socratic` (or any other tutor skill) and consults the student pack to personalise. The skill is *not* in the pack.
+- **All P0/P1 packs follow the same rule.** `x.klickd/coding` carries developer state (languages, projects, code-review history, gates), NOT a "code review skill". `x.klickd/legal` carries jurisdictional state and consent posture, NOT a "legal reasoning skill". And so on.
+- **Validation criterion §8.10 enforces it** (added to §8 below).
+- **Composition rule:** `host-skill` constrains *how to act*, `agent_core` (RFC-006) constrains *operating context*, `pack` declares *carrier state*, `user.klickd` (v4.0) *personalises*. Four layers, no overlap.
 
 ### 5.2 Base transversal core
 
@@ -180,8 +210,9 @@ A pack is **not** ready for catalog exposure (§7) until **all** of the followin
 7. **Router-priceable.** The pack publishes a deterministic token-cost estimate consistent with RFC-003's `chimera_v41_extrapolation()` shape, so router activation can be reasoned about.
 8. **Human-authority preserved.** No pack default lowers a user's v4.0 gate (§5.1). Static review of the pack MUST verify this.
 9. **No persona reuse.** The pack is not a renamed `examples/v4/personas/*` file (§6).
+10. **Carrier-vs-skill separation (§5.1.1).** The pack contains **state, not behaviour**. It MUST NOT carry method, pedagogy, prompting strategy, tone rules, scoring rubrics, or intervention policy. Any "skill" the agent applies on top of the pack lives on the host side (Klickd/Kai skill, agent core, or external skill registry). Static review verifies the pack declares no instructions that read like *"teach the user by …"*, *"review the user's code by …"*, *"prosecute the case by …"*.
 
-A pack passing all nine is **eligible** for promotion to a real `x.klickd/<pack>` artefact via a future RFC + checklist gate. Passing validation does **not** trigger catalog exposure (§7); catalog exposure is its own decision.
+A pack passing all **ten** is **eligible** for promotion to a real `x.klickd/<pack>` artefact via a future RFC + checklist gate. Passing validation does **not** trigger catalog exposure (§7); catalog exposure is its own decision.
 
 ## 9. Composition with existing RFCs
 
@@ -197,7 +228,7 @@ A pack passing all nine is **eligible** for promotion to a real `x.klickd/<pack>
 
 ## 10. Out of scope (v1 of this RFC)
 
-- Concrete JSON Schema for `x.klickd/<pack>` files. Strict schema arrives only if and when the RFC promotes past `Proposed`.
+- Concrete JSON Schema for `x.klickd/<pack>` files. Strict schema arrives only if and when the RFC promotes past `Proposed`. A first **shape sketch** (illustrative, not a schema) ships with the concrete pack at [`chimera/packs/student.md`](./chimera/packs/student.md).
 - The wire format of a `pack_manifest` block. Sketched conceptually here; normalised in a future RFC.
 - Catalog UX, discovery, marketplace, ratings, signing key infrastructure. (See §7 no-catalog.)
 - Concrete ESCO / WEF / O\*NET subset bundles per pack. Listed as a validation criterion (§8), not shipped here.
@@ -218,4 +249,9 @@ A pack passing all nine is **eligible** for promotion to a real `x.klickd/<pack>
 
 This RFC is **Draft**. It is **docs-only**. It does not change any current normative surface, schema, SDK, vector, or release artefact. Promotion to `Proposed` follows `ACCEPTANCE_CHECKLIST_V4.md`. Promotion to `Accepted` requires (at minimum) the open decisions of §11 to be resolved and one P0 pack draft to exist as a worked example demonstrating §8 is achievable.
 
-Companion doc: [`docs/rfcs/chimera/README.md`](./chimera/README.md) — pack scope table and validation criteria in summary form.
+**Worked-example pack (concrete scaffold, ships with this RFC):** [`docs/rfcs/chimera/packs/student.md`](./chimera/packs/student.md) — `x.klickd/student`. Demonstrates the carrier-vs-skill rule (§5.1.1) by carrying learner state only; the Socratic tutor skill lives host-side.
+
+**Companion docs:**
+
+- [`docs/rfcs/chimera/README.md`](./chimera/README.md) — pack scope table and validation criteria summary.
+- [`docs/rfcs/chimera/packs/README.md`](./chimera/packs/README.md) — concrete pack index, `/klickdskill` later-notes, no-fake-catalog reminder.
