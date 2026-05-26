@@ -15,6 +15,13 @@
 > - `research.klickd` (researcher starter)
 > - `coding.klickd` (developer / coding-agent starter)
 >
+> **Where the packs live (informational, non-binding):** the four starter
+> `.klickd` files currently ship under
+> [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) (neutral
+> public path). This pointer is informational — acceptance below is defined
+> against the pack files wherever they live in the repo, not against this
+> path.
+>
 > **Out of scope (hard exclusions):**
 >
 > - Triggering a release, tag, npm/PyPI publication, dist-tag move, or
