@@ -288,6 +288,7 @@ def check_required_candidates_present(rows: list[dict]) -> list[str]:
         "evidence-desk", "policy-analyst", "second-brain", "literature-review",
         "project-operator", "drone", "mission-control", "game-design",
         "rights-guard", "wellbeing-lite", "family",
+        "video-production-pipeline",
     }
     found = set()
     for row in rows:

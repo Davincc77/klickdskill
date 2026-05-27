@@ -11,7 +11,7 @@ This directory ships **real, structured `.klickd` files** that are concrete real
 | Path | Contents |
 |---|---|
 | [`lite/`](./lite/) | **Lot A (lightweight, user-lambda)** candidate skills. Compact (~6–7 KB), near-Chimera-size, fast-load; full manifest in prompt. **8 packs** + `manifest.json` (after 2026-05-27 audit rename + `crypto-lite` deferral). |
-| [`pro/`](./pro/) | **Lot B (advanced, dev/pro)** candidate skills. Up to ~+50% larger (~8–11 KB), with `compact_index` loading strategy declared so the router can advertise gates / framework anchors / router_cost in prompt and lazy-load the full body on demand. **18 packs** + `manifest.json` (after 2026-05-27 audit rename). |
+| [`pro/`](./pro/) | **Lot B (advanced, dev/pro)** candidate skills. Up to ~+50% larger (~8–12 KB), with `compact_index` loading strategy declared so the router can advertise gates / framework anchors / router_cost in prompt and lazy-load the full body on demand. **19 packs** + `manifest.json` (after 2026-05-27 audit rename + B19 `video-production-pipeline` follow-up). |
 
 > **Audit response 2026-05-27.** Filenames and canonical pack ids were aligned (filename stem == pack tail with underscores as dashes) per the audit's W-1 / BLOCKER finding. `crypto-lite` was demoted to `needs_mapping` because no EU SKOS-published crypto-asset-literacy framework exists with DigComp / NICE-comparable maturity. Full rename + defer table: [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../../../docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) §0.5. Each renamed file carries `_pack_metadata.renamed_from` with the prior filename for traceability.
 
@@ -91,7 +91,7 @@ Two additional candidates from the planning doc are also absent here, by design:
 
 > **`crypto-lite` (A8) — DEFERRED.** No artefact; row stays in the planning doc only. Reason: no EU SKOS-published crypto-asset-literacy framework with DigComp / NICE-comparable maturity (NICE / CIS cover security hygiene generically but do not anchor "crypto" as a distinct competency class).
 
-### `pro/` (18 packs)
+### `pro/` (19 packs)
 
 | File | Pack | Parents | Working nickname |
 |---|---|---|---|
@@ -113,8 +113,9 @@ Two additional candidates from the planning doc are also absent here, by design:
 | `mission-control.klickd` | `x.klickd/mission_control` | `user`, `mission`, `security` | mission-control (B16) |
 | `game-design.klickd` | `x.klickd/game_design` | `user`, `creator`, `coding` | game-design (B17) |
 | `rights-guard.klickd` | `x.klickd/rights_guard` | `user`, `legal`, `creator` | rights-guard (B18) |
+| `video-production-pipeline.klickd` | `x.klickd/video_production_pipeline` | `user`, `media_planner`, `creator`, `research`, `legal` | video-production-pipeline (B19) |
 
-> **Candidate→candidate parent edges.** Two pro packs compose on other Lot B candidates: `llm-agent-engineering.klickd` lists `x.klickd/llm_agent_security` as a parent, and `evidence-desk.klickd` lists `x.klickd/trust_evidence`. Both parents are themselves `candidate_mapped`; downstream loaders that resolve parents transitively will chain candidates onto candidates at this stage. Documented per audit W-2.
+> **Candidate→candidate parent edges.** Three pro packs compose on other candidates: `llm-agent-engineering.klickd` lists `x.klickd/llm_agent_security` as a parent, `evidence-desk.klickd` lists `x.klickd/trust_evidence`, and `video-production-pipeline.klickd` lists `x.klickd/media_planner` (a lite Lot A candidate). All parents are themselves `candidate_mapped`; downstream loaders that resolve parents transitively will chain candidates onto candidates at this stage. Documented per audit W-2.
 
 ## See also
 
