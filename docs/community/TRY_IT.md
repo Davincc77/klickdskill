@@ -24,7 +24,9 @@ npm install @klickd/core@4.0.3
 
 The packages have no network side-effects on import.
 
-> **Version note.** `v4.0.0` is the named stable spec release and remains the GA. The `4.0.x` series (`4.0.3` today) are package patches against the same spec — they bundle the starter-skill helpers used below and ship the same wire envelope. If you have an older `4.0.0` install, upgrade or substitute `==4.0.0` and load the starter files from disk instead (see step 3 alternative).
+> **Version note.** `v4.0.0` is the named stable spec release and remains the GA. The `4.0.x` series (`4.0.3` today) are package patches against the same spec — they bundle the starter-skill helpers (`get_starter_skill_bytes` / `getStarterSkillBytes`) used in step 3 and ship the same wire envelope.
+>
+> **If you are pinned to `klickd==4.0.0` / `@klickd/core@4.0.0`** (no bundled helpers), check out this repo and load the starter files from disk with plain JSON, e.g. `json.loads(Path("examples/v4/starter-skills/coding.klickd").read_bytes())` in Python or `JSON.parse(readFileSync("examples/v4/starter-skills/coding.klickd", "utf-8"))` in Node. Do **not** use `load_klickd` / `loadKlickd` for this — those decoders are for **encrypted envelopes only** and will reject the unencrypted starter files with a missing-`kdf`/`cipher`/`ciphertext` error.
 
 ---
 
