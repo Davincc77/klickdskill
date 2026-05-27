@@ -1,0 +1,96 @@
+{
+  "klickd_version": "4.0",
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "v4.1-chimera-candidate-1.0",
+  "created_at": "2026-05-27T00:00:00Z",
+  "encrypted": false,
+  "domain": "creative",
+  "profile_kind": "carrier_competency_pack",
+  "_pack_metadata": {
+    "kind": "chimera_candidate_skill_pack",
+    "size_tier": "lite",
+    "non_normative": true,
+    "claims_v41_ga": false,
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "status": "candidate_mapped",
+    "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
+    "see_readme": "examples/v4.1/chimera-skills/README.md",
+    "note": "Non-normative Chimera v4.1 candidate skill artefact. Lot A artist pack, distinct from x.klickd/creator (P1)."
+  },
+  "x_klickd_pack": {
+    "pack": "x.klickd/artist",
+    "pack_version": "0.1.0-candidate-lite",
+    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a10",
+    "publisher": {"name": "klickd", "ref": "https://klickd.app"},
+    "size_tier": "lite",
+    "parent_packs": ["x.klickd/user", "x.klickd/creator"],
+    "target_user": "Independent visual / musical / performing artist focused on practice rather than production-line creator workflow.",
+    "frameworks": [
+      {"scheme": "esco", "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/", "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"},
+      {"scheme": "lifecomp", "version": "2020", "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/", "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en"},
+      {"scheme": "digcomp", "version": "2.2", "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/", "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"}
+    ],
+    "base_transversal_core": {
+      "frameworks": [{"scheme": "esco", "version": "v1.1.1"}, {"scheme": "lifecomp", "version": "2020"}],
+      "transversal_refs": [
+        {"competency_ref": "esco:S1.0", "scheme": "esco", "prefLabel": "creativity and innovation"},
+        {"competency_ref": "lifecomp:P3", "scheme": "lifecomp", "prefLabel": "Well-being"}
+      ]
+    },
+    "competency_mappings": [
+      {"competency_ref": "esco:S1.0", "scheme": "esco", "prefLabel": "creativity and innovation"},
+      {"competency_ref": "esco:S1.5", "scheme": "esco", "prefLabel": "performing artistic work"},
+      {"competency_ref": "lifecomp:P3", "scheme": "lifecomp", "prefLabel": "Well-being"},
+      {"competency_ref": "digcomp:3.1", "scheme": "digcomp", "prefLabel": "Developing digital content"}
+    ],
+    "competencies": [
+      {"competency_ref": "esco:S1.0", "scheme": "esco", "prefLabel": "creativity and innovation"},
+      {"competency_ref": "esco:S1.5", "scheme": "esco", "prefLabel": "performing artistic work"}
+    ],
+    "levels": [{"framework_ref": "https://europa.eu/europass/eqf/level/5", "level_label": "EQF level 5", "effective_at": "2026-05-27"}],
+    "language_proficiency": [],
+    "mastery": [],
+    "memory_scope": "memory.x_klickd.artist",
+    "memory_segments": [
+      {"id": "works", "scope": "memory.x_klickd.artist.works", "policy": "pointer_only_attribution"},
+      {"id": "ai-training-consent", "scope": "memory.x_klickd.artist.consent", "policy": "explicit_opt_in_required"}
+    ],
+    "structured_memory": {"scope": "memory.x_klickd.artist", "policy": "pack_scoped_only", "entries": []},
+    "gates": {
+      "verification_gates_default": {"raise_only": true, "claim_grounding_required": true, "reversibility_threshold": "low"},
+      "human_veto_policy": {"owner": "human_carrier", "scope": ["work_attribution", "ai_training_use", "third_party_likeness"]}
+    },
+    "human_veto": {"owner": "human_carrier", "raise_only": true, "non_lowerable_floor": ["ai_training_use_without_opt_in"]},
+    "human_authority": {"final_decision_owner": "human_carrier", "agent_role": "advisory", "escalation": "human_carrier_only"},
+    "evidence_policy": {
+      "required_for_claims": true,
+      "pointer_only": true,
+      "attestation_shape_ref": "rfc-002#8b",
+      "ai_training_consent_default": "opt_out",
+      "verification_artifacts_ref": "rfc-003#verification_artifacts"
+    },
+    "source_policy": {"allow_inline_definitions": false, "language_tags": ["en", "fr"]},
+    "verification_gates": {
+      "version": 1,
+      "user_default": "silent",
+      "gates": [
+        {"id": "ai-training-use", "action_class": "ai_training_use", "level": "block", "reason": "AI-training use of carrier's work is opt-out by default; explicit opt-in required."},
+        {"id": "work-attribution", "action_class": "work_attribution", "level": "confirm", "reason": "Attribution of a work requires explicit confirmation by carrier."},
+        {"id": "third-party-likeness", "action_class": "third_party_likeness", "level": "confirm", "reason": "Use of a recognisable third-party likeness requires consent and confirmation."}
+      ]
+    },
+    "router_cost": {"tokens_estimate": 750, "baseline": "base_plus_one"},
+    "acceptance_criteria": [
+      "Every competency_ref resolves into ESCO, LifeComp, or DigComp.",
+      "AI-training-use is opt-out by default; explicit opt-in required to lower.",
+      "Pointer-only evidence for works; no inline work bytes.",
+      "Round-trip safe with v4.0-only reader."
+    ],
+    "tests": {
+      "static": ["forbidden_fields literal frozen", "no klickdapp.* or kai.* artefact reference", "size_tier == lite and tokens_estimate <= 900", "ai_training_consent_default == opt_out"],
+      "review": ["Reviewer verifies opt-out default is preserved.", "Reviewer verifies third_party_likeness gate stays at confirm or above."]
+    },
+    "forbidden_fields": ["pedagogy", "teaching_method", "socratic_steps", "prompt_strategy", "scoring_rubric", "intervention_policy", "tone_rules", "system_prompt_overrides", "knowledge.mastered", "mastered_topics"]
+  }
+}

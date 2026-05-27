@@ -1,0 +1,126 @@
+{
+  "manifest_version": "1.0",
+  "kind": "klickd_chimera_candidate_skill_manifest",
+  "size_tier": "lite",
+  "non_normative": true,
+  "claims_v41_ga": false,
+  "see_readme": "examples/v4.1/chimera-skills/README.md",
+  "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
+  "generated_at": "2026-05-27T00:00:00Z",
+  "hash_algo": "sha256",
+  "note": "Hashes are reproducible offline. sha256_file is over raw bytes; sha256_canonical_json is over json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8'). NON-NORMATIVE candidate Chimera v4.1 skill artefacts.",
+  "packs": [
+    {
+      "id": "x.klickd/artist",
+      "file": "artist.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 5908,
+      "sha256_file": "0f8c344fc5ffe77a9b1ecfdf129e77e497c43ad8cf3dd9362ff26790b4fa37a3",
+      "sha256_canonical_json": "eb52ac228e5df3c2fff4ada58085cb1291a512f162403d29462bba9a398c3b6e",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/creator"
+      ]
+    },
+    {
+      "id": "x.klickd/consumer_rights",
+      "file": "consumer-rights.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 5984,
+      "sha256_file": "9d69f0cdcb4dc7587ee8853eed1054d9279c993fe5cb8d4022ab8e8d203a7022",
+      "sha256_canonical_json": "f33fc1ac9818eb84e8051a0d481fbbc6932bc7b678c205f72e65b0fec4ad3eef",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/game_literacy",
+      "file": "game-literacy.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 5962,
+      "sha256_file": "13b9e475d0ea35ccdc87a8b4808e573cd4171e1f222f470901eb9b40fd4660ca",
+      "sha256_canonical_json": "b230a98346123fc01225189af2b2e9ff5e1fce76b80d48572601dbccf1e2b077",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/gaming"
+      ]
+    },
+    {
+      "id": "x.klickd/media_planner",
+      "file": "media-planner.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 6458,
+      "sha256_file": "225a9ada5b60941c33b77ecc156645ca53509d0fb39beafe59606e16c4af992e",
+      "sha256_canonical_json": "11902bef6cfb544db8dd12f0ca39ab0abdefbcf2640306fb05c2000084e39ed2",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/creator"
+      ]
+    },
+    {
+      "id": "x.klickd/parent_gaming",
+      "file": "parent-gaming.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 6607,
+      "sha256_file": "e50ff819c30a4b75d8d08e985b7027bd68a16d37304d592cc121c152d59ad97b",
+      "sha256_canonical_json": "7f393313becd70f2ad519e79523a957ced081f344bdf6155667b0649a77aabd2",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/gaming",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/social_literacy",
+      "file": "social-literacy.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 6249,
+      "sha256_file": "0b593d22e8bf8b99ffaffd2fac21fa8155caac896bc533046360eb1e0d079413",
+      "sha256_canonical_json": "4e0a1b53de153cd1d72dc6be5bdbfe7d808529d3df21fce5c7f73dbf40b556b0",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user"
+      ]
+    },
+    {
+      "id": "x.klickd/streaming_creator",
+      "file": "streaming-creator.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 5918,
+      "sha256_file": "b4cfe2c1e001a3ea5f7f7f5db99f09f9e0d08455a600c4a72fd1a683f8146802",
+      "sha256_canonical_json": "ea0b6ec986e6ae0735bca3e653f5463ef4726ac8eda3967d1afe6bc855762885",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/creator"
+      ]
+    },
+    {
+      "id": "x.klickd/work_assistant",
+      "file": "work-assistant.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 7211,
+      "sha256_file": "8f98ee244a365d4ffe044de571b317925bdb1950261ed90d5b6d449bfc9d2bb2",
+      "sha256_canonical_json": "b6e5316828255dee599619798a75da92b49a98c49196ccebccd79a54f0c377a9",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work"
+      ]
+    }
+  ]
+}
