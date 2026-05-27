@@ -92,6 +92,7 @@ Full methodology (v3.5.1 deposit, still applicable to v4.0.0 payload semantics):
 
 ## Try it now
 
+- [**5-minute developer path**](docs/community/TRY_IT.md) — install the SDK, load a starter `.klickd`, verify hashes, then plug into your provider of choice.
 - [**Playground**](https://klickd.app/klickdskill/playground) — load a `.klickd` file live, see what the AI receives
 - [**klickdskill docs**](https://klickd.app/klickdskill) — full specification and integration guides
 
@@ -217,6 +218,19 @@ For most real workloads the useful question is not "long context **or** portable
 ```markdown
 [![.klickd compatible](https://img.shields.io/badge/.klickd-v4.0.0%20compatible-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 ```
+
+---
+
+## Feedback & discussion
+
+If you tried `.klickd` and something worked — or did not work — we'd like to hear about it. The repo is early, the format is small, and direct developer feedback is the most useful signal at this stage.
+
+- [**5-minute path**](docs/community/TRY_IT.md) — the shortest honest route from clone to "I loaded a `.klickd` file in code".
+- [**Feedback questions**](docs/community/FEEDBACK.md) — five short questions: what model, what integration, what broke, what would make adoption easier.
+- [**GitHub Discussions**](https://github.com/Davincc77/klickdskill/discussions) — open-ended threads (seed prompts are being prepared in [`docs/community/DISCUSSION_PROMPTS.md`](docs/community/DISCUSSION_PROMPTS.md); not all categories are live yet).
+- **Security findings** — please use the private disclosure process in [`SECURITY.md`](SECURITY.md), not Discussions.
+
+No newsletter, no signup, no community claims we cannot back up — just a place to leave a short reply.
 
 ---
 
