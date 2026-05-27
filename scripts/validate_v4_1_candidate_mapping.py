@@ -56,9 +56,18 @@ SUB_AREA_NICKNAMES = {
     "exam",      # x.klickd/student.exam_targets[]
 }
 
-# Size-tier ceilings (descriptive planning hints; enforced by validator).
+# Size-tier ceilings (decimal KB by repo convention: "12 KB" = 12_000 bytes,
+# not 12 KiB). Enforced by validator; raised 2026-05-27 per the v4.1 expansion
+# audit response so Pro packs have headroom for compact_index + lazy body and
+# Lite packs have headroom for richer per-pack carrier-state vocabulary. The
+# new ceilings are an **upper bound (capacity envelope)**, NOT a target —
+# artefacts should stay as compact as their framework-anchored content allows.
+# Apply to public Chimera v4.1 catalog artefacts under
+# `examples/v4.1/chimera-skills/{lite,pro}/` only; Klickd.app student carriers
+# under `examples/v4/klickdapp-skills/` and Kai host-side artefacts are out of
+# scope (different validator).
 TIER_ROUTER_COST_CEILING = {"lite": 900, "pro": 1350}
-TIER_BYTES_CEILING = {"lite": 8_000, "pro": 12_000}
+TIER_BYTES_CEILING = {"lite": 12_000, "pro": 24_000}
 
 # Frozen counts for the v4.1 candidate artefact set (8 Lite + 34 Pro = 42).
 # Promotion or removal requires updating this table AND the planning doc.
@@ -89,6 +98,14 @@ ARTEFACT_FORBIDDEN_PATTERNS = (
     "kai tutor",
     "kai mentor",
     "kai.tutor",
+)
+
+# Regex variant of the forbidden-pattern check. Catches any future
+# `klickdapp.<2+ letters>` country / locale scope (e.g. `klickdapp.it`,
+# `klickdapp.nl`, `klickdapp.uk`) without having to enumerate them by
+# hand. Audit-hardening 2026-05-27. Case-insensitive.
+ARTEFACT_FORBIDDEN_REGEXES = (
+    re.compile(r"klickdapp\.[a-z]{2,}", re.IGNORECASE),
 )
 
 # Regex patterns that catch likely secrets / PII inside an artefact.
@@ -124,7 +141,12 @@ EXCLUDED_NAMES = (
 
 # Host-side artefact name patterns that MUST NOT appear as candidate
 # carrier_pack identifiers. Substring match; lower-cased on input.
+# Audit-hardening 2026-05-27: `klickdapp.` substring added so any
+# `klickdapp.<scope>` reference (current LU/FR/BE/DE or any future scope)
+# is rejected at the row-scan level, not only the four enumerated names
+# in EXCLUDED_NAMES above.
 EXCLUDED_PATTERNS = (
+    "klickdapp.",
     "core.kai.klickd",
     "skill.kai.",
     "kai.tutor",
@@ -523,8 +545,23 @@ def validate_artefact(path: Path) -> list[str]:
             fails.append(
                 f"{path.name}: forbidden Klickd.app / Kai host-side pattern '{bad}' present"
             )
+    # Regex sweep — catches any future `klickdapp.<scope>` country code
+    # we haven't enumerated yet (audit-hardening 2026-05-27).
+    for pat in ARTEFACT_FORBIDDEN_REGEXES:
+        m = pat.search(raw)
+        if m:
+            fails.append(
+                f"{path.name}: forbidden Klickd.app pattern matches "
+                f"{pat.pattern!r} (matched text: '{m.group(0)}')"
+            )
 
-    # Secrets / PII scan
+    # Secrets / PII scan. The patterns below are conservative shape
+    # checks; false-positive policy: if a real-world legitimate value
+    # ever needs to live in an artefact (e.g. a published support email,
+    # a publisher OIDC issuer), add the literal substring to
+    # `PII_ALLOWED_SUBSTRINGS` above with a one-line comment naming the
+    # artefact and reason. Do NOT silence the check by widening the
+    # pattern itself.
     for pat in SECRET_PATTERNS:
         if pat.search(raw):
             fails.append(f"{path.name}: suspected secret matches pattern {pat.pattern!r}")

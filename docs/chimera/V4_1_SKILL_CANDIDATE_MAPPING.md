@@ -78,6 +78,8 @@ The terms `carrier_pack`, `competency_pack`, `host_skill`, `base_transversal_cor
 
 The size tier is **descriptive**, not normative — it is a planning hint so reviewers can spot a candidate that would blow the seven-pack ceiling ([RFC-009 §5.3 / §5.4](../rfcs/RFC-009-chimera-v4.1.md)) if loaded alongside the always-on `x.klickd/user`.
 
+**Byte-size budgets (2026-05-27 update — public Chimera v4.1 catalog only).** The on-disk file-size ceiling for artefacts under [`examples/v4.1/chimera-skills/{lite,pro}/`](../../examples/v4.1/chimera-skills/) is **Lite ≤ 12 KB** and **Pro ≤ 24 KB** (decimal KB by repo convention: 12 KB = 12 000 bytes; 24 KB = 24 000 bytes). The new ceilings are an **upper bound / capacity envelope**, NOT a target — artefacts stay as compact as their framework-anchored content allows. The `tokens_estimate` ceilings above (`≤ 900` Lite, `≤ 1 350` Pro) and the Pro compact_index discipline are preserved unchanged — the bigger byte budget gives Pro packs headroom for deeper carrier-state vocabulary in the **lazy-loaded body**, not in the prompt-loaded compact_index. These ceilings **do NOT apply** to Klickd.app student carriers under `examples/v4/klickdapp-skills/` or to any Kai host-side artefact — those live in different validation contracts. The validator (`scripts/validate_v4_1_candidate_mapping.py`, `TIER_BYTES_CEILING`) enforces the new budgets.
+
 ## 0.4 Naming convention used in this document
 
 Per Vince's review, ambiguous names like `work-lite`, `student-lite`, `legal-lite` are **planning-only nicknames**; they MUST NOT appear as canonical `x.klickd/<name>` identifiers. Each candidate row below carries:

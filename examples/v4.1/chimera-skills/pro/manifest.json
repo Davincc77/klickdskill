@@ -424,9 +424,9 @@
       "file": "security-incident-response.klickd",
       "size_tier": "pro",
       "pack_version": "0.1.0-candidate-pro",
-      "bytes": 9841,
-      "sha256_file": "4e50921e5bc3be630a58de7cd32043941112182c6319d37de2fe0e3e9654d3b4",
-      "sha256_canonical_json": "1aca695a20fb46aeb5d2a728bbfd7234b600e4b4ef7f415810e2782ae69042c4",
+      "bytes": 10326,
+      "sha256_file": "1d8f4b6222a943650faf14f4eb494f324aca481d83ba8352628a000fca01d738",
+      "sha256_canonical_json": "e4cb10ce59a20463b496a6f99d327124123f322b4f0b8b6b4b58fb2674a9103c",
       "status": "candidate_mapped",
       "parent_packs": [
         "x.klickd/user",

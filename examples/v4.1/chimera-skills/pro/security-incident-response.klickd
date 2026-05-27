@@ -16,7 +16,7 @@
     "status": "candidate_mapped",
     "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/chimera-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact (B25). Pro tier; compact_index loading strategy declared."
+    "note": "Non-normative Chimera v4.1 candidate skill artefact (B25). Pro tier; compact_index loading strategy declared. Disambiguation: B25 owns the incident lifecycle (detect / triage / contain / eradicate / recover / lessons-learned) on conventional infrastructure; B1 (llm_agent_security) owns LLM/agent-system prompt-injection and tool-sandbox literacy at design + eval time; B3 (identity_access_management) owns IAM / MFA / session hygiene at operate time. Composition is explicit via parent_packs; this pack MUST NOT lower any default from x.klickd/security or from B1/B3 when they are also loaded."
   },
   "x_klickd_pack": {
     "pack": "x.klickd/security_incident_response",
