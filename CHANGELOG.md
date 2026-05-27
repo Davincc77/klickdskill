@@ -7,6 +7,59 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## packaging 4.0.2 — 2026-05-26 — fix CJS require() of @klickd/core; PyPI publishing path
+
+> **Packaging-only patch.** Stable `.klickd` spec release remains v4.0.0
+> (DOI, GitHub Release). 4.0.2 supersedes 4.0.1 for the `@klickd/core`
+> npm distribution and the `klickd` PyPI distribution.
+
+### npm — `@klickd/core` 4.0.1 → 4.0.2 (fix)
+
+- **Fix:** `listStarterSkills()` (and every other helper that called
+  `starterSkillsDir()`) threw `TypeError [ERR_INVALID_ARG_TYPE]:
+  fileURLToPath path undefined` under CommonJS `require()` because tsup
+  rewrites `import.meta.url` to an empty object in the CJS bundle. The
+  helper now probes `__dirname` first and falls back to
+  `fileURLToPath(import.meta.url)` so both module systems resolve the
+  directory correctly.
+- **Fix:** the ESM bundle re-emitted JSON imports without
+  `with { type: 'json' }`, so `import '@klickd/core'` failed on Node 20+
+  with `ERR_IMPORT_ASSERTION_TYPE_MISSING`. The bundled JSON schemas are
+  now inlined into the ESM and CJS outputs (no `--loader .json=copy`).
+- **New:** `scripts/verify-tarball.mjs` — packs the published artifact and
+  installs it into scratch CJS and ESM projects, exercising the helper
+  API the way real consumers will. Wired into the patch publish workflow
+  before `npm publish` runs.
+
+### PyPI — `klickd` 4.0.1 → 4.0.2 (publish path)
+
+- **Fix:** the 4.0.1 publish was driven by a new workflow file
+  `publish-pypi-4.0.1.yml`. PyPI Trusted Publishing matches on workflow
+  filename, and the existing `klickd` trusted publisher only trusts the
+  pre-existing `publish-pypi.yml`. The new workflow file has been
+  removed; `publish-pypi.yml` already supports `workflow_dispatch` with a
+  `ref` input and is used to publish 4.0.2 directly from `main`.
+
+### Scope guarantees (intentional non-goals)
+
+- No GitHub Release
+- No git tag
+- No Zenodo DOI / `.zenodo.json` change
+- No v4.1 / Chimera public claim — wire format, schemas, and spec are
+  unchanged from v4.0.0
+
+---
+
+## v4.0.1 — 2026-05-26 — superseded by 4.0.2
+
+Initial packaging-only patch that bundled the four v4.0-envelope starter
+`.klickd` skills. Superseded by 4.0.2; do not depend on `@klickd/core@4.0.1`
+under CommonJS (`require()`) or under modern Node.js ESM (JSON import
+attribute missing). The npm `latest` dist-tag is moved back to 4.0.0
+until 4.0.2 publishes.
+
+---
+
 ## v4.0.0 (GA) — 2026-05-25 — final v4 general availability (release-prep, not published)
 
 > **Status: RELEASE-PREP (PR open).** No git tag, no GitHub Release, no npm

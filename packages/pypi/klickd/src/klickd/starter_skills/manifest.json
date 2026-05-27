@@ -3,7 +3,6 @@
   "kind": "klickd_starter_skill_manifest",
   "non_normative": true,
   "claims_v41_ga": false,
-  "spec_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
   "see_readme": "examples/v4/starter-skills/README.md",
   "generated_at": "2026-05-26T00:00:00Z",
   "hash_algo": "sha256",
@@ -13,33 +12,33 @@
       "id": "x.klickd/user",
       "file": "user.klickd",
       "pack_version": "0.1.0-starter",
-      "bytes": 6020,
-      "sha256_file": "19121af045f6dd3537aa9bd4372edfaed5097b8436f026a8e9c585abbac6c80a",
-      "sha256_canonical_json": "09dfb1f9af44ac2e25d37ad87139388ea714f7b1d8ab79b5bc9ecf8f130cb1c6"
+      "bytes": 6294,
+      "sha256_file": "514e68223066e05a1b3af8f1d42c9d81c3e30f685259f7cf45c8aa2d50052036",
+      "sha256_canonical_json": "f61d52924d34acccf47cf4e8d5f7b6c9d791fad9f5a4f963e062c2230f11a4c9"
     },
     {
       "id": "x.klickd/student",
       "file": "student.klickd",
       "pack_version": "0.1.0-starter",
-      "bytes": 6554,
-      "sha256_file": "ffea74552ecedc9076d6468cb10214586632163f073a8c7975642e272464dba4",
-      "sha256_canonical_json": "72c542ae92db5bf8ba76c8b5449eb99dfceb4ab6886c944414473ba8b99fcd0e"
+      "bytes": 6685,
+      "sha256_file": "26d4bed5172a67397af201ca6ff6d96b716ff994f359acf68e29e7fc4a0865ec",
+      "sha256_canonical_json": "1a1c783442bc3dccd8ad2fac8e72785d746016fd3a34d0976656efdf9dfda69a"
     },
     {
       "id": "x.klickd/research",
       "file": "research.klickd",
       "pack_version": "0.1.0-starter",
-      "bytes": 6274,
-      "sha256_file": "571bd07773caff23d08fe6857bbf696dd6e49f701aab750fa7b261345285ce63",
-      "sha256_canonical_json": "f668a1069b9bf85cbe190052f029ac7430910ca2bf0caf2cf28035542b1e2d9c"
+      "bytes": 6488,
+      "sha256_file": "e0da88dbb5c1d0768ca7a05422c4831e0751462ce399c9109ac2a5de61fba2a9",
+      "sha256_canonical_json": "f6f7d613ce640421b1902cb93af750ff1c057971c7c05872b7643fe34ca74e16"
     },
     {
       "id": "x.klickd/coding",
       "file": "coding.klickd",
       "pack_version": "0.1.0-starter",
-      "bytes": 6305,
-      "sha256_file": "1aab06122d8b6c7ed45737aa3b6becad3ae33badb5ad893cc7788ad6dd1481f4",
-      "sha256_canonical_json": "b1ae3d57998c69ec41ad2fe88fa2b1920e31ab64cab71c38a7661edc3b14c38c"
+      "bytes": 6465,
+      "sha256_file": "ae022d357ee9b3445afca761c76cf74e47f4ba85fb8ae9470a3ddf8e3cafa07b",
+      "sha256_canonical_json": "a872a0bf1abf829d87ca05b73f47dbb3f817aca4152688cf00d2dd0ea24f9a7e"
     }
   ]
 }

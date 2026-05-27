@@ -44,4 +44,14 @@ describe('bundled starter .klickd skills', () => {
     expect(typeof dir).toBe('string');
     expect(dir.length).toBeGreaterThan(0);
   });
+
+  it('resolves the directory under either ESM (import.meta.url) or CJS (__dirname)', () => {
+    // Regression guard for the 4.0.1 incident where the CJS build of this
+    // helper called fileURLToPath(undefined) and threw
+    // ERR_INVALID_ARG_TYPE. listStarterSkills() must work without throwing
+    // regardless of which module system the consumer uses; this Jest run
+    // exercises both module systems via verify:tarball.
+    expect(() => listStarterSkills()).not.toThrow();
+    expect(() => getStarterSkillsManifest()).not.toThrow();
+  });
 });

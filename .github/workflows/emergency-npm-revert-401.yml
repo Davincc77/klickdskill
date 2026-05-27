@@ -1,0 +1,57 @@
+name: Emergency — revert @klickd/core npm latest to 4.0.0 and deprecate 4.0.1
+
+# Incident-response workflow for the broken 4.0.1 publish: the CJS bundle
+# called `fileURLToPath(undefined)` on first call to `listStarterSkills()`,
+# so `npm install @klickd/core` users were hitting `ERR_INVALID_ARG_TYPE`.
+# Until the 4.0.2 fix is published, this workflow:
+#
+#   - moves the `latest` dist-tag back to 4.0.0
+#   - marks 4.0.1 as deprecated with a pointer to the issue / fix
+#
+# It does NOT unpublish — npm policy and to preserve any downstream that
+# pins exactly 4.0.1.
+
+on:
+  workflow_dispatch:
+    inputs:
+      revert_to:
+        description: 'Version to move dist-tag latest back to (must already be published).'
+        required: false
+        default: '4.0.0'
+      broken_version:
+        description: 'Broken version to deprecate (will not be unpublished).'
+        required: false
+        default: '4.0.1'
+      deprecation_message:
+        description: 'Message attached to the deprecated version.'
+        required: false
+        default: 'Broken on CommonJS require(): listStarterSkills() throws ERR_INVALID_ARG_TYPE. Use 4.0.0 or wait for 4.0.2.'
+
+jobs:
+  revert:
+    name: Move dist-tag latest and deprecate broken version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Move dist-tag latest to ${{ github.event.inputs.revert_to || '4.0.0' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          REVERT_TO="${{ github.event.inputs.revert_to || '4.0.0' }}"
+          npm dist-tag add "@klickd/core@${REVERT_TO}" latest
+          npm dist-tag ls @klickd/core
+
+      - name: Deprecate ${{ github.event.inputs.broken_version || '4.0.1' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          BROKEN="${{ github.event.inputs.broken_version || '4.0.1' }}"
+          MSG="${{ github.event.inputs.deprecation_message || 'Broken on CommonJS require(): listStarterSkills() throws ERR_INVALID_ARG_TYPE. Use 4.0.0 or wait for 4.0.2.' }}"
+          npm deprecate "@klickd/core@${BROKEN}" "${MSG}"
