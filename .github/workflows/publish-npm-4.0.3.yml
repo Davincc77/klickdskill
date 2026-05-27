@@ -1,20 +1,18 @@
-name: Publish @klickd/core 4.0.2 to npm (latest)
+name: Publish @klickd/core 4.0.3 to npm (latest)
 
-# Emergency packaging-only patch release for @klickd/core. Fixes the
-# 4.0.1 starter-skills helper which threw
-# `ERR_INVALID_ARG_TYPE [fileURLToPath path undefined]` under CommonJS
-# require() because tsup rewrites `import.meta.url` to `{}` in the CJS
-# bundle. Also bundles JSON schemas inline so the ESM build does not
-# trip Node's `ERR_IMPORT_ASSERTION_TYPE_MISSING`. The stable spec
+# Packaging-only patch release for @klickd/core 4.0.3. Bumps npm `latest`
+# in lock-step with the PyPI 4.0.3 hotfix that aligns klickd.__version__
+# with the package metadata. No code, schema, or starter-pack changes —
+# the CJS+ESM tarball smoke test from 4.0.2 still runs. The stable spec
 # release remains v4.0.0 (DOI, GitHub Release). This workflow:
 #
 #   - is workflow_dispatch only (no release / tag triggers)
 #   - never creates a git tag or GitHub Release
-#   - hard-pins the published version to 4.0.2
+#   - hard-pins the published version to 4.0.3
 #   - defaults the build ref to the merged main commit
 #   - runs the packed-tarball CJS + ESM smoke test before publishing
 #
-# Run from the Actions UI after the 4.0.2 packaging PR is merged.
+# Run from the Actions UI after the 4.0.3 packaging PR is merged.
 
 on:
   workflow_dispatch:
@@ -24,17 +22,17 @@ on:
         required: false
         default: 'main'
       expected_version:
-        description: 'Exact package.json version required to publish (must be 4.0.2).'
+        description: 'Exact package.json version required to publish (must be 4.0.3).'
         required: false
-        default: '4.0.2'
+        default: '4.0.3'
       dist_tag:
-        description: 'npm dist-tag to publish under (latest for the 4.0.2 patch).'
+        description: 'npm dist-tag to publish under (latest for the 4.0.3 patch).'
         required: false
         default: 'latest'
 
 jobs:
-  publish-402:
-    name: Build, test, and publish @klickd/core 4.0.2 to npm
+  publish-403:
+    name: Build, test, and publish @klickd/core 4.0.3 to npm
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -53,10 +51,10 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Verify package version is 4.0.2
+      - name: Verify package version is 4.0.3
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
-          EXPECTED="${{ github.event.inputs.expected_version || '4.0.2' }}"
+          EXPECTED="${{ github.event.inputs.expected_version || '4.0.3' }}"
           echo "Package version: $PKG_VERSION"
           echo "Expected version: $EXPECTED"
           case "$PKG_VERSION" in
@@ -69,8 +67,8 @@ jobs:
             echo "ERROR: expected version $EXPECTED, got $PKG_VERSION. Refusing to publish."
             exit 1
           fi
-          if [ "$EXPECTED" != "4.0.2" ]; then
-            echo "ERROR: this workflow is hard-pinned to 4.0.2; expected_version must be 4.0.2."
+          if [ "$EXPECTED" != "4.0.3" ]; then
+            echo "ERROR: this workflow is hard-pinned to 4.0.3; expected_version must be 4.0.3."
             exit 1
           fi
 

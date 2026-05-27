@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "klickd"
-version = "4.0.2"
+version = "4.0.3"
 description = "Official Python library for reading and writing .klickd portable AI context files"
 readme = "README.md"
 license = {text = "CC0-1.0"}
