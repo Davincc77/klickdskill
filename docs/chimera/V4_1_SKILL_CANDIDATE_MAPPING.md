@@ -6,7 +6,7 @@
 | **Track** | `.klickd v4.1` — Chimera (post-`v4.0.0` GA) |
 | **Created** | 2026-05-27 |
 | **Relates to** | [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md) · [`docs/rfcs/chimera/README.md`](../rfcs/chimera/README.md) · [`docs/rfcs/chimera/packs/README.md`](../rfcs/chimera/packs/README.md) · [`docs/rfcs/chimera/frameworks/README.md`](../rfcs/chimera/frameworks/README.md) |
-| **Companion** | [`README_V4_1.md`](./README_V4_1.md) (planning index) · [`V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) (per-candidate review checklist) |
+| **Companion** | [`README_V4_1.md`](./README_V4_1.md) (planning index) · [`V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) (per-candidate review checklist) · [`V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](./V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md) (method for selecting and combining competencies per skill — merge gate) |
 
 > **This document is non-normative.** It does **not** modify any current `SPEC.md` section, schema, SDK behaviour, vector, lock file, or RFC status. It introduces **no new normative field**. It does **not** publish anything (no tag, no `latest` on npm/PyPI, no DOI on Zenodo, no IANA action, no SDK bump, no `/klickdskill` catalog change).
 >
@@ -228,6 +228,7 @@ Promotion path:
 - [`docs/rfcs/chimera/packs/router_cost.md`](../rfcs/chimera/packs/router_cost.md) — heuristic token-cost rows for already-mapped packs.
 - [`docs/chimera/README_V4_1.md`](./README_V4_1.md) — planning index for v4.1.
 - [`docs/chimera/V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) — per-candidate review checklist.
+- [`docs/chimera/V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](./V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md) — formal method for selecting and combining competencies per skill (transversal base + domain-specific; coherence and anti-clone rules; validator-enforced subset). **Merge gate for the v4.1 candidate set.**
 - [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) — already-shipped P0 starter `.klickd` files (`user`, `student`, `research`, `coding`). NOT extended by this document.
 - [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) — **real `candidate_mapped` artefacts** produced from this mapping. `lite/` (8 packs, after the 2026-05-27 audit-response `crypto-lite` deferral) and `pro/` (34 packs after the 2026-05-27 v4.1 expansion that added B20..B34 on top of the prior 19), each with a `manifest.json` carrying `sha256_file` + `sha256_canonical_json` per pack. Frozen at **8 Lite + 34 Pro = 42** artefacts; the validator (`scripts/validate_v4_1_candidate_mapping.py`, `TIER_EXPECTED_COUNT`) rejects any drift.
 - [`examples/v4/klickdapp-skills/`](../../examples/v4/klickdapp-skills/) — Klickd.app product carriers. Out of scope for this document; **never** referenced as candidate Chimera packs.

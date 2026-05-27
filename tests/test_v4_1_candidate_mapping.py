@@ -199,6 +199,78 @@ def test_crypto_lite_artefact_is_deferred():
         )
 
 
+def test_competency_protocol_doc_exists():
+    """Protocol doc is the merge gate per the 2026-05-27 user requirement.
+    PR #75 must not be considered ready until this document exists and
+    is linked from the planning index + the candidate mapping doc."""
+    p = REPO_ROOT / "docs" / "chimera" / "V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md"
+    assert p.is_file(), f"competency identification protocol doc missing: {p}"
+    text = p.read_text(encoding="utf-8")
+    # Sanity: the protocol must name its key sections so the validator
+    # comment references stay accurate.
+    for section in (
+        "Admissible source hierarchy",
+        "Selection method",
+        "Coherence rules",
+        "Exclusion rules",
+        "Validator support",
+    ):
+        assert section in text, f"protocol section '{section}' missing"
+
+
+def test_competency_count_in_tier_range():
+    """Coherence rule §3.1: every artefact's competencies[] count must
+    fall inside the tier's [min, max] range."""
+    import json as _json
+    mod = _load_validator()
+    failures: list[str] = []
+    for path in _lite_files() + _pro_files():
+        obj = _json.loads(path.read_text(encoding="utf-8"))
+        block = obj["x_klickd_pack"]
+        tier = block["size_tier"]
+        comps = block.get("competencies") or []
+        lo, hi = mod.TIER_COMPETENCY_RANGE[tier]
+        if not (lo <= len(comps) <= hi):
+            failures.append(
+                f"{path.name}: competencies[] count {len(comps)} outside "
+                f"{tier} range [{lo}, {hi}]"
+            )
+    assert not failures, "\n".join(failures)
+
+
+def test_every_artefact_carries_transversal_base():
+    """Coherence rule §3.2: every artefact carries a non-empty
+    base_transversal_core.transversal_refs[]. Anchors the 'shared'
+    half of the coherent-blend requirement."""
+    import json as _json
+    failures: list[str] = []
+    for path in _lite_files() + _pro_files():
+        obj = _json.loads(path.read_text(encoding="utf-8"))
+        block = obj["x_klickd_pack"]
+        btc = block.get("base_transversal_core") or {}
+        tr = btc.get("transversal_refs") or []
+        if not tr:
+            failures.append(
+                f"{path.name}: base_transversal_core.transversal_refs[] empty"
+            )
+        else:
+            for t in tr:
+                if "competency_ref" not in t:
+                    failures.append(
+                        f"{path.name}: transversal_refs[] entry missing 'competency_ref'"
+                    )
+    assert not failures, "\n".join(failures)
+
+
+def test_no_two_artefacts_share_competency_set():
+    """Anti-clone rule §3.4: no two artefacts may have identical
+    competencies[] sets. A failure here means one of the two is a
+    duplicate that should be merged or removed."""
+    mod = _load_validator()
+    failures = mod.validate_no_competency_clones()
+    assert not failures, "\n".join(failures)
+
+
 def test_tier_artefact_counts_are_frozen_at_8_lite_and_34_pro():
     """2026-05-27 v4.1 expansion: the artefact set is frozen at exactly
     8 Lite + 34 Pro = 42 candidate skills covering everyday users (Lite)

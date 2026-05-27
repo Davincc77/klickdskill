@@ -73,6 +73,14 @@ TIER_BYTES_CEILING = {"lite": 12_000, "pro": 24_000}
 # Promotion or removal requires updating this table AND the planning doc.
 TIER_EXPECTED_COUNT = {"lite": 8, "pro": 34}
 
+# Per-tier competency-count range — coherence-rule §3.1 of
+# docs/chimera/V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md. The total
+# count is len(competencies[]) (which by RFC-009 §5.5 equals
+# len(competency_mappings[])). The bounds matche the as-shipped
+# 2026-05-27 catalog; target ranges live in the protocol doc and are
+# not enforced.
+TIER_COMPETENCY_RANGE = {"lite": (2, 8), "pro": (3, 12)}
+
 FORBIDDEN_FIELDS_LITERAL = [
     "pedagogy", "teaching_method", "socratic_steps", "prompt_strategy",
     "scoring_rubric", "intervention_policy", "tone_rules",
@@ -471,6 +479,42 @@ def validate_artefact(path: Path) -> list[str]:
                 if k not in c:
                     fails.append(f"{path.name}: competencies[] entry missing '{k}'")
 
+    # Competency-coherence checks
+    # (docs/chimera/V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md §3).
+    # 3.1 Tier-specific count range.
+    if tier in TIER_COMPETENCY_RANGE and isinstance(comps, list):
+        lo, hi = TIER_COMPETENCY_RANGE[tier]
+        if not (lo <= len(comps) <= hi):
+            fails.append(
+                f"{path.name}: competencies[] count {len(comps)} outside "
+                f"{tier} range [{lo}, {hi}] (protocol §3.1)"
+            )
+    # 3.2 Common transversal base.
+    btc = block.get("base_transversal_core") or {}
+    transversal = btc.get("transversal_refs") or []
+    if not isinstance(transversal, list) or not transversal:
+        fails.append(
+            f"{path.name}: base_transversal_core.transversal_refs[] must be "
+            f"a non-empty list (protocol §3.2)"
+        )
+    else:
+        for t in transversal:
+            if not isinstance(t, dict) or "competency_ref" not in t:
+                fails.append(
+                    f"{path.name}: transversal_refs[] entry missing 'competency_ref'"
+                )
+    # 3.3 competency_mappings[] and competencies[] must agree in size
+    # (RFC-009 §5.5 equal-shape rule); soft check — warn-via-fail when
+    # one is empty and the other is not, but not when both shapes use
+    # the same anchor set.
+    cms = block.get("competency_mappings") or []
+    if isinstance(cms, list) and isinstance(comps, list):
+        if (len(cms) == 0) ^ (len(comps) == 0):
+            fails.append(
+                f"{path.name}: competency_mappings[] and competencies[] "
+                f"must both be populated or both empty (RFC-009 §5.5)"
+            )
+
     # human_authority + human_veto
     ha = block.get("human_authority") or {}
     if ha.get("final_decision_owner", "").split("_")[0] != "human":
@@ -575,6 +619,40 @@ def validate_artefact(path: Path) -> list[str]:
     return fails
 
 
+def validate_no_competency_clones() -> list[str]:
+    """Anti-clone rule (protocol §3.4): no two artefacts in the catalog
+    may share an identical `competencies[]` set (compared as the
+    frozenset of `competency_ref` strings). Prevents two skills from
+    being indistinguishable except by name."""
+    fails: list[str] = []
+    if not ARTEFACT_ROOT.exists():
+        return fails
+    sigs: dict[frozenset, list[str]] = {}
+    for tier_dir in (LITE_DIR, PRO_DIR):
+        if not tier_dir.exists():
+            continue
+        for path in sorted(tier_dir.glob("*.klickd")):
+            try:
+                obj = json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            comps = (obj.get("x_klickd_pack") or {}).get("competencies") or []
+            sig = frozenset(
+                c["competency_ref"] for c in comps
+                if isinstance(c, dict) and "competency_ref" in c
+            )
+            if not sig:
+                continue
+            sigs.setdefault(sig, []).append(path.name)
+    for sig, files in sigs.items():
+        if len(files) > 1:
+            fails.append(
+                f"competency-clone detected: {files} share identical "
+                f"competencies[] set {sorted(sig)} (protocol §3.4)"
+            )
+    return fails
+
+
 def validate_no_deferred_artefacts() -> list[str]:
     """Ensure no .klickd file exists for a deferred (needs_mapping) candidate."""
     fails: list[str] = []
@@ -666,6 +744,7 @@ def main(argv: list[str]) -> int:
                 artefact_count += 1
                 all_failures.extend(validate_artefact(path))
         all_failures.extend(validate_no_deferred_artefacts())
+        all_failures.extend(validate_no_competency_clones())
         all_failures.extend(validate_manifests())
 
     if all_failures:

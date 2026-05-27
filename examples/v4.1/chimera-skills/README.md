@@ -141,6 +141,7 @@ Two additional candidates from the planning doc are also absent here, by design:
 - [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../../../docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) — full candidate mapping (parent packs, target user, framework anchors, gates, evidence policy, size tier, status).
 - [`docs/chimera/README_V4_1.md`](../../../docs/chimera/README_V4_1.md) — planning index, strict mapping rule, exclusion table, release-gating ladder.
 - [`docs/chimera/V4_1_CANDIDATE_CHECKLIST.md`](../../../docs/chimera/V4_1_CANDIDATE_CHECKLIST.md) — per-candidate review checklist.
+- [`docs/chimera/V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](../../../docs/chimera/V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md) — formal method for selecting and combining competencies per skill (transversal base + domain-specific; coherence and anti-clone rules; validator-enforced subset). **Merge gate.**
 - [`docs/rfcs/RFC-009-chimera-v4.1.md`](../../../docs/rfcs/RFC-009-chimera-v4.1.md) — Chimera v4.1 RFC (P0/P1 sets, validation §8, no-catalog §7, carrier-vs-skill §5.1.1).
 - [`examples/v4/starter-skills/`](../../v4/starter-skills/) — already-shipped P0 starter `.klickd` files (`user`, `student`, `research`, `coding`). NOT extended by this directory.
 - [`examples/v4/klickdapp-skills/`](../../v4/klickdapp-skills/) — Klickd.app product carriers. Out of scope here; never referenced as candidate Chimera packs.
