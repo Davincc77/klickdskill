@@ -133,7 +133,7 @@ Four real, structured, downloadable starter `.klickd` skills ship under [`exampl
 - [`research.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/research.klickd) — `x.klickd/research` (research / evidence discipline)
 - [`coding.klickd`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/coding.klickd) — `x.klickd/coding` (software engineering)
 
-Each skill carries `base_transversal_core`, framework-anchored `competencies[]` (ESCO / DigComp / LifeComp / EQF / CEFR / SFIA), `levels[]`, `mastery[]` (pointer-only), `source_policy`, `evidence_policy`, `verification_gates`, `human_authority`, and a `structured_memory` slice scoped to `memory.x_klickd.<pack>`. They are **non-normative**, **do not claim v4.1 GA**, and trigger **no release**. SHA-256 manifest in [`manifest.json`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/manifest.json); offline verifier `scripts/verify_starter_skills.py`.
+Each skill carries `base_transversal_core`, framework-anchored `competencies[]` (ESCO / DigComp / LifeComp / EQF / CEFR / SFIA), `levels[]`, `mastery[]` (pointer-only), `source_policy`, `evidence_policy`, `verification_gates`, `human_authority`, and a `structured_memory` slice scoped to `memory.x_klickd.<pack>`. They are **non-normative** and trigger **no release**. SHA-256 manifest in [`manifest.json`](https://github.com/Davincc77/klickdskill/blob/main/examples/v4/starter-skills/manifest.json); offline verifier `scripts/verify_starter_skills.py`.
 
 #### Bundled in `klickd` 4.0.1
 
@@ -141,8 +141,8 @@ Starting with **`klickd` 4.0.1** (a packaging-only patch — the stable spec
 release remains **v4.0.0**), these four starter `.klickd` skills ship inside
 the wheel and sdist as `klickd/starter_skills/*.klickd` and are accessible
 via a small helper API. The on-the-wire `.klickd` format, the bundled JSON
-schemas, and the spec are unchanged from v4.0.0. This patch does **not** ship
-any v4.1 material and does **not** carry any Chimera branding.
+schemas, and the spec are unchanged from v4.0.0. This patch ships only the
+starter skill packaging fix; no new schema material is introduced.
 
 ```python
 from klickd import (

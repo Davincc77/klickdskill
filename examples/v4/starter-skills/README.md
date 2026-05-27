@@ -1,10 +1,10 @@
 # `examples/v4/starter-skills/` — Starter `.klickd` skills
 
-> **Status:** Starter / sample artefacts. **Non-normative.** **Pre-release.** **Not v4.1 GA.**
+> **Status:** Starter / sample artefacts. **Non-normative.** **Pre-release.**
 >
 > **Triggers no release.** No tag, no `latest` on npm or PyPI, no DOI on Zenodo, no IANA action, no SDK bump.
 
-This directory ships four real, structured `.klickd` files — starter skills on top of the **v4.0 envelope**. They are downloadable starter `.klickd` files — not relabelled v4-preview personas, not host-side skills, not v4.1 GA packs.
+This directory ships four real, structured `.klickd` files — starter skills on top of the **v4.0 envelope**. They are downloadable starter `.klickd` files — not relabelled v4-preview personas and not host-side skills.
 
 ## Files
 
@@ -37,7 +37,7 @@ Each file is a real structured JSON document that carries:
 
 ## What these skills are NOT
 
-- **Not v4.1 GA.** `klickd_version: "4.0"`, `_pack_metadata.claims_v41_ga: false`. No public catalog is implied.
+- **Stable v4.0 envelope.** `klickd_version: "4.0"`, `_pack_metadata.claims_v41_ga: false`. No public catalog is implied.
 - **Not relabelled personas.** They are *new artefacts* authored against frameworks. They do **not** harvest `knowledge.mastered[]` / `mastered_topics` from the v4-preview persona fixtures under [`../personas/`](../personas/) (clean-architecture invariant).
 - **Not host-side skills.** The `forbidden_fields` literal is the carrier-vs-skill firewall. Pedagogy, scoring rubrics, prompt strategies, tone rules — those belong in a `host_skill` on the agent side, not in the starter file.
 - **Not personal data.** No PII, no secrets, no real user state. `display_name: null`, `school_or_institution_ref: null`, `mastery: []`, `history: []`. The starter files are *publisher-owned starter shapes* a carrier can adopt and personalise locally.
@@ -52,11 +52,11 @@ python3 scripts/verify_starter_skills.py
 pytest tests/test_starter_skills.py
 ```
 
-The general starter-pack validator (`scripts/validate_starter_packs.py`) is
-v4.1-native by default — it expects the v4.1-shaped fields at the top level
-of each file. For the v4.0 starter `.klickd` files in this directory (which
-nest those fields under `x_klickd_pack` so the v4.0 envelope round-trips
-unchanged) run it with the `--v40-envelope` flag:
+The general starter-pack validator (`scripts/validate_starter_packs.py`) by
+default expects the structured fields at the top level of each file. For the
+v4.0 starter `.klickd` files in this directory (which nest those fields
+under `x_klickd_pack` so the v4.0 envelope round-trips unchanged) run it
+with the `--v40-envelope` flag:
 
 ```bash
 # v4.0-envelope mode — unwraps `x_klickd_pack` before validation
@@ -68,7 +68,7 @@ python3 scripts/validate_starter_packs.py \
 The two scripts are complementary: `verify_starter_skills.py` covers the v4.0
 envelope, persona-isolation, and hash-stability checks specific to this
 directory; `validate_starter_packs.py --v40-envelope` covers the shared
-v4.1-shaped field/forbidden-field/PII checks against the same files.
+field/forbidden-field/PII checks against the same files.
 
 ## How to use
 
@@ -80,7 +80,7 @@ These are downloadable starter `.klickd` files. A carrier can:
 
 ## Relation to internal spec work
 
-These starter `.klickd` files implement the **shape** described in the internal spec work at [`docs/rfcs/RFC-009-chimera-v4.1.md`](../../../docs/rfcs/RFC-009-chimera-v4.1.md) on top of the **v4.0 envelope**. They are starter artefacts for reviewers and integrators to see the architecture working end-to-end *before* the strict v4.1 schema is promoted past `Draft`. Promotion of the strict v4.1 schema and any catalog surface remains gated by `ACCEPTANCE_CHECKLIST_V4.md`.
+These starter `.klickd` files sit on top of the **v4.0 envelope** and are non-normative starter artefacts for reviewers and integrators. Any future schema promotion and catalog surface remains gated by `ACCEPTANCE_CHECKLIST_V4.md`.
 
 ## Relation to existing personas
 

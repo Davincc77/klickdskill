@@ -1,26 +1,24 @@
 {
   "klickd_version": "4.0",
-  "preview": "4.0.0-chimera-starter.1",
   "payload_schema_version": "4.0.0-preview.1",
-  "domain_schema_version": "chimera-starter-1.0",
+  "domain_schema_version": "v4-starter-1.0",
   "created_at": "2026-05-26T00:00:00Z",
   "encrypted": false,
   "domain": "research",
   "profile_kind": "researcher",
   "_pack_metadata": {
-    "kind": "chimera_starter_pack",
+    "kind": "starter_skill_pack",
     "non_normative": true,
     "claims_v41_ga": false,
     "contains_real_pii": false,
     "contains_secrets": false,
     "see_readme": "examples/v4/starter-skills/README.md",
-    "spec_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
-    "note": "Real structured Chimera-aligned starter pack on the v4.0 envelope. Not a v4.1 GA pack."
+    "note": "Non-normative starter skill pack on the v4.0 envelope."
   },
   "x_klickd_pack": {
     "pack": "x.klickd/research",
     "pack_version": "0.1.0-starter",
-    "spec_ref": "docs/rfcs/RFC-009-chimera-v4.1.md",
+    "spec_ref": "examples/v4/starter-skills/README.md",
     "publisher": {
       "name": "klickd",
       "ref": "https://klickd.app"
@@ -53,22 +51,62 @@
     ],
     "base_transversal_core": {
       "frameworks": [
-        { "scheme": "esco", "version": "v1.1.1" },
-        { "scheme": "digcomp", "version": "2.2" },
-        { "scheme": "lifecomp", "version": "2020" },
-        { "scheme": "eqf", "version": "2017" }
+        {
+          "scheme": "esco",
+          "version": "v1.1.1"
+        },
+        {
+          "scheme": "digcomp",
+          "version": "2.2"
+        },
+        {
+          "scheme": "lifecomp",
+          "version": "2020"
+        },
+        {
+          "scheme": "eqf",
+          "version": "2017"
+        }
       ],
       "transversal_refs": [
-        { "competency_ref": "esco:S2", "scheme": "esco", "prefLabel": "information skills" },
-        { "competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content" },
-        { "competency_ref": "lifecomp:L2", "scheme": "lifecomp", "prefLabel": "Critical thinking" }
+        {
+          "competency_ref": "esco:S2",
+          "scheme": "esco",
+          "prefLabel": "information skills"
+        },
+        {
+          "competency_ref": "digcomp:1.2",
+          "scheme": "digcomp",
+          "prefLabel": "Evaluating data, information and digital content"
+        },
+        {
+          "competency_ref": "lifecomp:L2",
+          "scheme": "lifecomp",
+          "prefLabel": "Critical thinking"
+        }
       ]
     },
     "competencies": [
-      { "competency_ref": "esco:S2", "scheme": "esco", "prefLabel": "information skills" },
-      { "competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content" },
-      { "competency_ref": "digcomp:1.3", "scheme": "digcomp", "prefLabel": "Managing data, information and digital content" },
-      { "competency_ref": "lifecomp:L2", "scheme": "lifecomp", "prefLabel": "Critical thinking" }
+      {
+        "competency_ref": "esco:S2",
+        "scheme": "esco",
+        "prefLabel": "information skills"
+      },
+      {
+        "competency_ref": "digcomp:1.2",
+        "scheme": "digcomp",
+        "prefLabel": "Evaluating data, information and digital content"
+      },
+      {
+        "competency_ref": "digcomp:1.3",
+        "scheme": "digcomp",
+        "prefLabel": "Managing data, information and digital content"
+      },
+      {
+        "competency_ref": "lifecomp:L2",
+        "scheme": "lifecomp",
+        "prefLabel": "Critical thinking"
+      }
     ],
     "levels": [
       {
@@ -81,15 +119,27 @@
     "mastery": [],
     "claim_grounding": {
       "policy": "every_factual_claim_with_date_or_attribution_requires_source",
-      "preferred_sources": ["peer_reviewed", "primary_source", "official_registry"],
-      "fallback_sources": ["tool:web_search"],
-      "forbidden_sources": ["unverified_social_media"],
+      "preferred_sources": [
+        "peer_reviewed",
+        "primary_source",
+        "official_registry"
+      ],
+      "fallback_sources": [
+        "tool:web_search"
+      ],
+      "forbidden_sources": [
+        "unverified_social_media"
+      ],
       "citation_shape_ref": "rfc-002#8b",
       "replication_expected_when": "quantitative_result_or_dated_event"
     },
     "verification_artifacts_policy": {
       "shape_ref": "rfc-003#verification_artifacts",
-      "required_for": ["empirical_claim", "quantitative_result", "policy_recommendation"],
+      "required_for": [
+        "empirical_claim",
+        "quantitative_result",
+        "policy_recommendation"
+      ],
       "pointer_only": true
     },
     "gates": {
@@ -100,7 +150,11 @@
       },
       "human_veto_policy": {
         "owner": "human_carrier",
-        "scope": ["publication", "claim_attribution", "data_release"]
+        "scope": [
+          "publication",
+          "claim_attribution",
+          "data_release"
+        ]
       }
     },
     "human_authority": {
@@ -120,9 +174,11 @@
       "attestation_shape_ref": "rfc-002#8b"
     },
     "source_policy": {
-      "frameworks_offline_bundle": "docs/rfcs/chimera/frameworks/base_transversal_core.bundle.json",
       "allow_inline_definitions": false,
-      "language_tags": ["en", "fr"]
+      "language_tags": [
+        "en",
+        "fr"
+      ]
     },
     "verification_gates": {
       "version": 1,
@@ -156,8 +212,7 @@
     },
     "router_cost": {
       "tokens_estimate": 800,
-      "baseline": "base_plus_one",
-      "source_row": "docs/rfcs/chimera/packs/router_cost.md"
+      "baseline": "base_plus_one"
     },
     "forbidden_fields": [
       "pedagogy",
