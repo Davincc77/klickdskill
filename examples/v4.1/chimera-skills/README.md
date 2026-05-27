@@ -10,8 +10,10 @@ This directory ships **real, structured `.klickd` files** that are concrete real
 
 | Path | Contents |
 |---|---|
-| [`lite/`](./lite/) | **Lot A (lightweight, user-lambda)** candidate skills. Compact (~6–7 KB), near-Chimera-size, fast-load; full manifest in prompt. 9 packs + `manifest.json`. |
-| [`pro/`](./pro/) | **Lot B (advanced, dev/pro)** candidate skills. Up to ~+50% larger (~8–11 KB), with `compact_index` loading strategy declared so the router can advertise gates / framework anchors / router_cost in prompt and lazy-load the full body on demand. 18 packs + `manifest.json`. |
+| [`lite/`](./lite/) | **Lot A (lightweight, user-lambda)** candidate skills. Compact (~6–7 KB), near-Chimera-size, fast-load; full manifest in prompt. **8 packs** + `manifest.json` (after 2026-05-27 audit rename + `crypto-lite` deferral). |
+| [`pro/`](./pro/) | **Lot B (advanced, dev/pro)** candidate skills. Up to ~+50% larger (~8–11 KB), with `compact_index` loading strategy declared so the router can advertise gates / framework anchors / router_cost in prompt and lazy-load the full body on demand. **18 packs** + `manifest.json` (after 2026-05-27 audit rename). |
+
+> **Audit response 2026-05-27.** Filenames and canonical pack ids were aligned (filename stem == pack tail with underscores as dashes) per the audit's W-1 / BLOCKER finding. `crypto-lite` was demoted to `needs_mapping` because no EU SKOS-published crypto-asset-literacy framework exists with DigComp / NICE-comparable maturity. Full rename + defer table: [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../../../docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) §0.5. Each renamed file carries `_pack_metadata.renamed_from` with the prior filename for traceability.
 
 ## Tier sizing (descriptive, not normative)
 
@@ -74,27 +76,28 @@ Two additional candidates from the planning doc are also absent here, by design:
 
 ## File index
 
-### `lite/` (9 packs)
+### `lite/` (8 packs)
 
 | File | Pack | Parents | Working nickname |
 |---|---|---|---|
-| `work-lite.klickd` | `x.klickd/work` (Lot A sub-profile) | `user` | work-lite (A1) |
-| `media-lite.klickd` | `x.klickd/creator` (Lot A sub-profile) | `user` | media-lite (A4) |
-| `consumer-rights.klickd` | `x.klickd/consumer` | `user`, `legal` | consumer-rights (A7) |
-| `crypto-lite.klickd` | `x.klickd/crypto_basics` | `user`, `security` | crypto-lite (A8) |
-| `social.klickd` | `x.klickd/social_literacy` | `user` | social (A9) |
+| `work-assistant.klickd` | `x.klickd/work_assistant` | `user`, `work` | work-lite (A1) |
+| `media-planner.klickd` | `x.klickd/media_planner` | `user`, `creator` | media-lite (A4) |
+| `consumer-rights.klickd` | `x.klickd/consumer_rights` | `user`, `legal` | consumer-rights (A7) |
+| `social-literacy.klickd` | `x.klickd/social_literacy` | `user` | social (A9) |
 | `artist.klickd` | `x.klickd/artist` | `user`, `creator` | artist (A10) |
-| `streamer-lite.klickd` | `x.klickd/streamer` | `user`, `creator` | streamer-lite (A11) |
+| `streaming-creator.klickd` | `x.klickd/streaming_creator` | `user`, `creator` | streamer-lite (A11) |
 | `game-literacy.klickd` | `x.klickd/game_literacy` | `user`, `gaming` | game-literacy (A12) |
 | `parent-gaming.klickd` | `x.klickd/parent_gaming` | `user`, `gaming`, `security` | parent-gaming (A13) |
+
+> **`crypto-lite` (A8) — DEFERRED.** No artefact; row stays in the planning doc only. Reason: no EU SKOS-published crypto-asset-literacy framework with DigComp / NICE-comparable maturity (NICE / CIS cover security hygiene generically but do not anchor "crypto" as a distinct competency class).
 
 ### `pro/` (18 packs)
 
 | File | Pack | Parents | Working nickname |
 |---|---|---|---|
-| `agent-security.klickd` | `x.klickd/agent_security` | `user`, `security`, `coding` | agent-security (B1) |
-| `ai-agent-builder.klickd` | `x.klickd/ai_agent_builder` | `user`, `coding`, `agent_security` | ai-agent-builder (B2) |
-| `iam-endpoint.klickd` | `x.klickd/iam_endpoint` | `user`, `security` | iam-endpoint (B3) |
+| `llm-agent-security.klickd` | `x.klickd/llm_agent_security` | `user`, `security`, `coding` | agent-security (B1) |
+| `llm-agent-engineering.klickd` | `x.klickd/llm_agent_engineering` | `user`, `coding`, `llm_agent_security` | ai-agent-builder (B2) |
+| `identity-access-management.klickd` | `x.klickd/identity_access_management` | `user`, `security` | iam-endpoint (B3) |
 | `release-engineer.klickd` | `x.klickd/release_engineer` | `user`, `coding`, `security` | release-engineer (B4) |
 | `trust-evidence.klickd` | `x.klickd/trust_evidence` | `user`, `research` | trust-evidence (B5) |
 | `eu-ai-act.klickd` | `x.klickd/eu_ai_act` | `user`, `legal` | eu-ai-act (B6) |
@@ -106,10 +109,12 @@ Two additional candidates from the planning doc are also absent here, by design:
 | `second-brain.klickd` | `x.klickd/second_brain` | `user`, `research` | second-brain (B12) |
 | `literature-review.klickd` | `x.klickd/literature_review` | `user`, `research` | literature-review (B13) |
 | `project-operator.klickd` | `x.klickd/project_operator` | `user`, `work`, `mission` | project-operator (B14) |
-| `drone.klickd` | `x.klickd/drone_operator` | `user`, `security`, `legal` | drone (B15) |
+| `drone-operator.klickd` | `x.klickd/drone_operator` | `user`, `security`, `legal` | drone (B15) |
 | `mission-control.klickd` | `x.klickd/mission_control` | `user`, `mission`, `security` | mission-control (B16) |
 | `game-design.klickd` | `x.klickd/game_design` | `user`, `creator`, `coding` | game-design (B17) |
 | `rights-guard.klickd` | `x.klickd/rights_guard` | `user`, `legal`, `creator` | rights-guard (B18) |
+
+> **Candidate→candidate parent edges.** Two pro packs compose on other Lot B candidates: `llm-agent-engineering.klickd` lists `x.klickd/llm_agent_security` as a parent, and `evidence-desk.klickd` lists `x.klickd/trust_evidence`. Both parents are themselves `candidate_mapped`; downstream loaders that resolve parents transitively will chain candidates onto candidates at this stage. Documented per audit W-2.
 
 ## See also
 

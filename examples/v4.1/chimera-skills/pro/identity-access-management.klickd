@@ -16,12 +16,13 @@
     "status": "candidate_mapped",
     "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/chimera-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact (B1). Pro tier; compact_index loading strategy declared."
+    "note": "Non-normative Chimera v4.1 candidate skill artefact (B3). Pro tier; compact_index loading strategy declared. Scoped to identity & access (NICE Identity Management + ENISA + CIS controls 5/6). Endpoint-hardening (CIS control 9 etc.) is intentionally out of scope.",
+    "renamed_from": "iam-endpoint.klickd"
   },
   "x_klickd_pack": {
-    "pack": "x.klickd/agent_security",
+    "pack": "x.klickd/identity_access_management",
     "pack_version": "0.1.0-candidate-pro",
-    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#b1",
+    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#b3",
     "publisher": {
       "name": "klickd",
       "ref": "https://klickd.app"
@@ -34,39 +35,32 @@
       "rationale": "Pro tier per docs/chimera/README_V4_1.md §2; full bodies (mastery scales, evidence rules, framework subsets) lazy-loaded by decision_router (RFC-007)."
     },
     "compact_index": {
-      "pack": "x.klickd/agent_security",
+      "pack": "x.klickd/identity_access_management",
       "frameworks": [
         "nice",
         "enisa",
-        "cis",
-        "esco"
+        "cis"
       ],
       "competency_ids": [
-        "nice:adversary-emulation",
-        "nice:secure-software-assessment",
-        "nice:vulnerability-assessment",
-        "enisa:cybersecurity-risk-manager",
-        "enisa:penetration-tester",
-        "cis:control-16",
-        "cis:control-18",
-        "esco:S5.6"
+        "nice:identity-management",
+        "nice:defensive-cybersecurity",
+        "enisa:cyber-incident-responder",
+        "enisa:cybersecurity-implementer",
+        "cis:control-5",
+        "cis:control-6"
       ],
       "gate_summaries": [
         {
-          "id": "agent-deployment",
+          "id": "iam-write",
           "level": "confirm"
         },
         {
-          "id": "prompt-injection-screen-disable",
+          "id": "mfa-downgrade",
           "level": "block"
         },
         {
-          "id": "memory-write-guard-disable",
+          "id": "session-token-inline",
           "level": "block"
-        },
-        {
-          "id": "responsible-disclosure",
-          "level": "confirm"
         }
       ],
       "human_authority": {
@@ -80,10 +74,9 @@
     },
     "parent_packs": [
       "x.klickd/user",
-      "x.klickd/security",
-      "x.klickd/coding"
+      "x.klickd/security"
     ],
-    "target_user": "Engineer / SRE / red-teamer building or operating LLM agents and MCP / tool-using systems. Prompt-injection literacy, tool-use sandboxing, eval discipline.",
+    "target_user": "Identity & access engineer covering account/access management, MFA, hardware-token discipline, and session hygiene. Endpoint-hardening competencies (EDR/MDM/email-and-web protections) are out of scope for this pack; they live in x.klickd/security and possibly a future endpoint-hardening pack.",
     "frameworks": [
       {
         "scheme": "nice",
@@ -102,12 +95,6 @@
         "version": "v8",
         "iri_prefix": "https://www.cisecurity.org/controls/v8/",
         "canonical_url": "https://www.cisecurity.org/controls/cis-controls-list"
-      },
-      {
-        "scheme": "esco",
-        "version": "v1.1.1",
-        "iri_prefix": "http://data.europa.eu/esco/skill/",
-        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
       }
     ],
     "base_transversal_core": {
@@ -123,94 +110,74 @@
       ],
       "transversal_refs": [
         {
-          "competency_ref": "esco:S2",
+          "competency_ref": "esco:S1",
           "scheme": "esco",
-          "prefLabel": "information skills"
+          "prefLabel": "communication, collaboration and creativity"
         }
       ]
     },
     "competency_mappings": [
       {
-        "competency_ref": "nice:adversary-emulation",
+        "competency_ref": "nice:identity-management",
         "scheme": "nice",
-        "prefLabel": "Adversary Emulation"
+        "prefLabel": "Identity Management"
       },
       {
-        "competency_ref": "nice:secure-software-assessment",
+        "competency_ref": "nice:defensive-cybersecurity",
         "scheme": "nice",
-        "prefLabel": "Secure Software Assessment"
+        "prefLabel": "Defensive Cybersecurity"
       },
       {
-        "competency_ref": "nice:vulnerability-assessment",
-        "scheme": "nice",
-        "prefLabel": "Vulnerability Assessment"
-      },
-      {
-        "competency_ref": "enisa:cybersecurity-risk-manager",
+        "competency_ref": "enisa:cyber-incident-responder",
         "scheme": "enisa",
-        "prefLabel": "Cybersecurity Risk Manager"
+        "prefLabel": "Cyber Incident Responder"
       },
       {
-        "competency_ref": "enisa:penetration-tester",
+        "competency_ref": "enisa:cybersecurity-implementer",
         "scheme": "enisa",
-        "prefLabel": "Penetration Tester"
+        "prefLabel": "Cybersecurity Implementer"
       },
       {
-        "competency_ref": "cis:control-16",
+        "competency_ref": "cis:control-5",
         "scheme": "cis",
-        "prefLabel": "Application Software Security"
+        "prefLabel": "Account Management"
       },
       {
-        "competency_ref": "cis:control-18",
+        "competency_ref": "cis:control-6",
         "scheme": "cis",
-        "prefLabel": "Penetration Testing"
-      },
-      {
-        "competency_ref": "esco:S5.6",
-        "scheme": "esco",
-        "prefLabel": "ICT security"
+        "prefLabel": "Access Control Management"
       }
     ],
     "competencies": [
       {
-        "competency_ref": "nice:adversary-emulation",
+        "competency_ref": "nice:identity-management",
         "scheme": "nice",
-        "prefLabel": "Adversary Emulation"
+        "prefLabel": "Identity Management"
       },
       {
-        "competency_ref": "nice:secure-software-assessment",
+        "competency_ref": "nice:defensive-cybersecurity",
         "scheme": "nice",
-        "prefLabel": "Secure Software Assessment"
+        "prefLabel": "Defensive Cybersecurity"
       },
       {
-        "competency_ref": "nice:vulnerability-assessment",
-        "scheme": "nice",
-        "prefLabel": "Vulnerability Assessment"
-      },
-      {
-        "competency_ref": "enisa:cybersecurity-risk-manager",
+        "competency_ref": "enisa:cyber-incident-responder",
         "scheme": "enisa",
-        "prefLabel": "Cybersecurity Risk Manager"
+        "prefLabel": "Cyber Incident Responder"
       },
       {
-        "competency_ref": "enisa:penetration-tester",
+        "competency_ref": "enisa:cybersecurity-implementer",
         "scheme": "enisa",
-        "prefLabel": "Penetration Tester"
+        "prefLabel": "Cybersecurity Implementer"
       },
       {
-        "competency_ref": "cis:control-16",
+        "competency_ref": "cis:control-5",
         "scheme": "cis",
-        "prefLabel": "Application Software Security"
+        "prefLabel": "Account Management"
       },
       {
-        "competency_ref": "cis:control-18",
+        "competency_ref": "cis:control-6",
         "scheme": "cis",
-        "prefLabel": "Penetration Testing"
-      },
-      {
-        "competency_ref": "esco:S5.6",
-        "scheme": "esco",
-        "prefLabel": "ICT security"
+        "prefLabel": "Access Control Management"
       }
     ],
     "levels": [
@@ -222,21 +189,21 @@
     ],
     "language_proficiency": [],
     "mastery": [],
-    "memory_scope": "memory.x_klickd.agent_security",
+    "memory_scope": "memory.x_klickd.identity_access_management",
     "memory_segments": [
       {
         "id": "operational",
-        "scope": "memory.x_klickd.agent_security.operational",
+        "scope": "memory.x_klickd.identity_access_management.operational",
         "policy": "pointer_only_summary"
       },
       {
         "id": "evidence",
-        "scope": "memory.x_klickd.agent_security.evidence",
+        "scope": "memory.x_klickd.identity_access_management.evidence",
         "policy": "pointer_only_chain_of_custody"
       }
     ],
     "structured_memory": {
-      "scope": "memory.x_klickd.agent_security",
+      "scope": "memory.x_klickd.identity_access_management",
       "policy": "pack_scoped_only",
       "entries": []
     },
@@ -249,10 +216,9 @@
       "human_veto_policy": {
         "owner": "human_carrier",
         "scope": [
-          "agent_capability_deployment",
-          "disable_prompt_injection_screen",
-          "disable_memory_write_guard",
-          "vuln_disclosure"
+          "iam_write",
+          "mfa_downgrade",
+          "session_token_inline"
         ]
       }
     },
@@ -260,8 +226,8 @@
       "owner": "human_carrier",
       "raise_only": true,
       "non_lowerable_floor": [
-        "disable_prompt_injection_screen",
-        "disable_memory_write_guard"
+        "mfa_downgrade",
+        "session_token_inline"
       ]
     },
     "human_authority": {
@@ -287,28 +253,22 @@
       "user_default": "silent",
       "gates": [
         {
-          "id": "agent-deployment",
-          "action_class": "agent_capability_deployment",
+          "id": "iam-write",
+          "action_class": "iam_write",
           "level": "confirm",
-          "reason": "Agent capability changes are hard to reverse once shipped."
+          "reason": "IAM writes affect blast radius; confirm required."
         },
         {
-          "id": "prompt-injection-screen-disable",
-          "action_class": "disable_prompt_injection_screen",
+          "id": "mfa-downgrade",
+          "action_class": "mfa_downgrade",
           "level": "block",
-          "reason": "Default disables blocked; floor not lowerable by this pack."
+          "reason": "MFA / hardware-token requirement downgrade blocked; floor not lowerable."
         },
         {
-          "id": "memory-write-guard-disable",
-          "action_class": "disable_memory_write_guard",
+          "id": "session-token-inline",
+          "action_class": "session_token_inline",
           "level": "block",
-          "reason": "Memory-write guard disables blocked; floor not lowerable."
-        },
-        {
-          "id": "responsible-disclosure",
-          "action_class": "vuln_disclosure",
-          "level": "confirm",
-          "reason": "Vulnerability disclosure must follow declared responsible-disclosure path."
+          "reason": "Session tokens never inline."
         }
       ]
     },
@@ -334,7 +294,7 @@
       "review": [
         "Reviewer verifies parent packs are present without redefinition.",
         "Reviewer verifies non_lowerable_floor matches the gate definitions.",
-        "Reviewer verifies citation-only references (if any) for x.klickd/agent_security are out of frameworks[]."
+        "Reviewer verifies citation-only references (if any) for x.klickd/identity_access_management are out of frameworks[]."
       ]
     },
     "forbidden_fields": [

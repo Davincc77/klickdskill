@@ -43,6 +43,9 @@ PRO_DIR = ARTEFACT_ROOT / "pro"
 DEFERRED_NICKNAMES = {
     "personal-finance",
     "budget",
+    "crypto-lite",     # audit response: no SKOS-published crypto-literacy framework
+    "crypto-basics",
+    "crypto",
     "wellbeing-lite",
     "family",
 }
@@ -62,6 +65,12 @@ FORBIDDEN_FIELDS_LITERAL = [
     "scoring_rubric", "intervention_policy", "tone_rules",
     "system_prompt_overrides", "knowledge.mastered", "mastered_topics",
 ]
+
+# Explicit allow-list for filenames whose stem is permitted to diverge
+# from `pack.rsplit('/', 1)[-1].replace('_', '-')`. Empty by default —
+# every artefact must have filename_stem == pack_tail_dashed. Audit
+# W-1 fix.
+FILENAME_PACK_ALLOWED_DIVERGENCE: dict[str, str] = {}
 
 # Patterns that, if matched in the raw artefact text, indicate a
 # Klickd.app product carrier or Kai host-side artefact leaked into the
@@ -356,6 +365,22 @@ def validate_artefact(path: Path) -> list[str]:
     for bad in ARTEFACT_FORBIDDEN_PATTERNS:
         if bad in pack_id.lower():
             fails.append(f"{path.name}: pack '{pack_id}' contains forbidden fragment '{bad}'")
+
+    # Filename <-> pack-id consistency (audit W-1). The filename stem
+    # MUST equal the pack-tail with underscores converted to dashes,
+    # unless the file appears in FILENAME_PACK_ALLOWED_DIVERGENCE with
+    # a documented justification.
+    if pack_id.startswith("x.klickd/"):
+        pack_tail = pack_id.rsplit("/", 1)[-1]
+        expected_stem = pack_tail.replace("_", "-")
+        stem = path.stem
+        allow = FILENAME_PACK_ALLOWED_DIVERGENCE.get(path.name)
+        if stem != expected_stem and allow is None:
+            fails.append(
+                f"{path.name}: filename stem '{stem}' must equal "
+                f"pack tail '{pack_tail}' with underscores as dashes "
+                f"('{expected_stem}'); no allowed-divergence entry."
+            )
 
     tier = block.get("size_tier")
     tier_dir = path.parent.name

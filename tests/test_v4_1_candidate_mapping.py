@@ -162,6 +162,43 @@ def test_pro_tier_artefacts_carry_compact_index():
     assert not failures, "\n".join(failures)
 
 
+def test_filename_stem_matches_pack_tail():
+    """Audit W-1 fix: every artefact's filename stem MUST equal the
+    pack-tail (with underscores converted to dashes). Audit BLOCKER
+    rename pass enforces this everywhere; this test guards against
+    regression in future PRs."""
+    import json as _json
+    mod = _load_validator()
+    failures: list[str] = []
+    for path in _lite_files() + _pro_files():
+        obj = _json.loads(path.read_text(encoding="utf-8"))
+        pack_id = obj["x_klickd_pack"]["pack"]
+        expected_stem = pack_id.rsplit("/", 1)[-1].replace("_", "-")
+        stem = path.stem
+        allow = mod.FILENAME_PACK_ALLOWED_DIVERGENCE.get(path.name)
+        if stem != expected_stem and allow is None:
+            failures.append(
+                f"{path.name}: stem '{stem}' != expected '{expected_stem}' "
+                f"(from pack '{pack_id}')"
+            )
+    assert not failures, "\n".join(failures)
+
+
+def test_crypto_lite_artefact_is_deferred():
+    """Audit response: crypto-lite artefact was removed because no EU
+    SKOS-published crypto-asset-literacy framework exists. The
+    nickname is in DEFERRED_NICKNAMES and the validator must reject
+    any future attempt to recreate the artefact under any spelling
+    (crypto-lite.klickd, crypto-basics.klickd, crypto.klickd)."""
+    forbidden_names = {"crypto-lite", "crypto-basics", "crypto",
+                       "crypto-asset", "crypto-literacy"}
+    for path in _lite_files() + _pro_files():
+        assert path.stem not in forbidden_names, (
+            f"{path.name}: crypto-* artefact must stay deferred until "
+            f"a SKOS-published crypto-literacy framework anchors it"
+        )
+
+
 def test_lite_router_cost_under_900_and_pro_under_1350():
     import json as _json
     failures: list[str] = []

@@ -4,7 +4,7 @@
   "domain_schema_version": "v4.1-chimera-candidate-1.0",
   "created_at": "2026-05-27T00:00:00Z",
   "encrypted": false,
-  "domain": "operations",
+  "domain": "software_engineering",
   "profile_kind": "carrier_competency_pack",
   "_pack_metadata": {
     "kind": "chimera_candidate_skill_pack",
@@ -16,12 +16,13 @@
     "status": "candidate_mapped",
     "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/chimera-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact (B15). Pro tier; compact_index loading strategy declared."
+    "note": "Non-normative Chimera v4.1 candidate skill artefact (B2). Pro tier; compact_index loading strategy declared.",
+    "renamed_from": "ai-agent-builder.klickd"
   },
   "x_klickd_pack": {
-    "pack": "x.klickd/drone_operator",
+    "pack": "x.klickd/llm_agent_engineering",
     "pack_version": "0.1.0-candidate-pro",
-    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#b15",
+    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#b2",
     "publisher": {
       "name": "klickd",
       "ref": "https://klickd.app"
@@ -34,27 +35,34 @@
       "rationale": "Pro tier per docs/chimera/README_V4_1.md §2; full bodies (mastery scales, evidence rules, framework subsets) lazy-loaded by decision_router (RFC-007)."
     },
     "compact_index": {
-      "pack": "x.klickd/drone_operator",
+      "pack": "x.klickd/llm_agent_engineering",
       "frameworks": [
-        "esco"
+        "esco",
+        "sfia",
+        "onet",
+        "wef"
       ],
       "competency_ids": [
-        "esco:S6",
-        "esco:S6.4",
-        "esco:S4.6"
+        "esco:S5.6.1",
+        "sfia:PROG",
+        "sfia:ARCH",
+        "sfia:METL",
+        "onet:15-1252.00",
+        "wef:ai-and-big-data",
+        "wef:programming"
       ],
       "gate_summaries": [
         {
-          "id": "no-fly-zone-override",
-          "level": "block"
-        },
-        {
-          "id": "first-flight-in-area",
+          "id": "agent-deployment",
           "level": "confirm"
         },
         {
-          "id": "minor-flight-write",
+          "id": "eval-gating-disable",
           "level": "block"
+        },
+        {
+          "id": "cost-budget-override",
+          "level": "confirm"
         }
       ],
       "human_authority": {
@@ -68,23 +76,34 @@
     },
     "parent_packs": [
       "x.klickd/user",
-      "x.klickd/security",
-      "x.klickd/legal"
+      "x.klickd/coding",
+      "x.klickd/llm_agent_security"
     ],
-    "target_user": "Civil drone (UAV) operator. Pre-flight discipline, airspace literacy, no-fly zones, incident reporting. Not military; not commercial heavy-lift.",
+    "target_user": "Developer building production LLM agents. Tool design, eval harness, observability, cost discipline.",
     "frameworks": [
       {
         "scheme": "esco",
         "version": "v1.1.1",
         "iri_prefix": "http://data.europa.eu/esco/skill/",
         "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
-      }
-    ],
-    "citation_only_references": [
+      },
       {
-        "id": "eu-2019-947",
-        "ref": "EU Regulation 2019/947 (UAS rules)",
-        "url": "https://eur-lex.europa.eu/eli/reg_impl/2019/947/oj"
+        "scheme": "sfia",
+        "version": "8",
+        "iri_prefix": "https://sfia-online.org/en/sfia-8/",
+        "canonical_url": "https://sfia-online.org/en/sfia-8"
+      },
+      {
+        "scheme": "onet",
+        "version": "28.0",
+        "iri_prefix": "https://www.onetonline.org/link/summary/",
+        "canonical_url": "https://www.onetonline.org/"
+      },
+      {
+        "scheme": "wef",
+        "version": "2023",
+        "iri_prefix": "https://www.weforum.org/reports/future-of-jobs-2023/skills/",
+        "canonical_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2023/"
       }
     ],
     "base_transversal_core": {
@@ -92,6 +111,10 @@
         {
           "scheme": "esco",
           "version": "v1.1.1"
+        },
+        {
+          "scheme": "sfia",
+          "version": "8"
         }
       ],
       "transversal_refs": [
@@ -104,36 +127,76 @@
     },
     "competency_mappings": [
       {
-        "competency_ref": "esco:S6",
+        "competency_ref": "esco:S5.6.1",
         "scheme": "esco",
-        "prefLabel": "transport, transportation"
+        "prefLabel": "developing AI and machine learning systems"
       },
       {
-        "competency_ref": "esco:S6.4",
-        "scheme": "esco",
-        "prefLabel": "operating aerial vehicles"
+        "competency_ref": "sfia:PROG",
+        "scheme": "sfia",
+        "prefLabel": "Programming/software development"
       },
       {
-        "competency_ref": "esco:S4.6",
-        "scheme": "esco",
-        "prefLabel": "legal and compliance support"
+        "competency_ref": "sfia:ARCH",
+        "scheme": "sfia",
+        "prefLabel": "Solution architecture"
+      },
+      {
+        "competency_ref": "sfia:METL",
+        "scheme": "sfia",
+        "prefLabel": "Methods and tools"
+      },
+      {
+        "competency_ref": "onet:15-1252.00",
+        "scheme": "onet",
+        "prefLabel": "Software Developers"
+      },
+      {
+        "competency_ref": "wef:ai-and-big-data",
+        "scheme": "wef",
+        "prefLabel": "AI and big data"
+      },
+      {
+        "competency_ref": "wef:programming",
+        "scheme": "wef",
+        "prefLabel": "Programming"
       }
     ],
     "competencies": [
       {
-        "competency_ref": "esco:S6",
+        "competency_ref": "esco:S5.6.1",
         "scheme": "esco",
-        "prefLabel": "transport, transportation"
+        "prefLabel": "developing AI and machine learning systems"
       },
       {
-        "competency_ref": "esco:S6.4",
-        "scheme": "esco",
-        "prefLabel": "operating aerial vehicles"
+        "competency_ref": "sfia:PROG",
+        "scheme": "sfia",
+        "prefLabel": "Programming/software development"
       },
       {
-        "competency_ref": "esco:S4.6",
-        "scheme": "esco",
-        "prefLabel": "legal and compliance support"
+        "competency_ref": "sfia:ARCH",
+        "scheme": "sfia",
+        "prefLabel": "Solution architecture"
+      },
+      {
+        "competency_ref": "sfia:METL",
+        "scheme": "sfia",
+        "prefLabel": "Methods and tools"
+      },
+      {
+        "competency_ref": "onet:15-1252.00",
+        "scheme": "onet",
+        "prefLabel": "Software Developers"
+      },
+      {
+        "competency_ref": "wef:ai-and-big-data",
+        "scheme": "wef",
+        "prefLabel": "AI and big data"
+      },
+      {
+        "competency_ref": "wef:programming",
+        "scheme": "wef",
+        "prefLabel": "Programming"
       }
     ],
     "levels": [
@@ -145,21 +208,21 @@
     ],
     "language_proficiency": [],
     "mastery": [],
-    "memory_scope": "memory.x_klickd.drone_operator",
+    "memory_scope": "memory.x_klickd.llm_agent_engineering",
     "memory_segments": [
       {
         "id": "operational",
-        "scope": "memory.x_klickd.drone_operator.operational",
+        "scope": "memory.x_klickd.llm_agent_engineering.operational",
         "policy": "pointer_only_summary"
       },
       {
         "id": "evidence",
-        "scope": "memory.x_klickd.drone_operator.evidence",
+        "scope": "memory.x_klickd.llm_agent_engineering.evidence",
         "policy": "pointer_only_chain_of_custody"
       }
     ],
     "structured_memory": {
-      "scope": "memory.x_klickd.drone_operator",
+      "scope": "memory.x_klickd.llm_agent_engineering",
       "policy": "pack_scoped_only",
       "entries": []
     },
@@ -172,9 +235,9 @@
       "human_veto_policy": {
         "owner": "human_carrier",
         "scope": [
-          "no_fly_zone_override",
-          "first_flight_in_area",
-          "flight_write_by_minor_without_guardian"
+          "agent_deployment",
+          "disable_eval_gating_on_model_bump",
+          "cost_budget_override"
         ]
       }
     },
@@ -182,8 +245,7 @@
       "owner": "human_carrier",
       "raise_only": true,
       "non_lowerable_floor": [
-        "no_fly_zone_override",
-        "flight_write_by_minor_without_guardian"
+        "disable_eval_gating_on_model_bump"
       ]
     },
     "human_authority": {
@@ -209,22 +271,22 @@
       "user_default": "silent",
       "gates": [
         {
-          "id": "no-fly-zone-override",
-          "action_class": "no_fly_zone_override",
-          "level": "block",
-          "reason": "No-fly-zone overrides blocked; floor not lowerable."
-        },
-        {
-          "id": "first-flight-in-area",
-          "action_class": "first_flight_in_area",
+          "id": "agent-deployment",
+          "action_class": "agent_deployment",
           "level": "confirm",
-          "reason": "First flight in a new area requires explicit confirmation."
+          "reason": "Agent deployments are hard to reverse."
         },
         {
-          "id": "minor-flight-write",
-          "action_class": "flight_write_by_minor_without_guardian",
+          "id": "eval-gating-disable",
+          "action_class": "disable_eval_gating_on_model_bump",
           "level": "block",
-          "reason": "Flight writes by minors without guardian blocked; floor not lowerable."
+          "reason": "Eval gating disables blocked on model version bumps; floor not lowerable."
+        },
+        {
+          "id": "cost-budget-override",
+          "action_class": "cost_budget_override",
+          "level": "confirm",
+          "reason": "Cost budget overrides require explicit attestation."
         }
       ]
     },
@@ -250,7 +312,7 @@
       "review": [
         "Reviewer verifies parent packs are present without redefinition.",
         "Reviewer verifies non_lowerable_floor matches the gate definitions.",
-        "Reviewer verifies citation-only references (if any) for x.klickd/drone_operator are out of frameworks[]."
+        "Reviewer verifies citation-only references (if any) for x.klickd/llm_agent_engineering are out of frameworks[]."
       ]
     },
     "forbidden_fields": [

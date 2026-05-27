@@ -4,7 +4,7 @@
   "domain_schema_version": "v4.1-chimera-candidate-1.0",
   "created_at": "2026-05-27T00:00:00Z",
   "encrypted": false,
-  "domain": "security",
+  "domain": "operations",
   "profile_kind": "carrier_competency_pack",
   "_pack_metadata": {
     "kind": "chimera_candidate_skill_pack",
@@ -16,12 +16,13 @@
     "status": "candidate_mapped",
     "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/chimera-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact (B3). Pro tier; compact_index loading strategy declared."
+    "note": "Non-normative Chimera v4.1 candidate skill artefact (B15). Pro tier; compact_index loading strategy declared.",
+    "renamed_from": "drone.klickd"
   },
   "x_klickd_pack": {
-    "pack": "x.klickd/iam_endpoint",
+    "pack": "x.klickd/drone_operator",
     "pack_version": "0.1.0-candidate-pro",
-    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#b3",
+    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#b15",
     "publisher": {
       "name": "klickd",
       "ref": "https://klickd.app"
@@ -34,32 +35,26 @@
       "rationale": "Pro tier per docs/chimera/README_V4_1.md §2; full bodies (mastery scales, evidence rules, framework subsets) lazy-loaded by decision_router (RFC-007)."
     },
     "compact_index": {
-      "pack": "x.klickd/iam_endpoint",
+      "pack": "x.klickd/drone_operator",
       "frameworks": [
-        "nice",
-        "enisa",
-        "cis"
+        "esco"
       ],
       "competency_ids": [
-        "nice:identity-management",
-        "nice:defensive-cybersecurity",
-        "enisa:cyber-incident-responder",
-        "enisa:cybersecurity-implementer",
-        "cis:control-5",
-        "cis:control-6",
-        "cis:control-9"
+        "esco:S6",
+        "esco:S6.4",
+        "esco:S4.6"
       ],
       "gate_summaries": [
         {
-          "id": "iam-write",
-          "level": "confirm"
-        },
-        {
-          "id": "mfa-downgrade",
+          "id": "no-fly-zone-override",
           "level": "block"
         },
         {
-          "id": "session-token-inline",
+          "id": "first-flight-in-area",
+          "level": "confirm"
+        },
+        {
+          "id": "minor-flight-write",
           "level": "block"
         }
       ],
@@ -74,120 +69,72 @@
     },
     "parent_packs": [
       "x.klickd/user",
-      "x.klickd/security"
+      "x.klickd/security",
+      "x.klickd/legal"
     ],
-    "target_user": "Identity / access / endpoint engineer. IAM, EDR, MDM, hardware-token discipline. Not a fleet-control panel.",
+    "target_user": "Civil drone (UAV) operator. Pre-flight discipline, airspace literacy, no-fly zones, incident reporting. Not military; not commercial heavy-lift.",
     "frameworks": [
       {
-        "scheme": "nice",
-        "version": "r1",
-        "iri_prefix": "https://niccs.cisa.gov/workforce-development/nice-framework/",
-        "canonical_url": "https://niccs.cisa.gov/workforce-development/nice-framework"
-      },
+        "scheme": "esco",
+        "version": "v1.1.1",
+        "iri_prefix": "http://data.europa.eu/esco/skill/",
+        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
+      }
+    ],
+    "citation_only_references": [
       {
-        "scheme": "enisa",
-        "version": "1.0",
-        "iri_prefix": "https://www.enisa.europa.eu/topics/skills-and-competences/skills-development/european-cybersecurity-skills-framework/",
-        "canonical_url": "https://www.enisa.europa.eu/topics/skills-and-competences/skills-development/european-cybersecurity-skills-framework"
-      },
-      {
-        "scheme": "cis",
-        "version": "v8",
-        "iri_prefix": "https://www.cisecurity.org/controls/v8/",
-        "canonical_url": "https://www.cisecurity.org/controls/cis-controls-list"
+        "id": "eu-2019-947",
+        "ref": "EU Regulation 2019/947 (UAS rules)",
+        "url": "https://eur-lex.europa.eu/eli/reg_impl/2019/947/oj"
       }
     ],
     "base_transversal_core": {
       "frameworks": [
         {
-          "scheme": "nice",
-          "version": "r1"
-        },
-        {
-          "scheme": "enisa",
-          "version": "1.0"
+          "scheme": "esco",
+          "version": "v1.1.1"
         }
       ],
       "transversal_refs": [
         {
-          "competency_ref": "esco:S1",
+          "competency_ref": "esco:S2",
           "scheme": "esco",
-          "prefLabel": "communication, collaboration and creativity"
+          "prefLabel": "information skills"
         }
       ]
     },
     "competency_mappings": [
       {
-        "competency_ref": "nice:identity-management",
-        "scheme": "nice",
-        "prefLabel": "Identity Management"
+        "competency_ref": "esco:S6",
+        "scheme": "esco",
+        "prefLabel": "transport, transportation"
       },
       {
-        "competency_ref": "nice:defensive-cybersecurity",
-        "scheme": "nice",
-        "prefLabel": "Defensive Cybersecurity"
+        "competency_ref": "esco:S6.4",
+        "scheme": "esco",
+        "prefLabel": "operating aerial vehicles"
       },
       {
-        "competency_ref": "enisa:cyber-incident-responder",
-        "scheme": "enisa",
-        "prefLabel": "Cyber Incident Responder"
-      },
-      {
-        "competency_ref": "enisa:cybersecurity-implementer",
-        "scheme": "enisa",
-        "prefLabel": "Cybersecurity Implementer"
-      },
-      {
-        "competency_ref": "cis:control-5",
-        "scheme": "cis",
-        "prefLabel": "Account Management"
-      },
-      {
-        "competency_ref": "cis:control-6",
-        "scheme": "cis",
-        "prefLabel": "Access Control Management"
-      },
-      {
-        "competency_ref": "cis:control-9",
-        "scheme": "cis",
-        "prefLabel": "Email and Web Browser Protections"
+        "competency_ref": "esco:S4.6",
+        "scheme": "esco",
+        "prefLabel": "legal and compliance support"
       }
     ],
     "competencies": [
       {
-        "competency_ref": "nice:identity-management",
-        "scheme": "nice",
-        "prefLabel": "Identity Management"
+        "competency_ref": "esco:S6",
+        "scheme": "esco",
+        "prefLabel": "transport, transportation"
       },
       {
-        "competency_ref": "nice:defensive-cybersecurity",
-        "scheme": "nice",
-        "prefLabel": "Defensive Cybersecurity"
+        "competency_ref": "esco:S6.4",
+        "scheme": "esco",
+        "prefLabel": "operating aerial vehicles"
       },
       {
-        "competency_ref": "enisa:cyber-incident-responder",
-        "scheme": "enisa",
-        "prefLabel": "Cyber Incident Responder"
-      },
-      {
-        "competency_ref": "enisa:cybersecurity-implementer",
-        "scheme": "enisa",
-        "prefLabel": "Cybersecurity Implementer"
-      },
-      {
-        "competency_ref": "cis:control-5",
-        "scheme": "cis",
-        "prefLabel": "Account Management"
-      },
-      {
-        "competency_ref": "cis:control-6",
-        "scheme": "cis",
-        "prefLabel": "Access Control Management"
-      },
-      {
-        "competency_ref": "cis:control-9",
-        "scheme": "cis",
-        "prefLabel": "Email and Web Browser Protections"
+        "competency_ref": "esco:S4.6",
+        "scheme": "esco",
+        "prefLabel": "legal and compliance support"
       }
     ],
     "levels": [
@@ -199,21 +146,21 @@
     ],
     "language_proficiency": [],
     "mastery": [],
-    "memory_scope": "memory.x_klickd.iam_endpoint",
+    "memory_scope": "memory.x_klickd.drone_operator",
     "memory_segments": [
       {
         "id": "operational",
-        "scope": "memory.x_klickd.iam_endpoint.operational",
+        "scope": "memory.x_klickd.drone_operator.operational",
         "policy": "pointer_only_summary"
       },
       {
         "id": "evidence",
-        "scope": "memory.x_klickd.iam_endpoint.evidence",
+        "scope": "memory.x_klickd.drone_operator.evidence",
         "policy": "pointer_only_chain_of_custody"
       }
     ],
     "structured_memory": {
-      "scope": "memory.x_klickd.iam_endpoint",
+      "scope": "memory.x_klickd.drone_operator",
       "policy": "pack_scoped_only",
       "entries": []
     },
@@ -226,9 +173,9 @@
       "human_veto_policy": {
         "owner": "human_carrier",
         "scope": [
-          "iam_write",
-          "mfa_downgrade",
-          "session_token_inline"
+          "no_fly_zone_override",
+          "first_flight_in_area",
+          "flight_write_by_minor_without_guardian"
         ]
       }
     },
@@ -236,8 +183,8 @@
       "owner": "human_carrier",
       "raise_only": true,
       "non_lowerable_floor": [
-        "mfa_downgrade",
-        "session_token_inline"
+        "no_fly_zone_override",
+        "flight_write_by_minor_without_guardian"
       ]
     },
     "human_authority": {
@@ -263,22 +210,22 @@
       "user_default": "silent",
       "gates": [
         {
-          "id": "iam-write",
-          "action_class": "iam_write",
+          "id": "no-fly-zone-override",
+          "action_class": "no_fly_zone_override",
+          "level": "block",
+          "reason": "No-fly-zone overrides blocked; floor not lowerable."
+        },
+        {
+          "id": "first-flight-in-area",
+          "action_class": "first_flight_in_area",
           "level": "confirm",
-          "reason": "IAM writes affect blast radius; confirm required."
+          "reason": "First flight in a new area requires explicit confirmation."
         },
         {
-          "id": "mfa-downgrade",
-          "action_class": "mfa_downgrade",
+          "id": "minor-flight-write",
+          "action_class": "flight_write_by_minor_without_guardian",
           "level": "block",
-          "reason": "MFA / hardware-token requirement downgrade blocked; floor not lowerable."
-        },
-        {
-          "id": "session-token-inline",
-          "action_class": "session_token_inline",
-          "level": "block",
-          "reason": "Session tokens never inline."
+          "reason": "Flight writes by minors without guardian blocked; floor not lowerable."
         }
       ]
     },
@@ -304,7 +251,7 @@
       "review": [
         "Reviewer verifies parent packs are present without redefinition.",
         "Reviewer verifies non_lowerable_floor matches the gate definitions.",
-        "Reviewer verifies citation-only references (if any) for x.klickd/iam_endpoint are out of frameworks[]."
+        "Reviewer verifies citation-only references (if any) for x.klickd/drone_operator are out of frameworks[]."
       ]
     },
     "forbidden_fields": [

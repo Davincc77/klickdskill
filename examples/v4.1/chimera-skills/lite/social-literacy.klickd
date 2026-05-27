@@ -16,7 +16,8 @@
     "status": "candidate_mapped",
     "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/chimera-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact. Lot A social-literacy pack composing x.klickd/user."
+    "note": "Non-normative Chimera v4.1 candidate skill artefact. Lot A social-literacy pack composing x.klickd/user.",
+    "renamed_from": "social.klickd"
   },
   "x_klickd_pack": {
     "pack": "x.klickd/social_literacy",

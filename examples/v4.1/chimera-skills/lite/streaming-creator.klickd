@@ -16,10 +16,11 @@
     "status": "candidate_mapped",
     "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/chimera-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact. Lot A streamer pack, entry-tier profile, composes x.klickd/creator (P1)."
+    "note": "Non-normative Chimera v4.1 candidate skill artefact. Lot A entry-tier streaming-creator pack composing x.klickd/creator (P1).",
+    "renamed_from": "streamer-lite.klickd"
   },
   "x_klickd_pack": {
-    "pack": "x.klickd/streamer",
+    "pack": "x.klickd/streaming_creator",
     "pack_version": "0.1.0-candidate-lite",
     "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a11",
     "publisher": {"name": "klickd", "ref": "https://klickd.app"},
@@ -50,12 +51,12 @@
     "levels": [{"framework_ref": "https://europa.eu/europass/eqf/level/4", "level_label": "EQF level 4", "effective_at": "2026-05-27"}],
     "language_proficiency": [],
     "mastery": [],
-    "memory_scope": "memory.x_klickd.streamer",
+    "memory_scope": "memory.x_klickd.streaming_creator",
     "memory_segments": [
-      {"id": "clips", "scope": "memory.x_klickd.streamer.clips", "policy": "pointer_only_no_third_party_likeness"},
-      {"id": "guests", "scope": "memory.x_klickd.streamer.guests", "policy": "explicit_consent_required"}
+      {"id": "clips", "scope": "memory.x_klickd.streaming_creator.clips", "policy": "pointer_only_no_third_party_likeness"},
+      {"id": "guests", "scope": "memory.x_klickd.streaming_creator.guests", "policy": "explicit_consent_required"}
     ],
-    "structured_memory": {"scope": "memory.x_klickd.streamer", "policy": "pack_scoped_only", "entries": []},
+    "structured_memory": {"scope": "memory.x_klickd.streaming_creator", "policy": "pack_scoped_only", "entries": []},
     "media_profile_compose_ref": "rfc-001#media_profile",
     "gates": {
       "verification_gates_default": {"raise_only": true, "claim_grounding_required": true, "reversibility_threshold": "low"},

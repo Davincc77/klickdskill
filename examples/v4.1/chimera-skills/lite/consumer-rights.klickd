@@ -19,7 +19,7 @@
     "note": "Non-normative Chimera v4.1 candidate skill artefact. Lot A consumer-rights pack composing x.klickd/user and x.klickd/legal (P0)."
   },
   "x_klickd_pack": {
-    "pack": "x.klickd/consumer",
+    "pack": "x.klickd/consumer_rights",
     "pack_version": "0.1.0-candidate-lite",
     "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a7",
     "publisher": {"name": "klickd", "ref": "https://klickd.app"},
@@ -53,11 +53,11 @@
     "levels": [{"framework_ref": "https://europa.eu/europass/eqf/level/4", "level_label": "EQF level 4", "effective_at": "2026-05-27"}],
     "language_proficiency": [],
     "mastery": [],
-    "memory_scope": "memory.x_klickd.consumer",
+    "memory_scope": "memory.x_klickd.consumer_rights",
     "memory_segments": [
-      {"id": "disputes", "scope": "memory.x_klickd.consumer.disputes", "policy": "pointer_only_no_third_party_text"}
+      {"id": "disputes", "scope": "memory.x_klickd.consumer_rights.disputes", "policy": "pointer_only_no_third_party_text"}
     ],
-    "structured_memory": {"scope": "memory.x_klickd.consumer", "policy": "pack_scoped_only", "entries": []},
+    "structured_memory": {"scope": "memory.x_klickd.consumer_rights", "policy": "pack_scoped_only", "entries": []},
     "gates": {
       "verification_gates_default": {"raise_only": true, "claim_grounding_required": true, "reversibility_threshold": "medium"},
       "human_veto_policy": {"owner": "human_carrier", "scope": ["legal_dispute_escalation", "contract_assertion", "third_party_communication"]}

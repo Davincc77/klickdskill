@@ -16,10 +16,11 @@
     "status": "candidate_mapped",
     "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/chimera-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact. Sub-profile of x.klickd/creator (P1); NOT a separate sibling pack."
+    "note": "Non-normative Chimera v4.1 candidate skill artefact. Composes with x.klickd/creator (P1); narrower planning / publishing scope for end-user creators.",
+    "renamed_from": "media-lite.klickd"
   },
   "x_klickd_pack": {
-    "pack": "x.klickd/creator",
+    "pack": "x.klickd/media_planner",
     "pack_version": "0.1.0-candidate-lite",
     "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a4",
     "publisher": {
@@ -27,7 +28,7 @@
       "ref": "https://klickd.app"
     },
     "size_tier": "lite",
-    "parent_packs": ["x.klickd/user"],
+    "parent_packs": ["x.klickd/user", "x.klickd/creator"],
     "target_user": "End-user creator: hobbyist editor, occasional newsletter author, light social-media poster. Not a journalist; not a full editorial role.",
     "frameworks": [
       {"scheme": "esco", "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/", "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"},
@@ -60,12 +61,12 @@
     ],
     "language_proficiency": [],
     "mastery": [],
-    "memory_scope": "memory.x_klickd.creator",
+    "memory_scope": "memory.x_klickd.media_planner",
     "memory_segments": [
-      {"id": "drafts", "scope": "memory.x_klickd.creator.drafts", "policy": "pointer_only_summary"},
-      {"id": "rights", "scope": "memory.x_klickd.creator.rights", "policy": "pointer_only_attribution"}
+      {"id": "drafts", "scope": "memory.x_klickd.media_planner.drafts", "policy": "pointer_only_summary"},
+      {"id": "rights", "scope": "memory.x_klickd.media_planner.rights", "policy": "pointer_only_attribution"}
     ],
-    "structured_memory": {"scope": "memory.x_klickd.creator", "policy": "pack_scoped_only", "entries": []},
+    "structured_memory": {"scope": "memory.x_klickd.media_planner", "policy": "pack_scoped_only", "entries": []},
     "media_profile_compose_ref": "rfc-001#media_profile",
     "gates": {
       "verification_gates_default": {"raise_only": true, "claim_grounding_required": true, "reversibility_threshold": "low"},

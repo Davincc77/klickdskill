@@ -16,10 +16,11 @@
     "status": "candidate_mapped",
     "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/chimera-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact. Sub-profile of x.klickd/work (P1); NOT a separate sibling pack."
+    "note": "Non-normative Chimera v4.1 candidate skill artefact. Composes with x.klickd/work (P1); narrower day-to-day assistant scope.",
+    "renamed_from": "work-lite.klickd"
   },
   "x_klickd_pack": {
-    "pack": "x.klickd/work",
+    "pack": "x.klickd/work_assistant",
     "pack_version": "0.1.0-candidate-lite",
     "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a1",
     "publisher": {
@@ -27,7 +28,7 @@
       "ref": "https://klickd.app"
     },
     "size_tier": "lite",
-    "parent_packs": ["x.klickd/user"],
+    "parent_packs": ["x.klickd/user", "x.klickd/work"],
     "target_user": "Employed person or freelancer covering day-to-day deliverables, communication, and planning. Not a senior PM (that stays in full x.klickd/work).",
     "frameworks": [
       {
@@ -83,13 +84,13 @@
     ],
     "language_proficiency": [],
     "mastery": [],
-    "memory_scope": "memory.x_klickd.work",
+    "memory_scope": "memory.x_klickd.work_assistant",
     "memory_segments": [
-      {"id": "deliverables", "scope": "memory.x_klickd.work.deliverables", "policy": "pointer_only_summary"},
-      {"id": "stakeholders", "scope": "memory.x_klickd.work.stakeholders", "policy": "pointer_only_no_pii_of_others"}
+      {"id": "deliverables", "scope": "memory.x_klickd.work_assistant.deliverables", "policy": "pointer_only_summary"},
+      {"id": "stakeholders", "scope": "memory.x_klickd.work_assistant.stakeholders", "policy": "pointer_only_no_pii_of_others"}
     ],
     "structured_memory": {
-      "scope": "memory.x_klickd.work",
+      "scope": "memory.x_klickd.work_assistant",
       "policy": "pack_scoped_only",
       "entries": []
     },

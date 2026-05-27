@@ -11,36 +11,6 @@
   "note": "Hashes are reproducible offline. sha256_file is over raw bytes; sha256_canonical_json is over json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8'). NON-NORMATIVE candidate Chimera v4.1 skill artefacts.",
   "packs": [
     {
-      "id": "x.klickd/agent_security",
-      "file": "agent-security.klickd",
-      "size_tier": "pro",
-      "pack_version": "0.1.0-candidate-pro",
-      "bytes": 10926,
-      "sha256_file": "43bcca12480773723699afd8576724dbe00d9a2f43fe88798a7a51c4fb09b883",
-      "sha256_canonical_json": "98da69dffa66a7fbaeaa7881a0db0de3112c1123b0a62a885a434ccef0df05a6",
-      "status": "candidate_mapped",
-      "parent_packs": [
-        "x.klickd/user",
-        "x.klickd/security",
-        "x.klickd/coding"
-      ]
-    },
-    {
-      "id": "x.klickd/ai_agent_builder",
-      "file": "ai-agent-builder.klickd",
-      "size_tier": "pro",
-      "pack_version": "0.1.0-candidate-pro",
-      "bytes": 9743,
-      "sha256_file": "f43edafda2d4d1d98e9bda8b5e6f3596fdd43369d0db8b592a9ec75cd3760b57",
-      "sha256_canonical_json": "a44c6c1f78622fc996fdf0170fb7359086c1c5bffecf5e573cc6b063d7034f0a",
-      "status": "candidate_mapped",
-      "parent_packs": [
-        "x.klickd/user",
-        "x.klickd/coding",
-        "x.klickd/agent_security"
-      ]
-    },
-    {
       "id": "x.klickd/contract_review",
       "file": "contract-review.klickd",
       "size_tier": "pro",
@@ -56,12 +26,12 @@
     },
     {
       "id": "x.klickd/drone_operator",
-      "file": "drone.klickd",
+      "file": "drone-operator.klickd",
       "size_tier": "pro",
       "pack_version": "0.1.0-candidate-pro",
-      "bytes": 8125,
-      "sha256_file": "8ae978b85ddb0a732b753e46585ac513bba9eb7e104bb49d406e96483cdc503a",
-      "sha256_canonical_json": "3dec5d26319b51c1f32ebd5acabeba635629df5925c29c692b5d17f7014c8a2f",
+      "bytes": 8161,
+      "sha256_file": "b6fb4f514cfd226cd51a872dc0427df38278ee01880e16bd890f9e206c7157f4",
+      "sha256_canonical_json": "850bea1c5e6547db30859dabf721cb5a27beb948354686bf53e5452b36c107b3",
       "status": "candidate_mapped",
       "parent_packs": [
         "x.klickd/user",
@@ -128,13 +98,13 @@
       ]
     },
     {
-      "id": "x.klickd/iam_endpoint",
-      "file": "iam-endpoint.klickd",
+      "id": "x.klickd/identity_access_management",
+      "file": "identity-access-management.klickd",
       "size_tier": "pro",
       "pack_version": "0.1.0-candidate-pro",
-      "bytes": 9789,
-      "sha256_file": "78a00b14f896978887c36bdf5a2032190b27fe5c0576ef7d3ff6823f389c3601",
-      "sha256_canonical_json": "33f1b212448812c7d238f2218cdefbac1d4e5011b9c2faf74ffb10968a12b1bd",
+      "bytes": 9961,
+      "sha256_file": "e06e53cb89b6d20b29fdc3fb109bd708c04d05a4dda0d725dfcb0d9b095ebe15",
+      "sha256_canonical_json": "be3012bb1d8143eee8ab518a36858d3546cd52c11dda6dedaef17189482a3755",
       "status": "candidate_mapped",
       "parent_packs": [
         "x.klickd/user",
@@ -153,6 +123,36 @@
       "parent_packs": [
         "x.klickd/user",
         "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/llm_agent_engineering",
+      "file": "llm-agent-engineering.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9829,
+      "sha256_file": "f035de2b8e169be46c3a25f0ed557254f894b1780ec2e43de7767eaeb41986d0",
+      "sha256_canonical_json": "95607ec720a99c6822ef69b8b8f0fba60e4a172cf5d70ca64b28989ebb18e97f",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/llm_agent_security"
+      ]
+    },
+    {
+      "id": "x.klickd/llm_agent_security",
+      "file": "llm-agent-security.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10999,
+      "sha256_file": "e32f56b4a746c1484e145a8a63831e8d4f1fad72d809ada96b94be55af61af8a",
+      "sha256_canonical_json": "8a2d5b9427514b344eb8f9109ef72d7a183dd114989a856c7d1fde3fbdcdd562",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security",
+        "x.klickd/coding"
       ]
     },
     {

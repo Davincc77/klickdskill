@@ -25,31 +25,17 @@
       ]
     },
     {
-      "id": "x.klickd/consumer",
+      "id": "x.klickd/consumer_rights",
       "file": "consumer-rights.klickd",
       "size_tier": "lite",
       "pack_version": "0.1.0-candidate-lite",
-      "bytes": 5956,
-      "sha256_file": "3cb21145ad0c6e549dc8bd7e2283e32ade8c33082b8f2d2d51351bebebb4aaa3",
-      "sha256_canonical_json": "0ef58c38b5221a056f811539a56f9b61e8baf5af7f52ae140e8ac1554d1cbf24",
+      "bytes": 5984,
+      "sha256_file": "9d69f0cdcb4dc7587ee8853eed1054d9279c993fe5cb8d4022ab8e8d203a7022",
+      "sha256_canonical_json": "f33fc1ac9818eb84e8051a0d481fbbc6932bc7b678c205f72e65b0fec4ad3eef",
       "status": "candidate_mapped",
       "parent_packs": [
         "x.klickd/user",
         "x.klickd/legal"
-      ]
-    },
-    {
-      "id": "x.klickd/crypto_basics",
-      "file": "crypto-lite.klickd",
-      "size_tier": "lite",
-      "pack_version": "0.1.0-candidate-lite",
-      "bytes": 6245,
-      "sha256_file": "0113ad93531ce5d9f55cb0d2e0afd252be3c180b6ae2a61e24a1326767dca3c0",
-      "sha256_canonical_json": "e28b151264b8b1b51b1f5a2ffcf437c23928249197b1e6cfba293d8cfbaa656b",
-      "status": "candidate_mapped",
-      "parent_packs": [
-        "x.klickd/user",
-        "x.klickd/security"
       ]
     },
     {
@@ -67,16 +53,17 @@
       ]
     },
     {
-      "id": "x.klickd/creator",
-      "file": "media-lite.klickd",
+      "id": "x.klickd/media_planner",
+      "file": "media-planner.klickd",
       "size_tier": "lite",
       "pack_version": "0.1.0-candidate-lite",
-      "bytes": 6337,
-      "sha256_file": "b1ebe9ab3f170dae221b808d2945cac76093ebcb8a3638a1ecbb32bfca4346e0",
-      "sha256_canonical_json": "06f084f81a432fd64915b023ccbef6783a7a27f57c8cdf91ad457c5df4af2ef8",
+      "bytes": 6458,
+      "sha256_file": "225a9ada5b60941c33b77ecc156645ca53509d0fb39beafe59606e16c4af992e",
+      "sha256_canonical_json": "11902bef6cfb544db8dd12f0ca39ab0abdefbcf2640306fb05c2000084e39ed2",
       "status": "candidate_mapped",
       "parent_packs": [
-        "x.klickd/user"
+        "x.klickd/user",
+        "x.klickd/creator"
       ]
     },
     {
@@ -96,25 +83,25 @@
     },
     {
       "id": "x.klickd/social_literacy",
-      "file": "social.klickd",
+      "file": "social-literacy.klickd",
       "size_tier": "lite",
       "pack_version": "0.1.0-candidate-lite",
-      "bytes": 6212,
-      "sha256_file": "71a395d332bf90822b7b36ce0c1addf5f13514401e18c5fe675f52fa30869b20",
-      "sha256_canonical_json": "1b73c616154b72da36b10279eeced9269e86e1c5d4b99c2dee649132979ddf5d",
+      "bytes": 6249,
+      "sha256_file": "0b593d22e8bf8b99ffaffd2fac21fa8155caac896bc533046360eb1e0d079413",
+      "sha256_canonical_json": "4e0a1b53de153cd1d72dc6be5bdbfe7d808529d3df21fce5c7f73dbf40b556b0",
       "status": "candidate_mapped",
       "parent_packs": [
         "x.klickd/user"
       ]
     },
     {
-      "id": "x.klickd/streamer",
-      "file": "streamer-lite.klickd",
+      "id": "x.klickd/streaming_creator",
+      "file": "streaming-creator.klickd",
       "size_tier": "lite",
       "pack_version": "0.1.0-candidate-lite",
-      "bytes": 5829,
-      "sha256_file": "869dee693490381e17a87c3387949567beb0024a0a864825b5bb547a08550c94",
-      "sha256_canonical_json": "a4a2a9f97198e68f79b30feae44e20594479dbbe5afbca4acfe6685d2e0482e4",
+      "bytes": 5918,
+      "sha256_file": "b4cfe2c1e001a3ea5f7f7f5db99f09f9e0d08455a600c4a72fd1a683f8146802",
+      "sha256_canonical_json": "ea0b6ec986e6ae0735bca3e653f5463ef4726ac8eda3967d1afe6bc855762885",
       "status": "candidate_mapped",
       "parent_packs": [
         "x.klickd/user",
@@ -122,16 +109,17 @@
       ]
     },
     {
-      "id": "x.klickd/work",
-      "file": "work-lite.klickd",
+      "id": "x.klickd/work_assistant",
+      "file": "work-assistant.klickd",
       "size_tier": "lite",
       "pack_version": "0.1.0-candidate-lite",
-      "bytes": 7097,
-      "sha256_file": "942c582514ae5b92d5907aa501c335b58e6f3f23e4794e7b4d378bea7d7adfad",
-      "sha256_canonical_json": "fbf0b22850112027a335753cea2c20d28d756f8327542d7f060d8dc6f388f13f",
+      "bytes": 7211,
+      "sha256_file": "8f98ee244a365d4ffe044de571b317925bdb1950261ed90d5b6d449bfc9d2bb2",
+      "sha256_canonical_json": "b6e5316828255dee599619798a75da92b49a98c49196ccebccd79a54f0c377a9",
       "status": "candidate_mapped",
       "parent_packs": [
-        "x.klickd/user"
+        "x.klickd/user",
+        "x.klickd/work"
       ]
     }
   ]
