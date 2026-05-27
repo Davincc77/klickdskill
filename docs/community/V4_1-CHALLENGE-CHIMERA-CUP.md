@@ -47,7 +47,7 @@ These rules apply to **every submission**. If a future maintainer-signed Rules d
 
 A **single Pull Request** to a public `klickdskill-cup-<round>` repository (to be created when the round opens) containing exactly:
 
-1. **`bundle.json`** — a strict JSON list of canonical pack ids + versions, max 10 entries (more than 10 is rejected before judging). Schema: `[ { "pack": "x.klickd/<name>", "version": "<semver>" }, ... ]`. Pack ids MUST exist in the live `/klickdskill` catalog at submission time.
+1. **`bundle.json`** — a strict JSON list of canonical pack ids + versions, **3–7 entries** (matches the `/klickdskill` bundle-builder window in [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §7a; outside that window is rejected before judging). Schema: `[ { "pack": "x.klickd/<name>", "version": "<semver>" }, ... ]`. Pack ids MUST exist in the live `/klickdskill` catalog at submission time.
 2. **`agents.md`** — a one-page (≤ 1,000 words) description of: how many agents the bundle implies, who carries which packs, what each agent's `final_decision_owner` is, and which gates are loudest.
 3. **`why.md`** — a one-page (≤ 1,000 words) explanation of: the scenario, the user need, why this bundle (and not a smaller one) is the right fit, and what bundles you considered and rejected.
 4. **`safety.md`** — a one-page (≤ 500 words) explanation of: which RFC-002 gates apply, where human review is mandatory, what the failure modes are, and what is explicitly out of scope.
@@ -64,9 +64,10 @@ Submissions MUST NOT contain:
 ### 3.3 What the bundle MUST satisfy
 
 - **Form an acyclic composition graph** rooted on `x.klickd/user` (which is implicit, not counted).
-- **Respect the seven-pack ceiling** at the **agent** level: every agent in `agents.md` may carry at most 7 packs from the bundle (the bundle itself may total up to 10).
-- **Use only `ship_ready` packs** as of the round's freeze date. Reserved-slot packs (see [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §1.2) are not eligible until they clear §8.
-- **Pass the framework-anchor rule:** every claimed competency in `why.md` must trace to a framework anchor in one of the bundled packs. Inventing competency labels is grounds for disqualification.
+- **Respect the seven-pack ceiling** at the **agent** level: every agent in `agents.md` may carry at most 7 packs from the bundle.
+- **Stay within the bundle size window:** bundles MUST contain **3–7 packs** total (matches the `/klickdskill` bundle-builder rule in [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §7a). A submission outside that window is rejected by the bot check.
+- **Use only `ship_ready` packs** as of the round's freeze date. Packs at `candidate_mapped` or below are not eligible until they clear [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md).
+- **Pass the framework-anchor rule:** every claimed competency in `why.md` MUST trace to a framework anchor in one of the bundled packs, and that framework MUST appear in the canonical admissible-frameworks list at [`docs/rfcs/chimera/frameworks/README.md`](../rfcs/chimera/frameworks/README.md) §1 (ESCO / WEF / O*NET / DigComp / EQF / CEFR / LifeComp / NICE / ENISA / CIS / SFIA). Inventing competency labels or anchoring to a framework outside that list is grounds for disqualification.
 - **Preserve `raise_only: true`** and a non-host-side `final_decision_owner`. A submission whose `agents.md` describes an agent that auto-approves a hard gate is disqualified.
 
 ### 3.4 Submission window and rounds
@@ -92,7 +93,7 @@ klickdskill-cup-<round>/
 
 A bot or maintainer script SHOULD validate, before judging:
 
-- `bundle.json` parses, has ≤ 10 entries, every `pack` exists in the live `/klickdskill` catalog at the freeze date, every `version` is `ship_ready`.
+- `bundle.json` parses, has 3–7 entries, every `pack` exists in the live `/klickdskill` catalog at the freeze date, every `version` is `ship_ready`.
 - Composition graph is acyclic from `x.klickd/user`.
 - No forbidden pack id appears (`klickdapp.*`, `kai.*`, `core.*`).
 - Word counts are within limits.
@@ -143,9 +144,11 @@ A one-off `carrier_pack` scaffold drafted by the maintainers for a use case the 
 - the resulting pack would clear [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md) (otherwise the prize is "we will draft what we can; the rest is `needs_mapping`");
 - the resulting pack is published under the project's standard licence and is NOT exclusive to the winner.
 
-### 7.2 Curated bundle of up to 10 ship-ready packs
+### 7.2 Curated bundle of 3–7 ship-ready packs
 
-A maintainer-curated bundle (same format as §4) selected to fit a scenario the winner names, packaged as a featured entry on `/klickdskill` for one season.
+A maintainer-curated bundle (same format as §4, 3–7 packs per the `/klickdskill` bundle-builder window) selected to fit a scenario the winner names, packaged as a **featured entry on `/klickdskill` for one season**.
+
+**"Season" definition.** A "season" is **a single calendar quarter — 90 consecutive days — beginning on the date the maintainer panel publishes the featured entry, with an automatic, unannounced expiry exactly 90 days later.** No early removal except for (a) a `SECURITY.md` incident touching a bundled pack, (b) a `ship_ready` pack in the bundle being downgraded by RFC review, or (c) the maintainer panel deciding to retire the bundle on safety grounds. No extension is implied; a second season requires an explicit, separate maintainer decision. After expiry the featured slot returns to maintainer rotation; the bundle's `bundle.json` remains visible in the contest archive permanently.
 
 ### 7.3 Honourable mentions
 
@@ -225,6 +228,7 @@ The contest exists to serve the catalog. The moment it stops doing that, it stop
 - [`docs/demos/V4_1-CURATED-BUNDLES.md`](../demos/V4_1-CURATED-BUNDLES.md)
 - [`docs/chimera/README_V4_1.md`](../chimera/README_V4_1.md)
 - [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md)
+- [`docs/rfcs/chimera/frameworks/README.md`](../rfcs/chimera/frameworks/README.md) — canonical admissible-frameworks list (referenced by §3.3).
 - [`docs/community/FEEDBACK.md`](./FEEDBACK.md)
 - [`SECURITY.md`](../../SECURITY.md)
 - [`CODE_OF_CONDUCT.md`](../../CODE_OF_CONDUCT.md)

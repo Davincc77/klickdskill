@@ -43,34 +43,30 @@ The catalog targets **42 ship-ready carrier-pack entries**, split into two tiers
 
 ### 1.1 Current vs. planned
 
+The catalog target is **42 cards** = **8 Lite + 34 Pro**. The P0 starter packs (`user`, `student`, `research`, `coding`) live under [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) and are **starter skills, not Pro-tier catalog entries**. They are surfaced on the catalog as a small "Foundations" affordance (category **C9**) attached to the catalog but **not counted toward the 8/34 totals**.
+
 | | Lite | Pro | Total |
 |---|---:|---:|---:|
-| **Already shipped** (`examples/v4.1/chimera-skills/{lite,pro}/`) | 8 | 19 | 27 |
-| **P0 starter packs** (`examples/v4/starter-skills/`) — `user`, `student`, `research`, `coding` | — | 4¹ | 4 |
-| **Reserved Pro slots** (not yet `candidate_mapped` or deferred per audit) | — | 11 | 11 |
-| **Catalog target** | **8** | **34** | **42** |
+| **`candidate_mapped` artefacts under `examples/v4.1/chimera-skills/{lite,pro}/`** as of PR #75 head | 8 | 34 | **42** |
+| **P0 starter packs** (`examples/v4/starter-skills/`) — `user`, `student`, `research`, `coding`. Surfaced as "Foundations" affordance, **not** counted toward 8/34. | — | — | (4, separate) |
 
-¹ The P0 starter packs are tier-neutral by construction but display under **Pro** in the catalog because their composition surface (gates, evidence policy, framework anchors) is advanced. A future "Lite face" of `user` may be considered but is out of scope here.
+The 8 Lite + 34 Pro arithmetic is enforced upstream by [`scripts/validate_v4_1_candidate_mapping.py`](../../scripts/validate_v4_1_candidate_mapping.py) (`TIER_EXPECTED_COUNT = {"lite": 8, "pro": 34}`) and by `tests/test_v4_1_candidate_mapping.py::test_tier_artefact_counts_are_frozen_at_8_lite_and_34_pro`. This doc must stay aligned with that invariant.
 
-### 1.2 The 11 reserved Pro slots (sketch only, **not** a commitment)
+### 1.2 Pro catalog roster (canonical, aligned with PR #75)
 
-Reserved for candidates that pass mapping + per-pack RFC + scaffold + substance + §8 validation per [RFC-009](../rfcs/RFC-009-chimera-v4.1.md). Naming below is **suggestive only**; any of these may be dropped or renamed by the RFC track:
+The 34 Pro entries below are the **canonical roster** at the head of PR #75 (`chore/chimera-v4-1-expand-42-skills`). This doc tracks that roster verbatim; if the roster changes by RFC, this section MUST be updated in the same PR that changes it.
 
-| # | Working nickname | Domain hint | Notes |
-|---|---|---|---|
-| R1 | `personal-finance` (was A5, **deferred**) | legal / consumer | Awaits a framework-anchored EU/OECD financial-literacy taxonomy. |
-| R2 | `budget` (was A6, **deferred**) | legal / consumer | Same anchor gap as R1; may merge with R1. |
-| R3 | `wellbeing-lite` (was A14, **deferred**) | family_support | Needs a clinician-reviewable framework anchor (WHO ICF or equivalent) — not a host_skill. |
-| R4 | `family` (was A15, **deferred**) | family_support | Awaits LifeComp + DigComp anchoring for guardianship surface. |
-| R5 | `data-engineer` | software_engineering | Composes with `coding`; ESCO + SFIA anchors. |
-| R6 | `ml-engineer` | software_engineering | Composes with `coding` + `llm_agent_engineering`. |
-| R7 | `sre-oncall` | operations | ESCO + SFIA; gates loud on production action. |
-| R8 | `support-ops` | professional / trust_and_safety | ESCO + LifeComp; tone rules stay in `host_skill`. |
-| R9 | `sales-ops` | professional | ESCO + WEF; CRM-neutral. |
-| R10 | `educator` | research / professional | DigCompEdu + LifeComp; clearly distinct from any Kai-side host. |
-| R11 | `journalist-newsroom` | research / professional | UNESCO MIL + EU media-literacy frameworks; gates loud on attribution. |
+**Already shipped before PR #75 (19 Pro)**
 
-Each reserved slot must clear the full gating ladder ([`docs/chimera/README_V4_1.md`](../chimera/README_V4_1.md) §4) before appearing on `/klickdskill`. Until then, the catalog **renders 31 cards plus a transparent "11 reserved" disclosure tile** — never an empty grid pretending to be complete.
+`llm-agent-security`, `llm-agent-engineering`, `identity-access-management`, `release-engineer`, `trust-evidence`, `eu-ai-act`, `gdpr-readiness`, `contract-review`, `privacy-product`, `evidence-desk`, `policy-analyst`, `second-brain`, `literature-review`, `project-operator`, `drone-operator`, `mission-control`, `game-design`, `rights-guard`, `video-production-pipeline`.
+
+**Added by PR #75 (15 new Pro, B20..B34)**
+
+`product-manager` (B20), `ux-researcher` (B21), `data-analyst` (B22), `api-integrator` (B23), `devops-operator` (B24), `security-incident-response` (B25), `sales-operator` (B26), `customer-support-operator` (B27), `finance-analyst` (B28), `accounting-operator` (B29), `technical-writer` (B30), `learning-designer` (B31), `sustainability-analyst` (B32), `healthcare-ai-safety-reviewer` (B33), `edge-ai-operator` (B34).
+
+All 34 Pro packs carry `_pack_metadata.status = "candidate_mapped"` and `claims_v41_ga = false`. None is `ship_ready` yet. **Catalog exposure on `/klickdskill` remains gated on [RFC-009 §7 / §8](../rfcs/RFC-009-chimera-v4.1.md)**: until each pack passes §8 and all P0 packs pass §8, the live catalog does not list these entries. Until that gate clears, `/klickdskill` either renders nothing or renders a transparent "v4.1 catalog under construction" disclosure — **not** a half-populated grid.
+
+The 8 Lite roster is fixed at: `work-assistant`, `media-planner`, `consumer-rights`, `social-literacy`, `artist`, `streaming-creator`, `game-literacy`, `parent-gaming`.
 
 ---
 
@@ -80,15 +76,17 @@ Nine categories, picked to (a) cover every domain present in current artefacts, 
 
 | # | Category | Audience hook | Examples (current artefacts) |
 |---|---|---|---|
-| **C1** | **Everyday** | "Day-to-day life, citizen rights, parenting, money literacy." | `consumer-rights`, `social-literacy`, `parent-gaming`, `game-literacy` (+ reserved `personal-finance`, `budget`, `family`, `wellbeing-lite`). |
-| **C2** | **Work** | "Get the job done — communication, planning, projects." | `work-assistant`, `project-operator` (+ reserved `support-ops`, `sales-ops`). |
-| **C3** | **Creator / Media** | "Make and ship creative work." | `artist`, `streaming-creator`, `media-planner`, `game-design`, `video-production-pipeline`. |
-| **C4** | **Developer / AI** | "Build, ship, and operate software and AI agents." | `coding` (P0), `llm-agent-engineering`, `release-engineer` (+ reserved `data-engineer`, `ml-engineer`). |
-| **C5** | **Security / Trust** | "Defend systems, manage identity, ship trustworthy evidence." | `llm-agent-security`, `identity-access-management`, `trust-evidence`, `evidence-desk` (+ reserved `sre-oncall`). |
-| **C6** | **Legal / Compliance** | "Read the law, ship the audit." | `eu-ai-act`, `gdpr-readiness`, `contract-review`, `privacy-product`, `rights-guard`, `policy-analyst`. |
-| **C7** | **Research / Knowledge** | "Think, read, write at depth." | `research` (P0), `second-brain`, `literature-review` (+ reserved `educator`, `journalist-newsroom`). |
-| **C8** | **Operations / Mission** | "Run things in the physical world." | `drone-operator`, `mission-control`. |
-| **C9** | **Foundations** | "The always-on packs every Chimera stack composes with." | `user` (P0), `student` (P0). |
+| **C1** | **Everyday** | "Day-to-day life, citizen rights, parenting, money literacy." | Lite: `consumer-rights`, `social-literacy`, `parent-gaming`, `game-literacy`. |
+| **C2** | **Work** | "Get the job done — communication, planning, projects." | Lite: `work-assistant`. Pro: `project-operator`, `product-manager`, `customer-support-operator`, `sales-operator`, `technical-writer`, `learning-designer`. |
+| **C3** | **Creator / Media** | "Make and ship creative work." | Lite: `artist`, `streaming-creator`, `media-planner`. Pro: `game-design`, `video-production-pipeline`, `ux-researcher`. |
+| **C4** | **Developer / AI** | "Build, ship, and operate software and AI agents." | Pro: `llm-agent-engineering`, `release-engineer`, `data-analyst`, `api-integrator`, `devops-operator`, `edge-ai-operator`. |
+| **C5** | **Security / Trust** | "Defend systems, manage identity, ship trustworthy evidence." | Pro: `llm-agent-security`, `identity-access-management`, `trust-evidence`, `evidence-desk`, `security-incident-response`. |
+| **C6** | **Legal / Compliance** | "Read the law, ship the audit." | Pro: `eu-ai-act`, `gdpr-readiness`, `contract-review`, `privacy-product`, `rights-guard`, `policy-analyst`, `finance-analyst`, `accounting-operator`, `sustainability-analyst`, `healthcare-ai-safety-reviewer`. |
+| **C7** | **Research / Knowledge** | "Think, read, write at depth." | Pro: `second-brain`, `literature-review`. |
+| **C8** | **Operations / Mission** | "Run things in the physical world." | Pro: `drone-operator`, `mission-control`. |
+| **C9** | **Foundations (P0 starter affordance, not catalog tier)** | "The always-on packs every Chimera stack composes with — surfaced as an affordance, not counted in the 8/34 totals." | P0 starter packs from [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/): `user`, `student`, `research`, `coding`. |
+
+C2..C8 cover the **34 Pro + 8 Lite = 42** catalog entries exactly. C9 is the P0 starter affordance and is **not** counted toward the 42. Sensitive-domain Pro packs in C6 carry their RFC-002 `block` gates verbatim (e.g., `finance-analyst` blocks regulated investment advice; `healthcare-ai-safety-reviewer` blocks clinical claims without trial); the catalog never softens those gates at the card level.
 
 **Rule:** every catalog card carries **exactly one** primary category, even if the underlying pack composes across domains. The composition is visible in the detail panel ("composes with…") and in the comparison table, never in the card chip. Multi-category chips create clutter and break the colour rule (§4.4).
 
@@ -213,7 +211,7 @@ A pack like `eu-ai-act` touches Legal **and** Developer/AI; `evidence-desk` touc
 - **Left rail (desktop) / drawer (mobile):** filters (see §5.3).
 - **Main grid:** cards. Default sort: category → tier → name. Optional sort: tokens, last validated, version. **Never** sort by popularity or recommendation.
 - **Right rail (desktop only, opt-in):** bundle builder tray (see §5.6). Empty by default, persistent across navigation.
-- **Bottom:** comparison table entry point + the 11 reserved slots disclosure.
+- **Bottom:** comparison table entry point + a "v4.1 readiness" disclosure showing how many of the 42 entries are currently `ship_ready` vs. `candidate_mapped` (today: 0 / 42 — none are `ship_ready` yet, and the catalog reflects that honestly).
 
 ### 5.2 Search
 
@@ -306,6 +304,29 @@ Hard rules:
 
 ---
 
+## 7a. Per-pack file-size budget (`/klickdskill` public catalog only)
+
+The numbers below apply **only** to v4.1 Chimera carrier packs surfaced on the public `/klickdskill` catalog (the 8 Lite + 34 Pro tracked in §1). They do **not** apply to the Klickd.app product (`klickdapp.*`), to `kai.*` host skills, to `core.*` agent-core artefacts, or to any private/internal pack. Those surfaces follow their own budgets and are explicitly out of scope here per §0.
+
+| Tier | File-size target | File-size ceiling | Loading strategy | `router_cost.tokens_estimate` ceiling |
+|---|---|---|---|---|
+| **Lite** | ≤ 8 KB | ≤ **12 KB** | Full manifest in prompt. | ≤ 900 tokens. |
+| **Pro** | ≤ 16 KB | ≤ **24 KB** | `compact_index_plus_lazy_body` — compact index in prompt; full body lazy-loaded via `decision_router`. | ≤ 1,350 tokens. |
+
+Rationale:
+- Lite at ≤ 12 KB stays comfortably loadable on first interaction even on a low-end Android in Europe (matches the catalog page-weight stance above).
+- Pro at ≤ 24 KB allows richer competency / gate detail without ever needing a network round-trip to read the pack body, while the **compact index** keeps prompt occupancy small enough that the seven-pack ceiling of [RFC-009 §5.3](../rfcs/RFC-009-chimera-v4.1.md) remains realistic.
+- The 24 KB ceiling is a **catalog-surface ceiling**, not a wire-format ceiling. A pack that legitimately needs more substance should split into a smaller compact index plus a lazy-loaded body, or move to a `temporary_overlay` per [RFC-009 §5.4](../rfcs/RFC-009-chimera-v4.1.md) — **never** break the ceiling by inflating the in-prompt body.
+
+Bundle-shape rule:
+- **Bundles on `/klickdskill` MUST contain 3–7 packs.** Below 3, the bundle isn't a bundle (single packs are first-class on their own card). Above 7, the bundle violates the seven-pack agent-level ceiling of [RFC-009 §5.3](../rfcs/RFC-009-chimera-v4.1.md) and the bundle builder MUST refuse to export it.
+- The bundle builder's token meter is advisory; the **pack-count limit (3–7) is binding**.
+- Implicit `x.klickd/user` is **not** counted toward the 3–7 window.
+
+These per-pack and per-bundle budgets exist so the catalog can promise a stable browsing experience without quietly shipping page weight. They are NOT a quality bar (a 5 KB pack is not worse than a 22 KB pack); they are a budget. Validator alignment for the file-size ceilings already exists in [`scripts/validate_v4_1_candidate_mapping.py`](../../scripts/validate_v4_1_candidate_mapping.py); any future tightening to the 12 / 24 KB numbers here MUST be accompanied by a matching validator update in the same PR.
+
+---
+
 ## 8. Internationalisation (planning only)
 
 - The catalog ships English first.
@@ -320,7 +341,7 @@ Hard rules:
 1. Exact tuning of the 9-hue palette against the live page background (§4.2).
 2. Whether the bundle token meter should default to a stated agent context budget or remain advisory only (§5.6).
 3. Whether the 4 P0 starter packs get a "Foundations" home, or stay invisible until composed (this doc picks **C9 Foundations**, but RFC review may differ).
-4. Whether the 11 reserved slots are disclosed as named placeholders or as an anonymised count (§1.2).
+4. Whether the catalog renders cards for `candidate_mapped` packs behind a "preview" flag, or hides them entirely until `ship_ready` (§1.2 + §5.3 default).
 5. Mobile bundle tray: bottom sheet vs. full-screen step.
 
 ---
@@ -330,8 +351,9 @@ Hard rules:
 - [`docs/chimera/README_V4_1.md`](../chimera/README_V4_1.md) — planning index for v4.1 candidates.
 - [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) — per-candidate mapping table.
 - [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md) — authoritative spec for v4.1.
+- [`docs/rfcs/chimera/frameworks/README.md`](../rfcs/chimera/frameworks/README.md) — canonical admissible-frameworks list (ESCO / WEF / O*NET / DigComp / EQF / CEFR / LifeComp / NICE / ENISA / CIS / SFIA).
 - [`docs/ux/V4-UX-SPEC.md`](./V4-UX-SPEC.md) — v4 viewer/decryptor UX, the source of the "simple by default + progressive disclosure" stance reused here.
 - [`docs/demos/V4_1-CURATED-BUNDLES.md`](../demos/V4_1-CURATED-BUNDLES.md) — companion: curated bundles and demo agent-team sizes.
 - [`docs/community/V4_1-CHALLENGE-CHIMERA-CUP.md`](../community/V4_1-CHALLENGE-CHIMERA-CUP.md) — companion: community challenge proposal.
-- [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) — actual ship-ready candidate artefacts referenced above.
-- [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) — P0 starter packs (`user`, `student`, `research`, `coding`).
+- [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) — `candidate_mapped` artefacts referenced above (none are `ship_ready` yet).
+- [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) — P0 starter packs (`user`, `student`, `research`, `coding`) — starter skills, not Pro-tier catalog entries.

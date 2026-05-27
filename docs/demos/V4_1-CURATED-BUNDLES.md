@@ -7,7 +7,7 @@
 | **Created** | 2026-05-27 |
 | **Companion to** | [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) |
 
-> **Non-normative.** No release, tag, Zenodo DOI, npm/PyPI publish, IANA action, schema change, or website edit is implied. This file proposes **demo bundles** to seed the future `/klickdskill` "Bundle builder" tray (see presentation strategy §5.6). All packs referenced exist in [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) or [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) **except** where explicitly marked **(reserved)** — those are sketches per [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §1.2 and MUST NOT appear on the live catalog until they clear [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md).
+> **Non-normative.** No release, tag, Zenodo DOI, npm/PyPI publish, IANA action, schema change, or website edit is implied. This file proposes **demo bundles** to seed the future `/klickdskill` "Bundle builder" tray (see presentation strategy §5.6). Every pack referenced below exists in [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) or [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) at the head of PR #75 as a `candidate_mapped` artefact; **none is `ship_ready` yet** and no bundle below may appear on the live catalog until each of its packs clears [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md).
 >
 > **No Klickd.app, no `kai.*`, no `core.*`, no v4-preview persona anchors** appear in any bundle below. The strict exclusion of [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §0 is binding here.
 >
@@ -19,6 +19,8 @@
 
 - **Bundle ≠ carrier.** A bundle is a list of canonical pack ids + versions, not a composed `.klickd` file. The catalog never composes a real carrier on a visitor's behalf ([`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §5.6).
 - **Implicit pack:** every agent carries `x.klickd/user` implicitly. It is not counted toward the seven-pack ceiling and not listed below.
+- **P0 starter packs ≠ Pro tier.** The starter packs `user`, `student`, `research`, `coding` (under [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/)) are **starter skills**, not Pro-tier catalog entries. When they appear in a column labelled "Pro" in a bundle below, that column reflects the audience the bundle targets, not the pack's catalog tier; the underlying pack remains a P0 starter and is **not** counted toward the 8 Lite + 34 Pro catalog totals tracked in [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §1. They are surfaced through the **C9 Foundations** affordance on `/klickdskill`, not as Pro cards.
+- **Bundle size window:** every bundle is sized for **3–7 packs** total (per [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §7a). Bundle 1 deliberately overflows to 8 to demonstrate the agent-split resolution path; production bundles MUST stay in 3–7.
 - **Composition graph:** every bundle MUST form an acyclic composition graph rooted on `x.klickd/user`. If two listed packs both name the other as a parent, the bundle is rejected.
 - **Token estimate:** each bundle row gives a coarse `Σ tokens_estimate` based on the size tiers (Lite ≤ 900, Pro ≤ 1,350). Exact router_cost lives in each pack's own file.
 - **Agent count rationale:** the table at the end of each bundle states "why N agents" — splitting by responsibility boundary (who owns the artifact, who reviews it, who escalates) and by `final_decision_owner` per RFC-002.
@@ -33,11 +35,11 @@
 | Role | Pack(s) | Category | Tier | Why |
 |---|---|---|---|---|
 | Founder / generalist | `x.klickd/work_assistant` + `x.klickd/project_operator` | Work | Lite + Pro | Day-to-day + multi-track project ownership without a senior PM seat. |
-| Engineer | `x.klickd/coding` (P0) + `x.klickd/llm_agent_engineering` | Developer/AI | Pro | Coding baseline + LLM-agent build discipline (tool-use, evals, sandboxing). |
+| Engineer | `x.klickd/coding` (P0 starter, see §0) + `x.klickd/llm_agent_engineering` | Developer/AI | P0 starter + Pro | Coding baseline + LLM-agent build discipline (tool-use, evals, sandboxing). |
 | Designer / creator | `x.klickd/media_planner` + `x.klickd/artist` | Creator/Media | Lite | Plans the comms surface; ships visual identity without a senior brand lead. |
 | Compliance hat (worn by founder) | `x.klickd/gdpr_readiness` + `x.klickd/eu_ai_act` | Legal/Compliance | Pro | Two highest-risk EU regimes for a SaaS shipping AI features. |
 
-**Σ packs (excluding `user`):** 8 — exceeds the seven-pack ceiling. **Resolve by splitting into 2 agents** that each load ≤ 4 packs and share via the agent-handoff surface of [RFC-009 §5.3](../rfcs/RFC-009-chimera-v4.1.md).
+**Σ packs (excluding `user`):** 8 — exceeds the seven-pack-per-agent ceiling. **Resolve by splitting into 3 agents** that each load ≤ 3 packs and share via the agent-handoff surface of [RFC-009 §5.3](../rfcs/RFC-009-chimera-v4.1.md). (See the agent table immediately below.)
 
 **Recommended agent count:** **3 agents.**
 
@@ -113,7 +115,7 @@
 
 | Pack | Category | Tier |
 |---|---|---|
-| `x.klickd/research` (P0) | Foundations (displayed as Research/Knowledge) | Pro |
+| `x.klickd/research` (P0 starter, see §0) | C9 Foundations affordance (audience: Research/Knowledge) | P0 starter |
 | `x.klickd/literature_review` | Research/Knowledge | Pro |
 | `x.klickd/second_brain` | Research/Knowledge | Pro |
 | `x.klickd/policy_analyst` | Research/Knowledge | Pro |
@@ -193,7 +195,7 @@
 | `x.klickd/game_literacy` | Everyday | Lite |
 | `x.klickd/rights_guard` | Legal/Compliance | Pro |
 | `x.klickd/parent_gaming` | Everyday | Lite |
-| `x.klickd/coding` (P0) | Developer/AI | Pro |
+| `x.klickd/coding` (P0 starter, see §0) | C9 Foundations affordance (audience: Developer/AI) | P0 starter |
 
 **Σ packs:** 5.
 
@@ -245,17 +247,17 @@
 | `x.klickd/project_operator` | Work | Pro |
 | `x.klickd/consumer_rights` | Everyday | Lite |
 | `x.klickd/contract_review` | Legal/Compliance | Pro |
-| `x.klickd/support_ops` **(reserved — R8)** | Work | Pro |
-| `x.klickd/sales_ops` **(reserved — R9)** | Work | Pro |
+| `x.klickd/customer_support_operator` | Work | Pro |
+| `x.klickd/sales_operator` | Work | Pro |
 
-**Σ packs:** 6 (4 currently shipped + 2 reserved). **Until R8 / R9 clear §8, the demo runs with the 4 shipped packs only.**
+**Σ packs:** 6 (all 6 are `candidate_mapped` at the head of PR #75; none is `ship_ready` yet — see [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §1.2).
 
-**Recommended agent count (full bundle):** **3 agents.**
+**Recommended agent count:** **3 agents.**
 
 | Agent | Packs | Final decision owner |
 |---|---|---|
-| **Support** | `work_assistant` + `consumer_rights` + `support_ops` (when ready) | human_carrier (support lead). |
-| **Sales** | `project_operator` + `sales_ops` (when ready) | human_carrier (sales lead). |
+| **Support** | `work_assistant` + `consumer_rights` + `customer_support_operator` | human_carrier (support lead). |
+| **Sales** | `project_operator` + `sales_operator` | human_carrier (sales lead). |
 | **Contracts** | `contract_review` | human_carrier (deal desk / legal). |
 
 **Why 3:** support, sales, and contracts have different review cycles and different consent surfaces; in particular, `contract_review` MUST live with a human empowered to refuse a deal.
@@ -274,7 +276,7 @@
 | 6. Security review | 6 | 3 | ✓ |
 | 7. Game / NPC prototype | 5 | 2 + 2 NPC | ✓ |
 | 8. Drone / mission ops | 5 | 3 | ✓ |
-| 9. Support / sales ops | 6 | 3 | partial — 2 reserved |
+| 9. Support / sales ops | 6 | 3 | all 6 `candidate_mapped` at PR #75 head; none `ship_ready` yet |
 
 Every bundle above forms an acyclic composition graph rooted on `x.klickd/user`, respects the seven-pack ceiling at the agent (not bundle) level, and is reproducible from the `.klickd` artefacts in [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) and [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/).
 
