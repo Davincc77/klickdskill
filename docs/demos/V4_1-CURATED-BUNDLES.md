@@ -268,17 +268,17 @@
 
 | Bundle | Packs | Agents | All `ship_ready` today? |
 |---|---:|---:|---|
-| 1. Startup A → Z | 8 | 3 | ✓ |
-| 2. AI app EU-compliant | 7 | 4 | ✓ |
-| 3. Video marketing campaign | 6 | 3 | ✓ |
-| 4. Research article | 5 | 2 | ✓ |
-| 5. Creator solo | 5 | 1 | ✓ |
-| 6. Security review | 6 | 3 | ✓ |
-| 7. Game / NPC prototype | 5 | 2 + 2 NPC | ✓ |
-| 8. Drone / mission ops | 5 | 3 | ✓ |
-| 9. Support / sales ops | 6 | 3 | all 6 `candidate_mapped` at PR #75 head; none `ship_ready` yet |
+| 1. Startup A → Z | 8 | 3 | no — all `candidate_mapped`; none `ship_ready` yet |
+| 2. AI app EU-compliant | 7 | 4 | no — all `candidate_mapped`; none `ship_ready` yet |
+| 3. Video marketing campaign | 6 | 3 | no — all `candidate_mapped`; none `ship_ready` yet |
+| 4. Research article | 5 | 2 | no — all `candidate_mapped`; none `ship_ready` yet |
+| 5. Creator solo | 5 | 1 | no — all `candidate_mapped`; none `ship_ready` yet |
+| 6. Security review | 6 | 3 | no — all `candidate_mapped`; none `ship_ready` yet |
+| 7. Game / NPC prototype | 5 | 2 + 2 NPC | no — all `candidate_mapped`; none `ship_ready` yet |
+| 8. Drone / mission ops | 5 | 3 | no — all `candidate_mapped`; none `ship_ready` yet |
+| 9. Support / sales ops | 6 | 3 | no — all `candidate_mapped` (incl. PR #75's `customer_support_operator` / `sales_operator`); none `ship_ready` yet |
 
-Every bundle above forms an acyclic composition graph rooted on `x.klickd/user`, respects the seven-pack ceiling at the agent (not bundle) level, and is reproducible from the `.klickd` artefacts in [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) and [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/).
+**None of the 42 v4.1 catalog packs is `ship_ready` yet.** Every bundle above forms an acyclic composition graph rooted on `x.klickd/user`, respects the seven-pack ceiling at the agent (not bundle) level, and is reproducible from the `.klickd` artefacts in [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) and [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/). No bundle below appears on the live `/klickdskill` catalog until **each** of its packs clears [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md).
 
 ---
 
