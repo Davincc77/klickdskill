@@ -56,9 +56,30 @@ SUB_AREA_NICKNAMES = {
     "exam",      # x.klickd/student.exam_targets[]
 }
 
-# Size-tier ceilings (descriptive planning hints; enforced by validator).
+# Size-tier ceilings (decimal KB by repo convention: "12 KB" = 12_000 bytes,
+# not 12 KiB). Enforced by validator; raised 2026-05-27 per the v4.1 expansion
+# audit response so Pro packs have headroom for compact_index + lazy body and
+# Lite packs have headroom for richer per-pack carrier-state vocabulary. The
+# new ceilings are an **upper bound (capacity envelope)**, NOT a target —
+# artefacts should stay as compact as their framework-anchored content allows.
+# Apply to public Chimera v4.1 catalog artefacts under
+# `examples/v4.1/chimera-skills/{lite,pro}/` only; Klickd.app student carriers
+# under `examples/v4/klickdapp-skills/` and Kai host-side artefacts are out of
+# scope (different validator).
 TIER_ROUTER_COST_CEILING = {"lite": 900, "pro": 1350}
-TIER_BYTES_CEILING = {"lite": 8_000, "pro": 12_000}
+TIER_BYTES_CEILING = {"lite": 12_000, "pro": 24_000}
+
+# Frozen counts for the v4.1 candidate artefact set (8 Lite + 34 Pro = 42).
+# Promotion or removal requires updating this table AND the planning doc.
+TIER_EXPECTED_COUNT = {"lite": 8, "pro": 34}
+
+# Per-tier competency-count range — coherence-rule §3.1 of
+# docs/chimera/V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md. The total
+# count is len(competencies[]) (which by RFC-009 §5.5 equals
+# len(competency_mappings[])). The bounds matche the as-shipped
+# 2026-05-27 catalog; target ranges live in the protocol doc and are
+# not enforced.
+TIER_COMPETENCY_RANGE = {"lite": (2, 8), "pro": (3, 12)}
 
 FORBIDDEN_FIELDS_LITERAL = [
     "pedagogy", "teaching_method", "socratic_steps", "prompt_strategy",
@@ -85,6 +106,14 @@ ARTEFACT_FORBIDDEN_PATTERNS = (
     "kai tutor",
     "kai mentor",
     "kai.tutor",
+)
+
+# Regex variant of the forbidden-pattern check. Catches any future
+# `klickdapp.<2+ letters>` country / locale scope (e.g. `klickdapp.it`,
+# `klickdapp.nl`, `klickdapp.uk`) without having to enumerate them by
+# hand. Audit-hardening 2026-05-27. Case-insensitive.
+ARTEFACT_FORBIDDEN_REGEXES = (
+    re.compile(r"klickdapp\.[a-z]{2,}", re.IGNORECASE),
 )
 
 # Regex patterns that catch likely secrets / PII inside an artefact.
@@ -120,7 +149,12 @@ EXCLUDED_NAMES = (
 
 # Host-side artefact name patterns that MUST NOT appear as candidate
 # carrier_pack identifiers. Substring match; lower-cased on input.
+# Audit-hardening 2026-05-27: `klickdapp.` substring added so any
+# `klickdapp.<scope>` reference (current LU/FR/BE/DE or any future scope)
+# is rejected at the row-scan level, not only the four enumerated names
+# in EXCLUDED_NAMES above.
 EXCLUDED_PATTERNS = (
+    "klickdapp.",
     "core.kai.klickd",
     "skill.kai.",
     "kai.tutor",
@@ -289,6 +323,12 @@ def check_required_candidates_present(rows: list[dict]) -> list[str]:
         "project-operator", "drone", "mission-control", "game-design",
         "rights-guard", "wellbeing-lite", "family",
         "video-production-pipeline",
+        # v4.1 expansion 2026-05-27 — 15 new Lot B candidates (B20..B34).
+        "product-manager", "ux-researcher", "data-analyst", "api-integrator",
+        "devops-operator", "security-incident-response", "sales-operator",
+        "customer-support-operator", "finance-analyst", "accounting-operator",
+        "technical-writer", "learning-designer", "sustainability-analyst",
+        "healthcare-ai-safety-reviewer", "edge-ai-operator",
     }
     found = set()
     for row in rows:
@@ -439,6 +479,42 @@ def validate_artefact(path: Path) -> list[str]:
                 if k not in c:
                     fails.append(f"{path.name}: competencies[] entry missing '{k}'")
 
+    # Competency-coherence checks
+    # (docs/chimera/V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md §3).
+    # 3.1 Tier-specific count range.
+    if tier in TIER_COMPETENCY_RANGE and isinstance(comps, list):
+        lo, hi = TIER_COMPETENCY_RANGE[tier]
+        if not (lo <= len(comps) <= hi):
+            fails.append(
+                f"{path.name}: competencies[] count {len(comps)} outside "
+                f"{tier} range [{lo}, {hi}] (protocol §3.1)"
+            )
+    # 3.2 Common transversal base.
+    btc = block.get("base_transversal_core") or {}
+    transversal = btc.get("transversal_refs") or []
+    if not isinstance(transversal, list) or not transversal:
+        fails.append(
+            f"{path.name}: base_transversal_core.transversal_refs[] must be "
+            f"a non-empty list (protocol §3.2)"
+        )
+    else:
+        for t in transversal:
+            if not isinstance(t, dict) or "competency_ref" not in t:
+                fails.append(
+                    f"{path.name}: transversal_refs[] entry missing 'competency_ref'"
+                )
+    # 3.3 competency_mappings[] and competencies[] must agree in size
+    # (RFC-009 §5.5 equal-shape rule); soft check — warn-via-fail when
+    # one is empty and the other is not, but not when both shapes use
+    # the same anchor set.
+    cms = block.get("competency_mappings") or []
+    if isinstance(cms, list) and isinstance(comps, list):
+        if (len(cms) == 0) ^ (len(comps) == 0):
+            fails.append(
+                f"{path.name}: competency_mappings[] and competencies[] "
+                f"must both be populated or both empty (RFC-009 §5.5)"
+            )
+
     # human_authority + human_veto
     ha = block.get("human_authority") or {}
     if ha.get("final_decision_owner", "").split("_")[0] != "human":
@@ -513,8 +589,23 @@ def validate_artefact(path: Path) -> list[str]:
             fails.append(
                 f"{path.name}: forbidden Klickd.app / Kai host-side pattern '{bad}' present"
             )
+    # Regex sweep — catches any future `klickdapp.<scope>` country code
+    # we haven't enumerated yet (audit-hardening 2026-05-27).
+    for pat in ARTEFACT_FORBIDDEN_REGEXES:
+        m = pat.search(raw)
+        if m:
+            fails.append(
+                f"{path.name}: forbidden Klickd.app pattern matches "
+                f"{pat.pattern!r} (matched text: '{m.group(0)}')"
+            )
 
-    # Secrets / PII scan
+    # Secrets / PII scan. The patterns below are conservative shape
+    # checks; false-positive policy: if a real-world legitimate value
+    # ever needs to live in an artefact (e.g. a published support email,
+    # a publisher OIDC issuer), add the literal substring to
+    # `PII_ALLOWED_SUBSTRINGS` above with a one-line comment naming the
+    # artefact and reason. Do NOT silence the check by widening the
+    # pattern itself.
     for pat in SECRET_PATTERNS:
         if pat.search(raw):
             fails.append(f"{path.name}: suspected secret matches pattern {pat.pattern!r}")
@@ -525,6 +616,40 @@ def validate_artefact(path: Path) -> list[str]:
                 continue
             fails.append(f"{path.name}: suspected PII '{value}' matches pattern {pat.pattern!r}")
 
+    return fails
+
+
+def validate_no_competency_clones() -> list[str]:
+    """Anti-clone rule (protocol §3.4): no two artefacts in the catalog
+    may share an identical `competencies[]` set (compared as the
+    frozenset of `competency_ref` strings). Prevents two skills from
+    being indistinguishable except by name."""
+    fails: list[str] = []
+    if not ARTEFACT_ROOT.exists():
+        return fails
+    sigs: dict[frozenset, list[str]] = {}
+    for tier_dir in (LITE_DIR, PRO_DIR):
+        if not tier_dir.exists():
+            continue
+        for path in sorted(tier_dir.glob("*.klickd")):
+            try:
+                obj = json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            comps = (obj.get("x_klickd_pack") or {}).get("competencies") or []
+            sig = frozenset(
+                c["competency_ref"] for c in comps
+                if isinstance(c, dict) and "competency_ref" in c
+            )
+            if not sig:
+                continue
+            sigs.setdefault(sig, []).append(path.name)
+    for sig, files in sigs.items():
+        if len(files) > 1:
+            fails.append(
+                f"competency-clone detected: {files} share identical "
+                f"competencies[] set {sorted(sig)} (protocol §3.4)"
+            )
     return fails
 
 
@@ -579,6 +704,12 @@ def validate_manifests() -> list[str]:
                 f"{mpath}: manifest files {manifest_files} do not match directory "
                 f"contents {actual_files}"
             )
+        expected = TIER_EXPECTED_COUNT.get(tier_dir.name)
+        if expected is not None and len(actual_files) != expected:
+            fails.append(
+                f"{mpath}: tier '{tier_dir.name}' has {len(actual_files)} artefact(s); "
+                f"expected exactly {expected} per TIER_EXPECTED_COUNT"
+            )
     return fails
 
 
@@ -613,6 +744,7 @@ def main(argv: list[str]) -> int:
                 artefact_count += 1
                 all_failures.extend(validate_artefact(path))
         all_failures.extend(validate_no_deferred_artefacts())
+        all_failures.extend(validate_no_competency_clones())
         all_failures.extend(validate_manifests())
 
     if all_failures:

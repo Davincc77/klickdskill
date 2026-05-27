@@ -10,8 +10,12 @@ This directory ships **real, structured `.klickd` files** that are concrete real
 
 | Path | Contents |
 |---|---|
-| [`lite/`](./lite/) | **Lot A (lightweight, user-lambda)** candidate skills. Compact (~6–7 KB), near-Chimera-size, fast-load; full manifest in prompt. **8 packs** + `manifest.json` (after 2026-05-27 audit rename + `crypto-lite` deferral). |
-| [`pro/`](./pro/) | **Lot B (advanced, dev/pro)** candidate skills. Up to ~+50% larger (~8–12 KB), with `compact_index` loading strategy declared so the router can advertise gates / framework anchors / router_cost in prompt and lazy-load the full body on demand. **19 packs** + `manifest.json` (after 2026-05-27 audit rename + B19 `video-production-pipeline` follow-up). |
+| [`lite/`](./lite/) | **Lot A (lightweight, user-lambda)** candidate skills. Compact, near-Chimera-size, **fast-load**; full manifest in prompt. **Capacity envelope ≤ 12 KB** (decimal; per the 2026-05-27 budget update); current artefacts are well under that (typically 5.9–7.3 KB). **8 packs** + `manifest.json` (after 2026-05-27 audit rename + `crypto-lite` deferral). |
+| [`pro/`](./pro/) | **Lot B (advanced, dev/pro)** candidate skills. Deeper / more-complex reasoning, with `compact_index` loading strategy declared so the router can advertise gates / framework anchors / router_cost in prompt and **lazy-load** the full body on demand. **Capacity envelope ≤ 24 KB** (decimal; per the 2026-05-27 budget update); current artefacts are well under that (typically 8–12 KB). The new budget is an **upper bound**, NOT a target — artefacts stay as compact as their framework-anchored content allows. **34 packs** + `manifest.json` (after 2026-05-27 audit rename, B19 `video-production-pipeline` follow-up, and the 2026-05-27 v4.1 expansion that added B20..B34 covering the majority of AI-assisted future jobs). |
+
+> **Size budgets (public Chimera v4.1 catalog only).** Lite ≤ 12 KB, Pro ≤ 24 KB. **Decimal KB** by repo convention (12 KB = 12 000 bytes; 24 KB = 24 000 bytes). These ceilings apply only to artefacts under `examples/v4.1/chimera-skills/{lite,pro}/`. **They do NOT apply** to Klickd.app student carriers under `examples/v4/klickdapp-skills/` or to any Kai host-side skill — those live in different validation contracts. Routing protections (Pro `compact_index` + lazy body, `router_cost.tokens_estimate ≤ 900` Lite / `≤ 1350` Pro) are preserved; the bigger ceilings give Pro packs headroom for deeper carrier-state vocabulary, not bigger compact indexes.
+
+> **Frozen counts.** The artefact set is exactly **8 Lite + 34 Pro = 42** `candidate_mapped` skills. The validator (`scripts/validate_v4_1_candidate_mapping.py`, `TIER_EXPECTED_COUNT`) rejects any drift from these counts. Promotion, demotion, or addition requires updating the planning doc, the validator constants, and the per-tier `manifest.json`. **Production-ready target**, NOT GA — `_pack_metadata.claims_v41_ga: false` everywhere; promotion past `candidate_mapped` still requires the ten-step gate of [RFC-009 §8](../../../docs/rfcs/RFC-009-chimera-v4.1.md).
 
 > **Audit response 2026-05-27.** Filenames and canonical pack ids were aligned (filename stem == pack tail with underscores as dashes) per the audit's W-1 / BLOCKER finding. `crypto-lite` was demoted to `needs_mapping` because no EU SKOS-published crypto-asset-literacy framework exists with DigComp / NICE-comparable maturity. Full rename + defer table: [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../../../docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) §0.5. Each renamed file carries `_pack_metadata.renamed_from` with the prior filename for traceability.
 
@@ -19,8 +23,8 @@ This directory ships **real, structured `.klickd` files** that are concrete real
 
 | Tier | Audience | Approx. file size | `router_cost.tokens_estimate` | Loading strategy |
 |---|---|---|---|---|
-| **`lite`** | General public, learners, end-users. | ≤ ~7 KB | ≤ 900 | Full manifest in prompt. |
-| **`pro`** | Developers, researchers, compliance officers, professional users. | ≤ ~11 KB (~+50% vs lite) | ≤ 1,350 | **`compact_index` in prompt + lazy body** via `decision_router` ([RFC-007](../../../docs/rfcs/RFC-007-usage-profile-skill-routing.md)). The compact_index carries `pack`, `frameworks[]` IDs, `competency_ids[]`, `gate_summaries[]`, `human_authority`, `router_cost`. Full body (mastery scales, evidence rules, framework subsets) loads on demand. |
+| **`lite`** | General public, learners, end-users. | ≤ 12 KB capacity envelope (decimal; current artefacts 5.9–7.3 KB). | ≤ 900 | Full manifest in prompt; **fast-load**. |
+| **`pro`** | Developers, researchers, compliance officers, professional users. | ≤ 24 KB capacity envelope (decimal; current artefacts 8–12 KB). | ≤ 1,350 | **`compact_index` in prompt + lazy body** via `decision_router` ([RFC-007](../../../docs/rfcs/RFC-007-usage-profile-skill-routing.md)). The compact_index carries `pack`, `frameworks[]` IDs, `competency_ids[]`, `gate_summaries[]`, `human_authority`, `router_cost`. Full body (mastery scales, evidence rules, framework subsets) loads on demand. The bigger byte ceiling supports deeper carrier-state vocabulary; the compact_index itself stays small so prompt-load cost remains capped. |
 
 ## What every file carries
 
@@ -91,7 +95,7 @@ Two additional candidates from the planning doc are also absent here, by design:
 
 > **`crypto-lite` (A8) — DEFERRED.** No artefact; row stays in the planning doc only. Reason: no EU SKOS-published crypto-asset-literacy framework with DigComp / NICE-comparable maturity (NICE / CIS cover security hygiene generically but do not anchor "crypto" as a distinct competency class).
 
-### `pro/` (19 packs)
+### `pro/` (34 packs)
 
 | File | Pack | Parents | Working nickname |
 |---|---|---|---|
@@ -114,6 +118,21 @@ Two additional candidates from the planning doc are also absent here, by design:
 | `game-design.klickd` | `x.klickd/game_design` | `user`, `creator`, `coding` | game-design (B17) |
 | `rights-guard.klickd` | `x.klickd/rights_guard` | `user`, `legal`, `creator` | rights-guard (B18) |
 | `video-production-pipeline.klickd` | `x.klickd/video_production_pipeline` | `user`, `media_planner`, `creator`, `research`, `legal` | video-production-pipeline (B19) |
+| `product-manager.klickd` | `x.klickd/product_manager` | `user`, `work`, `coding` | product-manager (B20) |
+| `ux-researcher.klickd` | `x.klickd/ux_researcher` | `user`, `research` | ux-researcher (B21) |
+| `data-analyst.klickd` | `x.klickd/data_analyst` | `user`, `research` | data-analyst (B22) |
+| `api-integrator.klickd` | `x.klickd/api_integrator` | `user`, `coding` | api-integrator (B23) |
+| `devops-operator.klickd` | `x.klickd/devops_operator` | `user`, `coding`, `security` | devops-operator (B24) |
+| `security-incident-response.klickd` | `x.klickd/security_incident_response` | `user`, `security` | security-incident-response (B25) |
+| `sales-operator.klickd` | `x.klickd/sales_operator` | `user`, `work` | sales-operator (B26) |
+| `customer-support-operator.klickd` | `x.klickd/customer_support_operator` | `user`, `work` | customer-support-operator (B27) |
+| `finance-analyst.klickd` | `x.klickd/finance_analyst` | `user`, `work` | finance-analyst (B28) |
+| `accounting-operator.klickd` | `x.klickd/accounting_operator` | `user`, `work`, `legal` | accounting-operator (B29) |
+| `technical-writer.klickd` | `x.klickd/technical_writer` | `user`, `coding`, `research` | technical-writer (B30) |
+| `learning-designer.klickd` | `x.klickd/learning_designer` | `user`, `research` | learning-designer (B31) |
+| `sustainability-analyst.klickd` | `x.klickd/sustainability_analyst` | `user`, `research`, `legal` | sustainability-analyst (B32) |
+| `healthcare-ai-safety-reviewer.klickd` | `x.klickd/healthcare_ai_safety_reviewer` | `user`, `research`, `legal`, `security` | healthcare-ai-safety-reviewer (B33) |
+| `edge-ai-operator.klickd` | `x.klickd/edge_ai_operator` | `user`, `coding`, `security` | edge-ai-operator (B34) |
 
 > **Candidate→candidate parent edges.** Three pro packs compose on other candidates: `llm-agent-engineering.klickd` lists `x.klickd/llm_agent_security` as a parent, `evidence-desk.klickd` lists `x.klickd/trust_evidence`, and `video-production-pipeline.klickd` lists `x.klickd/media_planner` (a lite Lot A candidate). All parents are themselves `candidate_mapped`; downstream loaders that resolve parents transitively will chain candidates onto candidates at this stage. Documented per audit W-2.
 
@@ -122,6 +141,7 @@ Two additional candidates from the planning doc are also absent here, by design:
 - [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../../../docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) — full candidate mapping (parent packs, target user, framework anchors, gates, evidence policy, size tier, status).
 - [`docs/chimera/README_V4_1.md`](../../../docs/chimera/README_V4_1.md) — planning index, strict mapping rule, exclusion table, release-gating ladder.
 - [`docs/chimera/V4_1_CANDIDATE_CHECKLIST.md`](../../../docs/chimera/V4_1_CANDIDATE_CHECKLIST.md) — per-candidate review checklist.
+- [`docs/chimera/V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](../../../docs/chimera/V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md) — formal method for selecting and combining competencies per skill (transversal base + domain-specific; coherence and anti-clone rules; validator-enforced subset). **Merge gate.**
 - [`docs/rfcs/RFC-009-chimera-v4.1.md`](../../../docs/rfcs/RFC-009-chimera-v4.1.md) — Chimera v4.1 RFC (P0/P1 sets, validation §8, no-catalog §7, carrier-vs-skill §5.1.1).
 - [`examples/v4/starter-skills/`](../../v4/starter-skills/) — already-shipped P0 starter `.klickd` files (`user`, `student`, `research`, `coding`). NOT extended by this directory.
 - [`examples/v4/klickdapp-skills/`](../../v4/klickdapp-skills/) — Klickd.app product carriers. Out of scope here; never referenced as candidate Chimera packs.
