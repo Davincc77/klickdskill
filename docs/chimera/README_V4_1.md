@@ -137,5 +137,8 @@ There is **no** "v4.1 GA" claim implied by anything in `docs/chimera/`. The trac
 - [`docs/rfcs/chimera/frameworks/README.md`](../rfcs/chimera/frameworks/README.md)
 - [`docs/rfcs/chimera/packs/router_cost.md`](../rfcs/chimera/packs/router_cost.md)
 - [`docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md`](../rfcs/ACCEPTANCE_CHECKLIST_V4.md)
+- [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) — future `/klickdskill` presentation strategy (42-entry catalog target, categories, palette, UI patterns). **Non-normative, no GA implied.**
+- [`docs/demos/V4_1-CURATED-BUNDLES.md`](../demos/V4_1-CURATED-BUNDLES.md) — curated demo bundles + recommended agent counts.
+- [`docs/community/V4_1-CHALLENGE-CHIMERA-CUP.md`](../community/V4_1-CHALLENGE-CHIMERA-CUP.md) — proposed (not launched) community challenge.
 - [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) — already-shipped P0 starter `.klickd` files (not extended by this PR).
 - [`examples/v4/klickdapp-skills/`](../../examples/v4/klickdapp-skills/) — Klickd.app product carriers (out of scope; never `/klickdskill` catalog candidates).
