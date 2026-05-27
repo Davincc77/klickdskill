@@ -272,6 +272,23 @@
         "x.klickd/user",
         "x.klickd/research"
       ]
+    },
+    {
+      "id": "x.klickd/video_production_pipeline",
+      "file": "video-production-pipeline.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 11978,
+      "sha256_file": "4bc32c2508aa60e760761ac90576ea5b8f1c354bb43438296a4f9a2de355f08c",
+      "sha256_canonical_json": "7c9a2d1b135dd673ce7d0091ba624b4aafd75884bbd840836188c936baa8bf82",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/media_planner",
+        "x.klickd/creator",
+        "x.klickd/research",
+        "x.klickd/legal"
+      ]
     }
   ]
 }
