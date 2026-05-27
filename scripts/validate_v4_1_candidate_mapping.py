@@ -60,6 +60,10 @@ SUB_AREA_NICKNAMES = {
 TIER_ROUTER_COST_CEILING = {"lite": 900, "pro": 1350}
 TIER_BYTES_CEILING = {"lite": 8_000, "pro": 12_000}
 
+# Frozen counts for the v4.1 candidate artefact set (8 Lite + 34 Pro = 42).
+# Promotion or removal requires updating this table AND the planning doc.
+TIER_EXPECTED_COUNT = {"lite": 8, "pro": 34}
+
 FORBIDDEN_FIELDS_LITERAL = [
     "pedagogy", "teaching_method", "socratic_steps", "prompt_strategy",
     "scoring_rubric", "intervention_policy", "tone_rules",
@@ -289,6 +293,12 @@ def check_required_candidates_present(rows: list[dict]) -> list[str]:
         "project-operator", "drone", "mission-control", "game-design",
         "rights-guard", "wellbeing-lite", "family",
         "video-production-pipeline",
+        # v4.1 expansion 2026-05-27 — 15 new Lot B candidates (B20..B34).
+        "product-manager", "ux-researcher", "data-analyst", "api-integrator",
+        "devops-operator", "security-incident-response", "sales-operator",
+        "customer-support-operator", "finance-analyst", "accounting-operator",
+        "technical-writer", "learning-designer", "sustainability-analyst",
+        "healthcare-ai-safety-reviewer", "edge-ai-operator",
     }
     found = set()
     for row in rows:
@@ -578,6 +588,12 @@ def validate_manifests() -> list[str]:
             fails.append(
                 f"{mpath}: manifest files {manifest_files} do not match directory "
                 f"contents {actual_files}"
+            )
+        expected = TIER_EXPECTED_COUNT.get(tier_dir.name)
+        if expected is not None and len(actual_files) != expected:
+            fails.append(
+                f"{mpath}: tier '{tier_dir.name}' has {len(actual_files)} artefact(s); "
+                f"expected exactly {expected} per TIER_EXPECTED_COUNT"
             )
     return fails
 

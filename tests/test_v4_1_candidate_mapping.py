@@ -199,6 +199,25 @@ def test_crypto_lite_artefact_is_deferred():
         )
 
 
+def test_tier_artefact_counts_are_frozen_at_8_lite_and_34_pro():
+    """2026-05-27 v4.1 expansion: the artefact set is frozen at exactly
+    8 Lite + 34 Pro = 42 candidate skills covering everyday users (Lite)
+    and the majority of AI-assisted future jobs (Pro). Any drift requires
+    updating the planning doc, the validator constants
+    (`TIER_EXPECTED_COUNT`), and the per-tier `manifest.json`."""
+    mod = _load_validator()
+    assert mod.TIER_EXPECTED_COUNT["lite"] == 8
+    assert mod.TIER_EXPECTED_COUNT["pro"] == 34
+    assert len(_lite_files()) == 8, (
+        f"expected 8 lite artefacts, found {len(_lite_files())}: "
+        f"{[p.name for p in _lite_files()]}"
+    )
+    assert len(_pro_files()) == 34, (
+        f"expected 34 pro artefacts, found {len(_pro_files())}: "
+        f"{[p.name for p in _pro_files()]}"
+    )
+
+
 def test_lite_router_cost_under_900_and_pro_under_1350():
     import json as _json
     failures: list[str] = []

@@ -11,7 +11,9 @@ This directory ships **real, structured `.klickd` files** that are concrete real
 | Path | Contents |
 |---|---|
 | [`lite/`](./lite/) | **Lot A (lightweight, user-lambda)** candidate skills. Compact (~6–7 KB), near-Chimera-size, fast-load; full manifest in prompt. **8 packs** + `manifest.json` (after 2026-05-27 audit rename + `crypto-lite` deferral). |
-| [`pro/`](./pro/) | **Lot B (advanced, dev/pro)** candidate skills. Up to ~+50% larger (~8–12 KB), with `compact_index` loading strategy declared so the router can advertise gates / framework anchors / router_cost in prompt and lazy-load the full body on demand. **19 packs** + `manifest.json` (after 2026-05-27 audit rename + B19 `video-production-pipeline` follow-up). |
+| [`pro/`](./pro/) | **Lot B (advanced, dev/pro)** candidate skills. Up to ~+50% larger (~8–12 KB), with `compact_index` loading strategy declared so the router can advertise gates / framework anchors / router_cost in prompt and lazy-load the full body on demand. **34 packs** + `manifest.json` (after 2026-05-27 audit rename, B19 `video-production-pipeline` follow-up, and the 2026-05-27 v4.1 expansion that added B20..B34 covering the majority of AI-assisted future jobs). |
+
+> **Frozen counts.** The artefact set is exactly **8 Lite + 34 Pro = 42** `candidate_mapped` skills. The validator (`scripts/validate_v4_1_candidate_mapping.py`, `TIER_EXPECTED_COUNT`) rejects any drift from these counts. Promotion, demotion, or addition requires updating the planning doc, the validator constants, and the per-tier `manifest.json`. **Production-ready target**, NOT GA — `_pack_metadata.claims_v41_ga: false` everywhere; promotion past `candidate_mapped` still requires the ten-step gate of [RFC-009 §8](../../../docs/rfcs/RFC-009-chimera-v4.1.md).
 
 > **Audit response 2026-05-27.** Filenames and canonical pack ids were aligned (filename stem == pack tail with underscores as dashes) per the audit's W-1 / BLOCKER finding. `crypto-lite` was demoted to `needs_mapping` because no EU SKOS-published crypto-asset-literacy framework exists with DigComp / NICE-comparable maturity. Full rename + defer table: [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../../../docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) §0.5. Each renamed file carries `_pack_metadata.renamed_from` with the prior filename for traceability.
 
@@ -91,7 +93,7 @@ Two additional candidates from the planning doc are also absent here, by design:
 
 > **`crypto-lite` (A8) — DEFERRED.** No artefact; row stays in the planning doc only. Reason: no EU SKOS-published crypto-asset-literacy framework with DigComp / NICE-comparable maturity (NICE / CIS cover security hygiene generically but do not anchor "crypto" as a distinct competency class).
 
-### `pro/` (19 packs)
+### `pro/` (34 packs)
 
 | File | Pack | Parents | Working nickname |
 |---|---|---|---|
@@ -114,6 +116,21 @@ Two additional candidates from the planning doc are also absent here, by design:
 | `game-design.klickd` | `x.klickd/game_design` | `user`, `creator`, `coding` | game-design (B17) |
 | `rights-guard.klickd` | `x.klickd/rights_guard` | `user`, `legal`, `creator` | rights-guard (B18) |
 | `video-production-pipeline.klickd` | `x.klickd/video_production_pipeline` | `user`, `media_planner`, `creator`, `research`, `legal` | video-production-pipeline (B19) |
+| `product-manager.klickd` | `x.klickd/product_manager` | `user`, `work`, `coding` | product-manager (B20) |
+| `ux-researcher.klickd` | `x.klickd/ux_researcher` | `user`, `research` | ux-researcher (B21) |
+| `data-analyst.klickd` | `x.klickd/data_analyst` | `user`, `research` | data-analyst (B22) |
+| `api-integrator.klickd` | `x.klickd/api_integrator` | `user`, `coding` | api-integrator (B23) |
+| `devops-operator.klickd` | `x.klickd/devops_operator` | `user`, `coding`, `security` | devops-operator (B24) |
+| `security-incident-response.klickd` | `x.klickd/security_incident_response` | `user`, `security` | security-incident-response (B25) |
+| `sales-operator.klickd` | `x.klickd/sales_operator` | `user`, `work` | sales-operator (B26) |
+| `customer-support-operator.klickd` | `x.klickd/customer_support_operator` | `user`, `work` | customer-support-operator (B27) |
+| `finance-analyst.klickd` | `x.klickd/finance_analyst` | `user`, `work` | finance-analyst (B28) |
+| `accounting-operator.klickd` | `x.klickd/accounting_operator` | `user`, `work`, `legal` | accounting-operator (B29) |
+| `technical-writer.klickd` | `x.klickd/technical_writer` | `user`, `coding`, `research` | technical-writer (B30) |
+| `learning-designer.klickd` | `x.klickd/learning_designer` | `user`, `research` | learning-designer (B31) |
+| `sustainability-analyst.klickd` | `x.klickd/sustainability_analyst` | `user`, `research`, `legal` | sustainability-analyst (B32) |
+| `healthcare-ai-safety-reviewer.klickd` | `x.klickd/healthcare_ai_safety_reviewer` | `user`, `research`, `legal`, `security` | healthcare-ai-safety-reviewer (B33) |
+| `edge-ai-operator.klickd` | `x.klickd/edge_ai_operator` | `user`, `coding`, `security` | edge-ai-operator (B34) |
 
 > **Candidate→candidate parent edges.** Three pro packs compose on other candidates: `llm-agent-engineering.klickd` lists `x.klickd/llm_agent_security` as a parent, `evidence-desk.klickd` lists `x.klickd/trust_evidence`, and `video-production-pipeline.klickd` lists `x.klickd/media_planner` (a lite Lot A candidate). All parents are themselves `candidate_mapped`; downstream loaders that resolve parents transitively will chain candidates onto candidates at this stage. Documented per audit W-2.
 

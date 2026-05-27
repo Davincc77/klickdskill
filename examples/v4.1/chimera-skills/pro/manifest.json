@@ -11,6 +11,35 @@
   "note": "Hashes are reproducible offline. sha256_file is over raw bytes; sha256_canonical_json is over json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8'). NON-NORMATIVE candidate Chimera v4.1 skill artefacts.",
   "packs": [
     {
+      "id": "x.klickd/accounting_operator",
+      "file": "accounting-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9071,
+      "sha256_file": "c4600af862c6fd576f974e84b437f883c24f3c8c9047adb5c161d2c63656288b",
+      "sha256_canonical_json": "037890bbf2157a6f2a40c125167db2d7fe68b3c455a5c356a26152ba187fd321",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/api_integrator",
+      "file": "api-integrator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9396,
+      "sha256_file": "a5a37121fd28cd6deb5a6b90dad83cacf148cedb6ea7b0a7045d9b0dfa17e31e",
+      "sha256_canonical_json": "5474807e4c37992a3c9eeedc69c98a4bbf963f1c32a41cbc3e993ddbeb99b670",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding"
+      ]
+    },
+    {
       "id": "x.klickd/contract_review",
       "file": "contract-review.klickd",
       "size_tier": "pro",
@@ -22,6 +51,49 @@
       "parent_packs": [
         "x.klickd/user",
         "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/customer_support_operator",
+      "file": "customer-support-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10032,
+      "sha256_file": "da5310b1442d57c90f46eaf0fda7a1995f152fd4f483473fb6dee8f6b7c9774d",
+      "sha256_canonical_json": "a36e0d3983183601e44262804cb4c0ef5deae94632d3c9a1ff61daa6865541e2",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work"
+      ]
+    },
+    {
+      "id": "x.klickd/data_analyst",
+      "file": "data-analyst.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9858,
+      "sha256_file": "b308deb55b4a360ee4a72f32fe7fbebffc050c849b2e90a97f151c59ebb6afdc",
+      "sha256_canonical_json": "6fd40887c87813c8af22c8cd8904107935f306b45e016c71f92e7cc855ac89fb",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/devops_operator",
+      "file": "devops-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9889,
+      "sha256_file": "a5862e3e24e6d4f92f7a0a96c1127560886b364479f4d5ffce7831a8229e7f3e",
+      "sha256_canonical_json": "b1ac5407b6b06b233d891de9deecec8d8e7980ddfd729d9275a07e0feaf8a8dc",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/security"
       ]
     },
     {
@@ -37,6 +109,21 @@
         "x.klickd/user",
         "x.klickd/security",
         "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/edge_ai_operator",
+      "file": "edge-ai-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10394,
+      "sha256_file": "d2e22e1f700662413cf2f09877cda7a191dcd86f5c2adf76cd2b8e83725a24ed",
+      "sha256_canonical_json": "8a5b4ebfd9ed4fd35ba11ff5d8514ad57f5f23660c9ba9a49e519fb94960fcaa",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/security"
       ]
     },
     {
@@ -69,6 +156,20 @@
       ]
     },
     {
+      "id": "x.klickd/finance_analyst",
+      "file": "finance-analyst.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9642,
+      "sha256_file": "df34307ed80d4b71ec2e8fb53b1faa2c7f00a43bef9579ee2d46951f2149deb8",
+      "sha256_canonical_json": "07d75a2774e65306833cf306c0d25f525427102dfb7e62473196c1d8342645a1",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work"
+      ]
+    },
+    {
       "id": "x.klickd/game_design",
       "file": "game-design.klickd",
       "size_tier": "pro",
@@ -98,6 +199,22 @@
       ]
     },
     {
+      "id": "x.klickd/healthcare_ai_safety_reviewer",
+      "file": "healthcare-ai-safety-reviewer.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9979,
+      "sha256_file": "d9a4ff9e7c9ba9f47788588af149898ef8a0938805c4a7bf1a72fa352304403f",
+      "sha256_canonical_json": "5fd96909dfece37270547ac32086e39c502064de0a25ec9acbf3a1454d03ec5c",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research",
+        "x.klickd/legal",
+        "x.klickd/security"
+      ]
+    },
+    {
       "id": "x.klickd/identity_access_management",
       "file": "identity-access-management.klickd",
       "size_tier": "pro",
@@ -109,6 +226,20 @@
       "parent_packs": [
         "x.klickd/user",
         "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/learning_designer",
+      "file": "learning-designer.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9915,
+      "sha256_file": "dbe500cbf87dd3aa950b37b870040a6bf09c0805b7bfdde61bd6c9b9f853b62c",
+      "sha256_canonical_json": "e76eaefea8db3e5b1d014bae3fcad9f9649723d243b6c54d30e037b4cf32a31d",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
       ]
     },
     {
@@ -201,6 +332,21 @@
       ]
     },
     {
+      "id": "x.klickd/product_manager",
+      "file": "product-manager.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9911,
+      "sha256_file": "115b868753f9a0e50e6a4d86b63b50c89933c2589d6431237635393dcacc0d44",
+      "sha256_canonical_json": "baaad4c271a8bba9469ad580982d91ff26d7fa994fb1469cf1003493c3365572",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work",
+        "x.klickd/coding"
+      ]
+    },
+    {
       "id": "x.klickd/project_operator",
       "file": "project-operator.klickd",
       "size_tier": "pro",
@@ -246,6 +392,20 @@
       ]
     },
     {
+      "id": "x.klickd/sales_operator",
+      "file": "sales-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9872,
+      "sha256_file": "82cd4a4eaa2c4b11ae2e2820171317f75487f0626dcb5538ee8c558419c54843",
+      "sha256_canonical_json": "3d78e0f62f7e860171563328d99e5c22d124af53088ff36f9c292511ca7a2ccb",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work"
+      ]
+    },
+    {
       "id": "x.klickd/second_brain",
       "file": "second-brain.klickd",
       "size_tier": "pro",
@@ -260,6 +420,50 @@
       ]
     },
     {
+      "id": "x.klickd/security_incident_response",
+      "file": "security-incident-response.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9841,
+      "sha256_file": "4e50921e5bc3be630a58de7cd32043941112182c6319d37de2fe0e3e9654d3b4",
+      "sha256_canonical_json": "1aca695a20fb46aeb5d2a728bbfd7234b600e4b4ef7f415810e2782ae69042c4",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/sustainability_analyst",
+      "file": "sustainability-analyst.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10337,
+      "sha256_file": "cd062f17163c20cb354c7ee69d7a11a097ece13b368a7f09269f43ca9f42598c",
+      "sha256_canonical_json": "e55b59e43f13e9bb0d111994155636618a745213fd22a1703902c3afe6b8c416",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/technical_writer",
+      "file": "technical-writer.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9851,
+      "sha256_file": "02983ed8048ee476196b1488b0add5ae1708eb0ed880b488b1e63f14005eb0e7",
+      "sha256_canonical_json": "b165dd9960f6a81cec52404a5ec7a71e01249a971b6b2b60dd65a6042d85eb8f",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/research"
+      ]
+    },
+    {
       "id": "x.klickd/trust_evidence",
       "file": "trust-evidence.klickd",
       "size_tier": "pro",
@@ -267,6 +471,20 @@
       "bytes": 9019,
       "sha256_file": "83c5e22b94686986d495fdf319ee8bc481804ef052b24862b427e0b7ec733240",
       "sha256_canonical_json": "d0718d38d94aac507aac2e3f612b55e4d51336a419f6cf0399e3bee28ed8d71a",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/ux_researcher",
+      "file": "ux-researcher.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9800,
+      "sha256_file": "722687404c7a8dd31dae67a4ec966828fc36ef2215f8e786a231e8ddc0243d6f",
+      "sha256_canonical_json": "e6b4910e8b4d18b0cd0a429b62f041f855c5b25e4ae8b55dcbef9e1c2acb5485",
       "status": "candidate_mapped",
       "parent_packs": [
         "x.klickd/user",
