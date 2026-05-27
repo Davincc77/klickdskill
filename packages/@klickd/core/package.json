@@ -1,6 +1,6 @@
 {
   "name": "@klickd/core",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Official JavaScript/TypeScript library for reading and writing .klickd portable AI context files",
   "keywords": [
     "klickd",

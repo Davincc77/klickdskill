@@ -7,6 +7,44 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## packaging 4.0.3 — 2026-05-27 — align Python runtime `__version__` with package metadata; npm parity
+
+> **Packaging-only patch.** Stable `.klickd` spec release remains v4.0.0
+> (DOI, GitHub Release). 4.0.3 supersedes 4.0.2 for both the `@klickd/core`
+> npm distribution and the `klickd` PyPI distribution. The wire envelope,
+> JSON schemas, payload semantics, and starter `.klickd` files are unchanged.
+
+### PyPI — `klickd` 4.0.2 → 4.0.3 (fix)
+
+- **Fix:** `klickd.__version__` was still `"4.0.1"` in the 4.0.2 wheel and
+  sdist, so consumers calling `klickd.__version__` (e.g. logging, support
+  diagnostics, downstream version pinning) saw a value that disagreed with
+  the PyPI release. The `__init__.py` constant is now bumped in lock-step
+  with `pyproject.toml`. PyPI 4.0.2 cannot be overwritten (immutable
+  release), so this hotfix ships as a new 4.0.3 patch.
+
+### npm — `@klickd/core` 4.0.2 → 4.0.3 (parity)
+
+- **Chore:** bump `@klickd/core` to 4.0.3 so the npm `latest` and PyPI
+  `latest` advertise the same patch level. No code, schema, or starter-pack
+  changes. The CJS+ESM tarball smoke test (`scripts/verify-tarball.mjs`)
+  remains the publish-time guard.
+
+### Starter `.klickd` files (unchanged)
+
+- `user.klickd`, `student.klickd`, `research.klickd`, `coding.klickd` ship
+  byte-identical to 4.0.2, with the same SHA-256 manifest.
+
+### Scope guarantees (intentional non-goals)
+
+- No GitHub Release
+- No git tag
+- No Zenodo DOI / `.zenodo.json` change
+- No v4.1 / "Chimera" public claim — wire format, schemas, and spec are
+  unchanged from v4.0.0
+
+---
+
 ## packaging 4.0.2 — 2026-05-26 — fix CJS require() of @klickd/core; PyPI publishing path
 
 > **Packaging-only patch.** Stable `.klickd` spec release remains v4.0.0
