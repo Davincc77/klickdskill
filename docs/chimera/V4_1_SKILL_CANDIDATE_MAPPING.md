@@ -208,5 +208,5 @@ Promotion path:
 - [`docs/chimera/README_V4_1.md`](./README_V4_1.md) — planning index for v4.1.
 - [`docs/chimera/V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) — per-candidate review checklist.
 - [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) — already-shipped P0 starter `.klickd` files (`user`, `student`, `research`, `coding`). NOT extended by this document.
-- [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) — **real `candidate_mapped` artefacts** produced from this mapping. `lite/` (9 packs) and `pro/` (18 packs), each with a `manifest.json` carrying `sha256_file` + `sha256_canonical_json` per pack.
+- [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) — **real `candidate_mapped` artefacts** produced from this mapping. `lite/` (8 packs, after the 2026-05-27 audit-response `crypto-lite` deferral) and `pro/` (18 packs), each with a `manifest.json` carrying `sha256_file` + `sha256_canonical_json` per pack.
 - [`examples/v4/klickdapp-skills/`](../../examples/v4/klickdapp-skills/) — Klickd.app product carriers. Out of scope for this document; **never** referenced as candidate Chimera packs.
