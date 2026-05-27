@@ -223,7 +223,7 @@ For most real workloads the useful question is not "long context **or** portable
 
 ## Feedback & discussion
 
-If you tried `.klickd` and something worked — or did not work — we'd like to hear about it. The repo is early, the format is small, and direct developer feedback is the most useful signal at this stage.
+If you tried `.klickd` and something worked — or did not work — I'd like to hear about it. The repo is early, the format is small, and direct developer feedback is the most useful signal at this stage.
 
 - [**5-minute path**](docs/community/TRY_IT.md) — the shortest honest route from clone to "I loaded a `.klickd` file in code".
 - [**Feedback questions**](docs/community/FEEDBACK.md) — five short questions: what model, what integration, what broke, what would make adoption easier.
