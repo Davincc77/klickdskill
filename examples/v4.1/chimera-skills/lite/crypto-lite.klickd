@@ -1,0 +1,95 @@
+{
+  "klickd_version": "4.0",
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "v4.1-chimera-candidate-1.0",
+  "created_at": "2026-05-27T00:00:00Z",
+  "encrypted": false,
+  "domain": "security",
+  "profile_kind": "carrier_competency_pack",
+  "_pack_metadata": {
+    "kind": "chimera_candidate_skill_pack",
+    "size_tier": "lite",
+    "non_normative": true,
+    "claims_v41_ga": false,
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "status": "candidate_mapped",
+    "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
+    "see_readme": "examples/v4.1/chimera-skills/README.md",
+    "note": "Non-normative Chimera v4.1 candidate skill artefact. Lot A crypto-basics pack composing x.klickd/user and x.klickd/security (P0)."
+  },
+  "x_klickd_pack": {
+    "pack": "x.klickd/crypto_basics",
+    "pack_version": "0.1.0-candidate-lite",
+    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a8",
+    "publisher": {"name": "klickd", "ref": "https://klickd.app"},
+    "size_tier": "lite",
+    "parent_packs": ["x.klickd/user", "x.klickd/security"],
+    "target_user": "Adult carrier handling self-custody wallets, hardware-wallet hygiene, basic on-chain literacy. Not trading strategy; not investment advice.",
+    "frameworks": [
+      {"scheme": "nice", "version": "r1", "iri_prefix": "https://niccs.cisa.gov/workforce-development/nice-framework/", "canonical_url": "https://niccs.cisa.gov/workforce-development/nice-framework"},
+      {"scheme": "cis", "version": "v8", "iri_prefix": "https://www.cisecurity.org/controls/v8/", "canonical_url": "https://www.cisecurity.org/controls/cis-controls-list"},
+      {"scheme": "digcomp", "version": "2.2", "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/", "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"}
+    ],
+    "citation_only_references": [
+      {"id": "mica", "ref": "Regulation (EU) 2023/1114 (MiCA)", "url": "https://eur-lex.europa.eu/eli/reg/2023/1114/oj"}
+    ],
+    "base_transversal_core": {
+      "frameworks": [{"scheme": "digcomp", "version": "2.2"}],
+      "transversal_refs": [
+        {"competency_ref": "digcomp:4.1", "scheme": "digcomp", "prefLabel": "Protecting devices"},
+        {"competency_ref": "digcomp:4.2", "scheme": "digcomp", "prefLabel": "Protecting personal data and privacy"}
+      ]
+    },
+    "competency_mappings": [
+      {"competency_ref": "nice:asset-management", "scheme": "nice", "prefLabel": "Asset Management"},
+      {"competency_ref": "nice:risk-management", "scheme": "nice", "prefLabel": "Risk Management"},
+      {"competency_ref": "cis:control-5", "scheme": "cis", "prefLabel": "Account Management"},
+      {"competency_ref": "cis:control-3", "scheme": "cis", "prefLabel": "Data Protection"},
+      {"competency_ref": "digcomp:4.1", "scheme": "digcomp", "prefLabel": "Protecting devices"}
+    ],
+    "competencies": [
+      {"competency_ref": "cis:control-5", "scheme": "cis", "prefLabel": "Account Management"},
+      {"competency_ref": "cis:control-3", "scheme": "cis", "prefLabel": "Data Protection"},
+      {"competency_ref": "digcomp:4.1", "scheme": "digcomp", "prefLabel": "Protecting devices"}
+    ],
+    "levels": [{"framework_ref": "https://europa.eu/europass/eqf/level/4", "level_label": "EQF level 4", "effective_at": "2026-05-27"}],
+    "language_proficiency": [],
+    "mastery": [],
+    "memory_scope": "memory.x_klickd.crypto_basics",
+    "memory_segments": [
+      {"id": "wallet-pointers", "scope": "memory.x_klickd.crypto_basics.wallets", "policy": "pointer_only_public_addresses_only"}
+    ],
+    "structured_memory": {"scope": "memory.x_klickd.crypto_basics", "policy": "pack_scoped_only", "entries": []},
+    "gates": {
+      "verification_gates_default": {"raise_only": true, "claim_grounding_required": true, "reversibility_threshold": "low"},
+      "human_veto_policy": {"owner": "human_carrier", "scope": ["seed_phrase_surface", "private_key_surface", "transaction_signing"]}
+    },
+    "human_veto": {"owner": "human_carrier", "raise_only": true, "non_lowerable_floor": ["seed_phrase_surface", "private_key_surface"]},
+    "human_authority": {"final_decision_owner": "human_carrier", "agent_role": "advisory", "escalation": "human_carrier_only_not_investment_advice"},
+    "evidence_policy": {"required_for_claims": true, "pointer_only": true, "attestation_shape_ref": "rfc-002#8b", "verification_artifacts_ref": "rfc-003#verification_artifacts"},
+    "source_policy": {"allow_inline_definitions": false, "language_tags": ["en", "fr"]},
+    "verification_gates": {
+      "version": 1,
+      "user_default": "silent",
+      "gates": [
+        {"id": "seed-phrase", "action_class": "seed_phrase_surface", "level": "block", "reason": "Seed phrases must never reach the prompt; floor cannot be lowered by this pack."},
+        {"id": "private-key", "action_class": "private_key_surface", "level": "block", "reason": "Private keys must never reach the prompt; floor cannot be lowered by this pack."},
+        {"id": "tx-signing", "action_class": "transaction_signing", "level": "confirm", "reason": "Transaction signing is irreversible; confirm with on-device review."}
+      ]
+    },
+    "router_cost": {"tokens_estimate": 800, "baseline": "base_plus_one"},
+    "acceptance_criteria": [
+      "Every competency_ref resolves into NICE, CIS, or DigComp.",
+      "Seed-phrase and private-key surfaces are block and non-lowerable.",
+      "MiCA is citation-only, not a frameworks[] scheme.",
+      "Pointer-only; only public addresses ever appear in structured memory.",
+      "Round-trip safe with v4.0-only reader."
+    ],
+    "tests": {
+      "static": ["forbidden_fields literal frozen", "no klickdapp.* or kai.* artefact reference", "size_tier == lite and tokens_estimate <= 900", "block on seed_phrase_surface present"],
+      "review": ["Reviewer verifies no inline wallet addresses are required by the pack shape.", "Reviewer verifies investment-advice disclaimer in escalation field."]
+    },
+    "forbidden_fields": ["pedagogy", "teaching_method", "socratic_steps", "prompt_strategy", "scoring_rubric", "intervention_policy", "tone_rules", "system_prompt_overrides", "knowledge.mastered", "mastered_topics"]
+  }
+}

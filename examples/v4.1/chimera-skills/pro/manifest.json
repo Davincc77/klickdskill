@@ -1,0 +1,277 @@
+{
+  "manifest_version": "1.0",
+  "kind": "klickd_chimera_candidate_skill_manifest",
+  "size_tier": "pro",
+  "non_normative": true,
+  "claims_v41_ga": false,
+  "see_readme": "examples/v4.1/chimera-skills/README.md",
+  "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
+  "generated_at": "2026-05-27T00:00:00Z",
+  "hash_algo": "sha256",
+  "note": "Hashes are reproducible offline. sha256_file is over raw bytes; sha256_canonical_json is over json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8'). NON-NORMATIVE candidate Chimera v4.1 skill artefacts.",
+  "packs": [
+    {
+      "id": "x.klickd/agent_security",
+      "file": "agent-security.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10926,
+      "sha256_file": "43bcca12480773723699afd8576724dbe00d9a2f43fe88798a7a51c4fb09b883",
+      "sha256_canonical_json": "98da69dffa66a7fbaeaa7881a0db0de3112c1123b0a62a885a434ccef0df05a6",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security",
+        "x.klickd/coding"
+      ]
+    },
+    {
+      "id": "x.klickd/ai_agent_builder",
+      "file": "ai-agent-builder.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9743,
+      "sha256_file": "f43edafda2d4d1d98e9bda8b5e6f3596fdd43369d0db8b592a9ec75cd3760b57",
+      "sha256_canonical_json": "a44c6c1f78622fc996fdf0170fb7359086c1c5bffecf5e573cc6b063d7034f0a",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/agent_security"
+      ]
+    },
+    {
+      "id": "x.klickd/contract_review",
+      "file": "contract-review.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8319,
+      "sha256_file": "b04329fcca38392159b7319ff59c53cf72bb06b2665df9b87bd229f4fe7967fb",
+      "sha256_canonical_json": "bf8a8c0474baecdb424d86d1e5bce6e766f22398709d819eed6f5c372b6a8417",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/drone_operator",
+      "file": "drone.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8125,
+      "sha256_file": "8ae978b85ddb0a732b753e46585ac513bba9eb7e104bb49d406e96483cdc503a",
+      "sha256_canonical_json": "3dec5d26319b51c1f32ebd5acabeba635629df5925c29c692b5d17f7014c8a2f",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/eu_ai_act",
+      "file": "eu-ai-act.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8246,
+      "sha256_file": "d3de4331c86d2cba0ec4dd1b0e1dc63176bb120645460cd7b1be6882d606e13a",
+      "sha256_canonical_json": "ffc0d04f429f86fa63bc6b4c1e37241f586abfbe10591c0349fe711e231aba13",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/evidence_desk",
+      "file": "evidence-desk.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9481,
+      "sha256_file": "61e4a9e347755a3e37a3d7d4658020e6ed61954da52fd931bb6fc919009b1421",
+      "sha256_canonical_json": "3b29545bb1bf551929814d9ac0f880c26c6556019bcaaa2f6b27ae475fe5d444",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research",
+        "x.klickd/trust_evidence"
+      ]
+    },
+    {
+      "id": "x.klickd/game_design",
+      "file": "game-design.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10071,
+      "sha256_file": "767b92d85590005ce47b9b3de55a1515b1de2a64e0afcf5ed244fd9de3623b93",
+      "sha256_canonical_json": "1027d834357d05944d2baf22c9f9185e8681354c8cbcb3181296b75e5f2411ac",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/creator",
+        "x.klickd/coding"
+      ]
+    },
+    {
+      "id": "x.klickd/gdpr_readiness",
+      "file": "gdpr-readiness.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8391,
+      "sha256_file": "66a20784544b65d0e3fddaf42d4ac5723077ef3a5d233064a558b43402c70be2",
+      "sha256_canonical_json": "d610c7739b7a6abb603da9e6440af35894db5cc1cc87fca65a86cd1066721ee4",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/iam_endpoint",
+      "file": "iam-endpoint.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9789,
+      "sha256_file": "78a00b14f896978887c36bdf5a2032190b27fe5c0576ef7d3ff6823f389c3601",
+      "sha256_canonical_json": "33f1b212448812c7d238f2218cdefbac1d4e5011b9c2faf74ffb10968a12b1bd",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/literature_review",
+      "file": "literature-review.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8637,
+      "sha256_file": "f9a8a5d26b30ca32d879fb5f4a8295bd72c9e8829261a69ec26c943d79ae1c18",
+      "sha256_canonical_json": "4c8b1d6c3df1560a1847dbf01f361d95e8681df3a3996da17d05531b170fda9c",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/mission_control",
+      "file": "mission-control.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9573,
+      "sha256_file": "82148f4be32775a627d0e16b6ae607b695bb21f64aa2d418cd0d7d412580c5f3",
+      "sha256_canonical_json": "61e8680cf74cbd9b8c4e903322262ad1cad6c7d2056b00ec47a55bee17b7ec33",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/mission",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/policy_analyst",
+      "file": "policy-analyst.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8994,
+      "sha256_file": "c389d1db7c648b0e5a30696834230fd90907e949dde41aaec690e87f34cf8bc3",
+      "sha256_canonical_json": "5062544558999f0be3698372fd5e7a250d5963abf36af5b270eb84b60a91dcaf",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/privacy_product",
+      "file": "privacy-product.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8447,
+      "sha256_file": "4ca5635ed7608364df8eb328edb67895a8ae1a7fd42c3ae200b468da314c6f6d",
+      "sha256_canonical_json": "9fa688aaeb0d3cfe58a9121aa8d55cb7da9d6e2f64bf8ee19e3cce982f13c6ee",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal",
+        "x.klickd/coding"
+      ]
+    },
+    {
+      "id": "x.klickd/project_operator",
+      "file": "project-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8872,
+      "sha256_file": "2afaef932b6e5df2a96f41393c08da4fd557b7e4720a2d14113781063e432318",
+      "sha256_canonical_json": "61d4711c3985660911d1574279f2875c6cb562d0e3e45186c07d7d8135bf7010",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work",
+        "x.klickd/mission"
+      ]
+    },
+    {
+      "id": "x.klickd/release_engineer",
+      "file": "release-engineer.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10556,
+      "sha256_file": "60c7e23ddd9f61e6d6c03f15c3b138064a2e5cfc53fc599c8c01355f8f973d21",
+      "sha256_canonical_json": "b3a2d355aa82142821b0b58bd62aa27d8bc39183029fda11629530976ef12668",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/rights_guard",
+      "file": "rights-guard.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8072,
+      "sha256_file": "c8bc18370491fc64dfb299d07339c9c0c16ca4a647d6cb735b01e6487f7b2548",
+      "sha256_canonical_json": "a8e177955146022c50eab372072fb509dc5f725f3e1484b1723074547fb35adc",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal",
+        "x.klickd/creator"
+      ]
+    },
+    {
+      "id": "x.klickd/second_brain",
+      "file": "second-brain.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8857,
+      "sha256_file": "709e0a8603bf9a1a82d39e95d4bab2c0d071fc81fae259360378bf2cb5642a8e",
+      "sha256_canonical_json": "c1761dd76cbecb60ac72ea4ade2592b99057c5d0fe119a245ac4055b304fb10b",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/trust_evidence",
+      "file": "trust-evidence.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9019,
+      "sha256_file": "83c5e22b94686986d495fdf319ee8bc481804ef052b24862b427e0b7ec733240",
+      "sha256_canonical_json": "d0718d38d94aac507aac2e3f612b55e4d51336a419f6cf0399e3bee28ed8d71a",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    }
+  ]
+}

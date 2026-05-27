@@ -1,0 +1,138 @@
+{
+  "manifest_version": "1.0",
+  "kind": "klickd_chimera_candidate_skill_manifest",
+  "size_tier": "lite",
+  "non_normative": true,
+  "claims_v41_ga": false,
+  "see_readme": "examples/v4.1/chimera-skills/README.md",
+  "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
+  "generated_at": "2026-05-27T00:00:00Z",
+  "hash_algo": "sha256",
+  "note": "Hashes are reproducible offline. sha256_file is over raw bytes; sha256_canonical_json is over json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8'). NON-NORMATIVE candidate Chimera v4.1 skill artefacts.",
+  "packs": [
+    {
+      "id": "x.klickd/artist",
+      "file": "artist.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 5908,
+      "sha256_file": "0f8c344fc5ffe77a9b1ecfdf129e77e497c43ad8cf3dd9362ff26790b4fa37a3",
+      "sha256_canonical_json": "eb52ac228e5df3c2fff4ada58085cb1291a512f162403d29462bba9a398c3b6e",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/creator"
+      ]
+    },
+    {
+      "id": "x.klickd/consumer",
+      "file": "consumer-rights.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 5956,
+      "sha256_file": "3cb21145ad0c6e549dc8bd7e2283e32ade8c33082b8f2d2d51351bebebb4aaa3",
+      "sha256_canonical_json": "0ef58c38b5221a056f811539a56f9b61e8baf5af7f52ae140e8ac1554d1cbf24",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/crypto_basics",
+      "file": "crypto-lite.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 6245,
+      "sha256_file": "0113ad93531ce5d9f55cb0d2e0afd252be3c180b6ae2a61e24a1326767dca3c0",
+      "sha256_canonical_json": "e28b151264b8b1b51b1f5a2ffcf437c23928249197b1e6cfba293d8cfbaa656b",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/game_literacy",
+      "file": "game-literacy.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 5962,
+      "sha256_file": "13b9e475d0ea35ccdc87a8b4808e573cd4171e1f222f470901eb9b40fd4660ca",
+      "sha256_canonical_json": "b230a98346123fc01225189af2b2e9ff5e1fce76b80d48572601dbccf1e2b077",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/gaming"
+      ]
+    },
+    {
+      "id": "x.klickd/creator",
+      "file": "media-lite.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 6337,
+      "sha256_file": "b1ebe9ab3f170dae221b808d2945cac76093ebcb8a3638a1ecbb32bfca4346e0",
+      "sha256_canonical_json": "06f084f81a432fd64915b023ccbef6783a7a27f57c8cdf91ad457c5df4af2ef8",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user"
+      ]
+    },
+    {
+      "id": "x.klickd/parent_gaming",
+      "file": "parent-gaming.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 6607,
+      "sha256_file": "e50ff819c30a4b75d8d08e985b7027bd68a16d37304d592cc121c152d59ad97b",
+      "sha256_canonical_json": "7f393313becd70f2ad519e79523a957ced081f344bdf6155667b0649a77aabd2",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/gaming",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/social_literacy",
+      "file": "social.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 6212,
+      "sha256_file": "71a395d332bf90822b7b36ce0c1addf5f13514401e18c5fe675f52fa30869b20",
+      "sha256_canonical_json": "1b73c616154b72da36b10279eeced9269e86e1c5d4b99c2dee649132979ddf5d",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user"
+      ]
+    },
+    {
+      "id": "x.klickd/streamer",
+      "file": "streamer-lite.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 5829,
+      "sha256_file": "869dee693490381e17a87c3387949567beb0024a0a864825b5bb547a08550c94",
+      "sha256_canonical_json": "a4a2a9f97198e68f79b30feae44e20594479dbbe5afbca4acfe6685d2e0482e4",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/creator"
+      ]
+    },
+    {
+      "id": "x.klickd/work",
+      "file": "work-lite.klickd",
+      "size_tier": "lite",
+      "pack_version": "0.1.0-candidate-lite",
+      "bytes": 7097,
+      "sha256_file": "942c582514ae5b92d5907aa501c335b58e6f3f23e4794e7b4d378bea7d7adfad",
+      "sha256_canonical_json": "fbf0b22850112027a335753cea2c20d28d756f8327542d7f060d8dc6f388f13f",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user"
+      ]
+    }
+  ]
+}

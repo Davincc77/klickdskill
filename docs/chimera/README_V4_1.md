@@ -8,6 +8,8 @@
 | **Authoritative spec** | [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md) |
 
 > **This document is non-normative and triggers no release.** No tag, no `latest` on npm/PyPI, no DOI on Zenodo, no IANA action, no schema change, no SDK bump. There are **no GA-readiness claims** anywhere in this directory. Promotion to `Accepted` is owned by the RFC track, not by this planning index.
+>
+> **Update 2026-05-27:** the repo now also ships **concrete `candidate_mapped` `.klickd` artefacts** for the candidates whose framework anchors are sufficiently resolved. They live under [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) in two tiers — `lite/` (9 packs) and `pro/` (18 packs, with `compact_index` loading strategy). The 4 deferred (`needs_mapping`) candidates and the 2 sub-area-only nicknames intentionally have **no** artefacts. See §5 below.
 
 ---
 
@@ -94,7 +96,9 @@ There is **no** "v4.1 GA" claim implied by anything in `docs/chimera/`. The trac
 
 ---
 
-## 5. Files in this directory
+## 5. Files in this directory + companion artefacts
+
+### Planning docs (this directory)
 
 | File | Purpose |
 |---|---|
@@ -102,7 +106,17 @@ There is **no** "v4.1 GA" claim implied by anything in `docs/chimera/`. The trac
 | [`V4_1_SKILL_CANDIDATE_MAPPING.md`](./V4_1_SKILL_CANDIDATE_MAPPING.md) | Per-candidate mapping table — Lot A (lightweight) and Lot B (advanced). All nine required fields per row. |
 | [`V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) | Per-candidate review checklist. Reviewer runs this against any new candidate before promoting it past `candidate_mapped`. |
 
-A future PR MAY add per-candidate notes under `docs/chimera/notes/<candidate>.md` when a single candidate's open questions outgrow the one-row format. None ships in this PR.
+### Concrete artefacts (companion directory, **`candidate_mapped`** only)
+
+| Path | Purpose |
+|---|---|
+| [`examples/v4.1/chimera-skills/lite/`](../../examples/v4.1/chimera-skills/lite/) | **Lot A** real `.klickd` files (lightweight, ~6–7 KB, `router_cost.tokens_estimate ≤ 900`). 9 packs: `work-lite`, `media-lite`, `consumer-rights`, `crypto-lite`, `social`, `artist`, `streamer-lite`, `game-literacy`, `parent-gaming`. Includes `manifest.json` with `sha256_file` + `sha256_canonical_json` per pack. |
+| [`examples/v4.1/chimera-skills/pro/`](../../examples/v4.1/chimera-skills/pro/) | **Lot B** real `.klickd` files (advanced, ~8–11 KB, `router_cost.tokens_estimate ≤ 1,350`) with `loading_strategy.mode = compact_index_plus_lazy_body` and a `compact_index` block in every file. 18 packs: `agent-security`, `ai-agent-builder`, `iam-endpoint`, `release-engineer`, `trust-evidence`, `eu-ai-act`, `gdpr-readiness`, `contract-review`, `privacy-product`, `evidence-desk`, `policy-analyst`, `second-brain`, `literature-review`, `project-operator`, `drone`, `mission-control`, `game-design`, `rights-guard`. Includes `manifest.json`. |
+| [`examples/v4.1/chimera-skills/README.md`](../../examples/v4.1/chimera-skills/README.md) | Reader doc for the artefact directory — what each file carries, what is NOT included, how to verify offline. |
+
+**No artefacts for deferred candidates.** A5 `personal-finance`, A6 `budget`, A14 `wellbeing-lite`, A15 `family` remain `needs_mapping` in [`V4_1_SKILL_CANDIDATE_MAPPING.md`](./V4_1_SKILL_CANDIDATE_MAPPING.md) and have **no** `.klickd` file under either tier. The validator (`scripts/validate_v4_1_candidate_mapping.py`) refuses to accept an artefact whose nickname matches one of those four (or one of the two `student`-sub-area nicknames `language` / `exam`).
+
+**No artefacts for the existing P0 starter packs.** The four canonical files (`user.klickd`, `student.klickd`, `research.klickd`, `coding.klickd`) already live under [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) and are NOT duplicated here.
 
 ---
 

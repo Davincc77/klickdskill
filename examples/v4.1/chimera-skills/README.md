@@ -1,0 +1,121 @@
+# `examples/v4.1/chimera-skills/` — concrete Chimera v4.1 candidate skill artefacts
+
+> **Status:** Concrete `candidate_mapped` artefacts. **Non-normative.** **Pre-release.**
+>
+> **Triggers no release.** No tag, no `latest` on npm or PyPI, no DOI on Zenodo, no IANA action, no SDK bump, no `/klickdskill` catalog change.
+
+This directory ships **real, structured `.klickd` files** that are concrete realisations of the Chimera v4.1 candidate mapping documented in [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../../../docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md). Every file is `candidate_mapped` (NOT `ship_ready`); none is GA; none is exposed on `/klickdskill`.
+
+## Layout
+
+| Path | Contents |
+|---|---|
+| [`lite/`](./lite/) | **Lot A (lightweight, user-lambda)** candidate skills. Compact (~6–7 KB), near-Chimera-size, fast-load; full manifest in prompt. 9 packs + `manifest.json`. |
+| [`pro/`](./pro/) | **Lot B (advanced, dev/pro)** candidate skills. Up to ~+50% larger (~8–11 KB), with `compact_index` loading strategy declared so the router can advertise gates / framework anchors / router_cost in prompt and lazy-load the full body on demand. 18 packs + `manifest.json`. |
+
+## Tier sizing (descriptive, not normative)
+
+| Tier | Audience | Approx. file size | `router_cost.tokens_estimate` | Loading strategy |
+|---|---|---|---|---|
+| **`lite`** | General public, learners, end-users. | ≤ ~7 KB | ≤ 900 | Full manifest in prompt. |
+| **`pro`** | Developers, researchers, compliance officers, professional users. | ≤ ~11 KB (~+50% vs lite) | ≤ 1,350 | **`compact_index` in prompt + lazy body** via `decision_router` ([RFC-007](../../../docs/rfcs/RFC-007-usage-profile-skill-routing.md)). The compact_index carries `pack`, `frameworks[]` IDs, `competency_ids[]`, `gate_summaries[]`, `human_authority`, `router_cost`. Full body (mastery scales, evidence rules, framework subsets) loads on demand. |
+
+## What every file carries
+
+Every `.klickd` in this directory is a real structured JSON document on the v4.0 envelope. Inside `x_klickd_pack` each file carries (at minimum):
+
+- `pack`, `pack_version`, `spec_ref`, `publisher`, `size_tier`
+- `parent_packs[]` — composition with existing Chimera P0/P1 packs (`x.klickd/user`, `x.klickd/student`, `x.klickd/coding`, `x.klickd/research`, `x.klickd/security`, `x.klickd/legal`, `x.klickd/work`, `x.klickd/creator`, `x.klickd/gaming`, `x.klickd/bridge`, `x.klickd/mission`)
+- `target_user` — plain-language carrier description (no PII)
+- `frameworks[]` — authoritative framework registry references (ESCO / DigComp / LifeComp / EQF / CEFR / WEF / O*NET / NICE / ENISA / CIS / SFIA)
+- `competency_mappings[]` / `competencies[]` — framework-anchored competency entries with `competency_ref`, `scheme`, `prefLabel`
+- `base_transversal_core` — minimum cross-pack competency layer
+- `levels[]` — EQF level anchors
+- `memory_scope` + `memory_segments[]` + `structured_memory` — pack-scoped memory slice ([RFC-009 §5.6](../../../docs/rfcs/RFC-009-chimera-v4.1.md)). Carries no inline content; pointer-only.
+- `gates`, `human_veto`, `human_authority` — RFC-002 verification gates default + carrier veto posture + final-decision owner. `raise_only: true`; non-lowerable floor declared.
+- `evidence_policy`, `source_policy` — RFC-002 §8b grounding + RFC-003 `verification_artifacts[]` shape; `pointer_only: true`.
+- `verification_gates` — concrete per-action gate definitions (block / confirm / silent) with reason text.
+- `router_cost` — deterministic heuristic token-cost estimate consistent with RFC-003.
+- `acceptance_criteria[]`, `tests.static[]`, `tests.review[]` — per-pack acceptance / test list a reviewer runs against the file.
+- `forbidden_fields[]` — frozen literal enforcing the carrier-vs-skill split ([RFC-009 §5.1.1 / §8.10](../../../docs/rfcs/RFC-009-chimera-v4.1.md)).
+
+Pro-tier files additionally carry:
+
+- `loading_strategy` — declares `compact_index_plus_lazy_body` with the rationale and the router (RFC-007) reference.
+- `compact_index` — the small block the router puts in prompt: `pack`, `frameworks[]` (scheme IDs only), `competency_ids[]`, `gate_summaries[]`, `human_authority`, `router_cost`.
+
+## What every file is NOT
+
+- **Not GA.** `_pack_metadata.claims_v41_ga: false` everywhere. `status: candidate_mapped`. No file in this directory is a `ship_ready` artefact; promotion past `candidate_mapped` requires a per-pack RFC + scaffold + bundle bytes + strict JSON Schema + round-trip vector per [RFC-009 §8](../../../docs/rfcs/RFC-009-chimera-v4.1.md).
+- **Not personal data.** `_pack_metadata.contains_real_pii: false`, `_pack_metadata.contains_secrets: false`. No real user state; pointer-only.
+- **Not Klickd.app product carriers.** No `klickdapp.lu/fr/be/de.klickd`. Those live under [`examples/v4/klickdapp-skills/`](../../v4/klickdapp-skills/) and are out of scope here.
+- **Not Kai host-side skills.** No `skill.kai.*`, no `kai.tutor`, no `core.Kai.klickd`. Host-side skills live in the host runtime, never inside a `carrier_pack` ([RFC-009 §0.1, §5.1.1](../../../docs/rfcs/RFC-009-chimera-v4.1.md)).
+- **Not catalog entries.** Until P0 + per-pack validation passes ([RFC-009 §7](../../../docs/rfcs/RFC-009-chimera-v4.1.md)), no `/klickdskill` listing is implied by anything in this directory.
+- **Not renamed v4-preview personas.** Each file is authored from frameworks, not harvested from a persona ([RFC-009 §5.0](../../../docs/rfcs/RFC-009-chimera-v4.1.md)).
+
+## How to verify
+
+Offline verification of structure, field presence, tier ceilings, anti-PII guard, anti-host_skill guard, anti-Klickd.app-leak guard, and hash stability:
+
+```bash
+python3 scripts/validate_v4_1_candidate_mapping.py
+pytest tests/test_v4_1_candidate_mapping.py
+```
+
+The validator parses every `.klickd` under `lite/` and `pro/`, checks the required Chimera fields, asserts the size-tier ceiling, enforces the frozen `forbidden_fields` literal, and refuses any leak of Klickd.app or Kai host-side names.
+
+## Deferred candidates (NOT shipped as artefacts)
+
+The four candidates flagged `needs_mapping` in [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../../../docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) §1 (A5 `personal-finance`, A6 `budget`, A14 `wellbeing-lite`, A15 `family`) are **deliberately absent** from this directory. They remain documented in the planning doc only; no `.klickd` is produced for them until the framework anchor / consent shape question is resolved. The validator enforces this — adding a `.klickd` file whose nickname matches one of the deferred candidates is rejected.
+
+Two additional candidates from the planning doc are also absent here, by design:
+
+- **A2 `language`** and **A3 `exam`** — these are explicit **sub-areas** of `x.klickd/student` ([`examples/v4/starter-skills/student.klickd`](../../v4/starter-skills/student.klickd) — `language_proficiency[]` and `exam_targets[]` blocks), not separate packs. They are NOT separate `.klickd` files and never will be under v4.1; the planning doc records them so reviewers do not propose them as siblings.
+
+## File index
+
+### `lite/` (9 packs)
+
+| File | Pack | Parents | Working nickname |
+|---|---|---|---|
+| `work-lite.klickd` | `x.klickd/work` (Lot A sub-profile) | `user` | work-lite (A1) |
+| `media-lite.klickd` | `x.klickd/creator` (Lot A sub-profile) | `user` | media-lite (A4) |
+| `consumer-rights.klickd` | `x.klickd/consumer` | `user`, `legal` | consumer-rights (A7) |
+| `crypto-lite.klickd` | `x.klickd/crypto_basics` | `user`, `security` | crypto-lite (A8) |
+| `social.klickd` | `x.klickd/social_literacy` | `user` | social (A9) |
+| `artist.klickd` | `x.klickd/artist` | `user`, `creator` | artist (A10) |
+| `streamer-lite.klickd` | `x.klickd/streamer` | `user`, `creator` | streamer-lite (A11) |
+| `game-literacy.klickd` | `x.klickd/game_literacy` | `user`, `gaming` | game-literacy (A12) |
+| `parent-gaming.klickd` | `x.klickd/parent_gaming` | `user`, `gaming`, `security` | parent-gaming (A13) |
+
+### `pro/` (18 packs)
+
+| File | Pack | Parents | Working nickname |
+|---|---|---|---|
+| `agent-security.klickd` | `x.klickd/agent_security` | `user`, `security`, `coding` | agent-security (B1) |
+| `ai-agent-builder.klickd` | `x.klickd/ai_agent_builder` | `user`, `coding`, `agent_security` | ai-agent-builder (B2) |
+| `iam-endpoint.klickd` | `x.klickd/iam_endpoint` | `user`, `security` | iam-endpoint (B3) |
+| `release-engineer.klickd` | `x.klickd/release_engineer` | `user`, `coding`, `security` | release-engineer (B4) |
+| `trust-evidence.klickd` | `x.klickd/trust_evidence` | `user`, `research` | trust-evidence (B5) |
+| `eu-ai-act.klickd` | `x.klickd/eu_ai_act` | `user`, `legal` | eu-ai-act (B6) |
+| `gdpr-readiness.klickd` | `x.klickd/gdpr_readiness` | `user`, `legal` | gdpr-readiness (B7) |
+| `contract-review.klickd` | `x.klickd/contract_review` | `user`, `legal` | contract-review (B8) |
+| `privacy-product.klickd` | `x.klickd/privacy_product` | `user`, `legal`, `coding` | privacy-product (B9) |
+| `evidence-desk.klickd` | `x.klickd/evidence_desk` | `user`, `research`, `trust_evidence` | evidence-desk (B10) |
+| `policy-analyst.klickd` | `x.klickd/policy_analyst` | `user`, `research`, `legal` | policy-analyst (B11) |
+| `second-brain.klickd` | `x.klickd/second_brain` | `user`, `research` | second-brain (B12) |
+| `literature-review.klickd` | `x.klickd/literature_review` | `user`, `research` | literature-review (B13) |
+| `project-operator.klickd` | `x.klickd/project_operator` | `user`, `work`, `mission` | project-operator (B14) |
+| `drone.klickd` | `x.klickd/drone_operator` | `user`, `security`, `legal` | drone (B15) |
+| `mission-control.klickd` | `x.klickd/mission_control` | `user`, `mission`, `security` | mission-control (B16) |
+| `game-design.klickd` | `x.klickd/game_design` | `user`, `creator`, `coding` | game-design (B17) |
+| `rights-guard.klickd` | `x.klickd/rights_guard` | `user`, `legal`, `creator` | rights-guard (B18) |
+
+## See also
+
+- [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../../../docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) — full candidate mapping (parent packs, target user, framework anchors, gates, evidence policy, size tier, status).
+- [`docs/chimera/README_V4_1.md`](../../../docs/chimera/README_V4_1.md) — planning index, strict mapping rule, exclusion table, release-gating ladder.
+- [`docs/chimera/V4_1_CANDIDATE_CHECKLIST.md`](../../../docs/chimera/V4_1_CANDIDATE_CHECKLIST.md) — per-candidate review checklist.
+- [`docs/rfcs/RFC-009-chimera-v4.1.md`](../../../docs/rfcs/RFC-009-chimera-v4.1.md) — Chimera v4.1 RFC (P0/P1 sets, validation §8, no-catalog §7, carrier-vs-skill §5.1.1).
+- [`examples/v4/starter-skills/`](../../v4/starter-skills/) — already-shipped P0 starter `.klickd` files (`user`, `student`, `research`, `coding`). NOT extended by this directory.
+- [`examples/v4/klickdapp-skills/`](../../v4/klickdapp-skills/) — Klickd.app product carriers. Out of scope here; never referenced as candidate Chimera packs.

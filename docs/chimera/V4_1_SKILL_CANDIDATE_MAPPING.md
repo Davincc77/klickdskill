@@ -10,7 +10,9 @@
 
 > **This document is non-normative.** It does **not** modify any current `SPEC.md` section, schema, SDK behaviour, vector, lock file, or RFC status. It introduces **no new normative field**. It does **not** publish anything (no tag, no `latest` on npm/PyPI, no DOI on Zenodo, no IANA action, no SDK bump, no `/klickdskill` catalog change).
 >
-> Every candidate below is **`candidate_mapped`** unless explicitly flagged otherwise. None of them are `ship_ready`. None of them are real `carrier_pack`s. The mapping exists so reviewers can argue with **scope, naming, and framework anchors** before any pack is authored.
+> Every candidate below is **`candidate_mapped`** unless explicitly flagged otherwise. None of them are `ship_ready`. The mapping exists so reviewers can argue with **scope, naming, and framework anchors**.
+>
+> **Update 2026-05-27 — concrete artefacts now ship alongside this doc.** For every `candidate_mapped` row whose framework anchors are sufficient, a real `.klickd` file exists under [`examples/v4.1/chimera-skills/lite/`](../../examples/v4.1/chimera-skills/lite/) (Lot A) or [`examples/v4.1/chimera-skills/pro/`](../../examples/v4.1/chimera-skills/pro/) (Lot B, with `compact_index` loading strategy). The four `needs_mapping` rows (A5, A6, A14, A15) and the two `student`-sub-area rows (A2 `language`, A3 `exam`) have **no** artefact — they are documented here only. The validator at `scripts/validate_v4_1_candidate_mapping.py` enforces both directions.
 
 ---
 
@@ -185,4 +187,5 @@ Promotion path:
 - [`docs/chimera/README_V4_1.md`](./README_V4_1.md) — planning index for v4.1.
 - [`docs/chimera/V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) — per-candidate review checklist.
 - [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) — already-shipped P0 starter `.klickd` files (`user`, `student`, `research`, `coding`). NOT extended by this document.
+- [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) — **real `candidate_mapped` artefacts** produced from this mapping. `lite/` (9 packs) and `pro/` (18 packs), each with a `manifest.json` carrying `sha256_file` + `sha256_canonical_json` per pack.
 - [`examples/v4/klickdapp-skills/`](../../examples/v4/klickdapp-skills/) — Klickd.app product carriers. Out of scope for this document; **never** referenced as candidate Chimera packs.
