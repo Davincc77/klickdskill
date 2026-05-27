@@ -1,0 +1,237 @@
+{
+  "klickd_version": "4.0",
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "v4-starter-1.0",
+  "created_at": "2026-05-27T00:00:00Z",
+  "encrypted": false,
+  "domain": "education",
+  "profile_kind": "learner",
+  "_pack_metadata": {
+    "kind": "app_student_carrier",
+    "app": "klickd.app",
+    "country_scope": "LU",
+    "non_normative": true,
+    "claims_v41_ga": false,
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "see_readme": "examples/v4/klickdapp-skills/README.md",
+    "note": "App-specific student .klickd carrier example for Klickd.app on the v4.0 envelope. Not a public starter skill, not package data."
+  },
+  "x_klickd_pack": {
+    "pack": "x.klickd/student",
+    "pack_version": "0.1.0-klickdapp-lu",
+    "spec_ref": "examples/v4/klickdapp-skills/README.md",
+    "publisher": {
+      "name": "klickd",
+      "ref": "https://klickd.app"
+    },
+    "frameworks": [
+      {
+        "scheme": "esco",
+        "version": "v1.1.1",
+        "iri_prefix": "http://data.europa.eu/esco/skill/",
+        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
+      },
+      {
+        "scheme": "digcomp",
+        "version": "2.2",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"
+      },
+      {
+        "scheme": "lifecomp",
+        "version": "2020",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en"
+      },
+      {
+        "scheme": "eqf",
+        "version": "2017",
+        "iri_prefix": "https://europa.eu/europass/eqf/",
+        "canonical_url": "https://europa.eu/europass/en/europass-tools/european-qualifications-framework"
+      },
+      {
+        "scheme": "cefr",
+        "version": "2020",
+        "iri_prefix": "https://www.coe.int/cefr/",
+        "canonical_url": "https://www.coe.int/en/web/common-european-framework-reference-languages"
+      },
+      {
+        "scheme": "menje-lu",
+        "version": "2024-2025",
+        "iri_prefix": "https://men.public.lu/curriculum/",
+        "canonical_url": "https://men.public.lu/"
+      }
+    ],
+    "base_transversal_core": {
+      "frameworks": [
+        {"scheme": "esco", "version": "v1.1.1"},
+        {"scheme": "digcomp", "version": "2.2"},
+        {"scheme": "lifecomp", "version": "2020"},
+        {"scheme": "eqf", "version": "2017"}
+      ],
+      "transversal_refs": [
+        {"competency_ref": "esco:S2", "scheme": "esco", "prefLabel": "information skills"},
+        {"competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content"},
+        {"competency_ref": "lifecomp:L2", "scheme": "lifecomp", "prefLabel": "Critical thinking"},
+        {"competency_ref": "lifecomp:L3", "scheme": "lifecomp", "prefLabel": "Managing learning"}
+      ]
+    },
+    "identity": {
+      "pack_role": "student",
+      "display_name": null,
+      "school_or_institution_ref": null,
+      "enrolment_period": null,
+      "country_ref": "iso3166:LU"
+    },
+    "competencies": [
+      {"competency_ref": "esco:S2", "scheme": "esco", "prefLabel": "information skills"},
+      {"competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content"},
+      {"competency_ref": "digcomp:3.1", "scheme": "digcomp", "prefLabel": "Developing digital content"},
+      {"competency_ref": "lifecomp:L3", "scheme": "lifecomp", "prefLabel": "Managing learning"}
+    ],
+    "levels": [
+      {
+        "framework_ref": "https://europa.eu/europass/eqf/level/4",
+        "level_label": "EQF level 4",
+        "effective_at": "2026-05-27"
+      }
+    ],
+    "language_proficiency": [
+      {"language_ref": "bcp47:lb", "cefr_ref": "https://www.coe.int/cefr/level/B2", "scheme": "cefr"},
+      {"language_ref": "bcp47:fr", "cefr_ref": "https://www.coe.int/cefr/level/B2", "scheme": "cefr"},
+      {"language_ref": "bcp47:de", "cefr_ref": "https://www.coe.int/cefr/level/B2", "scheme": "cefr"},
+      {"language_ref": "bcp47:en", "cefr_ref": "https://www.coe.int/cefr/level/B1", "scheme": "cefr"}
+    ],
+    "curriculum_refs": [
+      {
+        "curriculum_ref": "menje-lu:enseignement-secondaire",
+        "scheme": "menje-lu",
+        "prefLabel": "Enseignement secondaire (LU)",
+        "effective_at": "2026-05-27"
+      }
+    ],
+    "subjects": [
+      {
+        "subject_ref": "http://data.europa.eu/esco/isced-f/0541",
+        "prefLabel": "Mathematics",
+        "started_at": null,
+        "current_chapter_ref": null,
+        "coursework_pointer": null
+      }
+    ],
+    "mastery": [],
+    "mastery_delta_policy": {
+      "raise_only": true,
+      "human_confirmation_required": true,
+      "evidence_pointer_required": true,
+      "max_delta_per_session": 0.1
+    },
+    "progression": {
+      "current_stage_ref": null,
+      "next_stage_ref": null,
+      "last_evaluated_at": null
+    },
+    "session_evidence": {
+      "pointer_only": true,
+      "entries": []
+    },
+    "preferences": {
+      "preferred_languages": ["lb", "fr", "de", "en"],
+      "pace_preference": null,
+      "modality_preference": [],
+      "feedback_cadence_preference": null,
+      "time_budget_per_week_minutes": null
+    },
+    "accessibility": {
+      "needs": [],
+      "accommodations": [],
+      "consent_to_disclose_to_agent": false
+    },
+    "exam_targets": [],
+    "history": [],
+    "gates": {
+      "verification_gates_default": {
+        "raise_only": true,
+        "claim_grounding_required": true,
+        "reversibility_threshold": "medium"
+      },
+      "human_veto_policy": {
+        "owner": "human_carrier",
+        "scope": [
+          "mastery_writes",
+          "exam_target_changes",
+          "accommodations_changes",
+          "curriculum_ref_changes",
+          "progression_writes"
+        ]
+      }
+    },
+    "human_authority": {
+      "final_decision_owner": "human_carrier",
+      "agent_role": "advisory",
+      "escalation": "guardian_then_school"
+    },
+    "memory_scope": "memory.x_klickd.student",
+    "structured_memory": {
+      "scope": "memory.x_klickd.student",
+      "policy": "pack_scoped_only",
+      "entries": []
+    },
+    "evidence_policy": {
+      "required_for_claims": true,
+      "pointer_only": true,
+      "attestation_shape_ref": "rfc-002#8b"
+    },
+    "source_policy": {
+      "allow_inline_definitions": false,
+      "language_tags": ["lb", "fr", "de", "en"]
+    },
+    "verification_gates": {
+      "version": 1,
+      "user_default": "silent",
+      "gates": [
+        {
+          "id": "exam-claim",
+          "action_class": "factual_claim_with_date",
+          "level": "confirm",
+          "reason": "Exam dates and curriculum claims require grounding before assertion."
+        },
+        {
+          "id": "mastery-write",
+          "action_class": "carrier_state_write",
+          "level": "confirm",
+          "reason": "Writing to mastery[] changes carrier-recorded competence and requires explicit consent."
+        },
+        {
+          "id": "progression-write",
+          "action_class": "carrier_state_write",
+          "level": "confirm",
+          "reason": "Progression updates change recorded learner state and require explicit consent."
+        },
+        {
+          "id": "public-post",
+          "action_class": "public_post",
+          "level": "block",
+          "reason": "No public posting from a learner pack; minor-safe default."
+        }
+      ]
+    },
+    "router_cost": {
+      "tokens_estimate": 900,
+      "baseline": "base_plus_one"
+    },
+    "forbidden_fields": [
+      "pedagogy",
+      "teaching_method",
+      "socratic_steps",
+      "prompt_strategy",
+      "scoring_rubric",
+      "intervention_policy",
+      "tone_rules",
+      "system_prompt_overrides",
+      "knowledge.mastered",
+      "mastered_topics"
+    ]
+  }
+}
