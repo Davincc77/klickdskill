@@ -16,7 +16,8 @@ def _run_pilot(tmp_path: Path, monkeypatch, run_id: str = "rAudit") -> Path:
         fixtures=fxt, users=2, execute=True, provider="mock",
         model="m-audit", temperature=0.0, max_output_tokens=64,
         concurrency=1, batch_size=4, sleep_between_batches=0.0,
-        retry_max=0, run_id=run_id,
+        retry_max=0, retry_backoff=0.0, retry_backoff_max=1.0,
+        retry_jitter=0.0, run_id=run_id,
         _provider_instance=providers.MockProvider(),
     )
     runner.cmd_pilot(ns)

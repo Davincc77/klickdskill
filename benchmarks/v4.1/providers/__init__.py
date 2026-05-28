@@ -11,7 +11,9 @@ from .base import (
     ProviderConfig,
     ProviderError,
     ProviderResponse,
+    TransientProviderError,
     get_provider,
+    is_transient_error,
     register_provider,
 )
 from .mock_provider import MockProvider
@@ -21,7 +23,9 @@ __all__ = [
     "ProviderConfig",
     "ProviderError",
     "ProviderResponse",
+    "TransientProviderError",
     "MockProvider",
     "get_provider",
+    "is_transient_error",
     "register_provider",
 ]

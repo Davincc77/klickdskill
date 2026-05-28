@@ -28,6 +28,9 @@ _PILOT_DEFAULTS = dict(
     batch_size=10,
     sleep_between_batches=0.0,
     retry_max=2,
+    retry_backoff=2.0,
+    retry_backoff_max=30.0,
+    retry_jitter=0.25,
     run_id=None,
     _provider_instance=None,
 )

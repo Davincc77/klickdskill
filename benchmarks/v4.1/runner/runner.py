@@ -39,6 +39,13 @@ SNAPSHOTS_ROOT = RESULTS_ROOT / "snapshots"
 
 PILOT_MAX_USERS = 10
 PILOT_MAX_CONCURRENCY = 8
+PILOT_RETRY_MAX_CAP = 8
+PILOT_RETRY_BACKOFF_MAX_CAP = 30.0
+PILOT_RETRY_BACKOFF_BASE_CAP = 10.0
+PILOT_DEFAULT_RETRY_MAX = 5
+PILOT_DEFAULT_RETRY_BACKOFF_S = 2.0
+PILOT_DEFAULT_RETRY_BACKOFF_MAX_S = 30.0
+PILOT_DEFAULT_RETRY_JITTER = 0.25
 ENV_FULL_APPROVAL = "XKLICKD_BENCHMARK_FULL_APPROVED"
 ENV_LLM_KEYS = (
     "LLM_API_KEY",
@@ -240,6 +247,28 @@ def cmd_pilot(args: argparse.Namespace) -> int:
         raise RunnerError("--batch-size must be >= 1.")
     if args.retry_max < 0:
         raise RunnerError("--retry-max must be >= 0.")
+    if args.retry_max > PILOT_RETRY_MAX_CAP:
+        raise RunnerError(
+            f"--retry-max is capped at {PILOT_RETRY_MAX_CAP} for pilots "
+            f"(got {args.retry_max}). Higher values would risk overwhelming "
+            f"a stressed provider."
+        )
+    if args.retry_backoff < 0:
+        raise RunnerError("--retry-backoff must be >= 0.")
+    if args.retry_backoff > PILOT_RETRY_BACKOFF_BASE_CAP:
+        raise RunnerError(
+            f"--retry-backoff base is capped at {PILOT_RETRY_BACKOFF_BASE_CAP}s "
+            f"(got {args.retry_backoff})."
+        )
+    if args.retry_backoff_max < 0:
+        raise RunnerError("--retry-backoff-max must be >= 0.")
+    if args.retry_backoff_max > PILOT_RETRY_BACKOFF_MAX_CAP:
+        raise RunnerError(
+            f"--retry-backoff-max is capped at {PILOT_RETRY_BACKOFF_MAX_CAP}s "
+            f"(got {args.retry_backoff_max})."
+        )
+    if args.retry_jitter < 0 or args.retry_jitter > 1:
+        raise RunnerError("--retry-jitter must be in [0, 1].")
     if args.sleep_between_batches < 0:
         raise RunnerError("--sleep-between-batches must be >= 0.")
 
@@ -276,6 +305,9 @@ def cmd_pilot(args: argparse.Namespace) -> int:
             "batch_size": args.batch_size,
             "sleep_between_batches_s": args.sleep_between_batches,
             "retry_max": args.retry_max,
+            "retry_backoff_s": args.retry_backoff,
+            "retry_backoff_max_s": args.retry_backoff_max,
+            "retry_jitter": args.retry_jitter,
             "model": args.model,
             "temperature": args.temperature,
             "max_output_tokens": args.max_output_tokens,
@@ -309,6 +341,9 @@ def cmd_pilot(args: argparse.Namespace) -> int:
         batch_size=args.batch_size,
         sleep_between_batches_s=args.sleep_between_batches,
         retry_max=args.retry_max,
+        retry_backoff_s=args.retry_backoff,
+        retry_backoff_max_s=args.retry_backoff_max,
+        retry_jitter=args.retry_jitter,
     )
     result = executor.execute_pilot(
         run_specs=pilot_runs,
@@ -371,7 +406,37 @@ def _parse() -> argparse.Namespace:
                          help=f"Parallel calls (default 1, max {PILOT_MAX_CONCURRENCY}).")
     p_pilot.add_argument("--batch-size", type=int, default=10)
     p_pilot.add_argument("--sleep-between-batches", type=float, default=1.0)
-    p_pilot.add_argument("--retry-max", type=int, default=2)
+    p_pilot.add_argument(
+        "--retry-max", type=int, default=PILOT_DEFAULT_RETRY_MAX,
+        help=(
+            f"Max retries on transient errors (default {PILOT_DEFAULT_RETRY_MAX}, "
+            f"cap {PILOT_RETRY_MAX_CAP}). Only retries on 429/5xx/UNAVAILABLE/"
+            f"RESOURCE_EXHAUSTED; permanent errors abort immediately."
+        ),
+    )
+    p_pilot.add_argument(
+        "--retry-backoff", type=float, default=PILOT_DEFAULT_RETRY_BACKOFF_S,
+        help=(
+            f"Base backoff in seconds (default {PILOT_DEFAULT_RETRY_BACKOFF_S}s, "
+            f"cap {PILOT_RETRY_BACKOFF_BASE_CAP}s). Exponential with jitter."
+        ),
+    )
+    p_pilot.add_argument(
+        "--retry-backoff-max", type=float,
+        default=PILOT_DEFAULT_RETRY_BACKOFF_MAX_S,
+        help=(
+            f"Maximum single backoff in seconds (default "
+            f"{PILOT_DEFAULT_RETRY_BACKOFF_MAX_S}s, cap "
+            f"{PILOT_RETRY_BACKOFF_MAX_CAP}s)."
+        ),
+    )
+    p_pilot.add_argument(
+        "--retry-jitter", type=float, default=PILOT_DEFAULT_RETRY_JITTER,
+        help=(
+            f"Backoff jitter fraction in [0, 1] (default "
+            f"{PILOT_DEFAULT_RETRY_JITTER})."
+        ),
+    )
     p_pilot.add_argument("--run-id", default=None,
                          help="Reuse a prior run-id to resume.")
     # Internal-only: allow tests to inject a provider instance directly.

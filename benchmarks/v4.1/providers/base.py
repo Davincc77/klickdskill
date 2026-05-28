@@ -12,7 +12,85 @@ from typing import Any, Callable, Protocol
 
 
 class ProviderError(RuntimeError):
-    """Raised by any adapter on a fatal call failure."""
+    """Raised by any adapter on a call failure.
+
+    Adapters that can distinguish transient infrastructure failures from
+    permanent ones should raise :class:`TransientProviderError` for the
+    transient case so the executor only retries on conditions where a
+    retry could plausibly succeed.
+    """
+
+
+class TransientProviderError(ProviderError):
+    """Subclass marking a transient/retryable provider failure.
+
+    Examples: HTTP 429/500/502/503/504, gRPC ``UNAVAILABLE`` /
+    ``RESOURCE_EXHAUSTED``, connection resets, read timeouts.
+    Auth/config/quota-exceeded-permanent errors must remain plain
+    :class:`ProviderError` so the executor does not waste retries on them.
+    """
+
+
+# HTTP status codes and provider error tokens that should be treated as
+# transient by the classifier below.
+_TRANSIENT_HTTP_CODES = (408, 425, 429, 500, 502, 503, 504)
+_TRANSIENT_TOKENS = (
+    "unavailable",
+    "resource_exhausted",
+    "resource exhausted",
+    "rate limit",
+    "rate-limit",
+    "rate_limit",
+    "ratelimit",
+    "deadline_exceeded",
+    "deadline exceeded",
+    "internal error",
+    "internal server error",
+    "service unavailable",
+    "bad gateway",
+    "gateway timeout",
+    "temporarily unavailable",
+    "try again",
+    "overloaded",
+    "high demand",
+    "timeout",
+    "timed out",
+    "connection reset",
+    "connection aborted",
+    "econnreset",
+    "etimedout",
+)
+
+
+def is_transient_error(exc: BaseException) -> bool:
+    """Classify an exception as transient (retryable) or not.
+
+    Inspects:
+    - ``status_code`` / ``code`` / ``http_status`` attributes if present
+    - the exception's ``str()`` for known transient tokens (case-insensitive)
+
+    This is conservative on purpose: anything that does not match a
+    known transient signal is treated as non-transient so we do not
+    retry auth/permission/quota-permanent errors.
+    """
+    for attr in ("status_code", "http_status", "status"):
+        v = getattr(exc, attr, None)
+        if isinstance(v, int) and v in _TRANSIENT_HTTP_CODES:
+            return True
+    code = getattr(exc, "code", None)
+    if isinstance(code, int) and code in _TRANSIENT_HTTP_CODES:
+        return True
+    if isinstance(code, str) and code.lower() in {t.lower() for t in _TRANSIENT_TOKENS}:
+        return True
+    text = str(exc).lower()
+    for code in _TRANSIENT_HTTP_CODES:
+        # Match the bare status code as a token (avoid matching "500ms").
+        if f" {code} " in f" {text} " or f"({code})" in text or f"http {code}" in text or f"status {code}" in text:
+            return True
+    for tok in _TRANSIENT_TOKENS:
+        if tok in text:
+            return True
+    return False
 
 
 @dataclass(frozen=True)

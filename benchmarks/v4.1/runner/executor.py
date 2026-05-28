@@ -24,6 +24,7 @@ import concurrent.futures as _f
 import dataclasses
 import hashlib
 import json
+import random
 import threading
 import time
 import traceback
@@ -36,7 +37,14 @@ from ..providers.base import (
     ProviderConfig,
     ProviderError,
     ProviderResponse,
+    TransientProviderError,
+    is_transient_error,
 )
+
+
+# Conservative caps shared with the runner CLI to avoid aggressive hammering.
+RETRY_MAX_HARD_CAP = 8
+RETRY_BACKOFF_MAX_S = 30.0
 
 
 @dataclasses.dataclass(frozen=True)
@@ -47,7 +55,9 @@ class ExecutionPlan:
     batch_size: int
     sleep_between_batches_s: float
     retry_max: int
-    retry_backoff_s: float = 1.0
+    retry_backoff_s: float = 2.0
+    retry_backoff_max_s: float = RETRY_BACKOFF_MAX_S
+    retry_jitter: float = 0.25
 
 
 def _output_hash(text: str) -> str:
@@ -105,6 +115,30 @@ def _build_call(
     }
 
 
+def _classify(exc: BaseException) -> str:
+    """Stable short string used in retry logs."""
+    if isinstance(exc, TransientProviderError):
+        return "transient"
+    if isinstance(exc, ProviderError):
+        return "transient" if is_transient_error(exc) else "permanent"
+    return "transient" if is_transient_error(exc) else "unhandled"
+
+
+def _compute_backoff(
+    attempt: int,
+    base: float,
+    cap: float,
+    jitter: float,
+    rng: random.Random,
+) -> float:
+    """Exponential backoff with full-bandwidth jitter, capped at ``cap``."""
+    raw = min(cap, base * (2 ** attempt))
+    if jitter <= 0:
+        return max(0.0, raw)
+    spread = raw * jitter
+    return max(0.0, raw + rng.uniform(-spread, spread))
+
+
 def _call_with_retry(
     provider: LLMProvider,
     config: ProviderConfig,
@@ -112,27 +146,60 @@ def _call_with_retry(
     user: str,
     retry_max: int,
     retry_backoff_s: float,
-) -> tuple[ProviderResponse | None, list[str]]:
-    """Call the provider with bounded exponential backoff.
+    retry_backoff_max_s: float = RETRY_BACKOFF_MAX_S,
+    retry_jitter: float = 0.25,
+    sleep: Any = time.sleep,
+    rng: random.Random | None = None,
+) -> tuple[ProviderResponse | None, list[dict[str, Any]], float]:
+    """Call the provider with bounded jittered exponential backoff.
 
-    Returns ``(response, error_messages)``. ``response`` is ``None`` iff every
-    attempt failed; ``error_messages`` records the failure trace for each
-    attempt (so the audit can verify retries were actually attempted).
+    Only :class:`TransientProviderError` (or any exception classified as
+    transient by :func:`is_transient_error`) triggers a retry. Permanent
+    errors (auth, config, schema) abort immediately so quotas are not
+    burned on calls that cannot succeed.
+
+    Returns ``(response, attempts, cumulative_retry_delay_s)``.
+    ``response`` is ``None`` iff every attempt failed. ``attempts`` is a
+    list of structured dicts (one per attempt) used by the executor for
+    logging and by tests for verification.
     """
-    errors: list[str] = []
+    rng = rng or random.Random()
+    attempts: list[dict[str, Any]] = []
+    cumulative_delay = 0.0
     for attempt in range(retry_max + 1):
         try:
-            return provider.generate(system, user, config), errors
+            resp = provider.generate(system, user, config)
+            return resp, attempts, cumulative_delay
         except ProviderError as exc:
-            errors.append(f"attempt={attempt} err={exc!s}")
+            cls = _classify(exc)
+            attempts.append({
+                "attempt": attempt,
+                "error_class": cls,
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            })
+            if cls != "transient":
+                return None, attempts, cumulative_delay
         except Exception as exc:  # pragma: no cover - defensive
-            errors.append(
-                f"attempt={attempt} unhandled={exc!s}\n"
-                + traceback.format_exc(limit=2)
-            )
+            cls = _classify(exc)
+            attempts.append({
+                "attempt": attempt,
+                "error_class": cls,
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+                "traceback": traceback.format_exc(limit=2),
+            })
+            if cls != "transient":
+                return None, attempts, cumulative_delay
         if attempt < retry_max:
-            time.sleep(retry_backoff_s * (2 ** attempt))
-    return None, errors
+            delay = _compute_backoff(
+                attempt, retry_backoff_s, retry_backoff_max_s,
+                retry_jitter, rng,
+            )
+            attempts[-1]["sleep_s"] = round(delay, 3)
+            cumulative_delay += delay
+            sleep(delay)
+    return None, attempts, cumulative_delay
 
 
 class _Writer:
@@ -192,11 +259,15 @@ def execute_pilot(
 
     def _do_call(call: dict[str, Any]) -> None:
         t_start = _utcnow_iso()
-        resp, errors = _call_with_retry(
+        resp, attempts, cumulative_delay = _call_with_retry(
             provider, plan.config, call["system"], call["user"],
             plan.retry_max, plan.retry_backoff_s,
+            retry_backoff_max_s=plan.retry_backoff_max_s,
+            retry_jitter=plan.retry_jitter,
         )
+        retried_attempts = len(attempts)
         if resp is None:
+            final_class = attempts[-1]["error_class"] if attempts else "unknown"
             err_writer.write({
                 "run_id": call["run_id"],
                 "user_id": call["user_id"],
@@ -207,7 +278,15 @@ def execute_pilot(
                 "timestamp_utc": t_start,
                 "model": plan.config.model,
                 "provider": plan.provider_name,
-                "errors": errors,
+                "errors": [
+                    f"attempt={a['attempt']} class={a['error_class']} "
+                    f"type={a['error_type']} err={a['error']}"
+                    for a in attempts
+                ],
+                "attempts": attempts,
+                "retried_attempts": retried_attempts,
+                "final_error_class": final_class,
+                "cumulative_retry_delay_s": round(cumulative_delay, 3),
                 "status": "error",
             })
             counts["error"] += 1
@@ -229,7 +308,9 @@ def execute_pilot(
             "provider": plan.provider_name,
             "provider_metadata": resp.provider_metadata,
             "timestamp_utc": t_start,
-            "retried_attempts": len(errors),
+            "retried_attempts": retried_attempts,
+            "retry_attempts": attempts,
+            "cumulative_retry_delay_s": round(cumulative_delay, 3),
             "status": "ok",
         })
         counts["ok"] += 1
@@ -293,6 +374,8 @@ def execute_pilot(
             "sleep_between_batches_s": plan.sleep_between_batches_s,
             "retry_max": plan.retry_max,
             "retry_backoff_s": plan.retry_backoff_s,
+            "retry_backoff_max_s": plan.retry_backoff_max_s,
+            "retry_jitter": plan.retry_jitter,
         },
         "fixtures": fixtures_manifest,
         "repo_commit": repo_commit,
