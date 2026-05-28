@@ -1,0 +1,511 @@
+{
+  "manifest_version": "1.0",
+  "kind": "klickd_x_klickd_candidate_skill_manifest",
+  "size_tier": "pro",
+  "non_normative": true,
+  "claims_v41_ga": false,
+  "see_readme": "examples/v4.1/x-klickd-skills/README.md",
+  "generated_at": "2026-05-28T01:00:00Z",
+  "hash_algo": "sha256",
+  "note": "Hashes are reproducible offline. sha256_file is over raw bytes; sha256_canonical_json is over json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8'). NON-NORMATIVE candidate x.klickd v4.1 skill artefacts.",
+  "packs": [
+    {
+      "id": "x.klickd/accounting_operator",
+      "file": "accounting-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8965,
+      "sha256_file": "42975e47d80712b18d3d974b8dd1f06e661df2c7337d50989b0b4a820a8833ba",
+      "sha256_canonical_json": "775234f1542fcd63f533e5fd7c1cc012b8258273c78eac5cddaf8d5ea5c137b5",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/api_integrator",
+      "file": "api-integrator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9290,
+      "sha256_file": "a4e0c3612f3cda400581b90b1378075864b4bdd770f5db9d6105be172c3d234e",
+      "sha256_canonical_json": "57eb1a7493648766c77930770aa94307c7a9e3b1d90059763afedb468a7df0d0",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding"
+      ]
+    },
+    {
+      "id": "x.klickd/contract_review",
+      "file": "contract-review.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8213,
+      "sha256_file": "b3415f8bbce34092e9f8348a9f4e445ee45e78902c6825ed579ece02f5ac2051",
+      "sha256_canonical_json": "20f53467c2445f627aa88d6196ae24d563af82fa5b95cba5c41a179df381bf26",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/customer_support_operator",
+      "file": "customer-support-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9926,
+      "sha256_file": "df48b21e367cbea5bfc78e71887bda89664c3847a40c27f9ae97cec0621b3d94",
+      "sha256_canonical_json": "a6224a81a7a111642b45a4ad8a4eea571d9a2ea395dc17b8accebd9503796811",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work"
+      ]
+    },
+    {
+      "id": "x.klickd/data_analyst",
+      "file": "data-analyst.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9752,
+      "sha256_file": "147b364494cddb706e3b12cbf563bdfb1cd6707999bf149c5af65aecaea002cd",
+      "sha256_canonical_json": "b318a7ce3709cd207f7f6e246d5e1cfcb83bf3397ba544a3fda5c0f51b6d1d74",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/devops_operator",
+      "file": "devops-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9783,
+      "sha256_file": "7e78c768c8f59fdbd66053cf94355723ada5a7ac2d28620241edac080d48cccf",
+      "sha256_canonical_json": "2c37a3eab7f11beecb0fb0eb562b9c4b2e6aa2f211c8ce32eca584199c806190",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/drone_operator",
+      "file": "drone-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8055,
+      "sha256_file": "0f8310e06f3dd4f04b3d3b8f7ab0da2b63895dd631e8040669e050993933fb8d",
+      "sha256_canonical_json": "68512d99f04d2113f957917a3d352744641d352d5cda5b27822652221d7c543c",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/edge_ai_operator",
+      "file": "edge-ai-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10288,
+      "sha256_file": "71809390a333b135f5d41d5640c46fc3a31b01a9ae4a908b944a387cd3f18a01",
+      "sha256_canonical_json": "520cbe936611173b430318145a554fdae46b7c5b659a45f9ac22535ba387a82d",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/eu_ai_act",
+      "file": "eu-ai-act.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8140,
+      "sha256_file": "fb504fb64a928e2ef32e9864278e4d4873d82e7a76b970c62ca553808b24920a",
+      "sha256_canonical_json": "c20f9e15c61fa103b3af7784f9aa350b7388a5d0ee5290b45ae34ee3e5be3084",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/evidence_desk",
+      "file": "evidence-desk.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9375,
+      "sha256_file": "b89977edfbb037b11c2896fb3b4d050e2f91de3644416d3789af807fcc0df1f4",
+      "sha256_canonical_json": "0f0ba54c49a1a60c8436daff91cd366d8a6f32f2754fa9f73102f6cad9df7d4b",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research",
+        "x.klickd/trust_evidence"
+      ]
+    },
+    {
+      "id": "x.klickd/finance_analyst",
+      "file": "finance-analyst.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9536,
+      "sha256_file": "bafc5ccb18fc203a0d1fb88db224cc3d34651cf863f90f1004f591fe9a3ca71d",
+      "sha256_canonical_json": "e8f7ba401b95896e2c3b4220d03284e5794aff310c0b992e3ffeede6b070fad4",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work"
+      ]
+    },
+    {
+      "id": "x.klickd/game_design",
+      "file": "game-design.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9965,
+      "sha256_file": "dd4fdcf0902f20d0cbeeccf2dbbf18e7bf0cd3ed28c9e908f4c5021343d87a8c",
+      "sha256_canonical_json": "8e4a25155a9b81c8ee6dbf6e64855c2111c963e8ade0021aac97662e8eade2a3",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/creator",
+        "x.klickd/coding"
+      ]
+    },
+    {
+      "id": "x.klickd/gdpr_readiness",
+      "file": "gdpr-readiness.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8285,
+      "sha256_file": "00002f43344543f38ee1baf44c10d22fe6d2fde6e6b2c55b3731fbadd430c6c3",
+      "sha256_canonical_json": "3114fc320e4ab861a76e2af621242054e3b365d3f24ca70ff9a2fcf39e88ceba",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/healthcare_ai_safety_reviewer",
+      "file": "healthcare-ai-safety-reviewer.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9873,
+      "sha256_file": "700f6c82e24865eebebc69f27ba31fcf3ece6bed7aeccff425e71a96be64d0e6",
+      "sha256_canonical_json": "3b104e086e1b3505a6a27faa4f999913109a2397432edb97e44d768894c81bff",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research",
+        "x.klickd/legal",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/identity_access_management",
+      "file": "identity-access-management.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9855,
+      "sha256_file": "873630886850a3f83bc07841c4622cf7e1bcce9491225234bb015d960f7f6d7b",
+      "sha256_canonical_json": "151b5b271f886fbdfc2c6ff4c476890a578cec3ffde32aaf1d50b076617a1905",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/learning_designer",
+      "file": "learning-designer.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9809,
+      "sha256_file": "fe061f0cec24bc04ca819383f19119188dc61e07b7c58ccef702ddad08cb7f91",
+      "sha256_canonical_json": "34dd060d88e015c6a0f978cfc892aaa31d5d6fb65e13e0be253668237f0818df",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/literature_review",
+      "file": "literature-review.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8531,
+      "sha256_file": "8faa7c67a5315884d2ccfe3cbaae37034338c17188078bd5f0fe3aafea9d27c4",
+      "sha256_canonical_json": "e23133e4d69f78adb3cf524a09f8eea013bac75a0a00ad3ba5fee8d15b64bce9",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/llm_agent_engineering",
+      "file": "llm-agent-engineering.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9723,
+      "sha256_file": "0a2363eb0bd94d2fabddeec358b134ac2e25b9c9a8ad1ea6be8a387f2b945e33",
+      "sha256_canonical_json": "f3196177ca4fa193a4016cf8b74217bfaa8e48bf79af23145c07a39f44cffd00",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/llm_agent_security"
+      ]
+    },
+    {
+      "id": "x.klickd/llm_agent_security",
+      "file": "llm-agent-security.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10893,
+      "sha256_file": "6e6241ce5940e89af02735c5bd9e7c54c539deb42adedcb22c488dab4b1ba241",
+      "sha256_canonical_json": "dce183ed75266042639fc8082cf6404ab66be779ef63427363355175ddcdfd03",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security",
+        "x.klickd/coding"
+      ]
+    },
+    {
+      "id": "x.klickd/mission_control",
+      "file": "mission-control.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9467,
+      "sha256_file": "62a0d707aa765b4930990694f2340d3e66e5fd92aed16f8a570785694037d52c",
+      "sha256_canonical_json": "2e5f261d893469ddf2958210e97dcb472e52698a67d34abd20783acfd38b5887",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/mission",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/policy_analyst",
+      "file": "policy-analyst.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8888,
+      "sha256_file": "89399370dd9168b958e5559adf48e25fefb25d29a38cab87775a7bdd37edc935",
+      "sha256_canonical_json": "10fde9ce06db2b698d579751247ab00b62b1d9f9fec82fbc0f992d7074b93ace",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/privacy_product",
+      "file": "privacy-product.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8341,
+      "sha256_file": "eb8f39673e9c0281d0e4a02c782232f0c1a90c20b891b1eb0008281e7cad7d10",
+      "sha256_canonical_json": "23af24377843bcb11262ceb59d3e6755b576ab27350279cf5ce2abfc895e0c88",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal",
+        "x.klickd/coding"
+      ]
+    },
+    {
+      "id": "x.klickd/product_manager",
+      "file": "product-manager.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9805,
+      "sha256_file": "d807ee36446854a73d5f922f01dfe14876114ebe207ea27e64e84c4435a1a0c0",
+      "sha256_canonical_json": "fe9ad4e1d075a0315d79718aa7bfced7dda98b997e88fe339a9c90e6d8507ddc",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work",
+        "x.klickd/coding"
+      ]
+    },
+    {
+      "id": "x.klickd/project_operator",
+      "file": "project-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8766,
+      "sha256_file": "351df23114529eda0c0102f65470c633c821d6132c9ff9488a927138923d5029",
+      "sha256_canonical_json": "1a61db170b3264857a31cf05782b552cef8b65ec2e9b46cdca7c76eacd6234c6",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work",
+        "x.klickd/mission"
+      ]
+    },
+    {
+      "id": "x.klickd/release_engineer",
+      "file": "release-engineer.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10450,
+      "sha256_file": "a7f99e70dc0749d712d5b845fa98e16223d48abc7194174df49bff80258c0706",
+      "sha256_canonical_json": "8bc2e07137d52c61bb989aa7b0ecf0ae7f99df7c89edbe567216c7e5d754cc20",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/rights_guard",
+      "file": "rights-guard.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 7966,
+      "sha256_file": "cf4d0d0bfcd641dfaf96ac4e5b6d55264d73bb91203b9ff76f1b139235147307",
+      "sha256_canonical_json": "3720ffd269c98d950a80f6b8579faf7db971d5c95c0660db1496453251f3ed32",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/legal",
+        "x.klickd/creator"
+      ]
+    },
+    {
+      "id": "x.klickd/sales_operator",
+      "file": "sales-operator.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9766,
+      "sha256_file": "98c681145eae3abc26657b22115efee2f353da7cf9edcd125fdc890668a048c7",
+      "sha256_canonical_json": "a31f6d729283534f87565dbd62be2e5e5bb25e958061ed1500e9ab106abbc72d",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/work"
+      ]
+    },
+    {
+      "id": "x.klickd/second_brain",
+      "file": "second-brain.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8751,
+      "sha256_file": "3af92ed2e479b053f290deca384d221e17ee19325e4033c33ccd9eb54c092f9b",
+      "sha256_canonical_json": "f37b73bbbc53be8534d8a32e49edf7329b6034290dec8ae89c753d7b56f2850f",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/security_incident_response",
+      "file": "security-incident-response.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10220,
+      "sha256_file": "12740299d53e80cd888d27c6f861068a64165859fcc6f1a462854b1f466ff019",
+      "sha256_canonical_json": "5b0839a9ef278fe1144e3695fdac89e1bff77ea524d207616bc15c82640a53dd",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/security"
+      ]
+    },
+    {
+      "id": "x.klickd/sustainability_analyst",
+      "file": "sustainability-analyst.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 10231,
+      "sha256_file": "f1dcf41b142655e1af72f57b6aa830f0115e71a0441de2d4caa0e881072cf4fe",
+      "sha256_canonical_json": "6042d2a7376136fbf5a605d12359e09e6523c267a18f6348eda057183e486a2f",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research",
+        "x.klickd/legal"
+      ]
+    },
+    {
+      "id": "x.klickd/technical_writer",
+      "file": "technical-writer.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9745,
+      "sha256_file": "f37cec72bcf53ae870e785dde9156fd7cc2ab4162abd0eea8c20e10f9314daac",
+      "sha256_canonical_json": "df2582a579d581b2402344d780a3be62854e1f46903876439d23b8ecbe032acc",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/coding",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/trust_evidence",
+      "file": "trust-evidence.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 8913,
+      "sha256_file": "b5ba62cc82db19ad522834564d82f286f5d9ee13a19a3e090666b994af50212e",
+      "sha256_canonical_json": "0f82fc25d6f24cc5ab3ab9c62c51a9039835b47f72b3c36a38cce35cc8c7a5f7",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/ux_researcher",
+      "file": "ux-researcher.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 9694,
+      "sha256_file": "5432820d68c6144d7767b7bda59087aba5863fa1a21ec5cccd8dfd3b2d8b16f3",
+      "sha256_canonical_json": "a5fd6f8d734a8b6ed7088e3ea5486778d20c4225ca1f674c89ed28ed1cfb2d17",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/research"
+      ]
+    },
+    {
+      "id": "x.klickd/video_production_pipeline",
+      "file": "video-production-pipeline.klickd",
+      "size_tier": "pro",
+      "pack_version": "0.1.0-candidate-pro",
+      "bytes": 14488,
+      "sha256_file": "fd401d26816c0a19e8649453f3242010239e8d2206976a778dfb15a8cfea0cd5",
+      "sha256_canonical_json": "ead8ae4a8dbbd3b295f03d97249717d2dde4541aedb08bdce6dc8d7ae56e88d3",
+      "status": "candidate_mapped",
+      "parent_packs": [
+        "x.klickd/user",
+        "x.klickd/media_planner",
+        "x.klickd/creator",
+        "x.klickd/research",
+        "x.klickd/legal"
+      ]
+    }
+  ]
+}

@@ -10,7 +10,7 @@
 
 > **This document is non-normative and triggers no release.** No tag, no `latest` on npm / PyPI, no DOI on Zenodo, no IANA action, no schema change, no SDK bump, no website edit. It is a **planning artefact for the future `/klickdskill` catalog** once v4.1 candidates reach `ship_ready` per [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md). Catalog exposure is a separate decision per RFC-009 §7 and is gated on all P0 packs passing §8 plus the individual candidate passing §8. **Until that gate clears, `/klickdskill` does not list v4.1 skills.**
 >
-> The reachable artefacts referenced below already live in the repo under [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) and [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/). This document does **not** add new `.klickd` files and does **not** edit any website.
+> The reachable artefacts referenced below already live in the repo under [`examples/v4.1/x-klickd-skills/`](../../examples/v4.1/x-klickd-skills/) and [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/). This document does **not** add new `.klickd` files and does **not** edit any website.
 
 ---
 
@@ -47,7 +47,7 @@ The catalog target is **42 cards** = **8 Lite + 34 Pro**. The P0 starter packs (
 
 | | Lite | Pro | Total |
 |---|---:|---:|---:|
-| **`candidate_mapped` artefacts under `examples/v4.1/chimera-skills/{lite,pro}/`** as of PR #75 head | 8 | 34 | **42** |
+| **`candidate_mapped` artefacts under `examples/v4.1/x-klickd-skills/{lite,pro}/`** as of PR #75 head | 8 | 34 | **42** |
 | **P0 starter packs** (`examples/v4/starter-skills/`) — `user`, `student`, `research`, `coding`. Surfaced as "Foundations" affordance, **not** counted toward 8/34. | — | — | (4, separate) |
 
 The 8 Lite + 34 Pro arithmetic is enforced upstream by [`scripts/validate_v4_1_candidate_mapping.py`](../../scripts/validate_v4_1_candidate_mapping.py) (`TIER_EXPECTED_COUNT = {"lite": 8, "pro": 34}`) and by `tests/test_v4_1_candidate_mapping.py::test_tier_artefact_counts_are_frozen_at_8_lite_and_34_pro`. This doc must stay aligned with that invariant.
@@ -355,5 +355,5 @@ These per-pack and per-bundle budgets exist so the catalog can promise a stable 
 - [`docs/ux/V4-UX-SPEC.md`](./V4-UX-SPEC.md) — v4 viewer/decryptor UX, the source of the "simple by default + progressive disclosure" stance reused here.
 - [`docs/demos/V4_1-CURATED-BUNDLES.md`](../demos/V4_1-CURATED-BUNDLES.md) — companion: curated bundles and demo agent-team sizes.
 - [`docs/community/V4_1-CHALLENGE-CHIMERA-CUP.md`](../community/V4_1-CHALLENGE-CHIMERA-CUP.md) — companion: community challenge proposal.
-- [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) — `candidate_mapped` artefacts referenced above (none are `ship_ready` yet).
+- [`examples/v4.1/x-klickd-skills/`](../../examples/v4.1/x-klickd-skills/) — `candidate_mapped` artefacts referenced above (none are `ship_ready` yet).
 - [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) — P0 starter packs (`user`, `student`, `research`, `coding`) — starter skills, not Pro-tier catalog entries.

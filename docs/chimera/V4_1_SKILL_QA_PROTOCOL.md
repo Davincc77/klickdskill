@@ -248,7 +248,7 @@ The validator constants and the function `_collect_public_strings()` enumerate t
 
 ## 6. As-shipped audit (2026-05-28)
 
-The 42 already-published candidate artefacts (8 Lite + 34 Pro) under `examples/v4.1/chimera-skills/{lite,pro}/` (the historical directory name is an internal implementation detail; a future PR may rename it before the v4.1 GA tag) are at status `candidate_mapped`, not `ship_ready`. None of them has run the §2 scoring + §3 sign-off pass yet; **none of them is eligible for `/klickdskill` catalog exposure** until that pass exists per per-pack RFC.
+The 42 already-published candidate artefacts (8 Lite + 34 Pro) under `examples/v4.1/x-klickd-skills/{lite,pro}/` (the historical directory name is an internal implementation detail; a future PR may rename it before the v4.1 GA tag) are at status `candidate_mapped`, not `ship_ready`. None of them has run the §2 scoring + §3 sign-off pass yet; **none of them is eligible for `/klickdskill` catalog exposure** until that pass exists per per-pack RFC.
 
 The mechanical subset of the QA protocol (G02, G03, G04 BLOCKER half, G06 flags, G07, G09 BLOCKER half, G10, G11, G13) already passes — see the validator output in [`V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](./V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md) §6.
 

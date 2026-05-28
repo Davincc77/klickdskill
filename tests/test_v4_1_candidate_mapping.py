@@ -74,7 +74,7 @@ def test_no_klickdapp_in_chimera_planning_dir():
 
 # --- artefact-level tests (Lite + Pro real .klickd files) ---
 
-ART_ROOT = REPO_ROOT / "examples" / "v4.1" / "chimera-skills"
+ART_ROOT = REPO_ROOT / "examples" / "v4.1" / "x-klickd-skills"
 LITE = ART_ROOT / "lite"
 PRO = ART_ROOT / "pro"
 
@@ -122,6 +122,21 @@ def test_no_deferred_candidate_has_an_artefact():
 def test_manifests_match_directory_contents():
     mod = _load_validator()
     failures = mod.validate_manifests()
+    assert not failures, "\n".join(failures)
+
+
+def test_public_download_surface_is_codename_clean():
+    """Raw-byte scan of every file under examples/v4.1/x-klickd-skills/.
+
+    A downloader who opens any `.klickd`, the per-tier `manifest.json`,
+    the root `manifest.json`, or the in-directory `README.md` must NOT
+    see the internal v4.1 working codename in any byte. The PUBLIC_FIELDS
+    allow-list (which gates `validate_no_forbidden_public_wording()`) is
+    not sufficient because it explicitly excludes `_pack_metadata`,
+    `domain_schema_version`, and `spec_ref` — fields that are visible at
+    the top of every `.klickd` file."""
+    mod = _load_validator()
+    failures = mod.validate_public_surface_codename_clean()
     assert not failures, "\n".join(failures)
 
 
