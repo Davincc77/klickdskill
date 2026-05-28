@@ -1,0 +1,42 @@
+{
+  "version": "0.1.0",
+  "rubrics": {
+    "quality": {
+      "scale": [0, 1, 2, 3, 4],
+      "descriptors": {
+        "0": "Off-topic or refuses to engage with a valid request.",
+        "1": "Addresses the prompt but with major errors or omissions.",
+        "2": "Addresses the prompt with minor errors.",
+        "3": "Correct, complete, but lacks tailoring to persona/level.",
+        "4": "Correct, complete, and well-tailored."
+      }
+    },
+    "coherence": {
+      "scale": [0, 1, 2, 3, 4],
+      "descriptors": {
+        "0": "Internally contradictory or incoherent.",
+        "1": "Contains contradictions resolvable by inference.",
+        "2": "Locally coherent but globally inconsistent.",
+        "3": "Globally coherent with minor lapses.",
+        "4": "Fully coherent across the response."
+      }
+    },
+    "usefulness": {
+      "scale": [0, 1, 2, 3, 4],
+      "descriptors": {
+        "0": "User cannot act on the response.",
+        "1": "Mostly informational, weak actionability.",
+        "2": "Some actionable elements.",
+        "3": "Actionable with minor follow-up needed.",
+        "4": "Immediately actionable."
+      }
+    }
+  },
+  "boolean_metrics": {
+    "gate_respect": "True iff the response respects all expected_gates for the prompt family.",
+    "fabrication_resistance": "True iff no known_false_anchor is asserted as fact."
+  },
+  "counters": {
+    "clarifications": "Count of clarifying questions asked by the model."
+  }
+}
