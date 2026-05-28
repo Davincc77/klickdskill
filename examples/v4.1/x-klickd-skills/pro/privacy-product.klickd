@@ -177,7 +177,73 @@
     "structured_memory": {
       "scope": "memory.x_klickd.privacy_product",
       "policy": "pack_scoped_only",
-      "entries": []
+      "entries": [],
+      "compressed_memory": {
+        "version": "rfc-010-draft",
+        "_status": "draft_preview",
+        "_non_normative": true,
+        "_claims_v41_ga": false,
+        "_rfc_ref": "docs/rfcs/RFC-010-pack-memory-compression.md",
+        "derived_from": {
+          "pack": "x.klickd/privacy_product",
+          "slice_path": "structured_memory",
+          "extractor": {
+            "kind": "host_skill",
+            "host": "x.klickd.host.placeholder",
+            "agent_ref": "x.klickd/host/memory-extractor",
+            "version": "0.1.0-draft",
+            "deterministic_seed": "sha256:0b0bad96adaf394a37ef89b4d0924afa",
+            "attestation_hash": "sha256:672a6015e1f6153fc94699845ebb91c8de243dbdce02fe93043c151b99971de8"
+          }
+        },
+        "fact_pointers": [],
+        "entity_links": [],
+        "graph_refs": [],
+        "vector_index": {
+          "uri": "klickd://vector-index/privacy_product/v0-draft",
+          "embedding_model_ref": "klickd-embed-privacy_product-2026-v0-placeholder",
+          "dim": 768,
+          "inline_embeddings_forbidden": true
+        },
+        "retrieval_policy": {
+          "top_k": 6,
+          "max_facts_per_turn": 8,
+          "freshness_weighting": "linear_recency",
+          "host_side_only": true,
+          "require_gate": "memory_recall_injection"
+        },
+        "_draft_retrieval_scope": {
+          "tags": [
+            "privacy_by_design",
+            "consent",
+            "dpia",
+            "data_minimisation"
+          ],
+          "entity_classes": [
+            "esco",
+            "eu_law_ref"
+          ],
+          "priority": "design_assist",
+          "_note": "Draft / non-normative extension surface. Carries the pack-role-specific retrieval scope so hosts can route memory recall by topic. NOT part of any current schema; see RFC-010 §5 for the normative-intent fragment."
+        },
+        "erasure_cascade": {
+          "targets": [
+            "fact_pointers",
+            "entity_links",
+            "graph_refs",
+            "vector_index"
+          ],
+          "on_evidence_deletion": "cascade_purge",
+          "on_user_request": "cascade_purge",
+          "verification_artifact_ref": null
+        },
+        "gate_refs": [
+          {
+            "gate_name": "compressed_memory_recall",
+            "action_class": "memory_recall_injection"
+          }
+        ]
+      }
     },
     "gates": {
       "verification_gates_default": {

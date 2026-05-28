@@ -45,6 +45,7 @@ Every `.klickd` in this directory is a real structured JSON document on the v4.0
 - `router_cost` — deterministic heuristic token-cost estimate.
 - `acceptance_criteria[]`, `tests.static[]`, `tests.review[]` — per-pack acceptance / test list a reviewer runs against the file.
 - `forbidden_fields[]` — frozen literal enforcing the carrier-vs-skill split.
+- `structured_memory.compressed_memory` — **draft / preview** RFC-010 extension. Carries the *pointer-ready* surface (extractor metadata, vector-index URI, retrieval policy, GDPR Art.17 erasure cascade, `memory_recall_injection` gate) and the per-pack role-specific retrieval scope (`_draft_retrieval_scope.tags`, `entity_classes`, `priority`). `fact_pointers[]`, `entity_links[]`, `graph_refs[]` are intentionally **empty** — these are skill templates, not carrier state, and the host extracts facts at runtime. **Not a GA runtime guarantee.** See [`docs/rfcs/RFC-010-pack-memory-compression.md`](../../../docs/rfcs/RFC-010-pack-memory-compression.md). No compatibility with Mem0, GraphRAG, Letta/MemGPT, Zep, or A-MEM is claimed or implied (RFC-010 §2 anti-copy statement).
 
 Pro-tier files additionally carry:
 
@@ -70,6 +71,8 @@ pytest tests/test_v4_1_candidate_mapping.py
 ```
 
 The validator parses every `.klickd` under `lite/` and `pro/`, checks the required x.klickd v4.1 fields, asserts the size-tier ceiling, enforces the frozen `forbidden_fields` literal, refuses any leak of Klickd.app or Kai host-side names, and (since 2026-05-28) refuses any internal-codename byte under the entire `examples/v4.1/x-klickd-skills/` tree so the public download surface stays clean.
+
+Since 2026-05-28 the validator also enforces RFC-010 invariants on every artefact's `structured_memory.compressed_memory` block: presence, `version: "rfc-010-draft"`, draft-preview markers, empty pointer arrays (skill templates), hardened extractor (`kind` ∈ {`host_skill`, `local_runtime`, `verified_bridge`}, `x.klickd/host/`-prefixed `agent_ref`, semver `version`, algo-prefixed `attestation_hash` for automated extraction), pointer-only `vector_index` with `inline_embeddings_forbidden: true`, host-side-only retrieval, `memory_recall_injection` gate, GDPR Art.17 `erasure_cascade.on_user_request = "cascade_purge"`. The validator also refuses copy-paste retrieval scopes — no two skills may share an identical `_draft_retrieval_scope.tags` set or the full retrieval-scope tuple.
 
 ## Deferred candidates (NOT shipped as artefacts)
 

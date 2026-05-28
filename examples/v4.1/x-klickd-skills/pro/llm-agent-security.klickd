@@ -238,7 +238,74 @@
     "structured_memory": {
       "scope": "memory.x_klickd.llm_agent_security",
       "policy": "pack_scoped_only",
-      "entries": []
+      "entries": [],
+      "compressed_memory": {
+        "version": "rfc-010-draft",
+        "_status": "draft_preview",
+        "_non_normative": true,
+        "_claims_v41_ga": false,
+        "_rfc_ref": "docs/rfcs/RFC-010-pack-memory-compression.md",
+        "derived_from": {
+          "pack": "x.klickd/llm_agent_security",
+          "slice_path": "structured_memory",
+          "extractor": {
+            "kind": "host_skill",
+            "host": "x.klickd.host.placeholder",
+            "agent_ref": "x.klickd/host/memory-extractor",
+            "version": "0.1.0-draft",
+            "deterministic_seed": "sha256:1c1d4fda631d9a0a5c96e8254beb8193",
+            "attestation_hash": "sha256:a84abb41a8690e74bdae73e7237557559b9334f940a07bdbae110d0a8886d5b8"
+          }
+        },
+        "fact_pointers": [],
+        "entity_links": [],
+        "graph_refs": [],
+        "vector_index": {
+          "uri": "klickd://vector-index/llm_agent_security/v0-draft",
+          "embedding_model_ref": "klickd-embed-llm_agent_security-2026-v0-placeholder",
+          "dim": 768,
+          "inline_embeddings_forbidden": true
+        },
+        "retrieval_policy": {
+          "top_k": 7,
+          "max_facts_per_turn": 9,
+          "freshness_weighting": "exponential_recency",
+          "host_side_only": true,
+          "require_gate": "memory_recall_injection"
+        },
+        "_draft_retrieval_scope": {
+          "tags": [
+            "prompt_injection",
+            "jailbreak",
+            "exfiltration",
+            "owasp_llm"
+          ],
+          "entity_classes": [
+            "esco",
+            "nice",
+            "enisa_ref"
+          ],
+          "priority": "security_operation",
+          "_note": "Draft / non-normative extension surface. Carries the pack-role-specific retrieval scope so hosts can route memory recall by topic. NOT part of any current schema; see RFC-010 §5 for the normative-intent fragment."
+        },
+        "erasure_cascade": {
+          "targets": [
+            "fact_pointers",
+            "entity_links",
+            "graph_refs",
+            "vector_index"
+          ],
+          "on_evidence_deletion": "cascade_purge",
+          "on_user_request": "cascade_purge",
+          "verification_artifact_ref": null
+        },
+        "gate_refs": [
+          {
+            "gate_name": "compressed_memory_recall",
+            "action_class": "memory_recall_injection"
+          }
+        ]
+      }
     },
     "gates": {
       "verification_gates_default": {

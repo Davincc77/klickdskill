@@ -7,6 +7,59 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## docs/repo 2026-05-28 — RFC-010 `compressed_memory` draft/preview added to all 42 x.klickd v4.1 candidate skills
+
+> **Repo-only PR. Triggers no release.** No tag, no `latest` on npm or PyPI,
+> no DOI on Zenodo, no GitHub Release, no IANA action, no SDK bump, no
+> `/klickdskill` catalog change. The v4.0 GA schemas
+> (`schemas/klickd-payload-v4.schema.json`,
+> `schemas/klickd-payload-v4-preview.schema.json`,
+> `schema/klickd-v4.schema.json`, `schema/klickd-v4-preview.schema.json`)
+> are unchanged.
+
+- **Add:** every artefact under `examples/v4.1/x-klickd-skills/{lite,pro}/*.klickd`
+  now carries an RFC-010 `compressed_memory` block at the pinned path
+  `x_klickd_pack.structured_memory.compressed_memory`
+  (see [`docs/rfcs/RFC-010-pack-memory-compression.md`](docs/rfcs/RFC-010-pack-memory-compression.md)).
+  The block is **draft / preview** (`version: "rfc-010-draft"`,
+  `_non_normative: true`, `_claims_v41_ga: false`) and is **NOT** a GA
+  runtime guarantee.
+- **Shape per skill:** pointer-ready surface only. `fact_pointers[]`,
+  `entity_links[]`, `graph_refs[]` are intentionally **empty** (skill
+  templates carry no carrier facts; runtime extraction is host-side per
+  RFC-010 §5.4 / §6.1). `vector_index.inline_embeddings_forbidden = true`.
+  `retrieval_policy.host_side_only = true`,
+  `retrieval_policy.require_gate = "memory_recall_injection"`.
+  `erasure_cascade.on_user_request = "cascade_purge"` (GDPR Art.17).
+  Extractor is hardened: `kind ∈ {host_skill, local_runtime, verified_bridge}`,
+  `agent_ref` starts with `x.klickd/host/`, semver `version`,
+  algo-prefixed `attestation_hash`.
+- **Role-specific:** each of the 42 skills contributes its own
+  `_draft_retrieval_scope` (tags + entity_classes + priority) and tuned
+  `retrieval_policy` (`top_k`, `max_facts_per_turn`, `freshness_weighting`,
+  `dim`) so no two skills share a copy-paste compressed_memory block.
+- **Validator:** `scripts/validate_v4_1_candidate_mapping.py` now enforces
+  RFC-010 presence + invariants on every artefact and forbids identical
+  retrieval scopes / tag sets across the 42 packs
+  (`validate_rfc010_blocks_in_artefacts`, `validate_rfc010_retrieval_scope_unique`).
+- **Tests:** `tests/test_rfc010_pack_memory_compression.py` adds 14 new
+  catalogue-level invariants (presence, draft-preview markers, empty
+  pointer arrays, extractor hardening, host-side-only, Art.17 cascade,
+  gate ref, scope uniqueness, no third-party compatibility claim, no
+  inline extraction logic).
+- **Manifests + SHAs:** per-tier `lite/manifest.json`, `pro/manifest.json`,
+  and the root download index `manifest.json` were regenerated to match
+  the new artefact bytes (`scripts/update_x_klickd_manifests.py`).
+- **Public surface:** download paths and codename-clean guarantee are
+  unchanged. No compatibility with Mem0 / GraphRAG / Letta / MemGPT /
+  Zep / A-MEM is claimed or implied (RFC-010 §2 anti-copy statement).
+- **Out of scope:** v4.0 GA schemas, v4.0 GA payload, Kai host-side
+  skills, Klickd.app product carriers, npm / PyPI / Zenodo / IANA /
+  GitHub Release / tag surfaces. RFC-010 itself remains a **v4.2 Draft**;
+  this PR exercises its shape on the v4.1 candidate catalogue as a
+  draft/preview capability so reviewers can compare it against the v4.1
+  surface before any normative wording, schema, or pack field lands.
+
 ## docs/repo 2026-05-28 — rename public v4.1 candidate artefact path to `x-klickd-skills/`
 
 > **Repo-only docs/rename PR. Triggers no release.** No tag, no `latest` on

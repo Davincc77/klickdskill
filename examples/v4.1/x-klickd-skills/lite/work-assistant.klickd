@@ -160,7 +160,73 @@
     "structured_memory": {
       "scope": "memory.x_klickd.work_assistant",
       "policy": "pack_scoped_only",
-      "entries": []
+      "entries": [],
+      "compressed_memory": {
+        "version": "rfc-010-draft",
+        "_status": "draft_preview",
+        "_non_normative": true,
+        "_claims_v41_ga": false,
+        "_rfc_ref": "docs/rfcs/RFC-010-pack-memory-compression.md",
+        "derived_from": {
+          "pack": "x.klickd/work_assistant",
+          "slice_path": "structured_memory",
+          "extractor": {
+            "kind": "host_skill",
+            "host": "x.klickd.host.placeholder",
+            "agent_ref": "x.klickd/host/memory-extractor",
+            "version": "0.1.0-draft",
+            "deterministic_seed": "sha256:5674f0c94c1de54d9c4f583943de64ee",
+            "attestation_hash": "sha256:ffd3c88b9eab152655ed2044aa21c989e85f7f50154ecec07f2741fd6774863e"
+          }
+        },
+        "fact_pointers": [],
+        "entity_links": [],
+        "graph_refs": [],
+        "vector_index": {
+          "uri": "klickd://vector-index/work_assistant/v0-draft",
+          "embedding_model_ref": "klickd-embed-work_assistant-2026-v0-placeholder",
+          "dim": 512,
+          "inline_embeddings_forbidden": true
+        },
+        "retrieval_policy": {
+          "top_k": 5,
+          "max_facts_per_turn": 7,
+          "freshness_weighting": "linear_recency",
+          "host_side_only": true,
+          "require_gate": "memory_recall_injection"
+        },
+        "_draft_retrieval_scope": {
+          "tags": [
+            "work_admin",
+            "scheduling",
+            "email_triage",
+            "documents"
+          ],
+          "entity_classes": [
+            "esco",
+            "lifecomp"
+          ],
+          "priority": "workflow_assist",
+          "_note": "Draft / non-normative extension surface. Carries the pack-role-specific retrieval scope so hosts can route memory recall by topic. NOT part of any current schema; see RFC-010 §5 for the normative-intent fragment."
+        },
+        "erasure_cascade": {
+          "targets": [
+            "fact_pointers",
+            "entity_links",
+            "graph_refs",
+            "vector_index"
+          ],
+          "on_evidence_deletion": "cascade_purge",
+          "on_user_request": "cascade_purge",
+          "verification_artifact_ref": null
+        },
+        "gate_refs": [
+          {
+            "gate_name": "compressed_memory_recall",
+            "action_class": "memory_recall_injection"
+          }
+        ]
+      }
     },
     "gates": {
       "verification_gates_default": {

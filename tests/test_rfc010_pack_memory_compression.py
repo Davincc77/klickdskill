@@ -263,3 +263,227 @@ def test_rfc010_is_non_release_in_text():
         "**No** site exposure",
     ):
         assert explicit in text, f"RFC-010 must explicitly state '{explicit}'"
+
+
+# --- RFC-010 `compressed_memory` injected into all 42 x.klickd v4.1 skills ---
+#
+# The 42 candidate skill artefacts under examples/v4.1/x-klickd-skills/{lite,pro}
+# carry an RFC-010 `compressed_memory` draft/preview block under the pinned
+# path `x_klickd_pack.structured_memory.compressed_memory`. The block is
+# NON-NORMATIVE / NON-GA. The tests below pin the invariants:
+#
+#   - presence in every artefact
+#   - draft-preview markers
+#   - empty fact_pointers / entity_links / graph_refs (skill templates)
+#   - pointer-only, host-side-only, no inline embeddings
+#   - hardened extractor (kind, x.klickd/host/ prefix, semver, attestation)
+#   - GDPR Art.17 erasure cascade
+#   - memory_recall_injection gate
+#   - role-specific retrieval scope (no two skills share an identical
+#     `_draft_retrieval_scope` or identical tag set)
+
+
+def _skill_paths():
+    lite = sorted((FROZEN_V41_DIR / "lite").glob("*.klickd"))
+    pro = sorted((FROZEN_V41_DIR / "pro").glob("*.klickd"))
+    return lite, pro
+
+
+def _cm(path):
+    obj = json.loads(path.read_text(encoding="utf-8"))
+    return ((obj.get("x_klickd_pack") or {}).get("structured_memory") or {}).get(
+        "compressed_memory"
+    )
+
+
+def test_every_v41_skill_has_compressed_memory_block():
+    lite, pro = _skill_paths()
+    assert len(lite) + len(pro) == 42
+    missing = [p.name for p in lite + pro if not isinstance(_cm(p), dict)]
+    assert not missing, f"compressed_memory missing in: {missing}"
+
+
+def test_every_skill_block_is_draft_preview():
+    lite, pro = _skill_paths()
+    for p in lite + pro:
+        cm = _cm(p)
+        assert cm["version"] == "rfc-010-draft", p.name
+        assert cm["_non_normative"] is True, p.name
+        assert cm["_claims_v41_ga"] is False, p.name
+
+
+def test_every_skill_block_has_empty_pointer_arrays():
+    """Skill templates carry no carrier facts. Pointer arrays MUST be empty."""
+    lite, pro = _skill_paths()
+    for p in lite + pro:
+        cm = _cm(p)
+        for k in ("fact_pointers", "entity_links", "graph_refs"):
+            v = cm.get(k)
+            assert isinstance(v, list) and v == [], (
+                f"{p.name}: {k} must be []; got {v!r}"
+            )
+
+
+def test_every_skill_extractor_is_hardened():
+    lite, pro = _skill_paths()
+    semver = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.+-]+)?$")
+    hashre = re.compile(r"^(?:sha256|blake3):[A-Fa-f0-9]{32,}$")
+    for p in lite + pro:
+        cm = _cm(p)
+        ex = cm["derived_from"]["extractor"]
+        assert ex["kind"] in {"host_skill", "local_runtime", "verified_bridge"}, p.name
+        assert ex["agent_ref"].startswith("x.klickd/host/"), p.name
+        assert semver.match(ex["version"]), (p.name, ex["version"])
+        if ex["kind"] in {"host_skill", "verified_bridge"}:
+            assert hashre.match(ex["attestation_hash"]), (p.name, ex["attestation_hash"])
+
+
+def test_every_skill_block_is_pointer_only_host_side_only():
+    lite, pro = _skill_paths()
+    for p in lite + pro:
+        cm = _cm(p)
+        assert cm["vector_index"]["inline_embeddings_forbidden"] is True, p.name
+        assert not cm["vector_index"]["uri"].startswith("data:"), p.name
+        assert cm["retrieval_policy"]["host_side_only"] is True, p.name
+        assert (
+            cm["retrieval_policy"]["require_gate"] == "memory_recall_injection"
+        ), p.name
+
+
+def test_every_skill_block_has_art17_erasure_cascade():
+    lite, pro = _skill_paths()
+    for p in lite + pro:
+        cm = _cm(p)
+        ec = cm["erasure_cascade"]
+        assert ec["on_user_request"] == "cascade_purge", p.name
+        assert ec["on_evidence_deletion"] in {"cascade_purge", "tombstone_only"}, p.name
+        assert isinstance(ec["targets"], list) and ec["targets"], p.name
+
+
+def test_every_skill_block_carries_memory_recall_injection_gate():
+    lite, pro = _skill_paths()
+    for p in lite + pro:
+        cm = _cm(p)
+        gates = cm["gate_refs"]
+        assert any(
+            g.get("action_class") == "memory_recall_injection" for g in gates
+        ), p.name
+
+
+def test_pack_id_matches_compressed_memory_derived_from_pack():
+    lite, pro = _skill_paths()
+    for p in lite + pro:
+        obj = json.loads(p.read_text(encoding="utf-8"))
+        pack_id = obj["x_klickd_pack"]["pack"]
+        cm_pack = _cm(p)["derived_from"]["pack"]
+        assert pack_id == cm_pack, (p.name, pack_id, cm_pack)
+
+
+def test_no_two_skills_share_identical_compressed_memory_block():
+    """Each skill block must differ — at minimum in `derived_from.pack`
+    and `vector_index.uri`. The byte hash of the block must therefore be
+    unique across all 42 skills."""
+    import hashlib
+
+    lite, pro = _skill_paths()
+    digests: dict[str, list[str]] = {}
+    for p in lite + pro:
+        cm = _cm(p)
+        h = hashlib.sha256(
+            json.dumps(cm, sort_keys=True, ensure_ascii=False).encode("utf-8")
+        ).hexdigest()
+        digests.setdefault(h, []).append(p.name)
+    clones = {h: files for h, files in digests.items() if len(files) > 1}
+    assert not clones, f"copy-paste compressed_memory blocks: {clones}"
+
+
+def test_no_two_skills_share_identical_retrieval_tag_set():
+    """RFC-010 retrieval scope must be role-specific. The
+    `_draft_retrieval_scope.tags` field MUST differ across the 42
+    skills — no copy-paste retrieval tag vocabulary."""
+    lite, pro = _skill_paths()
+    tag_sets: dict[tuple, list[str]] = {}
+    for p in lite + pro:
+        cm = _cm(p)
+        scope = cm.get("_draft_retrieval_scope") or {}
+        tags = tuple(sorted(scope.get("tags") or []))
+        assert tags, f"{p.name}: _draft_retrieval_scope.tags must be non-empty"
+        tag_sets.setdefault(tags, []).append(p.name)
+    dupes = {t: files for t, files in tag_sets.items() if len(files) > 1}
+    assert not dupes, f"identical retrieval tag sets across skills: {dupes}"
+
+
+def test_no_two_skills_share_identical_full_retrieval_scope():
+    """The full retrieval scope tuple (tags + entity_classes + priority +
+    top_k + max_facts_per_turn + freshness_weighting + dim) MUST be
+    unique across the 42 skills."""
+    lite, pro = _skill_paths()
+    scopes: dict[tuple, list[str]] = {}
+    for p in lite + pro:
+        cm = _cm(p)
+        scope = cm.get("_draft_retrieval_scope") or {}
+        rp = cm["retrieval_policy"]
+        vi = cm["vector_index"]
+        key = (
+            tuple(sorted(scope.get("tags") or [])),
+            tuple(sorted(scope.get("entity_classes") or [])),
+            scope.get("priority"),
+            rp["top_k"],
+            rp["max_facts_per_turn"],
+            rp["freshness_weighting"],
+            vi["dim"],
+        )
+        scopes.setdefault(key, []).append(p.name)
+    dupes = {k: files for k, files in scopes.items() if len(files) > 1}
+    assert not dupes, f"identical retrieval scope tuples across skills: {dupes}"
+
+
+def test_no_skill_block_contains_extraction_logic():
+    """RFC-010 §5.4: extraction prompts, scoring functions, regex
+    mining patterns, etc. MUST NOT live inside the pack. The block
+    is state, not behaviour."""
+    lite, pro = _skill_paths()
+    forbidden_keys = (
+        "extraction_prompt",
+        "extractor_prompt",
+        "scoring_function",
+        "scoring_code",
+        "prompt_template",
+    )
+    for p in lite + pro:
+        cm = _cm(p)
+        body = json.dumps(cm).lower()
+        for fk in forbidden_keys:
+            assert fk not in body, f"{p.name}: contains forbidden '{fk}'"
+
+
+def test_no_skill_block_claims_third_party_compatibility():
+    """RFC-010 §2 anti-copy: no compressed_memory block may claim
+    Mem0 / GraphRAG / Letta / MemGPT / Zep / A-MEM compatibility."""
+    lite, pro = _skill_paths()
+    for p in lite + pro:
+        body = json.dumps(_cm(p)).lower()
+        for sys_name in ("mem0", "graphrag", "letta", "memgpt", "zep", "a-mem", "amem"):
+            for needle in (
+                f"{sys_name} compatible",
+                f"{sys_name}-compatible",
+                f"compatible with {sys_name}",
+            ):
+                assert needle not in body, f"{p.name}: claims '{needle}'"
+
+
+def test_validator_enforces_rfc010_invariants():
+    """The repo validator MUST expose the RFC-010 invariant functions
+    and they MUST be wired into the main validation run."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "x_validator",
+        REPO_ROOT / "scripts" / "validate_v4_1_candidate_mapping.py",
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert hasattr(mod, "validate_rfc010_blocks_in_artefacts")
+    assert hasattr(mod, "validate_rfc010_retrieval_scope_unique")
+    assert not mod.validate_rfc010_blocks_in_artefacts()
+    assert not mod.validate_rfc010_retrieval_scope_unique()

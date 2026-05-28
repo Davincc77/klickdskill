@@ -958,6 +958,321 @@ def validate_manifests() -> list[str]:
     return fails
 
 
+# --- RFC-010 (`compressed_memory` draft/preview) artefact invariants ---
+#
+# Every x.klickd v4.1 candidate skill now ships an RFC-010 `compressed_memory`
+# draft block under `x_klickd_pack.structured_memory.compressed_memory`. The
+# block is NON-NORMATIVE, NON-GA. The checks below enforce the RFC-010
+# invariants on the block as it appears inside the skill artefacts:
+#
+#   - presence + version pin (`rfc-010-draft`)
+#   - draft-preview markers (`_status`, `_non_normative`, `_claims_v41_ga`)
+#   - empty pointer arrays (these are skill templates, not carrier state)
+#   - pointer-only invariants (no inline embeddings, no data: URIs, no inline
+#     extraction logic)
+#   - hardened extractor (`kind` enum, `x.klickd/host/`-prefixed `agent_ref`,
+#     semver-shaped `version`, algo-prefixed `attestation_hash` when
+#     extraction is automated)
+#   - GDPR Art.17 erasure cascade (`on_user_request = cascade_purge`)
+#   - `memory_recall_injection` gate ref present
+#   - retrieval scope is role-specific: no two artefacts may share an
+#     identical `_draft_retrieval_scope` (tags + entity_classes + priority)
+
+RFC010_EXTRACTOR_KINDS = {"host_skill", "local_runtime", "verified_bridge"}
+RFC010_FRESHNESS_VALUES = {"none", "linear_recency", "exponential_recency"}
+RFC010_REQUIRED_TOP_KEYS = (
+    "version",
+    "derived_from",
+    "fact_pointers",
+    "entity_links",
+    "graph_refs",
+    "vector_index",
+    "retrieval_policy",
+    "erasure_cascade",
+    "gate_refs",
+)
+RFC010_SEMVER_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.+-]+)?$")
+RFC010_HASH_RE = re.compile(r"^(?:sha256|blake3):[A-Fa-f0-9]{32,}$")
+
+
+def _validate_rfc010_block(path: Path, cm: dict) -> list[str]:
+    fails: list[str] = []
+    name = path.name
+
+    for key in RFC010_REQUIRED_TOP_KEYS:
+        if key not in cm:
+            fails.append(f"{name}: compressed_memory.{key} missing (RFC-010 §5)")
+    if cm.get("version") != "rfc-010-draft":
+        fails.append(
+            f"{name}: compressed_memory.version must be 'rfc-010-draft' "
+            f"(RFC-010 §5)"
+        )
+    if cm.get("_non_normative") is not True:
+        fails.append(
+            f"{name}: compressed_memory._non_normative must be true "
+            f"(draft/preview marker)"
+        )
+    if cm.get("_claims_v41_ga") is not False:
+        fails.append(
+            f"{name}: compressed_memory._claims_v41_ga must be false "
+            f"(RFC-010 is v4.2 Draft, not v4.1 GA)"
+        )
+
+    # Empty pointer arrays — skill templates carry no carrier facts.
+    for arr_key in ("fact_pointers", "entity_links", "graph_refs"):
+        v = cm.get(arr_key)
+        if not isinstance(v, list):
+            fails.append(f"{name}: compressed_memory.{arr_key} must be a list")
+            continue
+        if v:
+            fails.append(
+                f"{name}: compressed_memory.{arr_key} must be empty in a "
+                f"skill template (no per-carrier facts; RFC-010 §5.1)"
+            )
+
+    # Extractor hardening
+    dfrom = cm.get("derived_from") or {}
+    if dfrom.get("pack") != (cm.get("derived_from") or {}).get("pack"):
+        pass  # no-op (kept for symmetry)
+    extractor = (dfrom.get("extractor") or {})
+    kind = extractor.get("kind")
+    if kind not in RFC010_EXTRACTOR_KINDS:
+        fails.append(
+            f"{name}: derived_from.extractor.kind '{kind}' must be in "
+            f"{sorted(RFC010_EXTRACTOR_KINDS)} (RFC-010 §5)"
+        )
+    agent_ref = extractor.get("agent_ref", "")
+    if not agent_ref.startswith("x.klickd/host/"):
+        fails.append(
+            f"{name}: derived_from.extractor.agent_ref must start with "
+            f"'x.klickd/host/' (RFC-010 §6.1)"
+        )
+    version = extractor.get("version", "")
+    if not RFC010_SEMVER_RE.match(version):
+        fails.append(
+            f"{name}: derived_from.extractor.version '{version}' is not "
+            f"semver-shaped (RFC-010 §5)"
+        )
+    att = extractor.get("attestation_hash")
+    if kind in {"host_skill", "verified_bridge"}:
+        if not (isinstance(att, str) and RFC010_HASH_RE.match(att)):
+            fails.append(
+                f"{name}: derived_from.extractor.attestation_hash must be "
+                f"'<sha256|blake3>:<hex>' when kind='{kind}' (RFC-010 §5)"
+            )
+
+    # vector_index — pointer-only, no inline embeddings
+    vi = cm.get("vector_index") or {}
+    if vi.get("inline_embeddings_forbidden") is not True:
+        fails.append(
+            f"{name}: vector_index.inline_embeddings_forbidden must be true "
+            f"(RFC-010 §5.3)"
+        )
+    uri = vi.get("uri", "")
+    if not isinstance(uri, str) or uri.startswith("data:"):
+        fails.append(
+            f"{name}: vector_index.uri must be a non-data: URI "
+            f"(RFC-010 §5)"
+        )
+    if not isinstance(vi.get("dim"), int) or vi.get("dim", 0) < 1:
+        fails.append(f"{name}: vector_index.dim must be a positive integer")
+    if not isinstance(vi.get("embedding_model_ref"), str) or not vi.get(
+        "embedding_model_ref"
+    ):
+        fails.append(
+            f"{name}: vector_index.embedding_model_ref must be a non-empty "
+            f"discriminated reference (RFC-010 §5)"
+        )
+
+    # retrieval_policy
+    rp = cm.get("retrieval_policy") or {}
+    if rp.get("host_side_only") is not True:
+        fails.append(
+            f"{name}: retrieval_policy.host_side_only must be true "
+            f"(RFC-010 §5)"
+        )
+    if rp.get("require_gate") != "memory_recall_injection":
+        fails.append(
+            f"{name}: retrieval_policy.require_gate must be "
+            f"'memory_recall_injection' (RFC-010 §6.3)"
+        )
+    if rp.get("freshness_weighting") not in RFC010_FRESHNESS_VALUES:
+        fails.append(
+            f"{name}: retrieval_policy.freshness_weighting "
+            f"'{rp.get('freshness_weighting')}' must be in "
+            f"{sorted(RFC010_FRESHNESS_VALUES)}"
+        )
+    for k in ("top_k", "max_facts_per_turn"):
+        v = rp.get(k)
+        if not isinstance(v, int) or not (1 <= v <= 50):
+            fails.append(
+                f"{name}: retrieval_policy.{k}={v!r} must be int in [1, 50]"
+            )
+
+    # erasure_cascade — Art.17 deterministic
+    ec = cm.get("erasure_cascade") or {}
+    if ec.get("on_user_request") != "cascade_purge":
+        fails.append(
+            f"{name}: erasure_cascade.on_user_request must be "
+            f"'cascade_purge' (RFC-010 §6.2; no exceptions)"
+        )
+    if ec.get("on_evidence_deletion") not in {"cascade_purge", "tombstone_only"}:
+        fails.append(
+            f"{name}: erasure_cascade.on_evidence_deletion must be "
+            f"'cascade_purge' or 'tombstone_only' (RFC-010 §6.2)"
+        )
+    targets = ec.get("targets") or []
+    if not isinstance(targets, list) or not targets:
+        fails.append(
+            f"{name}: erasure_cascade.targets must be a non-empty list"
+        )
+
+    # gate_refs — at least one memory_recall_injection
+    grefs = cm.get("gate_refs") or []
+    if not (
+        isinstance(grefs, list)
+        and any(
+            isinstance(g, dict)
+            and g.get("action_class") == "memory_recall_injection"
+            for g in grefs
+        )
+    ):
+        fails.append(
+            f"{name}: gate_refs[] must include a memory_recall_injection "
+            f"action_class (RFC-010 §6.3)"
+        )
+
+    # No inline extraction logic (§5.4) — heuristic byte check.
+    raw_block = json.dumps(cm).lower()
+    for forbidden_key in (
+        "extraction_prompt",
+        "extractor_prompt",
+        "scoring_function",
+        "scoring_code",
+        "prompt_template",
+    ):
+        if forbidden_key in raw_block:
+            fails.append(
+                f"{name}: compressed_memory must not contain extraction "
+                f"prompts / scoring code (RFC-010 §5.4, §6.5); found "
+                f"'{forbidden_key}'"
+            )
+
+    # Anti-copy: no third-party memory-system compatibility claim inside
+    # the artefact's compressed_memory block (RFC-010 §2, §8 #6).
+    for sys_name in ("mem0", "graphrag", "letta", "memgpt", "zep", "a-mem", "amem"):
+        for needle in (
+            f"{sys_name} compatible",
+            f"{sys_name}-compatible",
+            f"compatible with {sys_name}",
+        ):
+            if needle in raw_block:
+                fails.append(
+                    f"{name}: compressed_memory must not claim "
+                    f"third-party compatibility ('{needle}'); see "
+                    f"RFC-010 §2 anti-copy statement"
+                )
+    return fails
+
+
+def validate_rfc010_blocks_in_artefacts() -> list[str]:
+    """Enforce RFC-010 invariants in every x.klickd v4.1 candidate skill."""
+    fails: list[str] = []
+    if not ARTEFACT_ROOT.exists():
+        return fails
+    for tier_dir in (LITE_DIR, PRO_DIR):
+        if not tier_dir.exists():
+            continue
+        for path in sorted(tier_dir.glob("*.klickd")):
+            try:
+                obj = json.loads(path.read_text(encoding="utf-8"))
+            except Exception as e:
+                fails.append(f"{path.name}: JSON parse failed: {e}")
+                continue
+            block = (obj.get("x_klickd_pack") or {})
+            sm = block.get("structured_memory") or {}
+            cm = sm.get("compressed_memory")
+            if not isinstance(cm, dict):
+                fails.append(
+                    f"{path.name}: x_klickd_pack.structured_memory."
+                    f"compressed_memory missing (RFC-010 §4.1 pinned path)"
+                )
+                continue
+            # pack id consistency
+            dfrom_pack = (cm.get("derived_from") or {}).get("pack")
+            pack_id = block.get("pack")
+            if dfrom_pack != pack_id:
+                fails.append(
+                    f"{path.name}: compressed_memory.derived_from.pack "
+                    f"'{dfrom_pack}' != x_klickd_pack.pack '{pack_id}'"
+                )
+            fails.extend(_validate_rfc010_block(path, cm))
+    return fails
+
+
+def validate_rfc010_retrieval_scope_unique() -> list[str]:
+    """No two artefacts may share an identical RFC-010 retrieval scope.
+
+    The retrieval scope is the tuple
+        (sorted(tags), sorted(entity_classes), priority,
+         top_k, max_facts_per_turn, freshness_weighting, dim)
+    drawn from `_draft_retrieval_scope`, `retrieval_policy`, and
+    `vector_index`. Identical scopes across packs would mean the
+    catalogue carries copy-paste compressed_memory blocks — which the
+    parent audit explicitly forbids.
+    """
+    fails: list[str] = []
+    if not ARTEFACT_ROOT.exists():
+        return fails
+    scope_keys: dict[tuple, list[str]] = {}
+    tag_sets: dict[tuple, list[str]] = {}
+    for tier_dir in (LITE_DIR, PRO_DIR):
+        if not tier_dir.exists():
+            continue
+        for path in sorted(tier_dir.glob("*.klickd")):
+            try:
+                obj = json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            cm = (
+                ((obj.get("x_klickd_pack") or {}).get("structured_memory") or {})
+                .get("compressed_memory")
+            )
+            if not isinstance(cm, dict):
+                continue
+            scope = cm.get("_draft_retrieval_scope") or {}
+            rp = cm.get("retrieval_policy") or {}
+            vi = cm.get("vector_index") or {}
+            tags = tuple(sorted(scope.get("tags") or []))
+            ents = tuple(sorted(scope.get("entity_classes") or []))
+            key = (
+                tags,
+                ents,
+                scope.get("priority"),
+                rp.get("top_k"),
+                rp.get("max_facts_per_turn"),
+                rp.get("freshness_weighting"),
+                vi.get("dim"),
+            )
+            scope_keys.setdefault(key, []).append(path.name)
+            tag_sets.setdefault(tags, []).append(path.name)
+    for key, files in scope_keys.items():
+        if len(files) > 1:
+            fails.append(
+                f"RFC-010 retrieval-scope clone: {files} share identical "
+                f"retrieval scope {key} (no copy-paste compressed_memory "
+                f"across the 42 skills)"
+            )
+    for tags, files in tag_sets.items():
+        if len(files) > 1:
+            fails.append(
+                f"RFC-010 retrieval-tags clone: {files} share identical "
+                f"_draft_retrieval_scope.tags {list(tags)} (each pack "
+                f"must contribute a role-specific tag set)"
+            )
+    return fails
+
+
 def main(argv: list[str]) -> int:
     doc_path = Path(argv[1]) if len(argv) > 1 else DEFAULT_DOC
     if not doc_path.exists():
@@ -994,6 +1309,8 @@ def main(argv: list[str]) -> int:
         all_failures.extend(validate_no_forbidden_public_wording())
         all_failures.extend(validate_public_surface_codename_clean())
         all_failures.extend(validate_manifests())
+        all_failures.extend(validate_rfc010_blocks_in_artefacts())
+        all_failures.extend(validate_rfc010_retrieval_scope_unique())
         # Near-duplicate heuristic is advisory (QA protocol §5.1).
         # Reported to stderr but does NOT affect exit code.
         near_dup_warns = validate_near_duplicate_competency_sets()
