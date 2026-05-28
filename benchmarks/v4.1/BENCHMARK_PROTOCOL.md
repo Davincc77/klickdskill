@@ -111,9 +111,16 @@ provider calls.
 - **Dry-run default.** Without explicit flags, the harness never calls a
   provider, never writes outside `benchmarks/v4.1/results/`, and never
   consumes paid resources.
-- **Pilot run** (`--pilot`): up to 10 users. Designed to be < $5 in provider
-  cost at typical token rates. Requires `LLM_API_KEY` (or provider-specific
-  var) to be set; otherwise the runner produces a planned-run manifest.
+- **Pilot run** (`pilot`): up to 10 users. Designed to be < $5 in provider
+  cost at typical token rates. Requires `LLM_API_KEY` (or a provider-specific
+  variable such as `GEMINI_API_KEY`) AND `--execute` AND a `--provider`
+  selection; otherwise the runner produces a planned-run manifest. Pilot
+  execution writes `raw_outputs.jsonl`, `errors.jsonl`,
+  `metrics_summary.json`, and `run_manifest.json`. Concurrency is capped at
+  8 with a default of 1; batches are spaced by `--sleep-between-batches`.
+  Pilot runs are resumable via `--run-id`. After a pilot, run
+  `runner/audit.py <run_dir>` to verify completeness, condition balance,
+  hash coverage, model consistency, and to scan for secret-like patterns.
 - **Full run** (`--full`): blocked unless ALL of the following:
   - CLI flag `--confirm-full-run`
   - Environment variable `XKLICKD_BENCHMARK_FULL_APPROVED=1`
@@ -154,3 +161,18 @@ be promoted.
 - Publishing, tagging, releasing, Zenodo, npm, PyPI.
 - Modifying the 42 v4.1 skills or the public x.klickd site.
 - Production memory runtime (the RFC-010 implementation here is a *reference*).
+
+## 9. Provider fairness rules
+
+Across the three Test A conditions for a given (user, prompt_family):
+
+- The user message is **byte-identical**.
+- The generation config (`model`, `temperature`, `top_p`, `max_output_tokens`)
+  is identical.
+- Only the condition-specific context block prepended to the system
+  prompt differs (`no_klickd` → empty; `xklickd_lite` → persona + anchors;
+  `xklickd_pro` → persona + gates + anchors + active goals).
+
+Every call records `prompt_hash` (SHA-256 of the `{system, user}` JSON);
+every successful response records `output_hash`. These hashes let the
+audit step detect accidental drift between conditions.
