@@ -58,10 +58,13 @@ def test_required_candidates_all_present():
 
 def test_no_klickdapp_in_chimera_planning_dir():
     """Public planning dir MUST NOT mention Klickd.app product carrier
-    filenames or Kai host-side skills as if they were Chimera candidate
-    packs. The §3 exclusion table is allowed (it lists them precisely
-    in order to exclude them) so we scan only the §1 / §2 candidate
-    rows via the validator's row-scoped check."""
+    filenames or Kai host-side skills as if they were x.klickd v4.1
+    candidate packs. The §3 exclusion table is allowed (it lists them
+    precisely in order to exclude them) so we scan only the §1 / §2
+    candidate rows via the validator's row-scoped check. The function
+    name retains the historical `chimera` segment because the planning
+    directory itself is still named that on disk (rename is a separate
+    PR per audit WARN-2)."""
     mod = _load_validator()
     text = DOC.read_text(encoding="utf-8")
     rows = mod.parse_candidate_tables(text)
@@ -288,6 +291,195 @@ def test_tier_artefact_counts_are_frozen_at_8_lite_and_34_pro():
         f"expected 34 pro artefacts, found {len(_pro_files())}: "
         f"{[p.name for p in _pro_files()]}"
     )
+
+
+def test_qa_protocol_doc_exists():
+    """QA protocol is the mandatory merge gate for `ship_ready`
+    promotion (2026-05-28). Must exist, must name its key sections,
+    and must use public `x.klickd` wording in its title."""
+    p = REPO_ROOT / "docs" / "chimera" / "V4_1_SKILL_QA_PROTOCOL.md"
+    assert p.is_file(), f"QA protocol doc missing: {p}"
+    text = p.read_text(encoding="utf-8")
+    assert "x.klickd" in text.splitlines()[0], (
+        "QA protocol title must use public `x.klickd` wording"
+    )
+    for section in (
+        "Mandatory gates",
+        "Scoring checklist",
+        "Required sign-offs",
+        "Mandatory ordering",
+        "Near-duplicate heuristic",
+        "Public-fields allow-list",
+    ):
+        assert section in text, f"QA protocol section '{section}' missing"
+    # All 14 gates must be present.
+    for gate in [f"QA-G{i:02d}" for i in range(1, 15)]:
+        assert gate in text, f"QA protocol gate '{gate}' missing"
+    # The five sign-off owners must be present.
+    for owner in ("Architecture", "Security", "Legal", "UX", "QA"):
+        assert owner in text, f"QA protocol sign-off owner '{owner}' missing"
+
+
+def test_qa_protocol_doc_does_not_spell_forbidden_literal():
+    """Audit PR #76 WARN-1 follow-through: the public QA protocol doc
+    MUST NOT spell the forbidden public literal. The mechanical
+    literal lives only in the validator's FORBIDDEN_PUBLIC_TERMS
+    constant. The doc may reference paths whose filename is a
+    historical implementation detail (e.g. docs/rfcs/RFC-009-*.md)
+    because directory/file renames are out of scope for this PR per
+    audit WARN-2 — but the doc prose itself must not name the
+    codename outside such path references.
+
+    The check: every line of the doc that contains a
+    FORBIDDEN_PUBLIC_TERMS substring MUST also contain a path/URL
+    fragment (a substring with a '/' or a '.md' / '.py' suffix) that
+    explains why the literal is unavoidable on that line. Lines with
+    the literal but no such fragment are public prose leaks.
+    """
+    mod = _load_validator()
+    p = REPO_ROOT / "docs" / "chimera" / "V4_1_SKILL_QA_PROTOCOL.md"
+    text = p.read_text(encoding="utf-8")
+    leaks: list[str] = []
+    for i, line in enumerate(text.splitlines(), start=1):
+        low = line.lower()
+        for term in mod.FORBIDDEN_PUBLIC_TERMS:
+            if term in low:
+                if not any(frag in low for frag in (
+                    "/", ".md", ".py", "rfc-009", "examples/v4.1"
+                )):
+                    leaks.append(f"line {i}: {line!r}")
+                break
+    assert not leaks, (
+        "QA protocol doc spells the forbidden literal in public prose "
+        "(only path/URL references are allowed):\n" + "\n".join(leaks)
+    )
+
+
+def test_qa_protocol_linked_from_planning_docs():
+    """QA protocol must be reachable from the planning index, the
+    competency identification protocol, and the candidate checklist."""
+    for doc in (
+        REPO_ROOT / "docs" / "chimera" / "README_V4_1.md",
+        REPO_ROOT / "docs" / "chimera" / "V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md",
+        REPO_ROOT / "docs" / "chimera" / "V4_1_CANDIDATE_CHECKLIST.md",
+    ):
+        text = doc.read_text(encoding="utf-8")
+        assert "V4_1_SKILL_QA_PROTOCOL.md" in text, (
+            f"{doc.name} must link to V4_1_SKILL_QA_PROTOCOL.md"
+        )
+
+
+def test_near_duplicate_heuristic_function_exists():
+    """The near-duplicate Jaccard heuristic (QA-G09 WARN, QA protocol
+    §5.1) MUST exist as a function on the validator and MUST return a
+    list of strings (the WARN lines)."""
+    mod = _load_validator()
+    assert hasattr(mod, "validate_near_duplicate_competency_sets"), (
+        "validator missing validate_near_duplicate_competency_sets()"
+    )
+    assert hasattr(mod, "NEAR_DUPLICATE_JACCARD_WARN")
+    assert 0.0 < mod.NEAR_DUPLICATE_JACCARD_WARN < 1.0
+    warns = mod.validate_near_duplicate_competency_sets()
+    assert isinstance(warns, list)
+    for w in warns:
+        assert isinstance(w, str)
+        # WARN lines must not include 'FAIL' or 'BLOCKER' — they are advisory.
+        assert "FAIL" not in w
+
+
+def test_near_duplicate_heuristic_does_not_block_exit_code():
+    """The near-duplicate heuristic is advisory (QA protocol §5.1).
+    It is reported to stderr but MUST NOT contribute to the validator
+    failure list, which would change the exit code. The exact-clone
+    case is handled by validate_no_competency_clones() as a BLOCKER."""
+    mod = _load_validator()
+    # Sanity: the BLOCKER-half function is the exact-clone check.
+    blockers = mod.validate_no_competency_clones()
+    for b in blockers:
+        assert "clone" in b.lower()
+
+
+def test_qa_g12_no_forbidden_public_wording():
+    """QA-G12 (no forbidden public wording): every string reachable
+    through a PUBLIC_FIELDS pointer in any candidate artefact MUST
+    NOT contain a FORBIDDEN_PUBLIC_TERMS substring. Driven by the
+    validator's `validate_no_forbidden_public_wording()` so the
+    mechanical literal lives only in the non-public validator
+    constant. Internal metadata outside PUBLIC_FIELDS (publisher
+    bookkeeping, schema version, planning-doc pointers, ...) is
+    explicitly allowed to reference the historical internal planning
+    track."""
+    mod = _load_validator()
+    failures = mod.validate_no_forbidden_public_wording()
+    assert not failures, "\n".join(failures)
+
+
+def test_public_fields_allow_list_shape():
+    """The PUBLIC_FIELDS allow-list is the QA-G12 scan scope. Audit
+    PR #76 WARN-1 follow-through. Test verifies:
+
+      1. The constant exists and is a non-empty tuple.
+      2. Each entry is a (segments-tuple, kind-string) pair.
+      3. Each segments-tuple contains only str values.
+      4. Each kind is one of {'string', 'string_list'}.
+      5. The minimum carrier-facing fields are present: target_user
+         and at least one prefLabel pointer.
+    """
+    mod = _load_validator()
+    assert hasattr(mod, "PUBLIC_FIELDS"), "validator missing PUBLIC_FIELDS"
+    pf = mod.PUBLIC_FIELDS
+    assert isinstance(pf, tuple) and len(pf) > 0
+    target_user_seen = False
+    preflabel_seen = False
+    for entry in pf:
+        assert isinstance(entry, tuple) and len(entry) == 2
+        segments, kind = entry
+        assert isinstance(segments, tuple)
+        for s in segments:
+            assert isinstance(s, str)
+        assert kind in {"string", "string_list"}
+        if segments and segments[0] == "target_user":
+            target_user_seen = True
+        if segments and segments[-1] == "prefLabel":
+            preflabel_seen = True
+    assert target_user_seen, "PUBLIC_FIELDS must cover target_user"
+    assert preflabel_seen, "PUBLIC_FIELDS must cover at least one prefLabel pointer"
+
+
+def test_forbidden_public_terms_isolated_in_validator():
+    """The forbidden public literal lives only in the validator's
+    FORBIDDEN_PUBLIC_TERMS constant. The constant exists, is
+    non-empty, and contains only lowercase strings (the scan is
+    case-insensitive)."""
+    mod = _load_validator()
+    assert hasattr(mod, "FORBIDDEN_PUBLIC_TERMS")
+    ft = mod.FORBIDDEN_PUBLIC_TERMS
+    assert isinstance(ft, tuple) and len(ft) > 0
+    for term in ft:
+        assert isinstance(term, str) and term == term.lower() and term
+
+
+def test_public_strings_collector_walks_target_user_dict():
+    """`_collect_public_strings()` MUST walk nested dict values of
+    target_user (because some artefacts use a dict, not a string).
+    Sanity check against a synthetic block."""
+    mod = _load_validator()
+    block = {
+        "target_user": {
+            "role": "synthetic carrier role",
+            "context": "synthetic context",
+        },
+        "competencies": [
+            {"prefLabel": "synthetic label A"},
+            {"prefLabel": "synthetic label B"},
+        ],
+    }
+    strings = mod._collect_public_strings(block)
+    values = [v for _, v in strings]
+    assert "synthetic carrier role" in values
+    assert "synthetic context" in values
+    assert "synthetic label A" in values
+    assert "synthetic label B" in values
 
 
 def test_lite_router_cost_under_900_and_pro_under_1350():

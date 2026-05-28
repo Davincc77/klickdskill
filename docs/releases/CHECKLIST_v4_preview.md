@@ -11,6 +11,8 @@
 
 ---
 
+> **`x.klickd` v4.1 candidate catalog note (2026-05-28):** Any `x.klickd` candidate skill that will be exposed in a `/klickdskill` surface as part of a release MUST first clear the mandatory QA protocol in [`docs/chimera/V4_1_SKILL_QA_PROTOCOL.md`](../chimera/V4_1_SKILL_QA_PROTOCOL.md): all 14 PASS gates, no open BLOCKER, every WARN acknowledged, Architecture / Security / Legal-Claims / UX / QA sign-offs recorded. This is independent of the preview track gating below; it gates `ship_ready` and catalog exposure, not preview tagging.
+
 ## 0. Pre-flight (must all be green before tagging)
 
 - [ ] `main` is clean and all preview PRs (SPEC §33, schemas, SDK round-trip,
