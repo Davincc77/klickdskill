@@ -190,7 +190,9 @@ Verification:
 ```bash
 # Sanity check the count of hashed files
 wc -l release-artifacts/v4.1.0/SHA256SUMS.x-klickd-skills.txt
-# Expect: 42 skill lines + 2 manifest.json lines + spec/schema/docs lines
+# Expect: 42 skill lines + 3 manifest.json lines (root + lite + pro)
+#       + 1 catalog README.md line (examples/v4.1/x-klickd-skills/README.md)
+#       + spec/schema/docs lines. Current as-shipped total: 59 lines.
 
 # Spot-verify a hash
 cd examples/v4.1/x-klickd-skills/lite
