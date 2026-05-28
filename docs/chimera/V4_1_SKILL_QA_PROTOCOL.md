@@ -12,7 +12,7 @@
 >
 > **Non-normative.** This document is a process gate, not a schema change. It introduces no new fields, no envelope change, no migration. It composes with — and does not replace — [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md) (`ship_ready` criteria) and the existing reviewer checklist [`V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md).
 >
-> **Public wording.** This protocol refers to candidate skills as **`x.klickd`** skills. The internal track name (Chimera) MUST NOT appear in public-facing skill descriptions, catalog entries, or `/klickdskill` UI. Internal planning docs may use either term.
+> **Public wording.** This protocol refers to candidate skills as **`x.klickd`** skills. The internal codename used in the planning track MUST NOT appear in public-facing skill descriptions, catalog entries, or `/klickdskill` UI. Internal planning docs may use either term. The mechanical literal is isolated in a non-public validator constant (see [`scripts/validate_v4_1_candidate_mapping.py`](../../scripts/validate_v4_1_candidate_mapping.py) — `FORBIDDEN_PUBLIC_TERMS`); this document deliberately avoids spelling the literal so that a copy-paste of any paragraph here cannot accidentally seed it into a public surface.
 
 ---
 
@@ -118,10 +118,10 @@ Artefact text MUST NOT contain real PII (emails, IBAN, phone numbers outside cit
 
 ### QA-G12 — No forbidden public wording
 
-Public-facing surfaces of the skill (`prefLabel`, carrier-facing description, catalog entry text) MUST use `x.klickd` wording. The internal track name (Chimera) MUST NOT appear in any public-facing string.
+Public-facing surfaces of the skill (the carrier-facing fields enumerated in §5.4 below) MUST use `x.klickd` wording. The internal codename used in the planning track MUST NOT appear in any public-facing string.
 
-- **BLOCKER**: any public-facing string contains the literal substring `Chimera` (case-insensitive).
-- **PASS**: only internal planning docs and RFC text reference the track name.
+- **BLOCKER**: any public-facing string contains a case-insensitive substring match against the validator's non-public `FORBIDDEN_PUBLIC_TERMS` tuple ([`scripts/validate_v4_1_candidate_mapping.py`](../../scripts/validate_v4_1_candidate_mapping.py)). The mechanical literal lives only in that constant — this document deliberately does not spell it.
+- **PASS**: only internal planning docs and RFC text reference the codename.
 
 ### QA-G13 — No Klickd.app / Kai host-side leakage
 
@@ -156,7 +156,7 @@ Reviewer fills one row per gate. A skill is `ship_ready` only when **all 14 gate
 | QA-G09 — Anti-clone / near-duplicate | PASS / BLOCKER / WARN | Architecture + QA | clone-detector output attached |
 | QA-G10 — Size budget | PASS / BLOCKER | Architecture | validator bytes + tokens |
 | QA-G11 — No PII / no secrets | PASS / BLOCKER | Security | validator scan output |
-| QA-G12 — No forbidden public wording | PASS / BLOCKER | UX + Legal/Claims | grep `(?i)chimera` on public strings |
+| QA-G12 — No forbidden public wording | PASS / BLOCKER | UX + Legal/Claims | validator `FORBIDDEN_PUBLIC_TERMS` scan on `PUBLIC_FIELDS` |
 | QA-G13 — No Klickd.app / Kai leakage | PASS / BLOCKER | Architecture | validator scan output |
 | QA-G14 — Acceptance tests | PASS / BLOCKER | QA | criteria-to-competency map |
 
@@ -225,11 +225,30 @@ The manual review is a one-minute side-by-side scan; the reviewer attaches the c
 
 Near-duplicate WARNs are expected and acceptable; a green near-duplicate report is **not** a sign of validator weakness. A legitimate near-duplicate (e.g. `game-design` author-side vs `game-literacy` reader-side, or `llm-agent-security` defender vs `llm-agent-engineering` builder) is cleared by the task-boundary justification — the WARN exists to force the reviewer to write the justification down, not to block the ship.
 
+### 5.4 Public-fields allow-list (QA-G12 scan scope)
+
+The QA-G12 forbidden-public-wording check is **only** valid when the validator knows which artefact fields a carrier or `/klickdskill` catalog UI would read directly. The allow-list lives in the validator as `PUBLIC_FIELDS` and currently covers:
+
+| JSON pointer | Why it is public |
+|---|---|
+| `x_klickd_pack.target_user` | Carrier-facing role/target statement; visible in catalog cards. |
+| `x_klickd_pack.target_user.*` (string values) | Same — when `target_user` is an object, each string value is treated as carrier-facing. |
+| `x_klickd_pack.competencies[*].prefLabel` | SKOS preferred label; visible in catalog detail. |
+| `x_klickd_pack.competencies[*].description` | Reviewer-facing description when present; visible in catalog detail. |
+| `x_klickd_pack.competency_mappings[*].prefLabel` | Same as above (RFC-009 §5.5 equal-shape rule). |
+| `x_klickd_pack.competency_mappings[*].description` | Same. |
+| `x_klickd_pack.compact_index.prefLabel` | Pro-tier compact-index label visible to the router/catalog. |
+| `x_klickd_pack.acceptance_criteria[*]` (string entries) | Reviewer-visible criteria — leak risk if a copy gets surfaced. |
+
+The validator constants and the function `_collect_public_strings()` enumerate these paths exactly. Fields **not** on the allow-list (e.g. `_pack_metadata.kind`, `domain_schema_version`, `see_planning_doc`, `see_readme`) are explicitly internal and may continue to reference the historical directory layout (per audit WARN-2 on PR #76: directory rename is a separate PR, out of scope here).
+
+`FORBIDDEN_PUBLIC_TERMS` is the non-public constant the validator compares each public string against. The terms themselves are NOT enumerated in this document by design — a copy-paste of any paragraph here MUST NOT seed the forbidden literal into a public surface. To extend the list, edit the constant in `scripts/validate_v4_1_candidate_mapping.py` and document the addition in the commit message, not in this file.
+
 ---
 
 ## 6. As-shipped audit (2026-05-28)
 
-The 42 already-published candidate artefacts (8 Lite + 34 Pro) under [`examples/v4.1/chimera-skills/{lite,pro}/`](../../examples/v4.1/chimera-skills/) are at status `candidate_mapped`, not `ship_ready`. None of them has run the §2 scoring + §3 sign-off pass yet; **none of them is eligible for `/klickdskill` catalog exposure** until that pass exists per per-pack RFC.
+The 42 already-published candidate artefacts (8 Lite + 34 Pro) under `examples/v4.1/chimera-skills/{lite,pro}/` (the historical directory name is an internal implementation detail; a future PR may rename it before the v4.1 GA tag) are at status `candidate_mapped`, not `ship_ready`. None of them has run the §2 scoring + §3 sign-off pass yet; **none of them is eligible for `/klickdskill` catalog exposure** until that pass exists per per-pack RFC.
 
 The mechanical subset of the QA protocol (G02, G03, G04 BLOCKER half, G06 flags, G07, G09 BLOCKER half, G10, G11, G13) already passes — see the validator output in [`V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](./V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md) §6.
 
@@ -243,7 +262,7 @@ The reviewer-owned half (G01, G05, G06 action-class coverage, G08, G09 WARN half
 - [`V4_1_SKILL_CANDIDATE_MAPPING.md`](./V4_1_SKILL_CANDIDATE_MAPPING.md) — candidate roster.
 - [`V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) — C-001..C-022 reviewer checklist.
 - [`V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](./V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md) — competency selection method (admissible sources, coherence rules, anti-clone).
-- [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md) §8 — `ship_ready` validation contract.
+- [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md) §8 — `ship_ready` validation contract. *(Filename is a historical implementation detail of the internal planning track; a future PR may rename it before the v4.1 GA tag — out of scope here.)*
 - [`docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md`](../rfcs/ACCEPTANCE_CHECKLIST_V4.md) — promotion gate.
 - [`docs/releases/CHECKLIST_v4_preview.md`](../releases/CHECKLIST_v4_preview.md) — release pre-flight checklist.
 - [`scripts/validate_v4_1_candidate_mapping.py`](../../scripts/validate_v4_1_candidate_mapping.py) — validator (mechanical subset of QA protocol).

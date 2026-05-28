@@ -12,7 +12,7 @@ Scope (NON-NORMATIVE, planning-doc validator):
       `x.klickd/<name>` namespace (or is an explicit sub-area of an
       existing pack such as `x.klickd/student.exam_targets[]`).
   - Verifies that no Klickd.app-specific carrier name and no Kai host
-      skill leaks into the candidate list as if it were a Chimera pack.
+      skill leaks into the candidate list as if it were a v4.1 candidate pack.
       The blocklist is the §3 exclusion table of README_V4_1.md.
   - Verifies that the status field is one of `needs_mapping`,
       `candidate_mapped`, `ship_ready`.
@@ -62,8 +62,10 @@ SUB_AREA_NICKNAMES = {
 # Lite packs have headroom for richer per-pack carrier-state vocabulary. The
 # new ceilings are an **upper bound (capacity envelope)**, NOT a target —
 # artefacts should stay as compact as their framework-anchored content allows.
-# Apply to public Chimera v4.1 catalog artefacts under
-# `examples/v4.1/chimera-skills/{lite,pro}/` only; Klickd.app student carriers
+# Apply to public x.klickd v4.1 candidate catalog artefacts under
+# `examples/v4.1/chimera-skills/{lite,pro}/` (the historical directory
+# name is an internal implementation detail) only; Klickd.app student
+# carriers
 # under `examples/v4/klickdapp-skills/` and Kai host-side artefacts are out of
 # scope (different validator).
 TIER_ROUTER_COST_CEILING = {"lite": 900, "pro": 1350}
@@ -95,7 +97,7 @@ FILENAME_PACK_ALLOWED_DIVERGENCE: dict[str, str] = {}
 
 # Patterns that, if matched in the raw artefact text, indicate a
 # Klickd.app product carrier or Kai host-side artefact leaked into the
-# public Chimera catalog. Case-insensitive substring match.
+# public x.klickd v4.1 candidate catalog. Case-insensitive substring match.
 ARTEFACT_FORBIDDEN_PATTERNS = (
     "klickdapp.lu",
     "klickdapp.fr",
@@ -136,10 +138,51 @@ PII_PATTERNS = (
 # Allow-list literal email-like substrings (publisher placeholders only)
 PII_ALLOWED_SUBSTRINGS = ()
 
+# Forbidden public terms (QA-G12). Mechanical literal used by the
+# `_scan_public_strings_for_forbidden_terms()` helper. Kept here, in a
+# single non-public constant, so the public QA protocol doc
+# (docs/chimera/V4_1_SKILL_QA_PROTOCOL.md) does NOT have to spell the
+# literal. Lowercased case-insensitive substring match.
+#
+# Rationale (audit PR #76 WARN-1 follow-through): a copy-paste of any
+# paragraph of the protocol doc MUST NOT seed the forbidden literal
+# into a public surface. The doc references this constant by name
+# instead.
+#
+# To extend: add the new term here AND document the addition in the
+# commit message. Do NOT echo the literal into the public protocol doc.
+FORBIDDEN_PUBLIC_TERMS: tuple[str, ...] = ("chimera",)
+
+# Public-facing JSON pointer paths within an x_klickd_pack artefact —
+# the QA-G12 scan only fires on string values reached via these paths.
+# Anything outside this allow-list is internal metadata (publisher
+# bookkeeping, schema version, planning-doc pointers, ...) and may
+# continue to reference the historical internal planning track.
+#
+# Each entry is a (segments, kind) pair where:
+#   - segments is a tuple of keys / wildcards walked from x_klickd_pack
+#     ('*' matches any list index; '**' matches any dict value)
+#   - kind is 'string' (the leaf is a string) or 'string_list' (the
+#     leaf is a list of strings)
+#
+# Reviewers extend this list when a new public-facing field is added
+# to the artefact shape (RFC bump). Audit-hardening 2026-05-28.
+PUBLIC_FIELDS: tuple[tuple[tuple[str, ...], str], ...] = (
+    (("target_user",), "string"),
+    (("target_user", "**"), "string"),
+    (("competencies", "*", "prefLabel"), "string"),
+    (("competencies", "*", "description"), "string"),
+    (("competency_mappings", "*", "prefLabel"), "string"),
+    (("competency_mappings", "*", "description"), "string"),
+    (("compact_index", "prefLabel"), "string"),
+    (("acceptance_criteria",), "string_list"),
+)
+
 ALLOWED_STATUSES = {"needs_mapping", "candidate_mapped", "ship_ready"}
 
 # Names that MUST NOT appear in any candidate row as if they were
-# Chimera packs (per README_V4_1.md §3). They live elsewhere.
+# x.klickd v4.1 candidate packs (per README_V4_1.md §3). They live
+# elsewhere (Klickd.app product carriers / Kai host-side artefacts).
 EXCLUDED_NAMES = (
     "klickdapp.lu.klickd",
     "klickdapp.fr.klickd",
@@ -723,6 +766,92 @@ def validate_no_competency_clones() -> list[str]:
     return fails
 
 
+def _collect_public_strings(block: dict) -> list[tuple[str, str]]:
+    """Walk an x_klickd_pack block and yield (json_pointer, value) pairs
+    for every string reached via a path in PUBLIC_FIELDS.
+
+    Returns a list of (pointer, string_value) pairs. Pointer is a
+    slash-separated path starting at 'x_klickd_pack' so reviewer-facing
+    error messages are self-explanatory.
+    """
+    results: list[tuple[str, str]] = []
+
+    def _walk(node, segments: tuple[str, ...], pointer: str, kind: str) -> None:
+        if not segments:
+            if kind == "string" and isinstance(node, str):
+                results.append((pointer, node))
+            elif kind == "string_list" and isinstance(node, list):
+                for i, item in enumerate(node):
+                    if isinstance(item, str):
+                        results.append((f"{pointer}[{i}]", item))
+            return
+        head, rest = segments[0], segments[1:]
+        if head == "*":
+            if isinstance(node, list):
+                for i, item in enumerate(node):
+                    _walk(item, rest, f"{pointer}[{i}]", kind)
+            return
+        if head == "**":
+            if isinstance(node, dict):
+                for k, v in node.items():
+                    _walk(v, rest, f"{pointer}.{k}", kind)
+            return
+        if isinstance(node, dict) and head in node:
+            _walk(node[head], rest, f"{pointer}.{head}", kind)
+
+    for segments, kind in PUBLIC_FIELDS:
+        _walk(block, segments, "x_klickd_pack", kind)
+    return results
+
+
+def _scan_public_strings_for_forbidden_terms(
+    public_strings: list[tuple[str, str]],
+) -> list[tuple[str, str, str]]:
+    """Return (pointer, value, matched_term) triples for every string
+    that contains a FORBIDDEN_PUBLIC_TERMS substring (case-insensitive).
+    """
+    hits: list[tuple[str, str, str]] = []
+    for pointer, value in public_strings:
+        low = value.lower()
+        for term in FORBIDDEN_PUBLIC_TERMS:
+            if term in low:
+                hits.append((pointer, value, term))
+                break
+    return hits
+
+
+def validate_no_forbidden_public_wording() -> list[str]:
+    """QA-G12 (BLOCKER): no string reachable through a PUBLIC_FIELDS
+    pointer may contain a FORBIDDEN_PUBLIC_TERMS substring (case-
+    insensitive). Internal metadata outside PUBLIC_FIELDS is allowed
+    to reference the historical internal planning track. See
+    docs/chimera/V4_1_SKILL_QA_PROTOCOL.md §5.4 for the allow-list
+    and the rationale for not spelling the forbidden literal in the
+    public doc.
+    """
+    fails: list[str] = []
+    if not ARTEFACT_ROOT.exists():
+        return fails
+    for tier_dir in (LITE_DIR, PRO_DIR):
+        if not tier_dir.exists():
+            continue
+        for path in sorted(tier_dir.glob("*.klickd")):
+            try:
+                obj = json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            block = obj.get("x_klickd_pack") or {}
+            public_strings = _collect_public_strings(block)
+            hits = _scan_public_strings_for_forbidden_terms(public_strings)
+            for pointer, value, term in hits:
+                fails.append(
+                    f"{path.name}: QA-G12 BLOCKER — public field "
+                    f"'{pointer}' contains forbidden term "
+                    f"(matched '{term}' in {value!r})"
+                )
+    return fails
+
+
 def validate_no_deferred_artefacts() -> list[str]:
     """Ensure no .klickd file exists for a deferred (needs_mapping) candidate."""
     fails: list[str] = []
@@ -816,6 +945,7 @@ def main(argv: list[str]) -> int:
                 all_failures.extend(validate_artefact(path))
         all_failures.extend(validate_no_deferred_artefacts())
         all_failures.extend(validate_no_competency_clones())
+        all_failures.extend(validate_no_forbidden_public_wording())
         all_failures.extend(validate_manifests())
         # Near-duplicate heuristic is advisory (QA protocol §5.1).
         # Reported to stderr but does NOT affect exit code.
