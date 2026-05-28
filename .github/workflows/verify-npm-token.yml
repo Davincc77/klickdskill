@@ -1,0 +1,70 @@
+# Safe NPM_TOKEN secret verification workflow.
+#
+# Purpose:
+#   Confirm that the repository secret `NPM_TOKEN` is present and valid by
+#   performing READ-ONLY authenticated calls against the public npm registry.
+#
+# Safety guarantees (must remain true for any change to this file):
+#   - Trigger is `workflow_dispatch` ONLY (no push / pull_request / schedule).
+#   - No publish, tag, deprecate, unpublish, or registry-mutating commands run.
+#     Explicitly NOT used: `npm publish`, `npm dist-tag`, `npm deprecate`,
+#     `npm unpublish`, `npm access`, `npm owner`, `npm token`.
+#   - No tags, releases, Zenodo deposits, or PyPI uploads are produced.
+#   - Only `npm whoami` and `npm ping` are executed; both are read-only.
+#   - `NODE_AUTH_TOKEN` is scoped to the whoami step only.
+#
+# If you extend this workflow, do NOT add any command that writes to a
+# registry. Keep it strictly read-only.
+
+name: Verify NPM_TOKEN (safe, read-only)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify-npm-token:
+    name: Verify NPM_TOKEN is valid (no publish)
+    runs-on: ubuntu-latest
+    # Use the same protected environment as other npm-related workflows so
+    # token access stays gated behind environment approvals/reviewers.
+    environment: npm
+    permissions:
+      # Read-only checkout permission. No write scopes are required because
+      # this workflow does not push commits, tags, releases, or packages.
+      contents: read
+
+    steps:
+      - name: Set up Node.js with npm registry
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # Configures ~/.npmrc to authenticate against the public npm
+          # registry using ${NODE_AUTH_TOKEN}. No scope is set, so this only
+          # affects authenticated reads in subsequent steps.
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: npm ping (unauthenticated registry reachability check)
+        # `npm ping` is a read-only health check against the registry. It
+        # does not require a token and does not modify any state.
+        run: npm ping
+
+      - name: npm whoami (authenticated, read-only token check)
+        # `npm whoami` only reads the identity associated with the token.
+        # It cannot publish, tag, deprecate, or unpublish anything.
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "${NODE_AUTH_TOKEN}" ]; then
+            echo "ERROR: NPM_TOKEN secret is not set for this environment."
+            exit 1
+          fi
+          WHOAMI=$(npm whoami)
+          echo "Authenticated npm user: ${WHOAMI}"
+
+      - name: Confirm no mutating commands ran
+        # Informational only. This workflow intentionally performs no
+        # publish/tag/deprecate/unpublish operations.
+        run: |
+          echo "NPM_TOKEN verification complete."
+          echo "No publish, dist-tag, deprecate, unpublish, or registry"
+          echo "mutation was performed by this workflow."
