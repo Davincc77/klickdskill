@@ -1,0 +1,117 @@
+{
+  "_comment": "NON-NORMATIVE, NON-GA, NON-RELEASE example fragment for RFC-010 (`pack_memory_compression`, .klickd v4.2 Draft). This file is illustrative ONLY. It does NOT validate against any current schema in schema/ or schemas/. It does NOT modify klickd-payload-v4.schema.json or klickd-payload-v4-preview.schema.json. It does NOT modify the 42 frozen v4.1 x.klickd skill artefacts. It is NOT released on npm, PyPI, Zenodo, IANA, or as a GitHub Release. All URIs and hashes are placeholders. No code is copied from Mem0, GraphRAG, Letta/MemGPT, Zep, A-MEM, or any other memory system; no compatibility with those systems is claimed.",
+  "_rfc": "RFC-010 — pack_memory_compression (v4.2 Draft)",
+  "_status": "Draft / non-normative / non-release",
+  "_mount_path": "x_klickd_pack.structured_memory.compressed_memory",
+  "x_klickd_pack": {
+    "pack": "x.klickd/student",
+    "structured_memory": {
+      "_note": "The append-only `structured_memory` slice (RFC-009 §5.6, schema-fragments §10) lives next to this field. Only `compressed_memory` is shown for brevity.",
+      "compressed_memory": {
+        "version": "rfc-010-draft",
+        "derived_from": {
+          "pack": "x.klickd/student",
+          "slice_path": "structured_memory",
+          "extractor": {
+            "kind": "host_skill",
+            "host": "kai-edu-2026",
+            "agent_ref": "x.klickd/host/memory-extractor",
+            "version": "0.1.0",
+            "deterministic_seed": "PLACEHOLDER_SEED_BASE64",
+            "attestation_hash": "sha256:PLACEHOLDER_ATTESTATION_HASH_32CHARS_AAAAA"
+          }
+        },
+        "fact_pointers": [
+          {
+            "id": "fp_studentlevelterminale",
+            "evidence_uri": "klickd://evidence/student/level-attestation-2026-09",
+            "evidence_hash": {
+              "algo": "blake3",
+              "value": "PLACEHOLDER_BLAKE3_FACTPOINTER_HASH_64CHARS_0000000000000000000000000000"
+            },
+            "derived_from": ["structured_memory#evt_level_change_2026-09-01"],
+            "confidence": 0.97,
+            "issued_at": "2026-09-01T08:00:00Z",
+            "valid_until": "2027-09-01T00:00:00Z",
+            "erasure_status": "active",
+            "erasure_at": null,
+            "redaction": "salted_hash_only",
+            "tags": ["education", "level"]
+          },
+          {
+            "id": "fp_pythagorastheoremmastery",
+            "evidence_uri": "klickd://evidence/student/exercises/maths-pythagoras-2026-10-14",
+            "evidence_hash": {
+              "algo": "blake3",
+              "value": "PLACEHOLDER_BLAKE3_FACTPOINTER_HASH_64CHARS_1111111111111111111111111111"
+            },
+            "derived_from": [
+              "structured_memory#evt_exercise_completed_2026-10-14_pythagoras",
+              "structured_memory#evt_feedback_received_2026-10-14_kai"
+            ],
+            "confidence": 0.88,
+            "issued_at": "2026-10-14T16:42:00Z",
+            "valid_until": null,
+            "erasure_status": "active",
+            "erasure_at": null,
+            "redaction": "none",
+            "tags": ["maths", "geometry", "competency_acquired"]
+          }
+        ],
+        "entity_links": [
+          {
+            "fact_id": "fp_pythagorastheoremmastery",
+            "entity_uri": "https://esco.ec.europa.eu/skill/PLACEHOLDER-GEOMETRY-COMPETENCY",
+            "scheme": "esco",
+            "role": "subject"
+          },
+          {
+            "fact_id": "fp_studentlevelterminale",
+            "entity_uri": "klickd://curriculum/fr-lycee-terminale",
+            "scheme": "curriculum_ref",
+            "role": "context"
+          }
+        ],
+        "graph_refs": [
+          {
+            "graph_uri": "klickd://graph/student-knowledge/2026-q4",
+            "node_or_edge_id": "node_competency_pythagoras",
+            "kind": "node",
+            "labels": ["maths", "geometry"]
+          },
+          {
+            "graph_uri": "klickd://graph/student-knowledge/2026-q4",
+            "node_or_edge_id": "edge_acquired_2026-10-14",
+            "kind": "edge",
+            "labels": ["competency_acquired"]
+          }
+        ],
+        "vector_index": {
+          "uri": "klickd://vector-index/student-pack/v0",
+          "embedding_model_ref": "klickd-embed-2026-v0-placeholder",
+          "dim": 768,
+          "inline_embeddings_forbidden": true
+        },
+        "retrieval_policy": {
+          "top_k": 5,
+          "max_facts_per_turn": 8,
+          "freshness_weighting": "exponential_recency",
+          "host_side_only": true,
+          "require_gate": "memory_recall_injection"
+        },
+        "erasure_cascade": {
+          "targets": ["fact_pointers", "entity_links", "graph_refs", "vector_index"],
+          "on_evidence_deletion": "cascade_purge",
+          "on_user_request": "cascade_purge",
+          "verification_artifact_ref": null
+        },
+        "gate_refs": [
+          {
+            "gate_name": "compressed_memory_recall",
+            "action_class": "memory_recall_injection"
+          }
+        ]
+      }
+    }
+  }
+}
