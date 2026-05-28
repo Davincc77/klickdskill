@@ -48,7 +48,7 @@ For each candidate row, mark each check as `[x]` (passes), `[ ]` (does not pass 
 - [ ] **C-021 — No persona reuse, no legacy adapter (§8.9).**
 - [ ] **C-022 — Carrier-vs-skill separation, frozen `forbidden_fields` literal (§8.10).**
 
-A candidate is `ship_ready` only when **C-001 through C-022** all pass and pair-reviewer sign-off exists per [`docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md`](../rfcs/ACCEPTANCE_CHECKLIST_V4.md).
+A candidate is `ship_ready` only when **C-001 through C-022** all pass, the mandatory QA protocol [`V4_1_SKILL_QA_PROTOCOL.md`](./V4_1_SKILL_QA_PROTOCOL.md) clears (all 14 gates PASS, no open BLOCKER, every WARN acknowledged), and pair-reviewer sign-off exists per [`docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md`](../rfcs/ACCEPTANCE_CHECKLIST_V4.md). The QA protocol is the merge gate: a skill that flips to `ship_ready` without a QA scoring + sign-off record is rolled back to `candidate_mapped`.
 
 ---
 
@@ -56,6 +56,8 @@ A candidate is `ship_ready` only when **C-001 through C-022** all pass and pair-
 
 - [`README_V4_1.md`](./README_V4_1.md) — planning index.
 - [`V4_1_SKILL_CANDIDATE_MAPPING.md`](./V4_1_SKILL_CANDIDATE_MAPPING.md) — candidate mapping table.
+- [`V4_1_SKILL_QA_PROTOCOL.md`](./V4_1_SKILL_QA_PROTOCOL.md) — **mandatory** pre-ship QA gates and sign-offs (merge gate for `ship_ready`).
+- [`V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](./V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md) — competency selection method.
 - [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md) §8 / §8.1 — validation contract.
 - [`docs/rfcs/chimera/frameworks/README.md`](../rfcs/chimera/frameworks/README.md) — canonical framework registry.
 - [`docs/rfcs/ACCEPTANCE_CHECKLIST_V4.md`](../rfcs/ACCEPTANCE_CHECKLIST_V4.md) — promotion gate (pair-reviewer rule).

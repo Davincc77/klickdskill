@@ -17,6 +17,8 @@
 >
 > **Update 2026-05-27 (size budgets):** byte-size ceilings for artefacts under `examples/v4.1/chimera-skills/{lite,pro}/` were raised to **Lite ≤ 12 KB** and **Pro ≤ 24 KB** (decimal KB). The new ceilings are a **capacity envelope** (upper bound), not a target — artefacts stay compact as their framework-anchored content allows. Token-cost protections (`router_cost.tokens_estimate ≤ 900` Lite / `≤ 1 350` Pro) and the Pro `compact_index` + lazy-body discipline are unchanged. The new budget applies only to public Chimera v4.1 catalog artefacts; **Klickd.app student carriers and Kai host-side skills are out of scope**.
 >
+> **Update 2026-05-28 (QA protocol — mandatory pre-ship gates):** the mandatory quality-control protocol every `x.klickd` skill must pass before it can be promoted to `ship_ready` is documented in [`V4_1_SKILL_QA_PROTOCOL.md`](./V4_1_SKILL_QA_PROTOCOL.md). It defines fourteen PASS/BLOCKER/WARN gates (profile coherence, competency-source traceability, shared transversal base, domain-specific fit, memory segment fit, gates + human veto, source/evidence policy, regulated-output disclaimers, anti-clone + near-duplicate, size budget, no PII / no secrets, no forbidden public wording, no Klickd.app / Kai leakage, acceptance tests) and the required Architecture / Security / Legal-Claims / UX / QA sign-offs. The validator now also emits an advisory near-duplicate (Jaccard ≥ 0.80) warning to support QA-G09. Public wording remains `x.klickd`; the internal track name MUST NOT leak into public-facing surfaces.
+>
 > **Update 2026-05-27 (competency identification protocol):** the formal method for **how competencies are selected and combined inside each skill** is now documented in [`V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](./V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md). Every skill is a coherent blend of a shared transversal base (`base_transversal_core.transversal_refs[]`) and a small set of domain-specific competencies anchored to the canonical framework registry. The protocol covers admissible source hierarchy, the six-step selection method (job decomposition → anchor → relevance score → risk gates → memory impact), coherence rules (tier-specific count range, anti-clone), and exclusion rules. The validator enforces the mechanical subset (`TIER_COMPETENCY_RANGE`, transversal-base presence, anti-clone). All 42 already-shipped artefacts pass the new checks without modification.
 
 ---
@@ -113,6 +115,8 @@ There is **no** "v4.1 GA" claim implied by anything in `docs/chimera/`. The trac
 | [`README_V4_1.md`](./README_V4_1.md) | (this file) Planning index — strict mapping rule, size tiers, exclusions, gating ladder. |
 | [`V4_1_SKILL_CANDIDATE_MAPPING.md`](./V4_1_SKILL_CANDIDATE_MAPPING.md) | Per-candidate mapping table — Lot A (lightweight) and Lot B (advanced). All nine required fields per row. |
 | [`V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) | Per-candidate review checklist. Reviewer runs this against any new candidate before promoting it past `candidate_mapped`. |
+| [`V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md`](./V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md) | Method for selecting competencies per skill (admissible sources, six-step selection, coherence rules, anti-clone, exclusion rules). |
+| [`V4_1_SKILL_QA_PROTOCOL.md`](./V4_1_SKILL_QA_PROTOCOL.md) | **Mandatory** pre-ship QA gates (PASS/BLOCKER/WARN), scoring checklist, required sign-offs (Architecture / Security / Legal-Claims / UX / QA). Merge gate for `ship_ready`. |
 
 ### Concrete artefacts (companion directory, **`candidate_mapped`** only)
 
@@ -130,6 +134,7 @@ There is **no** "v4.1 GA" claim implied by anything in `docs/chimera/`. The trac
 
 ## 6. See also
 
+- [`V4_1_SKILL_QA_PROTOCOL.md`](./V4_1_SKILL_QA_PROTOCOL.md) — **mandatory** pre-ship QA gates and sign-offs (merge gate for `ship_ready`).
 - [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md)
 - [`docs/rfcs/chimera/README.md`](../rfcs/chimera/README.md)
 - [`docs/rfcs/chimera/packs/README.md`](../rfcs/chimera/packs/README.md)

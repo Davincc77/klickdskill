@@ -619,6 +619,76 @@ def validate_artefact(path: Path) -> list[str]:
     return fails
 
 
+# Near-duplicate heuristic thresholds — see
+# docs/chimera/V4_1_SKILL_QA_PROTOCOL.md §5.1. The exact-clone (1.00)
+# case is enforced as a BLOCKER by validate_no_competency_clones();
+# pairs above the WARN threshold but below the BLOCKER threshold are
+# reported as warnings via validate_near_duplicate_competency_sets(),
+# which does NOT contribute to the validator exit code. Reviewers
+# acknowledge each WARN in the QA-G09 scoring row.
+NEAR_DUPLICATE_JACCARD_WARN = 0.80
+
+
+def _jaccard(a: frozenset, b: frozenset) -> float:
+    if not a and not b:
+        return 0.0
+    union = a | b
+    if not union:
+        return 0.0
+    return len(a & b) / len(union)
+
+
+def validate_near_duplicate_competency_sets() -> list[str]:
+    """Near-duplicate heuristic (QA-G09 WARN, QA protocol §5.1).
+
+    Pairs of artefacts inside the same tier whose `competencies[]`
+    sets (compared as frozensets of `competency_ref` strings) have
+    Jaccard overlap >= NEAR_DUPLICATE_JACCARD_WARN and < 1.00 are
+    reported as warnings. Exact clones (overlap == 1.00) are caught
+    by validate_no_competency_clones() as BLOCKERs and are not
+    duplicated here. Cross-tier pairs are not flagged because a
+    Lite/Pro re-anchoring is a legitimate tier shift.
+
+    Returns a list of WARN lines (empty when nothing is suspect).
+    The caller MUST treat the returned list as advisory: the QA
+    protocol §5.1 explicitly states that WARNs do not auto-block the
+    ship; they only require a task-boundary justification recorded
+    in the QA-G09 scoring row.
+    """
+    warns: list[str] = []
+    if not ARTEFACT_ROOT.exists():
+        return warns
+    for tier_dir in (LITE_DIR, PRO_DIR):
+        if not tier_dir.exists():
+            continue
+        entries: list[tuple[str, frozenset]] = []
+        for path in sorted(tier_dir.glob("*.klickd")):
+            try:
+                obj = json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            comps = (obj.get("x_klickd_pack") or {}).get("competencies") or []
+            sig = frozenset(
+                c["competency_ref"] for c in comps
+                if isinstance(c, dict) and "competency_ref" in c
+            )
+            if sig:
+                entries.append((path.name, sig))
+        for i in range(len(entries)):
+            for j in range(i + 1, len(entries)):
+                name_i, sig_i = entries[i]
+                name_j, sig_j = entries[j]
+                j_score = _jaccard(sig_i, sig_j)
+                if NEAR_DUPLICATE_JACCARD_WARN <= j_score < 1.0:
+                    warns.append(
+                        f"WARN near-duplicate ({tier_dir.name}): "
+                        f"{name_i} <-> {name_j} Jaccard={j_score:.2f} "
+                        f"(QA-G09 WARN; record task-boundary justification "
+                        f"or split/merge — QA protocol §5.1)"
+                    )
+    return warns
+
+
 def validate_no_competency_clones() -> list[str]:
     """Anti-clone rule (protocol §3.4): no two artefacts in the catalog
     may share an identical `competencies[]` set (compared as the
@@ -736,6 +806,7 @@ def main(argv: list[str]) -> int:
 
     # Artefact-level validation
     artefact_count = 0
+    near_dup_warns: list[str] = []
     if ARTEFACT_ROOT.exists():
         for tier_dir in (LITE_DIR, PRO_DIR):
             if not tier_dir.exists():
@@ -746,12 +817,25 @@ def main(argv: list[str]) -> int:
         all_failures.extend(validate_no_deferred_artefacts())
         all_failures.extend(validate_no_competency_clones())
         all_failures.extend(validate_manifests())
+        # Near-duplicate heuristic is advisory (QA protocol §5.1).
+        # Reported to stderr but does NOT affect exit code.
+        near_dup_warns = validate_near_duplicate_competency_sets()
 
     if all_failures:
         print(f"FAIL: {len(all_failures)} issue(s) found", file=sys.stderr)
         for f in all_failures:
             print(f"  - {f}", file=sys.stderr)
         return 1
+
+    if near_dup_warns:
+        print(
+            f"WARN: {len(near_dup_warns)} near-duplicate pair(s) "
+            f"(QA-G09 WARN; advisory only — see "
+            f"docs/chimera/V4_1_SKILL_QA_PROTOCOL.md §5)",
+            file=sys.stderr,
+        )
+        for w in near_dup_warns:
+            print(f"  - {w}", file=sys.stderr)
 
     print(
         f"OK: {doc_path.name} — {len(rows)} candidate row(s) parsed; "

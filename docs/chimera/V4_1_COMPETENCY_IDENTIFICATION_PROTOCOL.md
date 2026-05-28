@@ -5,7 +5,7 @@
 | **Status** | **Draft · NON-NORMATIVE · planning + reviewer aid** |
 | **Track** | `.klickd v4.1` — Chimera (post-`v4.0.0` GA) |
 | **Created** | 2026-05-27 |
-| **Companion** | [`V4_1_SKILL_CANDIDATE_MAPPING.md`](./V4_1_SKILL_CANDIDATE_MAPPING.md) · [`V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) · [`README_V4_1.md`](./README_V4_1.md) |
+| **Companion** | [`V4_1_SKILL_CANDIDATE_MAPPING.md`](./V4_1_SKILL_CANDIDATE_MAPPING.md) · [`V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) · [`V4_1_SKILL_QA_PROTOCOL.md`](./V4_1_SKILL_QA_PROTOCOL.md) · [`README_V4_1.md`](./README_V4_1.md) |
 | **Validator** | [`scripts/validate_v4_1_candidate_mapping.py`](../../scripts/validate_v4_1_candidate_mapping.py) — competency-coherence + anti-clone checks |
 
 > **Non-normative.** This document records the **method** used to select competencies for every Chimera v4.1 candidate skill. It does **not** introduce any new schema, change `frameworks[]`/`competencies[]` shape, or alter the v4.0 envelope. It is the merge gate for [RFC-009](../rfcs/RFC-009-chimera-v4.1.md) §8 §8.1 (framework-anchor) and §8.2 (carrier-vs-skill).
@@ -241,6 +241,7 @@ The audit table that produced these counts is in the commit message that introdu
 
 - [`V4_1_SKILL_CANDIDATE_MAPPING.md`](./V4_1_SKILL_CANDIDATE_MAPPING.md) — the candidate roster + framework anchors per skill.
 - [`V4_1_CANDIDATE_CHECKLIST.md`](./V4_1_CANDIDATE_CHECKLIST.md) — per-candidate review checklist (C-001..C-012). This protocol provides the **method** the checklist verifies.
+- [`V4_1_SKILL_QA_PROTOCOL.md`](./V4_1_SKILL_QA_PROTOCOL.md) — **mandatory** pre-ship QA gates (PASS/BLOCKER/WARN) and sign-offs. Composes with this protocol: §3.4 anti-clone is the BLOCKER half of QA-G09; §5.1 near-duplicate is the WARN half.
 - [`README_V4_1.md`](./README_V4_1.md) — planning index, strict mapping rule, exclusion table.
 - [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md) — Chimera RFC (P0/P1, validation §8, no-catalog §7, carrier-vs-skill §5.1.1).
 - [`docs/rfcs/chimera/frameworks/README.md`](../rfcs/chimera/frameworks/README.md) — canonical framework registry (the §1.1 list above).

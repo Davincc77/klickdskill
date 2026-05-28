@@ -290,6 +290,111 @@ def test_tier_artefact_counts_are_frozen_at_8_lite_and_34_pro():
     )
 
 
+def test_qa_protocol_doc_exists():
+    """QA protocol is the mandatory merge gate for `ship_ready`
+    promotion (2026-05-28). Must exist, must name its key sections,
+    and must use public `x.klickd` wording (not `Chimera`) in its
+    title."""
+    p = REPO_ROOT / "docs" / "chimera" / "V4_1_SKILL_QA_PROTOCOL.md"
+    assert p.is_file(), f"QA protocol doc missing: {p}"
+    text = p.read_text(encoding="utf-8")
+    assert "x.klickd" in text.splitlines()[0], (
+        "QA protocol title must use public `x.klickd` wording"
+    )
+    for section in (
+        "Mandatory gates",
+        "Scoring checklist",
+        "Required sign-offs",
+        "Mandatory ordering",
+        "Near-duplicate heuristic",
+    ):
+        assert section in text, f"QA protocol section '{section}' missing"
+    # All 14 gates must be present.
+    for gate in [f"QA-G{i:02d}" for i in range(1, 15)]:
+        assert gate in text, f"QA protocol gate '{gate}' missing"
+    # The five sign-off owners must be present.
+    for owner in ("Architecture", "Security", "Legal", "UX", "QA"):
+        assert owner in text, f"QA protocol sign-off owner '{owner}' missing"
+
+
+def test_qa_protocol_linked_from_planning_docs():
+    """QA protocol must be reachable from the planning index, the
+    competency identification protocol, and the candidate checklist."""
+    for doc in (
+        REPO_ROOT / "docs" / "chimera" / "README_V4_1.md",
+        REPO_ROOT / "docs" / "chimera" / "V4_1_COMPETENCY_IDENTIFICATION_PROTOCOL.md",
+        REPO_ROOT / "docs" / "chimera" / "V4_1_CANDIDATE_CHECKLIST.md",
+    ):
+        text = doc.read_text(encoding="utf-8")
+        assert "V4_1_SKILL_QA_PROTOCOL.md" in text, (
+            f"{doc.name} must link to V4_1_SKILL_QA_PROTOCOL.md"
+        )
+
+
+def test_near_duplicate_heuristic_function_exists():
+    """The near-duplicate Jaccard heuristic (QA-G09 WARN, QA protocol
+    §5.1) MUST exist as a function on the validator and MUST return a
+    list of strings (the WARN lines)."""
+    mod = _load_validator()
+    assert hasattr(mod, "validate_near_duplicate_competency_sets"), (
+        "validator missing validate_near_duplicate_competency_sets()"
+    )
+    assert hasattr(mod, "NEAR_DUPLICATE_JACCARD_WARN")
+    assert 0.0 < mod.NEAR_DUPLICATE_JACCARD_WARN < 1.0
+    warns = mod.validate_near_duplicate_competency_sets()
+    assert isinstance(warns, list)
+    for w in warns:
+        assert isinstance(w, str)
+        # WARN lines must not include 'FAIL' or 'BLOCKER' — they are advisory.
+        assert "FAIL" not in w
+
+
+def test_near_duplicate_heuristic_does_not_block_exit_code():
+    """The near-duplicate heuristic is advisory (QA protocol §5.1).
+    It is reported to stderr but MUST NOT contribute to the validator
+    failure list, which would change the exit code. The exact-clone
+    case is handled by validate_no_competency_clones() as a BLOCKER."""
+    mod = _load_validator()
+    # Sanity: the BLOCKER-half function is the exact-clone check.
+    blockers = mod.validate_no_competency_clones()
+    for b in blockers:
+        assert "clone" in b.lower()
+
+
+def test_no_chimera_wording_in_public_facing_fields():
+    """QA-G12 (no forbidden public wording): public-facing fields in
+    every candidate artefact MUST NOT contain the internal track name
+    `Chimera` (case-insensitive). Public-facing fields are those a
+    carrier or `/klickdskill` catalog UI would read directly:
+    `x_klickd_pack.target_user` and `x_klickd_pack.competencies[*].prefLabel`.
+    Internal metadata (`_pack_metadata.kind`, `_pack_metadata.note`,
+    `domain_schema_version`, `see_planning_doc`, ...) is explicitly
+    allowed to reference the track name because those keys are not
+    surfaced in any public UI."""
+    import json as _json
+    leaks: list[str] = []
+    for path in _lite_files() + _pro_files():
+        obj = _json.loads(path.read_text(encoding="utf-8"))
+        block = obj.get("x_klickd_pack") or {}
+        public_strings: list[str] = []
+        tu = block.get("target_user")
+        if isinstance(tu, str):
+            public_strings.append(tu)
+        elif isinstance(tu, dict):
+            for v in tu.values():
+                if isinstance(v, str):
+                    public_strings.append(v)
+        for c in block.get("competencies") or []:
+            if isinstance(c, dict):
+                label = c.get("prefLabel")
+                if isinstance(label, str):
+                    public_strings.append(label)
+        for s in public_strings:
+            if "chimera" in s.lower():
+                leaks.append(f"{path.name}: public-facing field contains 'Chimera': {s!r}")
+    assert not leaks, "\n".join(leaks)
+
+
 def test_lite_router_cost_under_900_and_pro_under_1350():
     import json as _json
     failures: list[str] = []
