@@ -140,6 +140,8 @@ def test_rfc010_key_terms_present():
         "vector_index",
         "retrieval_policy",
         "erasure_cascade",
+        "erasure_status",
+        "cascade_purged",
         "gate_refs",
         "memory_recall_injection",
         "host-side",
@@ -147,9 +149,51 @@ def test_rfc010_key_terms_present():
         "GDPR Art.17",
         "knowledge.skills_compressed",
         "x_klickd_pack.structured_memory.compressed_memory",
+        "host_skill",
+        "local_runtime",
+        "verified_bridge",
+        "attestation_hash",
     ]
     missing = [t for t in required if t not in text]
     assert not missing, f"RFC-010 missing required terms: {missing}"
+
+
+def test_rfc010_mount_path_pinned_no_alternative():
+    text = RFC_PATH.read_text(encoding="utf-8")
+    # The pinned canonical path MUST appear and the §4.1 "alternative" wording
+    # MUST be gone — the path is no longer an open question.
+    assert "x_klickd_pack.structured_memory.compressed_memory" in text
+    assert "pinned" in text.lower(), "§4.1 must declare the path pinned"
+    # The previously-considered alternative form must not appear anywhere.
+    assert "x.klickd.<pack>.structured_memory.compressed_memory" not in text, (
+        "alternative mount path must be removed (parent audit pinned the path)"
+    )
+
+
+def test_rfc010_does_not_require_rfc009_kind_enum_change():
+    text = RFC_PATH.read_text(encoding="utf-8")
+    # RFC-010 must record erasure on the fact pointer, NOT by adding a new
+    # value to RFC-009 §10's `kind` enum.
+    assert "erasure_status" in text and "cascade_purged" in text
+    # Old wording that proposed a kind: "evidence_removed" addition must be
+    # gone.
+    assert 'kind: "evidence_removed"' not in text
+    assert '"evidence_removed"' not in text
+
+
+def test_rfc010_extractor_is_hardened():
+    text = RFC_PATH.read_text(encoding="utf-8")
+    # The new extractor must declare a kind enum, an x.klickd/host/ prefixed
+    # agent_ref, a semver-shaped version, and an attestation_hash rule.
+    for needle in (
+        '"kind"',
+        "host_skill",
+        "local_runtime",
+        "verified_bridge",
+        "x.klickd/host/",
+        "attestation_hash",
+    ):
+        assert needle in text, f"extractor hardening missing in RFC: '{needle}'"
 
 
 def test_rfc010_example_mounts_at_recommended_path():
@@ -171,6 +215,29 @@ def test_rfc010_example_mounts_at_recommended_path():
         assert not fp["evidence_uri"].startswith("data:"), (
             "inline data: URIs forbidden in fact pointers (§5.2)"
         )
+        assert fp.get("erasure_status") in ("active", "cascade_purged"), (
+            "every fact_pointer must declare erasure_status"
+        )
+
+
+def test_rfc010_example_extractor_is_hardened():
+    data = json.loads(EXAMPLE_PATH.read_text(encoding="utf-8"))
+    extractor = data["x_klickd_pack"]["structured_memory"]["compressed_memory"][
+        "derived_from"
+    ]["extractor"]
+    assert extractor["kind"] in {"host_skill", "local_runtime", "verified_bridge"}
+    assert extractor["agent_ref"].startswith("x.klickd/host/"), (
+        "agent_ref must be x.klickd/host/-prefixed (no arbitrary external URL)"
+    )
+    # Semver-ish version
+    assert re.match(r"^[0-9]+\.[0-9]+\.[0-9]+", extractor["version"])
+    # When automated extraction, attestation_hash must be set and prefixed with
+    # a recognised algo.
+    if extractor["kind"] in {"host_skill", "verified_bridge"}:
+        att = extractor.get("attestation_hash")
+        assert isinstance(att, str) and (
+            att.startswith("sha256:") or att.startswith("blake3:")
+        ), "attestation_hash required + algo-prefixed for automated extraction"
 
 
 def test_rfc010_listed_in_rfc_index_as_v42_draft():

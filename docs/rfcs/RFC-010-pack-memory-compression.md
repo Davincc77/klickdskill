@@ -60,7 +60,7 @@ The extracted-facts / entity-linking / retrieval-compression pattern is well-tro
 
 ### 3.1 Scope
 
-- A new optional block `compressed_memory` mounted at `x_klickd_pack.structured_memory.compressed_memory` inside each Chimera carrier pack. (Audit-recommended path; see §4.1 on path resolution if the repo settles on a slight variant.)
+- A new optional block `compressed_memory` mounted at the pinned path `x_klickd_pack.structured_memory.compressed_memory` inside each Chimera carrier pack (§4.1).
 - A `retrieval_policy` declaring how the host MAY recall the compressed block (top-k, recency weighting, gate references).
 - A `vector_index` URI pointing at an **external** index (never inline embeddings).
 - A `graph_refs[]` list of pointers to entity-graph nodes/edges, always external.
@@ -85,21 +85,21 @@ This RFC does **not** add:
 
 ## 4. Mounting
 
-### 4.1 Path
+### 4.1 Path (pinned)
 
-The recommended mount path is:
+The canonical mount path for RFC-010 is:
 
 ```
 x_klickd_pack.structured_memory.compressed_memory
 ```
 
-This nests the new block under the existing pack-scoped `structured_memory` field (RFC-009 §5.6, schema-fragments §10) rather than at the top of a pack manifest. The rationale is:
+This path is **pinned** by this Draft. There is no alternative. The schema fragment (§5), the example fixture (`docs/rfcs/examples/pack_memory_compression-v1.example.json`), and the validator test (`tests/test_rfc010_pack_memory_compression.py`) all use this exact path. The promotion PR MUST NOT introduce a second path.
+
+The path nests the new block under the existing pack-scoped `structured_memory` field (RFC-009 §5.6, schema-fragments §10) rather than at the top of a pack manifest. The rationale is:
 
 1. `structured_memory` is already the field that carries the carrier's pack-local memory slice.
 2. The compressed view is a **derived** view of the same slice — co-locating them keeps the derivation visible.
 3. Mounting under `x_klickd_pack.*` keeps the new block clearly in the `x.klickd/<pack>` namespace (RFC-009 §0.1 `carrier_pack`) and prevents any drift toward the top-level v4.0 `memory[]` (which RFC-009 §5.6 forbids aliasing).
-
-Open path question: the exact repo-consistent form may be `x_klickd_pack.structured_memory.compressed_memory` (preferred) or, if the v4.2 repo layout settles on a different envelope name, `x.klickd.<pack>.structured_memory.compressed_memory`. Both refer to the same block — the path normalises to "pack-scoped structured_memory's compressed_memory child". The promotion PR (post-v4.1) MUST pick one and pin it.
 
 ### 4.2 Reserved user-facing concept name
 
@@ -144,13 +144,37 @@ This fragment defines the shape of `compressed_memory`. It is **not** added to a
         "extractor": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["host", "agent_ref", "version", "deterministic_seed"],
+          "required": ["kind", "host", "agent_ref", "version", "deterministic_seed"],
           "properties": {
-            "host":              { "type": "string", "description": "Host that ran the extraction (e.g. 'kai-edu-2026'). Carrier never runs extraction itself; see §5.1." },
-            "agent_ref":         { "type": "string", "description": "Discriminated reference to the host agent / `host_skill` (RFC-009 §0.1). Free-text disallowed by the host's gate." },
-            "version":           { "type": "string", "minLength": 1, "description": "Extractor host_skill version. Required so a re-extraction is reproducible." },
-            "deterministic_seed":{ "type": ["string", "null"], "description": "Optional canonical seed for deterministic re-extraction. May be null if the extractor is intrinsically deterministic." }
-          }
+            "kind": {
+              "type": "string",
+              "enum": ["host_skill", "local_runtime", "verified_bridge"],
+              "description": "Class of extractor that produced this compressed view. `host_skill` = a Klickd-side host_skill (RFC-009 §0.1). `local_runtime` = a manual / interactive run on the user's device, no automated pipeline. `verified_bridge` = a third-party bridge that publishes an attestation. No other value is allowed."
+            },
+            "host":              { "type": "string", "minLength": 1, "description": "Host that ran the extraction (e.g. 'kai-edu-2026'). Carrier never runs extraction itself; see §5.1." },
+            "agent_ref": {
+              "type": "string",
+              "pattern": "^x\\.klickd/host/[a-z][a-z0-9._/-]*$",
+              "description": "Discriminated reference to the extractor `host_skill` (RFC-009 §0.1). MUST start with `x.klickd/host/`. Arbitrary external URLs are forbidden — discrimination is enforced by the schema pattern, not only by the host gate."
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.+-]+)?$",
+              "description": "Semver-shaped extractor host_skill version (`MAJOR.MINOR.PATCH` with optional pre-release suffix). Required so a re-extraction is reproducible."
+            },
+            "deterministic_seed":{ "type": ["string", "null"], "description": "Optional canonical seed for deterministic re-extraction. May be null if the extractor is intrinsically deterministic." },
+            "attestation_hash": {
+              "type": ["string", "null"],
+              "pattern": "^(?:sha256|blake3):[A-Fa-f0-9]{32,}$",
+              "description": "Required when `kind` ∈ {`host_skill`, `verified_bridge`} (automated or verified extraction). MAY be null when `kind = local_runtime` (manual on-device extraction with no automated pipeline to attest). Format: `<algo>:<hex>` where `<algo>` ∈ {`sha256`, `blake3`}."
+            }
+          },
+          "allOf": [
+            {
+              "if":   { "properties": { "kind": { "enum": ["host_skill", "verified_bridge"] } }, "required": ["kind"] },
+              "then": { "required": ["kind", "host", "agent_ref", "version", "deterministic_seed", "attestation_hash"], "properties": { "attestation_hash": { "type": "string" } } }
+            }
+          ]
         }
       }
     },
@@ -177,11 +201,22 @@ This fragment defines the shape of `compressed_memory`. It is **not** added to a
           "derived_from": {
             "type": "array",
             "minItems": 1,
-            "items": { "type": "string", "description": "Reference into the pack's `structured_memory[]` slice (`ref` of a kind ∈ §10) or another pointer id (`fp_*`)." }
+            "items": { "type": "string", "description": "Reference into the pack's `structured_memory[]` slice (the `ref` field of an entry, per RFC-009 schema-fragments §10) or another fact pointer id (`fp_*`). RFC-010 does NOT require any new value in RFC-009's `kind` enum." }
           },
           "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
           "issued_at":  { "type": "string", "format": "date-time" },
           "valid_until":{ "type": ["string", "null"], "format": "date-time", "description": "Optional temporal validity bound (e.g. 'student is in classe terminale 2026' expires 2027-09-01)." },
+          "erasure_status": {
+            "type": "string",
+            "enum": ["active", "cascade_purged"],
+            "default": "active",
+            "description": "Local-to-RFC-010 erasure marker for the pointer itself. `active` = pointer is live. `cascade_purged` = the underlying evidence was erased and this pointer entry was cascade-purged per §6.2 (the entry MAY be removed entirely; if retained for auditability, it MUST carry this status). This field replaces any reliance on a new value in RFC-009 §10's `kind` enum."
+          },
+          "erasure_at": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "UTC timestamp of cascade purge. MUST be set when `erasure_status = cascade_purged`; MUST be null otherwise."
+          },
           "redaction":  {
             "type": "string",
             "enum": ["none", "salted_hash_only", "encrypted_blob_pointer"],
@@ -264,7 +299,7 @@ This fragment defines the shape of `compressed_memory`. It is **not** added to a
         "on_evidence_deletion": {
           "type": "string",
           "enum": ["cascade_purge", "tombstone_only"],
-          "description": "cascade_purge = remove pointer + entity links + vector vector + graph refs derived from the same evidence. tombstone_only = mark deleted, do not purge external index (only acceptable if the host can prove external purge by another channel)."
+          "description": "cascade_purge = remove pointer + entity links + vector entries + graph refs derived from the same evidence. tombstone_only = mark deleted, do not purge external index (only acceptable if the host can prove external purge by another channel)."
         },
         "on_user_request": {
           "type": "string",
@@ -315,21 +350,23 @@ This fragment defines the shape of `compressed_memory`. It is **not** added to a
 
 The `derived_from.extractor` field is a **declaration** of which host ran the extraction. The carrier file does not contain extraction code. A host that produces or updates a `compressed_memory` block MUST:
 
-1. Run extraction inside its `host_skill` (e.g. `skill.kai.memory.extractor`), never inside a carrier-side template.
-2. Stamp `derived_from.extractor.host`, `agent_ref`, `version`, and (if available) `deterministic_seed`.
-3. Submit each write to the `memory_recall_injection` gate (§6.3) and to the `human_authority_layer` (RFC-009 §0.1, §5.1).
+1. Run extraction inside its `host_skill` (e.g. `x.klickd/host/memory-extractor`), never inside a carrier-side template.
+2. Stamp `derived_from.extractor.kind` ∈ {`host_skill`, `local_runtime`, `verified_bridge`}, `host`, `agent_ref` (which MUST start with `x.klickd/host/` — no arbitrary external URLs), `version` (semver), and (if available) `deterministic_seed`.
+3. Stamp `attestation_hash` (sha256 / blake3) whenever `kind ∈ {host_skill, verified_bridge}`. `attestation_hash` MAY be null only when `kind = local_runtime` (manual on-device extraction).
+4. Submit each write to the `memory_recall_injection` gate (§6.3) and to the `human_authority_layer` (RFC-009 §0.1, §5.1).
 
-A reader that cannot trust `derived_from.extractor` MUST treat the `compressed_memory` as opaque and recall from the underlying `structured_memory[]` slice instead.
+A reader that cannot trust `derived_from.extractor` (missing `attestation_hash` when required, unknown `kind`, non-`x.klickd/host/` `agent_ref`, etc.) MUST treat the `compressed_memory` as opaque and recall from the underlying `structured_memory[]` slice instead.
 
 ### 6.2 GDPR Art.17 erasure cascade (normative intent)
 
 When a carrier exercises a right-to-erasure (GDPR Art.17) against any evidence artefact referenced by a `fact_pointers[].evidence_uri`, the host MUST:
 
-1. Remove every `fact_pointers[]` entry whose `evidence_uri` or `derived_from` chain resolves to the deleted artefact.
-2. Remove every `entity_links[]` entry whose `fact_id` was removed in (1).
-3. Remove every `graph_refs[]` entry derived solely from facts removed in (1).
+1. For every `fact_pointers[]` entry whose `evidence_uri` or `derived_from` chain resolves to the deleted artefact, EITHER remove the entry entirely OR set `erasure_status = "cascade_purged"` with `erasure_at = <UTC timestamp>` (auditable retention).
+2. Remove every `entity_links[]` entry whose `fact_id` was purged or removed in (1).
+3. Remove every `graph_refs[]` entry derived solely from facts purged or removed in (1).
 4. Purge the corresponding vectors from `vector_index.uri` (or store a verifiable attestation that the external index has done so, per `erasure_cascade.verification_artifact_ref`).
-5. Update `structured_memory[]` to record an `evidence_added` / equivalent `evidence_removed` kind (proposed `kind: "evidence_removed"`, to be confirmed in the promotion PR — currently the RFC-009 §10 enum does not include it).
+
+This mechanism is **RFC-010-local**. RFC-010 does **not** require any change to RFC-009 §10's `structured_memory[].kind` enum: the erasure record lives on the `fact_pointers[]` item via `erasure_status` + `erasure_at`, not on the underlying `structured_memory[]` slice.
 
 `erasure_cascade.on_user_request` MUST be `"cascade_purge"`. `"tombstone_only"` is **not** a valid response to a user request; it is allowed only as a transitional state for evidence deletions initiated outside the carrier (e.g. a third-party source-of-truth deletion) and only when an external purge attestation exists.
 
@@ -382,7 +419,7 @@ A PR claiming to advance RFC-010 (including this PR) MUST satisfy:
 4. **No** modification to `schema/klickd-v4.schema.json` or `schema/klickd-v4-preview.schema.json`.
 5. **No** modification to any of the 42 frozen v4.1 x.klickd skill artefacts.
 6. **No** "Mem0 compatible", "GraphRAG compatible", "Letta compatible", "MemGPT compatible", "Zep compatible", or "A-MEM compatible" claim anywhere in the document or example fixture.
-7. Key terms present in the RFC: `compressed_memory`, `fact_pointers`, `entity_links`, `graph_refs`, `vector_index`, `retrieval_policy`, `erasure_cascade`, `gate_refs`, `memory_recall_injection`, `host-side`, `pointer-only`, `GDPR Art.17`, `knowledge.skills_compressed`.
+7. Key terms present in the RFC: `compressed_memory`, `fact_pointers`, `entity_links`, `graph_refs`, `vector_index`, `retrieval_policy`, `erasure_cascade`, `erasure_status`, `cascade_purged`, `gate_refs`, `memory_recall_injection`, `host-side`, `pointer-only`, `GDPR Art.17`, `knowledge.skills_compressed`, `host_skill`, `local_runtime`, `verified_bridge`, `attestation_hash`.
 8. The example fixture under `docs/rfcs/examples/` is clearly marked non-GA / non-release.
 9. No npm / PyPI / Zenodo / IANA / GitHub Release / tag artefact is added by the PR.
 
@@ -414,11 +451,16 @@ The user validated `knowledge.skills_compressed` as the **user-facing** name for
 
 ## 11. Open questions
 
+> **Resolved in this Draft (no longer open):**
+>
+> - **Mount path** is pinned to `x_klickd_pack.structured_memory.compressed_memory` (§4.1). No alternative path remains in the RFC.
+> - **`evidence_removed` enum dependency on RFC-009 §10** is removed. Erasure is now recorded on the `fact_pointers[]` items themselves via a local `erasure_status` field (§5, §6.2). RFC-010 no longer requires any change to RFC-009's `structured_memory[].kind` enum.
+
 1. Should `derived_from.slice_path` be widened beyond the literal `"structured_memory"` (e.g. to allow a future `history[]` source)? — Default answer: no, until v4.2 ships at least one alternative slice.
-2. Should `kind: "evidence_removed"` be added to RFC-009 §10's enum, or carried in a sibling field? — Default answer: defer to the RFC-010 promotion PR.
-3. Should `retrieval_policy.require_gate` accept additional gates (e.g. a future `memory_recall_redaction` action class)? — Default answer: not in v4.2; one gate, one action class.
-4. Should `erasure_cascade.verification_artifact_ref` follow RFC-002 §8b attestation shape directly, or a thinner Art.17-specific shape? — Default answer: follow §8b; reduces surface and reuses contract tests.
-5. Should the alias `knowledge.skills_compressed` (§10) be top-level on the envelope or top-level on the v4 payload? — Default answer: payload-level, mirroring `memory[]`.
+2. Should `retrieval_policy.require_gate` accept additional gates (e.g. a future `memory_recall_redaction` action class)? — Default answer: not in v4.2; one gate, one action class.
+3. Should `erasure_cascade.verification_artifact_ref` follow RFC-002 §8b attestation shape directly, or a thinner Art.17-specific shape? — Default answer: follow §8b; reduces surface and reuses contract tests.
+4. Should the alias `knowledge.skills_compressed` (§10) be top-level on the envelope or top-level on the v4 payload? — Default answer: payload-level, mirroring `memory[]`.
+5. Should `extractor.kind` enum gain additional values beyond `host_skill` / `local_runtime` / `verified_bridge` in v4.2 (e.g. `air_gapped_runtime`)? — Default answer: no, additions deferred to a future RFC.
 
 ## 12. Non-release confirmation
 

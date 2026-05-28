@@ -13,10 +13,12 @@
           "pack": "x.klickd/student",
           "slice_path": "structured_memory",
           "extractor": {
+            "kind": "host_skill",
             "host": "kai-edu-2026",
-            "agent_ref": "skill.kai.memory.extractor",
-            "version": "0.1.0-rfc010",
-            "deterministic_seed": "PLACEHOLDER_SEED_BASE64"
+            "agent_ref": "x.klickd/host/memory-extractor",
+            "version": "0.1.0",
+            "deterministic_seed": "PLACEHOLDER_SEED_BASE64",
+            "attestation_hash": "sha256:PLACEHOLDER_ATTESTATION_HASH_32CHARS_AAAAA"
           }
         },
         "fact_pointers": [
@@ -31,6 +33,8 @@
             "confidence": 0.97,
             "issued_at": "2026-09-01T08:00:00Z",
             "valid_until": "2027-09-01T00:00:00Z",
+            "erasure_status": "active",
+            "erasure_at": null,
             "redaction": "salted_hash_only",
             "tags": ["education", "level"]
           },
@@ -48,6 +52,8 @@
             "confidence": 0.88,
             "issued_at": "2026-10-14T16:42:00Z",
             "valid_until": null,
+            "erasure_status": "active",
+            "erasure_at": null,
             "redaction": "none",
             "tags": ["maths", "geometry", "competency_acquired"]
           }
