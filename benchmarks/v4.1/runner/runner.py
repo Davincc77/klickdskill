@@ -170,7 +170,7 @@ def _load_executor_module() -> Any:
         pkg = _types.ModuleType(pkg_name)
         pkg.__path__ = [str(base)]
         sys.modules[pkg_name] = pkg
-    for child in ("providers", "prompts", "runner"):
+    for child in ("providers", "prompts", "runner", "reference_runtime"):
         full = f"{pkg_name}.{child}"
         if full in sys.modules:
             continue
@@ -188,6 +188,46 @@ def _load_executor_module() -> Any:
     if full not in sys.modules:
         spec = importlib.util.spec_from_file_location(
             full, base / "runner" / "executor.py",
+        )
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[full] = mod
+        spec.loader.exec_module(mod)
+    return sys.modules[full]
+
+
+def _load_executor_b_module() -> Any:
+    """Load the Test B executor and its prompt module.
+
+    The Test B prompts import the RFC-010 reference runtime, so we
+    register ``reference_runtime`` and ``prompts.test_b`` under the
+    synthetic package so relative imports resolve at load time.
+    """
+    _load_executor_module()
+    base = ROOT
+    pkg_name = "_v4_1_pkg"
+    rfc_mod_name = f"{pkg_name}.reference_runtime.rfc010_reference"
+    if rfc_mod_name not in sys.modules:
+        spec = importlib.util.spec_from_file_location(
+            rfc_mod_name, base / "reference_runtime" / "rfc010_reference.py",
+        )
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[rfc_mod_name] = mod
+        spec.loader.exec_module(mod)
+    prompts_test_b = f"{pkg_name}.prompts.test_b"
+    if prompts_test_b not in sys.modules:
+        spec = importlib.util.spec_from_file_location(
+            prompts_test_b, base / "prompts" / "test_b.py",
+        )
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[prompts_test_b] = mod
+        spec.loader.exec_module(mod)
+    full = f"{pkg_name}.runner.executor_b"
+    if full not in sys.modules:
+        spec = importlib.util.spec_from_file_location(
+            full, base / "runner" / "executor_b.py",
         )
         assert spec and spec.loader
         mod = importlib.util.module_from_spec(spec)
@@ -363,6 +403,154 @@ def cmd_pilot(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_pilot_test_b(args: argparse.Namespace) -> int:
+    """Controlled Test B pilot.
+
+    Reuses the same caps and retry/backoff knobs as the Test A pilot,
+    but the workload is per-session memory recall using the deterministic
+    Test B condition blocks defined in :mod:`prompts.test_b`. The
+    ``mem0`` condition is only included when ``mem0_present()`` is True;
+    even then, the manifest does NOT claim Mem0 compatibility.
+    """
+    if args.users > PILOT_MAX_USERS:
+        raise RunnerError(
+            f"--pilot-test-b is limited to {PILOT_MAX_USERS} users (requested {args.users})."
+        )
+    if args.concurrency < 1 or args.concurrency > PILOT_MAX_CONCURRENCY:
+        raise RunnerError(
+            f"--concurrency must be in [1, {PILOT_MAX_CONCURRENCY}] (got {args.concurrency})."
+        )
+    if args.batch_size < 1:
+        raise RunnerError("--batch-size must be >= 1.")
+    if args.retry_max < 0:
+        raise RunnerError("--retry-max must be >= 0.")
+    if args.retry_max > PILOT_RETRY_MAX_CAP:
+        raise RunnerError(
+            f"--retry-max is capped at {PILOT_RETRY_MAX_CAP} for pilots (got {args.retry_max})."
+        )
+    if args.retry_backoff < 0:
+        raise RunnerError("--retry-backoff must be >= 0.")
+    if args.retry_backoff > PILOT_RETRY_BACKOFF_BASE_CAP:
+        raise RunnerError(
+            f"--retry-backoff base is capped at {PILOT_RETRY_BACKOFF_BASE_CAP}s "
+            f"(got {args.retry_backoff})."
+        )
+    if args.retry_backoff_max < 0:
+        raise RunnerError("--retry-backoff-max must be >= 0.")
+    if args.retry_backoff_max > PILOT_RETRY_BACKOFF_MAX_CAP:
+        raise RunnerError(
+            f"--retry-backoff-max is capped at {PILOT_RETRY_BACKOFF_MAX_CAP}s "
+            f"(got {args.retry_backoff_max})."
+        )
+    if args.retry_jitter < 0 or args.retry_jitter > 1:
+        raise RunnerError("--retry-jitter must be in [0, 1].")
+    if args.sleep_between_batches < 0:
+        raise RunnerError("--sleep-between-batches must be >= 0.")
+
+    fixtures_dir = args.fixtures
+    manifest = load_manifest(fixtures_dir)
+    personas = load_jsonl(fixtures_dir / manifest["files"]["personas"]["path"])
+    pilot_personas = personas[: args.users]
+    pilot_ids = {p["user_id"] for p in pilot_personas}
+    sessions = load_jsonl(fixtures_dir / manifest["files"]["test_b_sessions"]["path"])
+    pilot_sessions = [s for s in sessions if s["user_id"] in pilot_ids]
+
+    # Load executor + prompt module so we can build the conditions tuple.
+    executor_b = _load_executor_b_module()
+    prompts_test_b = sys.modules["_v4_1_pkg.prompts.test_b"]
+
+    mem0 = mem0_present()
+    conditions = list(prompts_test_b.TEST_B_BASE_CONDITIONS)
+    conditions.append(
+        prompts_test_b.TEST_B_MEM0_CONDITION if mem0
+        else prompts_test_b.TEST_B_MEM0_SKIPPED
+    )
+    conditions_tuple = tuple(conditions)
+
+    out_dir = RESULTS_ROOT / _utcnow_date() / "pilot_test_b"
+
+    needs_provider = args.execute
+    has_key = args.provider == "mock" or llm_configured()
+    if not needs_provider or not has_key:
+        reason = (
+            "No LLM API key set and provider != mock; emitting planned-run "
+            "manifest only."
+            if not has_key
+            else "Provider available but --execute not supplied; emitting plan only."
+        )
+        payload = planned_run_manifest(
+            mode="pilot_test_b",
+            fixtures_dir=fixtures_dir,
+            n_users=args.users,
+            reason=reason,
+        )
+        payload["pilot_user_ids"] = sorted(pilot_ids)
+        payload["pilot_sessions_count"] = len(pilot_sessions)
+        payload["provider_requested"] = args.provider
+        payload["test_b_conditions_planned"] = list(conditions_tuple)
+        payload["execution_plan"] = {
+            "concurrency": args.concurrency,
+            "batch_size": args.batch_size,
+            "sleep_between_batches_s": args.sleep_between_batches,
+            "retry_max": args.retry_max,
+            "retry_backoff_s": args.retry_backoff,
+            "retry_backoff_max_s": args.retry_backoff_max,
+            "retry_jitter": args.retry_jitter,
+            "model": args.model,
+            "temperature": args.temperature,
+            "max_output_tokens": args.max_output_tokens,
+        }
+        out_path = write_results(out_dir, "planned_run.json", payload)
+        print(f"[pilot-test-b] {reason}\n[pilot-test-b] Plan: {out_path}")
+        return 0
+
+    rid = args.run_id or _run_id().replace("pilot_", "pilot_b_")
+    run_dir = out_dir / rid
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    providers_pkg = sys.modules["_v4_1_pkg.providers"]
+    config = providers_pkg.ProviderConfig(
+        model=args.model,
+        temperature=args.temperature,
+        max_output_tokens=args.max_output_tokens,
+    )
+    if args._provider_instance is not None:
+        provider = args._provider_instance
+    else:
+        provider = _resolve_provider(args.provider)
+
+    executor_module = _load_executor_module()
+    plan = executor_module.ExecutionPlan(
+        provider_name=args.provider,
+        config=config,
+        concurrency=args.concurrency,
+        batch_size=args.batch_size,
+        sleep_between_batches_s=args.sleep_between_batches,
+        retry_max=args.retry_max,
+        retry_backoff_s=args.retry_backoff,
+        retry_backoff_max_s=args.retry_backoff_max,
+        retry_jitter=args.retry_jitter,
+    )
+    result = executor_b.execute_test_b_pilot(
+        personas=pilot_personas,
+        sessions=pilot_sessions,
+        conditions=conditions_tuple,
+        provider=provider,
+        plan=plan,
+        out_dir=run_dir,
+        fixtures_manifest=manifest,
+        repo_commit=_git_sha(),
+        run_id=rid,
+        mem0_present=mem0,
+    )
+    print(
+        f"[pilot-test-b] Executed {result['summary']['counts']['ok']} ok / "
+        f"{result['summary']['counts']['error']} errors. "
+        f"Outputs in {run_dir}"
+    )
+    return 0
+
+
 def cmd_full(args: argparse.Namespace) -> int:
     if not args.confirm_full_run:
         raise RunnerError("Full run requires --confirm-full-run.")
@@ -441,6 +629,35 @@ def _parse() -> argparse.Namespace:
                          help="Reuse a prior run-id to resume.")
     # Internal-only: allow tests to inject a provider instance directly.
     p_pilot.set_defaults(func=cmd_pilot, _provider_instance=None)
+
+    p_pb = sub.add_parser(
+        "pilot-test-b",
+        help=f"Test B pilot run, max {PILOT_MAX_USERS} users.",
+    )
+    p_pb.add_argument("--fixtures", type=Path, default=FIXTURES_DIR)
+    p_pb.add_argument("--users", type=int, default=10)
+    p_pb.add_argument("--execute", action="store_true",
+                      help="Actually call the provider (requires adapter).")
+    p_pb.add_argument("--provider", default="gemini",
+                      choices=["gemini", "mock"],
+                      help="Provider name (default: gemini).")
+    p_pb.add_argument("--model", default="gemini-2.5-flash")
+    p_pb.add_argument("--temperature", type=float, default=0.2)
+    p_pb.add_argument("--max-output-tokens", type=int, default=512)
+    p_pb.add_argument("--concurrency", type=int, default=1,
+                      help=f"Parallel calls (default 1, max {PILOT_MAX_CONCURRENCY}).")
+    p_pb.add_argument("--batch-size", type=int, default=10)
+    p_pb.add_argument("--sleep-between-batches", type=float, default=1.0)
+    p_pb.add_argument("--retry-max", type=int, default=PILOT_DEFAULT_RETRY_MAX)
+    p_pb.add_argument("--retry-backoff", type=float,
+                      default=PILOT_DEFAULT_RETRY_BACKOFF_S)
+    p_pb.add_argument("--retry-backoff-max", type=float,
+                      default=PILOT_DEFAULT_RETRY_BACKOFF_MAX_S)
+    p_pb.add_argument("--retry-jitter", type=float,
+                      default=PILOT_DEFAULT_RETRY_JITTER)
+    p_pb.add_argument("--run-id", default=None,
+                      help="Reuse a prior run-id to resume.")
+    p_pb.set_defaults(func=cmd_pilot_test_b, _provider_instance=None)
 
     p_full = sub.add_parser("full", help="Full run; heavily gated.")
     p_full.add_argument("--fixtures", type=Path, default=FIXTURES_DIR)
