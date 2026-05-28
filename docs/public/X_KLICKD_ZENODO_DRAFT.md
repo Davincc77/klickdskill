@@ -34,7 +34,7 @@ No field in this draft is final until Vince signs off and the release tag exists
 Notes:
 
 - Use the dotted name `.klickd` and `x.klickd` exactly as shown — that is the public lock.
-- Do **not** include the internal codename (e.g. do not write "Chimera" anywhere in the title).
+- Do **not** include the internal codename anywhere in the title. The literal codename string is intentionally not reproduced in this draft; the rule is: only public wording (`.klickd`, `x.klickd`) appears in the deposit title.
 - The minor track is v4.1; the format wire envelope remains `klickd_version 3.0` and is signalled inside the payload via `payload_schema_version 4.1`. The title says `v4.1` to match the release tag; the wire detail belongs in the description.
 
 ---
@@ -85,7 +85,7 @@ Mirrors the creator entry in `/.zenodo.json` for `v4.0.0`. If the contributor li
 The deposit-bundle ZIP should contain (paths relative to the repository root):
 
 - `SPEC.md` — normative v4.1 specification (post-merge of the relevant RFCs into `SPEC.md`).
-- `docs/rfcs/RFC-009-chimera-v4.1.md` — the planning RFC that gates v4.1 promotion *(internal-codename-tagged historical document — the public Zenodo description does not name the codename; the RFC document itself uses its in-repo title)*.
+- The v4.1 planning RFC under `docs/rfcs/` — see §7.1 below; this RFC carries the internal codename in its filename and is a candidate for **exclusion or rename** before the deposit bundle is sealed.
 - `docs/public/X_KLICKD_SITE_COPY.md` — public site copy (this directory).
 - `docs/public/X_KLICKD_MATRIX_VISUAL_BRIEF.md` — visual brief (this directory).
 - `docs/public/X_KLICKD_ZENODO_DRAFT.md` — this file (the deposit draft itself, included for archival).
@@ -95,13 +95,22 @@ The deposit-bundle ZIP should contain (paths relative to the repository root):
 - `tests/` — strict cross-implementation test vectors.
 - `verify_vectors.py`, `verify_vectors.mjs` — cross-implementation verifiers.
 - `save_klickd.py`, `load_klickd.py` — reference CLI scripts.
-- `examples/v4.1/chimera-skills/lite/` — Lite tier `x.klickd` candidate artefacts (8 packs at the time of this draft).
-- `examples/v4.1/chimera-skills/pro/` — Pro tier `x.klickd` candidate artefacts (34 packs at the time of this draft).
+- The v4.1 candidate `x.klickd` artefact tree under `examples/v4.1/` — see §7.1 below; the in-repo subdirectory carries the internal codename and **must be renamed inside the deposit bundle** to `x-klickd-skills/` (or excluded if covered by `SPEC.md` + the validator output) before the deposit ZIP is sealed. Lite tier (8 packs at the time of this draft) and Pro tier (34 packs at the time of this draft).
 - `scripts/validate_v4_1_candidate_mapping.py` — validator enforcing the mapping rule.
 - `CHANGELOG.md`, `CITATION.cff`, `LICENSE`, `README.md`, `ACKNOWLEDGEMENTS.md` — repository metadata.
 - `assets/x-klickd-matrix-hero.svg`, `assets/x-klickd-matrix-hero.png` — original matrix visual (added by Vince when the visual is produced).
 
-Path note: although the internal-codename directory name (`examples/v4.1/chimera-skills/`) survives in the deposit because that is the in-repository path, the public Zenodo metadata (title, description, keywords, notes) does **not** name the codename. The directory name is a historical implementation detail; the public-facing names in metadata stay on `x.klickd`.
+### 7.1 TODO before sealing the deposit bundle — codename-bearing paths
+
+Zenodo's web record displays the uploaded ZIP's filenames and lets visitors browse the directory tree. Even though every metadata field (title, description, keywords, notes) in this draft is clean, **any file or directory inside the deposit ZIP that carries the internal codename will be visible to the public** through Zenodo's file browser. This is a hard lock: the public deposit surface must not show the codename.
+
+Before the v4.1 Zenodo deposit ZIP is created, Vince MUST resolve the codename-bearing paths via one of the three options below. Pick exactly one per affected path:
+
+1. **Rename in repo first (cleanest).** Open a separate PR that renames the codename-bearing in-repo paths to `x.klickd`-named equivalents (e.g. internal `examples/v4.1/<codename>-skills/` → `examples/v4.1/x-klickd-skills/`; the v4.1 planning RFC → an `x-klickd`-named filename). Merge before tagging v4.1 GA. The deposit bundle then naturally contains only clean paths. *Out of scope for the present site-copy PR — flagged here so Vince can plan the rename ahead of GA.*
+2. **Repackage at archive time.** Keep the in-repo directory under its historical name, but **rename the path inside the deposit ZIP** before uploading to Zenodo. The bundle becomes `x-klickd-skills/lite/`, `x-klickd-skills/pro/`, and an `x-klickd`-named RFC filename — regardless of what the live repo calls them. Use `git archive` + a scripted rename step.
+3. **Exclude from the deposit bundle.** If the codename-bearing v4.1 planning RFC is fully superseded by `SPEC.md` post-merge, omit it from the deposit ZIP entirely. The same applies to any subdirectory whose content is already redundantly captured by other public artefacts.
+
+The deposit MUST NOT be created until exactly one of options 1/2/3 has been applied to every codename-bearing path that would otherwise appear in the bundle. The §14 acceptance checklist gates the deposit on this.
 
 ---
 
@@ -208,7 +217,8 @@ A reviewer (Vince, or a delegate) must be able to tick every box below before th
 - [ ] `SPEC.md` and the v4.1 RFC track have been promoted to `Accepted` per RFC-009 §8.
 - [ ] The validator script (`scripts/validate_v4_1_candidate_mapping.py`) passes on the catalog tree at the GA tag.
 - [ ] The deposit metadata uses `x.klickd` everywhere — title, description, keywords, notes, related-identifier titles.
-- [ ] The internal codename used in the planning track does **not** appear in any public-facing Zenodo field (title, description, keywords, notes). (It may appear inside repository file paths that survive into the deposit bundle; that is an implementation detail.)
+- [ ] The internal codename used in the planning track does **not** appear in any public-facing Zenodo field (title, description, keywords, notes).
+- [ ] §7.1 has been applied: **no file or directory inside the deposit bundle ZIP carries the internal codename** in its name. One of the three options in §7.1 (rename in repo, repackage at archive time, or exclude) has been applied to every affected path. Spot-check by listing the bundle ZIP and grepping for the codename string before uploading.
 - [ ] The disclaimer block (§6) has been re-evaluated against the GA state — if v4.1 is now GA at deposit time, the "candidates / not for unmodified production use" sentence has been removed; if v4.1 is being deposited as a release candidate, the non-GA sentence is retained.
 - [ ] No copyrighted third-party visual is included in the deposit bundle. All diagrams included are original works.
 - [ ] The related-identifier list points only at existing, published artefacts (npm, PyPI, prior Zenodo DOIs). No staged links to artefacts that do not yet exist.

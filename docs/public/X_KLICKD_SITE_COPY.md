@@ -8,7 +8,7 @@
 | **Created** | 2026-05-28 |
 | **Not for publication** | This file is a copy draft. It is not the live website. Nothing here triggers a release, a Zenodo deposit, an npm/PyPI publication, an IANA action, or a public announcement. |
 
-> **Public wording lock.** All public-facing copy in this document uses `x.klickd`. The internal codename used in the planning track (`docs/chimera/`, `docs/rfcs/RFC-009-*`, `examples/v4.1/chimera-skills/`) is intentionally **not used** here and must not appear in the published site, in PR copy aimed at the public, in slide decks for external audiences, or in Zenodo metadata.
+> **Public wording lock.** All public-facing copy in this document uses `x.klickd`. The internal codename used in the planning track (see the internal planning directory; the literal codename string is intentionally not reproduced in this paste-ready draft) is intentionally **not used** here and must not appear in the published site, in PR copy aimed at the public, in slide decks for external audiences, or in Zenodo metadata.
 >
 > **v4.1 is not GA.** v4.1 of the open `.klickd` spec — under which `x.klickd` skills are framed — is in preparation. Until the v4.1 release is tagged, the artefacts referenced here are **candidate** material. No GA claim, no production guarantee, no recommendation to ship `x.klickd` skills into a live product unmodified.
 >
@@ -243,7 +243,7 @@ The site footer should link to the following public sources. The list mirrors th
 
 When editing this copy or extending the site, the following wording rules apply:
 
-1. **Use `x.klickd`** in every public-facing reference to the competency-anchored skill namespace. Do **not** use the internal codename used in the planning track (`docs/chimera/`, `docs/rfcs/RFC-009-*`, `examples/v4.1/chimera-skills/`). The internal codename is for internal planning only.
+1. **Use `x.klickd`** in every public-facing reference to the competency-anchored skill namespace. Do **not** use the internal codename used in the planning track (the literal codename string is intentionally not reproduced here; see the internal planning directory for the actual paths). The internal codename is for internal planning only.
 2. **Use the tagline `A true open standard, not a prompt gallery.`** as the sub-headline. Do not paraphrase it for variety — it is a positioning lock.
 3. **Always pair the catalog mention with the disclaimer in §9** until v4.1 is GA. Do not strip the disclaimer for layout reasons.
 4. **Never claim a partnership, certification, endorsement, or accreditation** from any framework owner (EU Commission, NIST, ENISA, CIS, SFIA Foundation, US Department of Labor, World Economic Forum). The relationship is *references and anchors*, not partnership.
@@ -257,7 +257,7 @@ When editing this copy or extending the site, the following wording rules apply:
 The following items are not decided in this copy draft and should be resolved with the website team before publication.
 
 - **URL slug.** `klickd.app/klickdskill` is the current page slug. If the public catalog gets its own sub-page (`/klickdskill/catalog`), the CTA in §1 should be wired to it.
-- **Catalog rendering.** Whether the public catalog renders the candidate artefacts directly from `examples/v4.1/chimera-skills/` (internal location) or from a curated public mirror. The site copy here is agnostic and works either way.
+- **Catalog rendering.** Whether the public catalog renders the candidate artefacts directly from the internal candidate-catalog location or from a curated public mirror. The site copy here is agnostic and works either way.
 - **Bundle naming.** The bundle names in §6 are draft labels. Vince may want to revise them (e.g. "Learner pack", "Maker pack").
 - **Roadmap depth.** §7 currently lists only v4.0.0, v4.1, v4.2. If the public roadmap should show more (e.g. v5 outlook), Vince to expand.
 
