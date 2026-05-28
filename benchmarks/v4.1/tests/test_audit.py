@@ -48,6 +48,30 @@ def test_audit_detects_secret_pattern(tmp_path: Path, monkeypatch) -> None:
     assert any("secret_scan" in f for f in report["failures"])
 
 
+def test_audit_detects_secret_in_errors_jsonl(tmp_path: Path, monkeypatch) -> None:
+    """Defence-in-depth: secrets that land in errors.jsonl must also be caught."""
+    run_dir = _run_pilot(tmp_path, monkeypatch, run_id="rErrSecret")
+    err_path = run_dir / "errors.jsonl"
+    # The clean pilot has no errors; synthesise one carrying a Gemini-shaped key.
+    err_path.write_text(json.dumps({
+        "run_id": "synthetic_err_001",
+        "user_id": "u_0000",
+        "condition": "no_klickd",
+        "family": "factual",
+        "prompt_id": "pid",
+        "prompt_hash": "x" * 64,
+        "timestamp_utc": "1970-01-01T00:00:00Z",
+        "model": "m-audit",
+        "provider": "mock",
+        "errors": ["attempt=0 err=auth failed AIzaSyA1234567890abcdefghijklmnopqrstuv"],
+        "status": "error",
+    }, sort_keys=True) + "\n")
+    report = audit.audit_run(run_dir)
+    assert not report["passed"]
+    assert any("secret_scan" in f for f in report["failures"])
+    assert report["checks"]["secret_scan"]["error_rows_with_hits"]
+
+
 def test_audit_detects_model_inconsistency(tmp_path: Path, monkeypatch) -> None:
     run_dir = _run_pilot(tmp_path, monkeypatch, run_id="rModel")
     raw_path = run_dir / "raw_outputs.jsonl"

@@ -151,18 +151,26 @@ def audit_run(run_dir: Path) -> dict[str, Any]:
     if bad_model_rows or bad_model_err:
         report["failures"].append("model_consistency: row model != manifest model")
 
-    # Secret scan over raw outputs and manifest body.
-    secret_hits: list[dict[str, Any]] = []
+    # Secret scan over raw outputs, error rows, and manifest body. Error
+    # rows are included because some SDKs echo credentials into exception
+    # messages; defence-in-depth even though our adapter wraps with !s.
+    raw_hits: list[dict[str, Any]] = []
     for r in raw:
         hits = _scan_secrets(json.dumps(r, ensure_ascii=False))
         if hits:
-            secret_hits.append({"run_id": r["run_id"], "hits": hits})
+            raw_hits.append({"run_id": r["run_id"], "hits": hits})
+    error_hits: list[dict[str, Any]] = []
+    for e in errors:
+        hits = _scan_secrets(json.dumps(e, ensure_ascii=False))
+        if hits:
+            error_hits.append({"run_id": e.get("run_id"), "hits": hits})
     manifest_hits = _scan_secrets(json.dumps(manifest, ensure_ascii=False))
     report["checks"]["secret_scan"] = {
-        "rows_with_hits": secret_hits,
+        "rows_with_hits": raw_hits,
+        "error_rows_with_hits": error_hits,
         "manifest_hits": manifest_hits,
     }
-    if secret_hits or manifest_hits:
+    if raw_hits or error_hits or manifest_hits:
         report["failures"].append("secret_scan: potential secret-like pattern detected")
 
     # Token / latency stats.

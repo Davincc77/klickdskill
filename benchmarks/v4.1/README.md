@@ -98,8 +98,9 @@ Pilot output lives under
 | `metrics_summary.json` | Aggregate counts, latency, tokens, by-condition counts |
 | `run_manifest.json` | Run id, mode, provider, config, execution settings, fixture manifest reference, repo commit, counts |
 
-The executor is **resumable**: re-invoking with the same `--run-id` skips
-already-completed `run_id`s recorded in `raw_outputs.jsonl`.
+The executor is **resumable**: re-invoking with the same `--run-id`
+makes zero new calls for any `run_id` already present in
+`raw_outputs.jsonl`; only the missing rows are called.
 
 ### 5. Pilot — audit
 
