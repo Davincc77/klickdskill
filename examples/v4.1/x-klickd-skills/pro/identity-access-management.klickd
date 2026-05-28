@@ -204,7 +204,75 @@
     "structured_memory": {
       "scope": "memory.x_klickd.identity_access_management",
       "policy": "pack_scoped_only",
-      "entries": []
+      "entries": [],
+      "compressed_memory": {
+        "version": "rfc-010-draft",
+        "_status": "draft_preview",
+        "_non_normative": true,
+        "_claims_v41_ga": false,
+        "_rfc_ref": "docs/rfcs/RFC-010-pack-memory-compression.md",
+        "derived_from": {
+          "pack": "x.klickd/identity_access_management",
+          "slice_path": "structured_memory",
+          "extractor": {
+            "kind": "host_skill",
+            "host": "x.klickd.host.placeholder",
+            "agent_ref": "x.klickd/host/memory-extractor",
+            "version": "0.1.0-draft",
+            "deterministic_seed": "sha256:07aa3f55803e07ff80ca6c58f943962c",
+            "attestation_hash": "sha256:8f0eae4f9464762ab6f8478045324f06eb0e87d7aae237a08fbeff0460068440"
+          }
+        },
+        "fact_pointers": [],
+        "entity_links": [],
+        "graph_refs": [],
+        "vector_index": {
+          "uri": "klickd://vector-index/identity_access_management/v0-draft",
+          "embedding_model_ref": "klickd-embed-identity_access_management-2026-v0-placeholder",
+          "dim": 768,
+          "inline_embeddings_forbidden": true
+        },
+        "retrieval_policy": {
+          "top_k": 6,
+          "max_facts_per_turn": 8,
+          "freshness_weighting": "exponential_recency",
+          "host_side_only": true,
+          "require_gate": "memory_recall_injection"
+        },
+        "_draft_retrieval_scope": {
+          "tags": [
+            "iam",
+            "rbac",
+            "abac",
+            "session_lifecycle",
+            "key_rotation"
+          ],
+          "entity_classes": [
+            "esco",
+            "sfia",
+            "nice"
+          ],
+          "priority": "security_operation",
+          "_note": "Draft / non-normative extension surface. Carries the pack-role-specific retrieval scope so hosts can route memory recall by topic. NOT part of any current schema; see RFC-010 §5 for the normative-intent fragment."
+        },
+        "erasure_cascade": {
+          "targets": [
+            "fact_pointers",
+            "entity_links",
+            "graph_refs",
+            "vector_index"
+          ],
+          "on_evidence_deletion": "cascade_purge",
+          "on_user_request": "cascade_purge",
+          "verification_artifact_ref": null
+        },
+        "gate_refs": [
+          {
+            "gate_name": "compressed_memory_recall",
+            "action_class": "memory_recall_injection"
+          }
+        ]
+      }
     },
     "gates": {
       "verification_gates_default": {

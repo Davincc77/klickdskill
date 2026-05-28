@@ -277,7 +277,73 @@
     "structured_memory": {
       "scope": "memory.x_klickd.video_production_pipeline",
       "policy": "pack_scoped_only",
-      "entries": []
+      "entries": [],
+      "compressed_memory": {
+        "version": "rfc-010-draft",
+        "_status": "draft_preview",
+        "_non_normative": true,
+        "_claims_v41_ga": false,
+        "_rfc_ref": "docs/rfcs/RFC-010-pack-memory-compression.md",
+        "derived_from": {
+          "pack": "x.klickd/video_production_pipeline",
+          "slice_path": "structured_memory",
+          "extractor": {
+            "kind": "host_skill",
+            "host": "x.klickd.host.placeholder",
+            "agent_ref": "x.klickd/host/memory-extractor",
+            "version": "0.1.0-draft",
+            "deterministic_seed": "sha256:79f77682b3cfe75b3a55207a4c0f2a5d",
+            "attestation_hash": "sha256:503e12d5ec8c5be3b0a7db062851749610734654879c08b5dc8260dd059dd035"
+          }
+        },
+        "fact_pointers": [],
+        "entity_links": [],
+        "graph_refs": [],
+        "vector_index": {
+          "uri": "klickd://vector-index/video_production_pipeline/v0-draft",
+          "embedding_model_ref": "klickd-embed-video_production_pipeline-2026-v0-placeholder",
+          "dim": 768,
+          "inline_embeddings_forbidden": true
+        },
+        "retrieval_policy": {
+          "top_k": 6,
+          "max_facts_per_turn": 8,
+          "freshness_weighting": "linear_recency",
+          "host_side_only": true,
+          "require_gate": "memory_recall_injection"
+        },
+        "_draft_retrieval_scope": {
+          "tags": [
+            "video",
+            "edit_decision_list",
+            "color_pipeline",
+            "delivery_spec"
+          ],
+          "entity_classes": [
+            "esco",
+            "onet"
+          ],
+          "priority": "creative_practice",
+          "_note": "Draft / non-normative extension surface. Carries the pack-role-specific retrieval scope so hosts can route memory recall by topic. NOT part of any current schema; see RFC-010 §5 for the normative-intent fragment."
+        },
+        "erasure_cascade": {
+          "targets": [
+            "fact_pointers",
+            "entity_links",
+            "graph_refs",
+            "vector_index"
+          ],
+          "on_evidence_deletion": "cascade_purge",
+          "on_user_request": "cascade_purge",
+          "verification_artifact_ref": null
+        },
+        "gate_refs": [
+          {
+            "gate_name": "compressed_memory_recall",
+            "action_class": "memory_recall_injection"
+          }
+        ]
+      }
     },
     "media_profile_compose_ref": "rfc-001#media_profile",
     "gates": {

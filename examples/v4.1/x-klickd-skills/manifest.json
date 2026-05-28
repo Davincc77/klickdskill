@@ -25,8 +25,8 @@
       "pack": "x.klickd/artist",
       "file": "artist.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/lite/artist.klickd",
-      "bytes": 6953,
-      "sha256_file": "539965450b5ae8a521a7ddd4d92285d64202c9d874e48871d41327a185307613",
+      "bytes": 9308,
+      "sha256_file": "56dbd966942475354e4f2daac48c3aeabfedbf3ff48f6248c443cdf8fe82b5c8",
       "status": "candidate_mapped"
     },
     {
@@ -34,8 +34,8 @@
       "pack": "x.klickd/consumer_rights",
       "file": "consumer-rights.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/lite/consumer-rights.klickd",
-      "bytes": 6957,
-      "sha256_file": "881c2bf40e7de1e2ecd6bb1a4377a3abfa33b63b1c28ddfba107866d29daad18",
+      "bytes": 9353,
+      "sha256_file": "16f77c9b7cb0801f198407f063c1b8395b98f6f729a14597ede8a15ae766ebbc",
       "status": "candidate_mapped"
     },
     {
@@ -43,8 +43,8 @@
       "pack": "x.klickd/game_literacy",
       "file": "game-literacy.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/lite/game-literacy.klickd",
-      "bytes": 6945,
-      "sha256_file": "2dc8f570ad19c8333c66609aa4244672949e731ae97ab2c1d6b52e1438b49314",
+      "bytes": 9325,
+      "sha256_file": "6e3158a2bde1024f54db53d149e525b820c4c167a71124416c8f4e8df38a3632",
       "status": "candidate_mapped"
     },
     {
@@ -52,8 +52,8 @@
       "pack": "x.klickd/media_planner",
       "file": "media-planner.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/lite/media-planner.klickd",
-      "bytes": 7351,
-      "sha256_file": "6ad1cb325a6384eefde4f76afd5f9a249ebc9560c3af49e61999c11f48e05574",
+      "bytes": 9719,
+      "sha256_file": "a399ef56eb140d5adf272ffe3578448085f082154647811853e3d52e58b3a33e",
       "status": "candidate_mapped"
     },
     {
@@ -61,8 +61,8 @@
       "pack": "x.klickd/parent_gaming",
       "file": "parent-gaming.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/lite/parent-gaming.klickd",
-      "bytes": 7748,
-      "sha256_file": "477369bb18ff131256fdb8c65ca6f0422e9a939af65a6800f675d9fd88ed4c01",
+      "bytes": 10149,
+      "sha256_file": "f2016892ac731f284d37d207a9464dcb93551b6934ff86f09d05fcd9d1a0ce52",
       "status": "candidate_mapped"
     },
     {
@@ -70,8 +70,8 @@
       "pack": "x.klickd/social_literacy",
       "file": "social-literacy.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/lite/social-literacy.klickd",
-      "bytes": 7350,
-      "sha256_file": "408e9f3a4f4048d9c4f6f5f6f657e3aff0dae9600e7301909afc32bcd84523f8",
+      "bytes": 9745,
+      "sha256_file": "5da46abae45a40adf562d1119bd4240c60d14b7c2b798e8e47aed4122834d9dc",
       "status": "candidate_mapped"
     },
     {
@@ -79,8 +79,8 @@
       "pack": "x.klickd/streaming_creator",
       "file": "streaming-creator.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/lite/streaming-creator.klickd",
-      "bytes": 6937,
-      "sha256_file": "eec40891d378faa4c2a1bb7dc79733d0489315d5d1268493dcb96dbcc1c6d1c3",
+      "bytes": 9332,
+      "sha256_file": "83a47a7370650c9870d28566344a11e52298a9e0a581003dc0ea8009558ac8ce",
       "status": "candidate_mapped"
     },
     {
@@ -88,8 +88,8 @@
       "pack": "x.klickd/work_assistant",
       "file": "work-assistant.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/lite/work-assistant.klickd",
-      "bytes": 7932,
-      "sha256_file": "c82970715b23230f84083c2e2b8294934879d8969d4f41e06aab5db6b97ddb4c",
+      "bytes": 10312,
+      "sha256_file": "7918922d04e406c406f1d8a1a6aeaa3f82fb2a9c5697a547f001cfac85063bcb",
       "status": "candidate_mapped"
     },
     {
@@ -97,8 +97,8 @@
       "pack": "x.klickd/accounting_operator",
       "file": "accounting-operator.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/accounting-operator.klickd",
-      "bytes": 8965,
-      "sha256_file": "42975e47d80712b18d3d974b8dd1f06e661df2c7337d50989b0b4a820a8833ba",
+      "bytes": 11371,
+      "sha256_file": "0464b9d8bd284e7c498a60064f8f923e148f2ac3e0e39fd7c0f479174c8ad243",
       "status": "candidate_mapped"
     },
     {
@@ -106,8 +106,8 @@
       "pack": "x.klickd/api_integrator",
       "file": "api-integrator.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/api-integrator.klickd",
-      "bytes": 9290,
-      "sha256_file": "a4e0c3612f3cda400581b90b1378075864b4bdd770f5db9d6105be172c3d234e",
+      "bytes": 11707,
+      "sha256_file": "875536c647ff1905f2e54a7997977b7d4087b7153b8b9a7c3270aef301af6dab",
       "status": "candidate_mapped"
     },
     {
@@ -115,8 +115,8 @@
       "pack": "x.klickd/contract_review",
       "file": "contract-review.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/contract-review.klickd",
-      "bytes": 8213,
-      "sha256_file": "b3415f8bbce34092e9f8348a9f4e445ee45e78902c6825ed579ece02f5ac2051",
+      "bytes": 10615,
+      "sha256_file": "4be316d9bbb758e9d98dcf81ac25ef1fc9a8e24d9cb6462055d66660f104ba41",
       "status": "candidate_mapped"
     },
     {
@@ -124,8 +124,8 @@
       "pack": "x.klickd/customer_support_operator",
       "file": "customer-support-operator.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/customer-support-operator.klickd",
-      "bytes": 9926,
-      "sha256_file": "df48b21e367cbea5bfc78e71887bda89664c3847a40c27f9ae97cec0621b3d94",
+      "bytes": 12349,
+      "sha256_file": "9e6c755f8d975110bd8fd5bfdb1d87773f1a571968bf27933357b7bcc13516e9",
       "status": "candidate_mapped"
     },
     {
@@ -133,8 +133,8 @@
       "pack": "x.klickd/data_analyst",
       "file": "data-analyst.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/data-analyst.klickd",
-      "bytes": 9752,
-      "sha256_file": "147b364494cddb706e3b12cbf563bdfb1cd6707999bf149c5af65aecaea002cd",
+      "bytes": 12175,
+      "sha256_file": "8ae8fe5e3b55d4402e0da93738e97d23c41d3daeb93c6bdc41301486a2f6cd4f",
       "status": "candidate_mapped"
     },
     {
@@ -142,8 +142,8 @@
       "pack": "x.klickd/devops_operator",
       "file": "devops-operator.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/devops-operator.klickd",
-      "bytes": 9783,
-      "sha256_file": "7e78c768c8f59fdbd66053cf94355723ada5a7ac2d28620241edac080d48cccf",
+      "bytes": 12201,
+      "sha256_file": "bfad80b1110461f683c7000b9af1104ccdcd33a10c3059e3898dabea3f1d6fb4",
       "status": "candidate_mapped"
     },
     {
@@ -151,8 +151,8 @@
       "pack": "x.klickd/drone_operator",
       "file": "drone-operator.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/drone-operator.klickd",
-      "bytes": 8055,
-      "sha256_file": "0f8310e06f3dd4f04b3d3b8f7ab0da2b63895dd631e8040669e050993933fb8d",
+      "bytes": 10450,
+      "sha256_file": "d4017d93c8b8ac765e59914b61116bd90bd68944c4a2b47e031dafc7d562ec23",
       "status": "candidate_mapped"
     },
     {
@@ -160,8 +160,8 @@
       "pack": "x.klickd/edge_ai_operator",
       "file": "edge-ai-operator.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/edge-ai-operator.klickd",
-      "bytes": 10288,
-      "sha256_file": "71809390a333b135f5d41d5640c46fc3a31b01a9ae4a908b944a387cd3f18a01",
+      "bytes": 12705,
+      "sha256_file": "295cd879168320e5af7d19a0c82a1bd0f8be52fbf9f16ec80c9db7f33b3cef6e",
       "status": "candidate_mapped"
     },
     {
@@ -169,8 +169,8 @@
       "pack": "x.klickd/eu_ai_act",
       "file": "eu-ai-act.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/eu-ai-act.klickd",
-      "bytes": 8140,
-      "sha256_file": "fb504fb64a928e2ef32e9864278e4d4873d82e7a76b970c62ca553808b24920a",
+      "bytes": 10507,
+      "sha256_file": "4df66de2930e3f4d726c08a1e0d15e64c6929f4cbbd6a593d69b9f88c5a9de93",
       "status": "candidate_mapped"
     },
     {
@@ -178,8 +178,8 @@
       "pack": "x.klickd/evidence_desk",
       "file": "evidence-desk.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/evidence-desk.klickd",
-      "bytes": 9375,
-      "sha256_file": "b89977edfbb037b11c2896fb3b4d050e2f91de3644416d3789af807fcc0df1f4",
+      "bytes": 11765,
+      "sha256_file": "a1cc35277960a95ebbe12ca12c00d9d70ce71dc58cae99b642653835b90d14dd",
       "status": "candidate_mapped"
     },
     {
@@ -187,8 +187,8 @@
       "pack": "x.klickd/finance_analyst",
       "file": "finance-analyst.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/finance-analyst.klickd",
-      "bytes": 9536,
-      "sha256_file": "bafc5ccb18fc203a0d1fb88db224cc3d34651cf863f90f1004f591fe9a3ca71d",
+      "bytes": 11950,
+      "sha256_file": "dbf02eac4910f73b35f818bd20545cd41f6a391ca06adf59f9470aa421afb326",
       "status": "candidate_mapped"
     },
     {
@@ -196,8 +196,8 @@
       "pack": "x.klickd/game_design",
       "file": "game-design.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/game-design.klickd",
-      "bytes": 9965,
-      "sha256_file": "dd4fdcf0902f20d0cbeeccf2dbbf18e7bf0cd3ed28c9e908f4c5021343d87a8c",
+      "bytes": 12342,
+      "sha256_file": "0894cec1f3f54b770a16fd3f07e16817ee57e574bdb2ca0837b8653362f3abb3",
       "status": "candidate_mapped"
     },
     {
@@ -205,8 +205,8 @@
       "pack": "x.klickd/gdpr_readiness",
       "file": "gdpr-readiness.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/gdpr-readiness.klickd",
-      "bytes": 8285,
-      "sha256_file": "00002f43344543f38ee1baf44c10d22fe6d2fde6e6b2c55b3731fbadd430c6c3",
+      "bytes": 10671,
+      "sha256_file": "d5c4cb7b707fc3f028424f34149cb95300fae583f9a261dfc161914da43bbc40",
       "status": "candidate_mapped"
     },
     {
@@ -214,8 +214,8 @@
       "pack": "x.klickd/healthcare_ai_safety_reviewer",
       "file": "healthcare-ai-safety-reviewer.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/healthcare-ai-safety-reviewer.klickd",
-      "bytes": 9873,
-      "sha256_file": "700f6c82e24865eebebc69f27ba31fcf3ece6bed7aeccff425e71a96be64d0e6",
+      "bytes": 12293,
+      "sha256_file": "183965179ebcdb7ef0f67866aa9c7364aaad1bd02996b4d0c696580ee2c6f789",
       "status": "candidate_mapped"
     },
     {
@@ -223,8 +223,8 @@
       "pack": "x.klickd/identity_access_management",
       "file": "identity-access-management.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/identity-access-management.klickd",
-      "bytes": 9855,
-      "sha256_file": "873630886850a3f83bc07841c4622cf7e1bcce9491225234bb015d960f7f6d7b",
+      "bytes": 12310,
+      "sha256_file": "d9112c7f82733e77bc382c4ca314c2bf3112c63ca03455a7efd037b6c33cd74d",
       "status": "candidate_mapped"
     },
     {
@@ -232,8 +232,8 @@
       "pack": "x.klickd/learning_designer",
       "file": "learning-designer.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/learning-designer.klickd",
-      "bytes": 9809,
-      "sha256_file": "fe061f0cec24bc04ca819383f19119188dc61e07b7c58ccef702ddad08cb7f91",
+      "bytes": 12206,
+      "sha256_file": "f7b1f5d39ee4f05261b4735a32475dee2583556681124c59b0250335729188f9",
       "status": "candidate_mapped"
     },
     {
@@ -241,8 +241,8 @@
       "pack": "x.klickd/literature_review",
       "file": "literature-review.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/literature-review.klickd",
-      "bytes": 8531,
-      "sha256_file": "8faa7c67a5315884d2ccfe3cbaae37034338c17188078bd5f0fe3aafea9d27c4",
+      "bytes": 10906,
+      "sha256_file": "104865d2750605d9261fd27208b0e19e2908861e9e5672ed453d383701a770f1",
       "status": "candidate_mapped"
     },
     {
@@ -250,8 +250,8 @@
       "pack": "x.klickd/llm_agent_engineering",
       "file": "llm-agent-engineering.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/llm-agent-engineering.klickd",
-      "bytes": 9723,
-      "sha256_file": "0a2363eb0bd94d2fabddeec358b134ac2e25b9c9a8ad1ea6be8a387f2b945e33",
+      "bytes": 12164,
+      "sha256_file": "1649234c2859b8309c404f71f5c0db714805655cdbb714b7bdb9394644fb49f8",
       "status": "candidate_mapped"
     },
     {
@@ -259,8 +259,8 @@
       "pack": "x.klickd/llm_agent_security",
       "file": "llm-agent-security.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/llm-agent-security.klickd",
-      "bytes": 10893,
-      "sha256_file": "6e6241ce5940e89af02735c5bd9e7c54c539deb42adedcb22c488dab4b1ba241",
+      "bytes": 13319,
+      "sha256_file": "baed596a642f68086cabc1a76d09ba6d987231a057c8fb66f1aabb84dd137098",
       "status": "candidate_mapped"
     },
     {
@@ -268,8 +268,8 @@
       "pack": "x.klickd/mission_control",
       "file": "mission-control.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/mission-control.klickd",
-      "bytes": 9467,
-      "sha256_file": "62a0d707aa765b4930990694f2340d3e66e5fd92aed16f8a570785694037d52c",
+      "bytes": 11861,
+      "sha256_file": "2c2d02b4ecec40f022c4c7da0cdb3f082e588dfe11d3f14d1692dbbdba7e8ba2",
       "status": "candidate_mapped"
     },
     {
@@ -277,8 +277,8 @@
       "pack": "x.klickd/policy_analyst",
       "file": "policy-analyst.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/policy-analyst.klickd",
-      "bytes": 8888,
-      "sha256_file": "89399370dd9168b958e5559adf48e25fefb25d29a38cab87775a7bdd37edc935",
+      "bytes": 11275,
+      "sha256_file": "f348f1d1a73797979a51005586dcd9f1069a17fab173dab7df742290127c73a7",
       "status": "candidate_mapped"
     },
     {
@@ -286,8 +286,8 @@
       "pack": "x.klickd/privacy_product",
       "file": "privacy-product.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/privacy-product.klickd",
-      "bytes": 8341,
-      "sha256_file": "eb8f39673e9c0281d0e4a02c782232f0c1a90c20b891b1eb0008281e7cad7d10",
+      "bytes": 10728,
+      "sha256_file": "5a35d4a214a98f945f048c6647528df5ce2188aaa3d0913b7c6a1af2305eff00",
       "status": "candidate_mapped"
     },
     {
@@ -295,8 +295,8 @@
       "pack": "x.klickd/product_manager",
       "file": "product-manager.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/product-manager.klickd",
-      "bytes": 9805,
-      "sha256_file": "d807ee36446854a73d5f922f01dfe14876114ebe207ea27e64e84c4435a1a0c0",
+      "bytes": 12231,
+      "sha256_file": "dbf2365508df3ae9acbbb6e002e3c44fb2a81e9166d0003cacb94a3714fdaeda",
       "status": "candidate_mapped"
     },
     {
@@ -304,8 +304,8 @@
       "pack": "x.klickd/project_operator",
       "file": "project-operator.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/project-operator.klickd",
-      "bytes": 8766,
-      "sha256_file": "351df23114529eda0c0102f65470c633c821d6132c9ff9488a927138923d5029",
+      "bytes": 11164,
+      "sha256_file": "5d019adfc08bcf518780bbe3e18a428682374397475a8bf6282d1e474ae6d5ce",
       "status": "candidate_mapped"
     },
     {
@@ -313,8 +313,8 @@
       "pack": "x.klickd/release_engineer",
       "file": "release-engineer.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/release-engineer.klickd",
-      "bytes": 10450,
-      "sha256_file": "a7f99e70dc0749d712d5b845fa98e16223d48abc7194174df49bff80258c0706",
+      "bytes": 12865,
+      "sha256_file": "c96329cff482f39d52a13b628bd027cd5854f15d40ce58c945fb58aec52aef9e",
       "status": "candidate_mapped"
     },
     {
@@ -322,8 +322,8 @@
       "pack": "x.klickd/rights_guard",
       "file": "rights-guard.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/rights-guard.klickd",
-      "bytes": 7966,
-      "sha256_file": "cf4d0d0bfcd641dfaf96ac4e5b6d55264d73bb91203b9ff76f1b139235147307",
+      "bytes": 10347,
+      "sha256_file": "3efa2982479b6ba3544092d848fb52b91dc7687031c4a481181547d9728703b3",
       "status": "candidate_mapped"
     },
     {
@@ -331,8 +331,8 @@
       "pack": "x.klickd/sales_operator",
       "file": "sales-operator.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/sales-operator.klickd",
-      "bytes": 9766,
-      "sha256_file": "98c681145eae3abc26657b22115efee2f353da7cf9edcd125fdc890668a048c7",
+      "bytes": 12186,
+      "sha256_file": "1bdc2c5895e07b909dda9bd04040917004727bed00198962c006a43a0be13060",
       "status": "candidate_mapped"
     },
     {
@@ -340,8 +340,8 @@
       "pack": "x.klickd/second_brain",
       "file": "second-brain.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/second-brain.klickd",
-      "bytes": 8751,
-      "sha256_file": "3af92ed2e479b053f290deca384d221e17ee19325e4033c33ccd9eb54c092f9b",
+      "bytes": 11153,
+      "sha256_file": "06504aa5dddc1b53634310210fff4374e68e0a2b959ae9dfa191b29995153bdb",
       "status": "candidate_mapped"
     },
     {
@@ -349,8 +349,8 @@
       "pack": "x.klickd/security_incident_response",
       "file": "security-incident-response.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/security-incident-response.klickd",
-      "bytes": 10220,
-      "sha256_file": "12740299d53e80cd888d27c6f861068a64165859fcc6f1a462854b1f466ff019",
+      "bytes": 12682,
+      "sha256_file": "1315833cf73b3d04e00fe73006e985b0a7af7d266c457e18f61204cca09dcc7a",
       "status": "candidate_mapped"
     },
     {
@@ -358,8 +358,8 @@
       "pack": "x.klickd/sustainability_analyst",
       "file": "sustainability-analyst.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/sustainability-analyst.klickd",
-      "bytes": 10231,
-      "sha256_file": "f1dcf41b142655e1af72f57b6aa830f0115e71a0441de2d4caa0e881072cf4fe",
+      "bytes": 12667,
+      "sha256_file": "445a7f1111e6474ca87bc717d0f50d6af5016863fe3fd87083502d77eeffcf1f",
       "status": "candidate_mapped"
     },
     {
@@ -367,8 +367,8 @@
       "pack": "x.klickd/technical_writer",
       "file": "technical-writer.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/technical-writer.klickd",
-      "bytes": 9745,
-      "sha256_file": "f37cec72bcf53ae870e785dde9156fd7cc2ab4162abd0eea8c20e10f9314daac",
+      "bytes": 12150,
+      "sha256_file": "473c44c67a889c783872494f262feb16bdb1377a74dd5b4d605fe340ecebecc9",
       "status": "candidate_mapped"
     },
     {
@@ -376,8 +376,8 @@
       "pack": "x.klickd/trust_evidence",
       "file": "trust-evidence.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/trust-evidence.klickd",
-      "bytes": 8913,
-      "sha256_file": "b5ba62cc82db19ad522834564d82f286f5d9ee13a19a3e090666b994af50212e",
+      "bytes": 11317,
+      "sha256_file": "57f4ac349438d3c3305e03ecf9a09a44d20e289550f8afa292267666bcc150ad",
       "status": "candidate_mapped"
     },
     {
@@ -385,8 +385,8 @@
       "pack": "x.klickd/ux_researcher",
       "file": "ux-researcher.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/ux-researcher.klickd",
-      "bytes": 9694,
-      "sha256_file": "5432820d68c6144d7767b7bda59087aba5863fa1a21ec5cccd8dfd3b2d8b16f3",
+      "bytes": 12109,
+      "sha256_file": "d91afbf120c6175c4d23d175265697b7a0a7bd4f11dd60fc08bb053c8113e13e",
       "status": "candidate_mapped"
     },
     {
@@ -394,8 +394,8 @@
       "pack": "x.klickd/video_production_pipeline",
       "file": "video-production-pipeline.klickd",
       "relative_path": "examples/v4.1/x-klickd-skills/pro/video-production-pipeline.klickd",
-      "bytes": 14488,
-      "sha256_file": "fd401d26816c0a19e8649453f3242010239e8d2206976a778dfb15a8cfea0cd5",
+      "bytes": 16908,
+      "sha256_file": "d6da8f7569953f7c6fb4f0ce02cb2649187bcbf52ae3f4d32a35c8fe885498a8",
       "status": "candidate_mapped"
     }
   ]
