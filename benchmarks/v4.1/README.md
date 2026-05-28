@@ -83,18 +83,28 @@ python3 benchmarks/v4.1/runner/runner.py pilot \
     --concurrency 2 \
     --batch-size 10 \
     --sleep-between-batches 1.0 \
-    --retry-max 2 \
+    --retry-max 5 \
+    --retry-backoff 2 \
+    --retry-backoff-max 30 \
+    --retry-jitter 0.25 \
     --execute
 ```
 
 `--users` is capped at 10. `--concurrency` is in `[1, 8]` (default `1`).
+`--retry-max` is in `[0, 8]` (default `5`). Retries fire **only** on
+transient provider errors — HTTP `429/500/502/503/504`, gRPC
+`UNAVAILABLE` / `RESOURCE_EXHAUSTED` / `DEADLINE_EXCEEDED`, and read
+timeouts. Permanent errors (auth, config, schema) abort immediately so
+we do not waste quota. Backoff is exponential with jitter, base
+`--retry-backoff` (default `2s`, cap `10s`), capped at
+`--retry-backoff-max` (default `30s`, cap `30s`).
 Pilot output lives under
 `benchmarks/v4.1/results/<date>/pilot/<run_id>/` with these files:
 
 | File | Description |
 | ---- | ----------- |
-| `raw_outputs.jsonl` | One line per successful call: `run_id`, `condition`, `model`, `prompt_hash`, `output_hash`, `output_text`, latency, tokens, timestamp, provider metadata |
-| `errors.jsonl` | One line per failed call after retries |
+| `raw_outputs.jsonl` | One line per successful call: `run_id`, `condition`, `model`, `prompt_hash`, `output_hash`, `output_text`, latency, tokens, timestamp, provider metadata, `retried_attempts`, `retry_attempts` (per-attempt error class/type/sleep), `cumulative_retry_delay_s` |
+| `errors.jsonl` | One line per failed call after retries, including `attempts`, `final_error_class` (`transient` / `permanent` / `unhandled`), `retried_attempts`, `cumulative_retry_delay_s` |
 | `metrics_summary.json` | Aggregate counts, latency, tokens, by-condition counts |
 | `run_manifest.json` | Run id, mode, provider, config, execution settings, fixture manifest reference, repo commit, counts |
 

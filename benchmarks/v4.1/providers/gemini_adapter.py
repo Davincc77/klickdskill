@@ -15,7 +15,14 @@ from __future__ import annotations
 import time
 from typing import Any
 
-from .base import ProviderConfig, ProviderError, ProviderResponse, env_api_key
+from .base import (
+    ProviderConfig,
+    ProviderError,
+    ProviderResponse,
+    TransientProviderError,
+    env_api_key,
+    is_transient_error,
+)
 
 DEFAULT_MODEL = "gemini-2.5-flash"
 _ENV_KEYS = ("GEMINI_API_KEY", "GOOGLE_API_KEY", "LLM_API_KEY")
@@ -61,6 +68,10 @@ class GeminiProvider:
                 config={"system_instruction": system, **gen_config},
             )
         except Exception as exc:
+            if is_transient_error(exc):
+                raise TransientProviderError(
+                    f"gemini transient call failure: {exc!s}"
+                ) from exc
             raise ProviderError(f"gemini call failed: {exc!s}") from exc
         latency_ms = int((time.monotonic() - t0) * 1000)
         return _normalise_response(resp, config.model, latency_ms)

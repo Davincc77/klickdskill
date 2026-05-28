@@ -38,6 +38,18 @@ on:
         description: "Actually call Gemini (true) or stay plan-only (false)."
         required: false
         default: "true"
+      retry_max:
+        description: "Max retries on transient 5xx/UNAVAILABLE/RESOURCE_EXHAUSTED (>=0, <=8)."
+        required: false
+        default: "5"
+      retry_backoff:
+        description: "Base exponential backoff in seconds (>=0, <=10). Default 2."
+        required: false
+        default: "2"
+      retry_backoff_max:
+        description: "Max single backoff in seconds (>=0, <=30). Default 30."
+        required: false
+        default: "30"
 
 permissions:
   contents: read
@@ -58,6 +70,9 @@ jobs:
       INPUT_SESSIONS_PER_USER: ${{ github.event.inputs.sessions_per_user }}
       INPUT_PROVIDER: ${{ github.event.inputs.provider }}
       INPUT_EXECUTE: ${{ github.event.inputs.execute }}
+      INPUT_RETRY_MAX: ${{ github.event.inputs.retry_max }}
+      INPUT_RETRY_BACKOFF: ${{ github.event.inputs.retry_backoff }}
+      INPUT_RETRY_BACKOFF_MAX: ${{ github.event.inputs.retry_backoff_max }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -98,7 +113,34 @@ jobs:
             exit 2
           fi
 
-          echo "Validated inputs: users=$users concurrency=$conc seed=${INPUT_SEED:-4242} sessions_per_user=${INPUT_SESSIONS_PER_USER:-10} provider=$provider execute=$execute"
+          retry_max="${INPUT_RETRY_MAX:-5}"
+          retry_backoff="${INPUT_RETRY_BACKOFF:-2}"
+          retry_backoff_max="${INPUT_RETRY_BACKOFF_MAX:-30}"
+          case "$retry_max" in ''|*[!0-9]*) echo "retry_max must be a non-negative integer (got: $retry_max)"; exit 2;; esac
+          # retry_backoff* accept decimals like '2' or '2.5'
+          if ! printf '%s' "$retry_backoff" | grep -Eq '^[0-9]+(\.[0-9]+)?$'; then
+            echo "retry_backoff must be a non-negative number (got: $retry_backoff)"; exit 2
+          fi
+          if ! printf '%s' "$retry_backoff_max" | grep -Eq '^[0-9]+(\.[0-9]+)?$'; then
+            echo "retry_backoff_max must be a non-negative number (got: $retry_backoff_max)"; exit 2
+          fi
+          if [ "$retry_max" -gt 8 ]; then
+            echo "retry_max is capped at 8 in this workflow (got: $retry_max)."
+            exit 2
+          fi
+          # Compare floats by stripping the decimal portion for an upper bound check.
+          backoff_int="${retry_backoff%.*}"
+          backoff_max_int="${retry_backoff_max%.*}"
+          if [ "${backoff_int:-0}" -gt 10 ]; then
+            echo "retry_backoff is capped at 10s in this workflow (got: $retry_backoff)."
+            exit 2
+          fi
+          if [ "${backoff_max_int:-0}" -gt 30 ]; then
+            echo "retry_backoff_max is capped at 30s in this workflow (got: $retry_backoff_max)."
+            exit 2
+          fi
+
+          echo "Validated inputs: users=$users concurrency=$conc seed=${INPUT_SEED:-4242} sessions_per_user=${INPUT_SESSIONS_PER_USER:-10} provider=$provider execute=$execute retry_max=$retry_max retry_backoff=$retry_backoff retry_backoff_max=$retry_backoff_max"
 
       - name: Preflight — GEMINI_API_KEY secret presence
         if: ${{ github.event.inputs.execute == 'true' }}
@@ -158,7 +200,10 @@ jobs:
             --concurrency "${INPUT_CONCURRENCY:-2}" \
             --batch-size 10 \
             --sleep-between-batches 1.0 \
-            --retry-max 2 \
+            --retry-max "${INPUT_RETRY_MAX:-5}" \
+            --retry-backoff "${INPUT_RETRY_BACKOFF:-2}" \
+            --retry-backoff-max "${INPUT_RETRY_BACKOFF_MAX:-30}" \
+            --retry-jitter 0.25 \
             --execute
 
       - name: Locate pilot run directory
@@ -195,6 +240,9 @@ jobs:
             echo "- sessions_per_user: \`${INPUT_SESSIONS_PER_USER:-10}\`"
             echo "- provider: \`${INPUT_PROVIDER:-gemini}\` (only \`gemini\` is allowed)"
             echo "- execute: \`${INPUT_EXECUTE:-true}\`"
+            echo "- retry_max: \`${INPUT_RETRY_MAX:-5}\` (cap 8; retries only on 429/5xx/UNAVAILABLE/RESOURCE_EXHAUSTED)"
+            echo "- retry_backoff: \`${INPUT_RETRY_BACKOFF:-2}s\` (exponential with jitter)"
+            echo "- retry_backoff_max: \`${INPUT_RETRY_BACKOFF_MAX:-30}s\` (cap 30s)"
             echo ""
             echo "No publish / no tag / no release / no Zenodo / no npm / no PyPI."
           } >> "$GITHUB_STEP_SUMMARY"

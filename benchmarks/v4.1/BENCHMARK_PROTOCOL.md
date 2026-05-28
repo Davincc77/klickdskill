@@ -118,6 +118,14 @@ provider calls.
   execution writes `raw_outputs.jsonl`, `errors.jsonl`,
   `metrics_summary.json`, and `run_manifest.json`. Concurrency is capped at
   8 with a default of 1; batches are spaced by `--sleep-between-batches`.
+  Transient provider failures (`429`, `500/502/503/504`, `UNAVAILABLE`,
+  `RESOURCE_EXHAUSTED`, `DEADLINE_EXCEEDED`, read timeouts) are retried
+  with exponential, jittered backoff. Defaults: `--retry-max 5`,
+  `--retry-backoff 2`, `--retry-backoff-max 30`, `--retry-jitter 0.25`.
+  Permanent errors (auth, config, schema) abort immediately and are
+  written to `errors.jsonl` without consuming retry budget. Every row in
+  both files records the per-attempt trace, the final error class, the
+  `retried_attempts` count, and the `cumulative_retry_delay_s`.
   Pilot runs are resumable via `--run-id`. After a pilot, run
   `runner/audit.py <run_dir>` to verify completeness, condition balance,
   hash coverage, model consistency, and to scan for secret-like patterns.

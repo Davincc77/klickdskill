@@ -41,6 +41,9 @@ def _pilot_ns(fixtures_dir: Path, **overrides) -> argparse.Namespace:
         batch_size=4,
         sleep_between_batches=0.0,
         retry_max=0,
+        retry_backoff=0.0,
+        retry_backoff_max=1.0,
+        retry_jitter=0.0,
         run_id="test_run_001",
         _provider_instance=providers.MockProvider(),
     )
@@ -110,7 +113,9 @@ def test_pilot_retries_then_succeeds(tmp_path: Path, monkeypatch) -> None:
         def generate(self, system, user, config):
             self.calls += 1
             if self.calls % 3 == 1:
-                raise providers.ProviderError("flake")
+                raise providers.TransientProviderError(
+                    "503 UNAVAILABLE high demand (simulated transient)"
+                )
             return providers.MockProvider().generate(system, user, config)
 
     flaky = FlakyProvider()
