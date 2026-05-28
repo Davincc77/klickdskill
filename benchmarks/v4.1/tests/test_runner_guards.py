@@ -18,8 +18,29 @@ def fixtures_dir(tmp_path: Path) -> Path:
     return out
 
 
+_PILOT_DEFAULTS = dict(
+    execute=False,
+    provider="gemini",
+    model="gemini-2.5-flash",
+    temperature=0.2,
+    max_output_tokens=512,
+    concurrency=1,
+    batch_size=10,
+    sleep_between_batches=0.0,
+    retry_max=2,
+    run_id=None,
+    _provider_instance=None,
+)
+
+
 def _ns(**kw):
     return argparse.Namespace(**kw)
+
+
+def _pilot_ns(**kw):
+    base = dict(_PILOT_DEFAULTS)
+    base.update(kw)
+    return argparse.Namespace(**base)
 
 
 def test_dry_run_never_calls_llm(fixtures_dir: Path, monkeypatch, tmp_path: Path) -> None:
@@ -41,7 +62,7 @@ def test_dry_run_never_calls_llm(fixtures_dir: Path, monkeypatch, tmp_path: Path
 
 
 def test_pilot_caps_at_10_users(fixtures_dir: Path) -> None:
-    ns = _ns(fixtures=fixtures_dir, users=11, execute=False)
+    ns = _pilot_ns(fixtures=fixtures_dir, users=11)
     with pytest.raises(runner.RunnerError, match="pilot.*limited"):
         runner.cmd_pilot(ns)
 
@@ -51,7 +72,7 @@ def test_pilot_without_llm_emits_plan_only(fixtures_dir: Path, monkeypatch,
     for k in runner.ENV_LLM_KEYS:
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setattr(runner, "RESULTS_ROOT", tmp_path / "results")
-    rc = runner.cmd_pilot(_ns(fixtures=fixtures_dir, users=5, execute=False))
+    rc = runner.cmd_pilot(_pilot_ns(fixtures=fixtures_dir, users=5))
     assert rc == 0
     written = list((tmp_path / "results").rglob("planned_run.json"))
     assert written

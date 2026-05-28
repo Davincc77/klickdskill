@@ -2,26 +2,32 @@
 """x.klickd v4.1 benchmark runner — dry-run by default.
 
 Modes:
-    --dry-run   (default) Never calls an LLM. Validates fixtures and writes
-                a planned-run manifest under results/.
-    --pilot     Up to 10 users. Requires an LLM API key. If none set, falls
-                back to a planned-run manifest.
-    --full      Requires --confirm-full-run AND XKLICKD_BENCHMARK_FULL_APPROVED=1
-                AND a pre-flight snapshot under results/snapshots/<date>/.
+    dry-run   Never calls an LLM. Validates fixtures and writes a planned
+              manifest under results/.
+    pilot     Up to 10 users. With ``--execute`` AND a provider, calls the
+              provider with low concurrency. Without ``--execute`` or
+              without a provider, only a planned manifest is emitted.
+    full      Requires ``--confirm-full-run`` AND ``XKLICKD_BENCHMARK_FULL_APPROVED=1``
+              AND a pre-flight snapshot under results/snapshots/<date>/.
+              The full run is intentionally still refused even when all
+              gates pass; a human must wire the execution path explicitly.
 
-Token accounting is heuristic unless a provider returns usage. Heuristic counts
-are labelled as such.
+Token accounting is heuristic unless a provider returns usage. Heuristic
+counts are labelled as such.
 
-NEVER claims Mem0 compatibility. The mem0 condition is skipped unless a Mem0
-local install or MEM0_API_KEY is detected, and even then the runner reports
-it as `mem0_present=true` without asserting compatibility.
+NEVER claims Mem0 compatibility. The mem0 condition is skipped unless a
+local Mem0 install or MEM0_API_KEY is detected, and even then the runner
+reports it as ``mem0_present=true`` without asserting compatibility.
 """
 from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import importlib
+import importlib.util
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -32,8 +38,16 @@ RESULTS_ROOT = ROOT / "results"
 SNAPSHOTS_ROOT = RESULTS_ROOT / "snapshots"
 
 PILOT_MAX_USERS = 10
+PILOT_MAX_CONCURRENCY = 8
 ENV_FULL_APPROVAL = "XKLICKD_BENCHMARK_FULL_APPROVED"
-ENV_LLM_KEYS = ("LLM_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GROQ_API_KEY")
+ENV_LLM_KEYS = (
+    "LLM_API_KEY",
+    "GEMINI_API_KEY",
+    "GOOGLE_API_KEY",
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY",
+    "GROQ_API_KEY",
+)
 ENV_MEM0_KEY = "MEM0_API_KEY"
 
 
@@ -49,6 +63,23 @@ def _utcnow_iso() -> str:
     return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _run_id() -> str:
+    return _dt.datetime.now(_dt.timezone.utc).strftime("pilot_%Y%m%dT%H%M%SZ")
+
+
+def _git_sha() -> str | None:
+    try:
+        out = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT,
+            check=False, capture_output=True, text=True, timeout=5,
+        )
+        if out.returncode == 0:
+            return out.stdout.strip() or None
+    except Exception:
+        return None
+    return None
+
+
 def llm_configured() -> bool:
     return any(os.environ.get(k) for k in ENV_LLM_KEYS)
 
@@ -57,9 +88,7 @@ def mem0_present() -> bool:
     if os.environ.get(ENV_MEM0_KEY):
         return True
     try:
-        import importlib
-        importlib.util.find_spec("mem0")  # type: ignore[attr-defined]
-        return importlib.util.find_spec("mem0") is not None  # type: ignore[attr-defined]
+        return importlib.util.find_spec("mem0") is not None
     except Exception:
         return False
 
@@ -80,13 +109,9 @@ def load_manifest(fixtures_dir: Path) -> dict[str, Any]:
     if not mpath.exists():
         raise RunnerError(
             f"Missing fixture manifest at {mpath}. "
-            f"Run: python -m benchmarks.v4_1.fixtures.generator"
+            f"Run: python benchmarks/v4.1/fixtures/generator.py"
         )
     return json.loads(mpath.read_text())
-
-
-def filter_users(rows: list[dict[str, Any]], user_ids: set[str]) -> list[dict[str, Any]]:
-    return [r for r in rows if r.get("user_id") in user_ids]
 
 
 def planned_run_manifest(mode: str, fixtures_dir: Path, n_users: int,
@@ -111,6 +136,7 @@ def planned_run_manifest(mode: str, fixtures_dir: Path, n_users: int,
                        "mem0" if mem0_present() else "mem0_skipped"],
         },
         "token_accounting": "heuristic_unless_provider_reports",
+        "repo_commit": _git_sha(),
     }
 
 
@@ -120,6 +146,54 @@ def write_results(out_dir: Path, name: str, payload: dict[str, Any]) -> Path:
     out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n",
                         encoding="utf-8")
     return out_path
+
+
+def _load_executor_module() -> Any:
+    """Load the executor module without relying on package imports.
+
+    The ``benchmarks/v4.1`` directory is not a valid Python identifier so
+    we cannot ``from .. import ...``. We load both ``executor`` and the
+    ``providers`` / ``prompts`` packages by absolute path.
+    """
+    base = ROOT
+    # Register a synthetic top-level package mapping so relative imports work.
+    pkg_name = "_v4_1_pkg"
+    if pkg_name not in sys.modules:
+        import types as _types
+        pkg = _types.ModuleType(pkg_name)
+        pkg.__path__ = [str(base)]
+        sys.modules[pkg_name] = pkg
+    for child in ("providers", "prompts", "runner"):
+        full = f"{pkg_name}.{child}"
+        if full in sys.modules:
+            continue
+        spec = importlib.util.spec_from_file_location(
+            full, base / child / "__init__.py",
+            submodule_search_locations=[str(base / child)],
+        )
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[full] = mod
+        spec.loader.exec_module(mod)
+    # Now load the executor as a submodule of _v4_1_pkg.runner so its
+    # relative imports (``..prompts``, ``..providers``) resolve.
+    full = f"{pkg_name}.runner.executor"
+    if full not in sys.modules:
+        spec = importlib.util.spec_from_file_location(
+            full, base / "runner" / "executor.py",
+        )
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[full] = mod
+        spec.loader.exec_module(mod)
+    return sys.modules[full]
+
+
+def _resolve_provider(name: str) -> Any:
+    """Resolve a provider factory from the loaded providers package."""
+    _load_executor_module()
+    providers_pkg = sys.modules["_v4_1_pkg.providers"]
+    return providers_pkg.get_provider(name)
 
 
 def cmd_dry_run(args: argparse.Namespace) -> int:
@@ -158,44 +232,100 @@ def cmd_pilot(args: argparse.Namespace) -> int:
         raise RunnerError(
             f"--pilot is limited to {PILOT_MAX_USERS} users (requested {args.users})."
         )
+    if args.concurrency < 1 or args.concurrency > PILOT_MAX_CONCURRENCY:
+        raise RunnerError(
+            f"--concurrency must be in [1, {PILOT_MAX_CONCURRENCY}] (got {args.concurrency})."
+        )
+    if args.batch_size < 1:
+        raise RunnerError("--batch-size must be >= 1.")
+    if args.retry_max < 0:
+        raise RunnerError("--retry-max must be >= 0.")
+    if args.sleep_between_batches < 0:
+        raise RunnerError("--sleep-between-batches must be >= 0.")
+
     fixtures_dir = args.fixtures
     manifest = load_manifest(fixtures_dir)
     personas = load_jsonl(fixtures_dir / manifest["files"]["personas"]["path"])
-    pilot_ids = {p["user_id"] for p in personas[: args.users]}
+    pilot_personas = personas[: args.users]
+    pilot_ids = {p["user_id"] for p in pilot_personas}
+    test_a = load_jsonl(fixtures_dir / manifest["files"]["test_a_runs"]["path"])
+    pilot_runs = [r for r in test_a if r["user_id"] in pilot_ids]
 
     out_dir = RESULTS_ROOT / _utcnow_date() / "pilot"
-    if not llm_configured():
+
+    # Plan-only branch: no execute, or no provider, or no LLM key.
+    needs_provider = args.execute
+    has_key = args.provider == "mock" or llm_configured()
+    if not needs_provider or not has_key:
+        reason = (
+            "No LLM API key set and provider != mock; emitting planned-run "
+            "manifest only."
+            if not has_key
+            else "Provider available but --execute not supplied; emitting plan only."
+        )
         payload = planned_run_manifest(
             mode="pilot",
             fixtures_dir=fixtures_dir,
             n_users=args.users,
-            reason="No LLM API key set; emitting planned-run manifest only.",
+            reason=reason,
         )
         payload["pilot_user_ids"] = sorted(pilot_ids)
+        payload["provider_requested"] = args.provider
+        payload["execution_plan"] = {
+            "concurrency": args.concurrency,
+            "batch_size": args.batch_size,
+            "sleep_between_batches_s": args.sleep_between_batches,
+            "retry_max": args.retry_max,
+            "model": args.model,
+            "temperature": args.temperature,
+            "max_output_tokens": args.max_output_tokens,
+        }
         out_path = write_results(out_dir, "planned_run.json", payload)
-        print(f"[pilot] No LLM API key found. Planned manifest written: {out_path}")
+        print(f"[pilot] {reason}\n[pilot] Plan: {out_path}")
         return 0
 
-    # When an LLM is configured, the pilot still does not run by default
-    # without --execute. This keeps accidental spend at zero.
-    if not args.execute:
-        payload = planned_run_manifest(
-            mode="pilot",
-            fixtures_dir=fixtures_dir,
-            n_users=args.users,
-            reason="LLM configured but --execute not supplied; emitting plan only.",
-        )
-        payload["pilot_user_ids"] = sorted(pilot_ids)
-        out_path = write_results(out_dir, "planned_run.json", payload)
-        print(f"[pilot] LLM available; rerun with --execute to actually call. Plan: {out_path}")
-        return 0
+    # Execution path. Use the run-id subdirectory to keep multiple pilot
+    # attempts side by side; resumability is per-run.
+    rid = args.run_id or _run_id()
+    run_dir = out_dir / rid
+    run_dir.mkdir(parents=True, exist_ok=True)
 
-    # Execution path is intentionally a stub: real provider wiring lives in
-    # an adapter the human approves separately.
-    raise RunnerError(
-        "Pilot execution adapter is not wired in this commit. "
-        "Add a provider adapter and re-invoke with --execute after review."
+    executor = _load_executor_module()
+    providers_pkg = sys.modules["_v4_1_pkg.providers"]
+    config = providers_pkg.ProviderConfig(
+        model=args.model,
+        temperature=args.temperature,
+        max_output_tokens=args.max_output_tokens,
     )
+    if args._provider_instance is not None:
+        provider = args._provider_instance
+    else:
+        provider = _resolve_provider(args.provider)
+
+    plan = executor.ExecutionPlan(
+        provider_name=args.provider,
+        config=config,
+        concurrency=args.concurrency,
+        batch_size=args.batch_size,
+        sleep_between_batches_s=args.sleep_between_batches,
+        retry_max=args.retry_max,
+    )
+    result = executor.execute_pilot(
+        run_specs=pilot_runs,
+        personas=pilot_personas,
+        provider=provider,
+        plan=plan,
+        out_dir=run_dir,
+        fixtures_manifest=manifest,
+        repo_commit=_git_sha(),
+        run_id=rid,
+    )
+    print(
+        f"[pilot] Executed {result['summary']['counts']['ok']} ok / "
+        f"{result['summary']['counts']['error']} errors. "
+        f"Outputs in {run_dir}"
+    )
+    return 0
 
 
 def cmd_full(args: argparse.Namespace) -> int:
@@ -230,7 +360,22 @@ def _parse() -> argparse.Namespace:
     p_pilot.add_argument("--users", type=int, default=10)
     p_pilot.add_argument("--execute", action="store_true",
                          help="Actually call the provider (requires adapter).")
-    p_pilot.set_defaults(func=cmd_pilot)
+    p_pilot.add_argument("--provider", default="gemini",
+                         choices=["gemini", "mock"],
+                         help="Provider name (default: gemini).")
+    p_pilot.add_argument("--model", default="gemini-2.5-flash",
+                         help="Model id (default: gemini-2.5-flash).")
+    p_pilot.add_argument("--temperature", type=float, default=0.2)
+    p_pilot.add_argument("--max-output-tokens", type=int, default=512)
+    p_pilot.add_argument("--concurrency", type=int, default=1,
+                         help=f"Parallel calls (default 1, max {PILOT_MAX_CONCURRENCY}).")
+    p_pilot.add_argument("--batch-size", type=int, default=10)
+    p_pilot.add_argument("--sleep-between-batches", type=float, default=1.0)
+    p_pilot.add_argument("--retry-max", type=int, default=2)
+    p_pilot.add_argument("--run-id", default=None,
+                         help="Reuse a prior run-id to resume.")
+    # Internal-only: allow tests to inject a provider instance directly.
+    p_pilot.set_defaults(func=cmd_pilot, _provider_instance=None)
 
     p_full = sub.add_parser("full", help="Full run; heavily gated.")
     p_full.add_argument("--fixtures", type=Path, default=FIXTURES_DIR)

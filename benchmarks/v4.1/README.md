@@ -1,6 +1,7 @@
 # x.klickd v4.1 — Benchmark Harness
 
-**Status:** scaffolding only. No large/expensive LLM batches have been run.
+**Status:** scaffolding + controlled pilot executor. No large/expensive LLM
+batches have been run.
 **Default mode:** dry-run. No provider calls happen without explicit human
 approval, an environment variable, and a CLI flag.
 **No publish / no tag / no release / no Zenodo / no npm / no PyPI.**
@@ -19,16 +20,26 @@ benchmarks/v4.1/
     generated/              Generated fixtures (gitignored)
   runner/
     runner.py               Dry-run / pilot / full-run guard
+    executor.py             Controlled pilot executor (logging, retries, resume)
+    audit.py                Pilot output auditor (writes audit_report.md)
+  providers/
+    base.py                 Provider protocol + registry
+    gemini_adapter.py       Gemini 2.5 Flash adapter (key from env)
+    mock_provider.py        Deterministic in-process mock; never calls network
+  prompts/
+    test_a.py               Test A condition prompt builders + hashing
   evaluator/
     evaluator.py            Deterministic rubric scorer
     rubrics.json            Rubric definitions
   reference_runtime/
     rfc010_reference.py     NON-PRODUCTION RFC-010 reference runtime
   results/                  Outputs (gitignored except for .gitkeep)
-  tests/                    Unit tests
+  tests/                    Unit tests (provider is always mocked)
 ```
 
-## 1. Generate fixtures (no LLM)
+## Exact commands
+
+### 1. Generate fixtures (no LLM)
 
 ```bash
 python3 benchmarks/v4.1/fixtures/generator.py \
@@ -36,91 +47,138 @@ python3 benchmarks/v4.1/fixtures/generator.py \
     --out benchmarks/v4.1/fixtures/generated
 ```
 
-This produces:
+Produces `personas.jsonl`, `test_a_runs.jsonl`, `test_b_sessions.jsonl`,
+`manifest.json`. Identical seeds produce byte-identical files.
 
-- `personas.jsonl` — 500 personas
-- `test_a_runs.jsonl` — 500 × 6 prompt families × 3 conditions = 9,000 run specs (Test A coverage exceeds the ~3,000 target so subsampling is supported)
-- `test_b_sessions.jsonl` — 500 × 10 sessions = 5,000 session specs
-- `manifest.json` — counts, seed, SHA-256 of each fixture file
-
-Identical seeds produce byte-identical files.
-
-## 2. Dry-run
+### 2. Dry-run (never calls a provider)
 
 ```bash
 python3 benchmarks/v4.1/runner/runner.py dry-run
 ```
 
 Validates fixtures against the manifest, emits a planned-run manifest under
-`benchmarks/v4.1/results/<date>/dry_run/planned_run.json`. **Never calls a
-provider.**
+`benchmarks/v4.1/results/<date>/dry_run/planned_run.json`.
 
-## 3. Pilot (up to 10 users)
+### 3. Pilot — plan only (no API calls)
 
 ```bash
-# With no API key: writes a planned manifest only.
 python3 benchmarks/v4.1/runner/runner.py pilot --users 10
-
-# With an LLM key set, still requires --execute to actually call:
-LLM_API_KEY=sk-... python3 benchmarks/v4.1/runner/runner.py pilot --users 10 --execute
 ```
 
-`--users` is capped at 10 by the harness. Without `--execute`, the runner
-emits a planned manifest even if a key is present. The actual provider adapter
-is intentionally not wired in this commit — a human must review and add it
-before any real pilot.
+Without `--execute`, the runner emits a planned manifest only — even if
+`GEMINI_API_KEY` is set.
 
-## 4. Full run (500 users) — heavily gated
+### 4. Pilot — execute with Gemini (requires explicit approval)
 
-A full run requires ALL of:
-
-1. CLI flag `--confirm-full-run`
-2. Environment variable `XKLICKD_BENCHMARK_FULL_APPROVED=1`
-3. A pre-flight snapshot directory at
-   `benchmarks/v4.1/results/snapshots/<YYYY-MM-DD>/`
+After a human has reviewed the planned manifest:
 
 ```bash
-# This will refuse — by design — until all conditions are met
-# AND a human has wired the provider adapter.
+export GEMINI_API_KEY=...   # or LLM_API_KEY / GOOGLE_API_KEY
+python3 benchmarks/v4.1/runner/runner.py pilot \
+    --users 10 \
+    --provider gemini \
+    --model gemini-2.5-flash \
+    --temperature 0.2 \
+    --max-output-tokens 512 \
+    --concurrency 2 \
+    --batch-size 10 \
+    --sleep-between-batches 1.0 \
+    --retry-max 2 \
+    --execute
+```
+
+`--users` is capped at 10. `--concurrency` is in `[1, 8]` (default `1`).
+Pilot output lives under
+`benchmarks/v4.1/results/<date>/pilot/<run_id>/` with these files:
+
+| File | Description |
+| ---- | ----------- |
+| `raw_outputs.jsonl` | One line per successful call: `run_id`, `condition`, `model`, `prompt_hash`, `output_hash`, `output_text`, latency, tokens, timestamp, provider metadata |
+| `errors.jsonl` | One line per failed call after retries |
+| `metrics_summary.json` | Aggregate counts, latency, tokens, by-condition counts |
+| `run_manifest.json` | Run id, mode, provider, config, execution settings, fixture manifest reference, repo commit, counts |
+
+The executor is **resumable**: re-invoking with the same `--run-id` skips
+already-completed `run_id`s recorded in `raw_outputs.jsonl`.
+
+### 5. Pilot — audit
+
+```bash
+python3 benchmarks/v4.1/runner/audit.py \
+    benchmarks/v4.1/results/<date>/pilot/<run_id>
+```
+
+Writes `audit_report.md` and `audit_report.json` in the run directory.
+Exits non-zero if any of these hard checks fail:
+
+- Condition balance (`no_klickd` / `xklickd_lite` / `xklickd_pro` counts
+  must be equal and non-zero across attempts).
+- Missing `prompt_hash` or `output_hash`.
+- Model id on a row differs from the manifest's model.
+- Any output or manifest text matches a known secret pattern
+  (`sk-...`, `AIza...`, `AKIA...`, `ghp_...`, Slack tokens, PEM keys).
+
+Soft warnings (empty output text, missing provider tokens) appear in the
+report but do not change the exit code.
+
+### 6. Full run (500 users) — STILL refused
+
+Full execution remains intentionally not wired in this commit. Even with
+`--confirm-full-run`, `XKLICKD_BENCHMARK_FULL_APPROVED=1`, and a
+pre-flight snapshot directory, the runner refuses and exits non-zero.
+
+```bash
+# Will refuse — by design. Do not run.
 XKLICKD_BENCHMARK_FULL_APPROVED=1 \
     python3 benchmarks/v4.1/runner/runner.py full --confirm-full-run
 ```
 
-See `BENCHMARK_PROTOCOL.md §6` for why a snapshot is required.
-
-## 5. Evaluate
+### 7. Evaluate (rule-based)
 
 ```bash
 python3 benchmarks/v4.1/evaluator/evaluator.py \
-    --input  benchmarks/v4.1/results/<date>/pilot/raw_runs.jsonl \
-    --output benchmarks/v4.1/results/<date>/pilot/eval.jsonl
+    --input  benchmarks/v4.1/results/<date>/pilot/<run_id>/raw_outputs.jsonl \
+    --output benchmarks/v4.1/results/<date>/pilot/<run_id>/eval.jsonl
 ```
 
 The evaluator is deterministic and rule-based. Token counts are
 provider-reported when present, else heuristic (~4 chars/token) and labelled
 as such.
 
-## 6. RFC-010 reference runtime (Test B)
+## Fairness and determinism
 
-`reference_runtime/rfc010_reference.py` implements the minimum primitives
-(`extract_facts`, `link_entities`, `retrieve`, `build_injection_context`,
-`erase`) needed to run the `xklickd_compressed` Test B condition. It is
-**rule-based, deterministic, and explicitly NON-PRODUCTION** — tagged
-`rfc010-reference/0.1.0-nonprod`. It is not a memory layer, and not a Mem0
-replacement.
+- **Identical user prompt** across the three Test A conditions; only the
+  condition-specific context block prepended to the system prompt differs.
+- **Identical generation parameters** (model, temperature, top_p,
+  max_output_tokens) for every call within a run.
+- **`prompt_hash`** (SHA-256 of `{system, user}` JSON) recorded for every
+  call; **`output_hash`** recorded for every successful call.
+- The runner records the seed, fixture SHA-256, repo commit SHA, and full
+  provider config in `run_manifest.json`.
 
-## 7. Mem0
-
-This harness makes **no Mem0 compatibility claim**. The `mem0` Test B
-condition is `skipped` unless a local Mem0 install or `MEM0_API_KEY` is
-detected; even when detected, it is reported as `mem0_present=true` without
-asserting compatibility. See tests/test_no_mem0_claim.py.
-
-## 8. Tests
+## Test policy
 
 ```bash
 python3 -m pytest benchmarks/v4.1/tests/ -v
 ```
 
-Covers: fixture counts, determinism, no-LLM-in-dry-run, full-run guard,
-no Mem0 claim, RFC-010 reference primitives.
+Tests cover: fixture counts and determinism, no-LLM-in-dry-run, full-run
+guard, no Mem0 claim, RFC-010 reference primitives, provider registry,
+prompt-builder fairness and hash sensitivity, controlled-execution
+artifacts, deterministic logs, concurrency validation, retry behaviour,
+resumability, and audit detection of secret/model-mismatch issues. **No
+network call is made by any test**, even if API keys are set.
+
+## RFC-010 reference runtime (Test B)
+
+`reference_runtime/rfc010_reference.py` implements minimum primitives needed
+to run the `xklickd_compressed` Test B condition. It is **rule-based,
+deterministic, and explicitly NON-PRODUCTION** — tagged
+`rfc010-reference/0.1.0-nonprod`. Not a memory layer, not a Mem0
+replacement.
+
+## Mem0
+
+This harness makes **no Mem0 compatibility claim**. The `mem0` Test B
+condition is `skipped` unless a local Mem0 install or `MEM0_API_KEY` is
+detected. See `tests/test_no_mem0_claim.py`.
