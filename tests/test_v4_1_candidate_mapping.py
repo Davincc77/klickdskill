@@ -74,7 +74,7 @@ def test_no_klickdapp_in_chimera_planning_dir():
 
 # --- artefact-level tests (Lite + Pro real .klickd files) ---
 
-ART_ROOT = REPO_ROOT / "examples" / "v4.1" / "chimera-skills"
+ART_ROOT = REPO_ROOT / "examples" / "v4.1" / "x-klickd-skills"
 LITE = ART_ROOT / "lite"
 PRO = ART_ROOT / "pro"
 

@@ -1,0 +1,326 @@
+{
+  "klickd_version": "4.0",
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "v4.1-chimera-candidate-1.0",
+  "created_at": "2026-05-27T00:00:00Z",
+  "encrypted": false,
+  "domain": "education",
+  "profile_kind": "carrier_competency_pack",
+  "_pack_metadata": {
+    "kind": "chimera_candidate_skill_pack",
+    "size_tier": "pro",
+    "non_normative": true,
+    "claims_v41_ga": false,
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "status": "candidate_mapped",
+    "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
+    "see_readme": "examples/v4.1/x-klickd-skills/README.md",
+    "note": "Non-normative Chimera v4.1 candidate skill artefact (B31). Pro tier; compact_index loading strategy declared."
+  },
+  "x_klickd_pack": {
+    "pack": "x.klickd/learning_designer",
+    "pack_version": "0.1.0-candidate-pro",
+    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#b31",
+    "publisher": {
+      "name": "klickd",
+      "ref": "https://klickd.app"
+    },
+    "size_tier": "pro",
+    "loading_strategy": {
+      "mode": "compact_index_plus_lazy_body",
+      "compact_index_in_prompt": true,
+      "full_body_on_demand": true,
+      "rationale": "Pro tier per docs/chimera/README_V4_1.md §2; full bodies (mastery scales, evidence rules, framework subsets) lazy-loaded by decision_router (RFC-007)."
+    },
+    "compact_index": {
+      "pack": "x.klickd/learning_designer",
+      "frameworks": [
+        "esco",
+        "digcomp",
+        "onet",
+        "lifecomp"
+      ],
+      "competency_ids": [
+        "esco:S1.6",
+        "esco:S2.0",
+        "digcomp:3.1",
+        "digcomp:5.3",
+        "onet:25-9031.00",
+        "lifecomp:L1",
+        "lifecomp:L3"
+      ],
+      "gate_summaries": [
+        {
+          "id": "accessibility-skip",
+          "level": "block"
+        },
+        {
+          "id": "minor-learner-pii",
+          "level": "block"
+        },
+        {
+          "id": "high-stakes-assessment",
+          "level": "confirm"
+        }
+      ],
+      "human_authority": {
+        "final_decision_owner": "human_carrier",
+        "agent_role": "advisory"
+      },
+      "router_cost": {
+        "tokens_estimate": 1200,
+        "baseline": "base_plus_one"
+      }
+    },
+    "parent_packs": [
+      "x.klickd/user",
+      "x.klickd/research"
+    ],
+    "target_user": "Learning experience designer / instructional designer building curricula, courses, assessments. Constructive alignment, accessibility, evidence-grounded outcomes. NOT a host-side tutor (that's host_skill).",
+    "frameworks": [
+      {
+        "scheme": "esco",
+        "version": "v1.1.1",
+        "iri_prefix": "http://data.europa.eu/esco/skill/",
+        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
+      },
+      {
+        "scheme": "digcomp",
+        "version": "2.2",
+        "iri_prefix": "https://publications.jrc.ec.europa.eu/repository/handle/JRC128415/",
+        "canonical_url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC128415"
+      },
+      {
+        "scheme": "onet",
+        "version": "28.0",
+        "iri_prefix": "https://www.onetonline.org/link/summary/",
+        "canonical_url": "https://www.onetonline.org/"
+      },
+      {
+        "scheme": "lifecomp",
+        "version": "2020",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/lifecomp/2020/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/lifecomp_en"
+      }
+    ],
+    "base_transversal_core": {
+      "frameworks": [
+        {
+          "scheme": "esco",
+          "version": "v1.1.1"
+        }
+      ],
+      "transversal_refs": [
+        {
+          "competency_ref": "esco:S2",
+          "scheme": "esco",
+          "prefLabel": "information skills"
+        }
+      ]
+    },
+    "competency_mappings": [
+      {
+        "competency_ref": "esco:S1.6",
+        "scheme": "esco",
+        "prefLabel": "training, coaching, teaching"
+      },
+      {
+        "competency_ref": "esco:S2.0",
+        "scheme": "esco",
+        "prefLabel": "information skills"
+      },
+      {
+        "competency_ref": "digcomp:3.1",
+        "scheme": "digcomp",
+        "prefLabel": "Developing digital content"
+      },
+      {
+        "competency_ref": "digcomp:5.3",
+        "scheme": "digcomp",
+        "prefLabel": "Creatively using digital technologies"
+      },
+      {
+        "competency_ref": "onet:25-9031.00",
+        "scheme": "onet",
+        "prefLabel": "Instructional Coordinators"
+      },
+      {
+        "competency_ref": "lifecomp:L1",
+        "scheme": "lifecomp",
+        "prefLabel": "Growth mindset"
+      },
+      {
+        "competency_ref": "lifecomp:L3",
+        "scheme": "lifecomp",
+        "prefLabel": "Managing learning"
+      }
+    ],
+    "competencies": [
+      {
+        "competency_ref": "esco:S1.6",
+        "scheme": "esco",
+        "prefLabel": "training, coaching, teaching"
+      },
+      {
+        "competency_ref": "esco:S2.0",
+        "scheme": "esco",
+        "prefLabel": "information skills"
+      },
+      {
+        "competency_ref": "digcomp:3.1",
+        "scheme": "digcomp",
+        "prefLabel": "Developing digital content"
+      },
+      {
+        "competency_ref": "digcomp:5.3",
+        "scheme": "digcomp",
+        "prefLabel": "Creatively using digital technologies"
+      },
+      {
+        "competency_ref": "onet:25-9031.00",
+        "scheme": "onet",
+        "prefLabel": "Instructional Coordinators"
+      },
+      {
+        "competency_ref": "lifecomp:L1",
+        "scheme": "lifecomp",
+        "prefLabel": "Growth mindset"
+      },
+      {
+        "competency_ref": "lifecomp:L3",
+        "scheme": "lifecomp",
+        "prefLabel": "Managing learning"
+      }
+    ],
+    "levels": [
+      {
+        "framework_ref": "https://europa.eu/europass/eqf/level/7",
+        "level_label": "EQF level 7",
+        "effective_at": "2026-05-27"
+      }
+    ],
+    "language_proficiency": [],
+    "mastery": [],
+    "memory_scope": "memory.x_klickd.learning_designer",
+    "memory_segments": [
+      {
+        "id": "operational",
+        "scope": "memory.x_klickd.learning_designer.operational",
+        "policy": "pointer_only_summary"
+      },
+      {
+        "id": "evidence",
+        "scope": "memory.x_klickd.learning_designer.evidence",
+        "policy": "pointer_only_chain_of_custody"
+      }
+    ],
+    "structured_memory": {
+      "scope": "memory.x_klickd.learning_designer",
+      "policy": "pack_scoped_only",
+      "entries": []
+    },
+    "gates": {
+      "verification_gates_default": {
+        "raise_only": true,
+        "claim_grounding_required": true,
+        "reversibility_threshold": "medium"
+      },
+      "human_veto_policy": {
+        "owner": "human_carrier",
+        "scope": [
+          "skip_accessibility_review",
+          "minor_learner_pii_write",
+          "high_stakes_assessment_publish"
+        ]
+      }
+    },
+    "human_veto": {
+      "owner": "human_carrier",
+      "raise_only": true,
+      "non_lowerable_floor": [
+        "skip_accessibility_review",
+        "minor_learner_pii_write"
+      ]
+    },
+    "human_authority": {
+      "final_decision_owner": "human_carrier",
+      "agent_role": "advisory",
+      "escalation": "qualified_specialist_per_domain"
+    },
+    "evidence_policy": {
+      "required_for_claims": true,
+      "pointer_only": true,
+      "attestation_shape_ref": "rfc-002#8b",
+      "verification_artifacts_ref": "rfc-003#verification_artifacts"
+    },
+    "source_policy": {
+      "allow_inline_definitions": false,
+      "language_tags": [
+        "en",
+        "fr"
+      ]
+    },
+    "verification_gates": {
+      "version": 1,
+      "user_default": "silent",
+      "gates": [
+        {
+          "id": "accessibility-skip",
+          "action_class": "skip_accessibility_review",
+          "level": "block",
+          "reason": "Skipping accessibility review on a published learning artefact is blocked."
+        },
+        {
+          "id": "minor-learner-pii",
+          "action_class": "minor_learner_pii_write",
+          "level": "block",
+          "reason": "Inline PII of minor learners is blocked."
+        },
+        {
+          "id": "high-stakes-assessment",
+          "action_class": "high_stakes_assessment_publish",
+          "level": "confirm",
+          "reason": "Publishing a high-stakes assessment requires confirmation against the validity evidence."
+        }
+      ]
+    },
+    "router_cost": {
+      "tokens_estimate": 1200,
+      "baseline": "base_plus_one"
+    },
+    "acceptance_criteria": [
+      "Every competency_ref resolves into an authoritative framework declared in frameworks[].",
+      "Citation-only references (where present) are NOT registered as frameworks[] schemes.",
+      "All non_lowerable_floor gates are block and stay block under composition.",
+      "compact_index declares the same gates and router_cost as the full body.",
+      "Pointer-only evidence; no inline confidential or PII content.",
+      "Round-trip safe with v4.0-only reader."
+    ],
+    "tests": {
+      "static": [
+        "forbidden_fields literal frozen",
+        "no klickdapp.* or kai.* artefact reference",
+        "size_tier == pro and tokens_estimate <= 1350",
+        "compact_index present with frameworks, competency_ids, gate_summaries, router_cost"
+      ],
+      "review": [
+        "Reviewer verifies parent packs are present without redefinition.",
+        "Reviewer verifies non_lowerable_floor matches the gate definitions.",
+        "Reviewer verifies citation-only references (if any) for x.klickd/learning_designer are out of frameworks[]."
+      ]
+    },
+    "forbidden_fields": [
+      "pedagogy",
+      "teaching_method",
+      "socratic_steps",
+      "prompt_strategy",
+      "scoring_rubric",
+      "intervention_policy",
+      "tone_rules",
+      "system_prompt_overrides",
+      "knowledge.mastered",
+      "mastered_topics"
+    ]
+  }
+}

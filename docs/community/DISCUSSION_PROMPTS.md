@@ -186,7 +186,7 @@ The planning index for v4.1 candidate work is here:
 - [`docs/chimera/README_V4_1.md`](../chimera/README_V4_1.md) — what `docs/chimera/` is and is not.
 - [`docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md`](../chimera/V4_1_SKILL_CANDIDATE_MAPPING.md) — the candidate list with mapping status (`needs_mapping` / `candidate_mapped` / `ship_ready`).
 - [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md) — authoritative RFC.
-- [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) — concrete `candidate_mapped` artefacts (lite/ and pro/ tiers).
+- [`examples/v4.1/x-klickd-skills/`](../../examples/v4.1/x-klickd-skills/) — concrete `candidate_mapped` artefacts (lite/ and pro/ tiers).
 
 What would help most at this stage:
 

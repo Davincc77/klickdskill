@@ -7,6 +7,43 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## docs/repo 2026-05-28 — rename public v4.1 candidate artefact path to `x-klickd-skills/`
+
+> **Repo-only docs/rename PR. Triggers no release.** No tag, no `latest` on
+> npm or PyPI, no DOI, no Zenodo deposit, no GitHub Release, no IANA action,
+> no SDK bump, no `/klickdskill` catalog change. Wire envelope, JSON
+> schemas, payload semantics, and the existing starter `.klickd` files are
+> unchanged.
+
+- **Move:** `examples/v4.1/chimera-skills/` → `examples/v4.1/x-klickd-skills/`.
+  The internal v4.1 working codename is no longer in the public artefact
+  path; the site can now link to 42 distinct raw GitHub URLs without
+  exposing it. Per-artefact `see_readme` pointers and both per-tier
+  `manifest.json` files were updated and per-tier SHA-256 hashes were
+  regenerated to match the new bytes.
+- **Add:** root download index `examples/v4.1/x-klickd-skills/manifest.json`
+  listing all 42 artefacts (8 Lite + 34 Pro) with `tier`, `pack`, `file`,
+  `relative_path`, `bytes`, `sha256_file`, and a `raw_url_template` so a
+  consumer can construct a raw GitHub URL deterministically.
+- **Update:** validator (`scripts/validate_v4_1_candidate_mapping.py`),
+  pytest wrapper (`tests/test_v4_1_candidate_mapping.py`), README inside
+  the moved directory, and every public doc that pointed at the old path
+  (`docs/ux/`, `docs/demos/`, `docs/community/`, `docs/public/`, plus the
+  internal `docs/chimera/` planning track whose links would otherwise
+  break).
+- **Frozen counts unchanged.** Still 8 Lite + 34 Pro = 42 `candidate_mapped`
+  artefacts. `_pack_metadata.claims_v41_ga: false` everywhere. Promotion
+  past `candidate_mapped` still requires the per-pack RFC + scaffold +
+  schema + round-trip vector chain of RFC-009 §8.
+- **Out of scope of this PR.** No artefact content was edited beyond the
+  `see_readme` path string. The `kind` field of each per-tier manifest
+  retains its historical value (internal JSON tag, not a public surface).
+  Internal planning docs under `docs/chimera/` and `docs/rfcs/chimera/`
+  remain as historical record (rename is an explicit non-goal here per
+  the rename brief).
+
+---
+
 ## packaging 4.0.3 — 2026-05-27 — align Python runtime `__version__` with package metadata; npm parity
 
 > **Packaging-only patch.** Stable `.klickd` spec release remains v4.0.0

@@ -7,7 +7,7 @@
 | **Created** | 2026-05-27 |
 | **Companion to** | [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) |
 
-> **Non-normative.** No release, tag, Zenodo DOI, npm/PyPI publish, IANA action, schema change, or website edit is implied. This file proposes **demo bundles** to seed the future `/klickdskill` "Bundle builder" tray (see presentation strategy §5.6). Every pack referenced below exists in [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) or [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) at the head of PR #75 as a `candidate_mapped` artefact; **none is `ship_ready` yet** and no bundle below may appear on the live catalog until each of its packs clears [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md).
+> **Non-normative.** No release, tag, Zenodo DOI, npm/PyPI publish, IANA action, schema change, or website edit is implied. This file proposes **demo bundles** to seed the future `/klickdskill` "Bundle builder" tray (see presentation strategy §5.6). Every pack referenced below exists in [`examples/v4.1/x-klickd-skills/`](../../examples/v4.1/x-klickd-skills/) or [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/) at the head of PR #75 as a `candidate_mapped` artefact; **none is `ship_ready` yet** and no bundle below may appear on the live catalog until each of its packs clears [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md).
 >
 > **No Klickd.app, no `kai.*`, no `core.*`, no v4-preview persona anchors** appear in any bundle below. The strict exclusion of [`docs/ux/V4_1-PRESENTATION-STRATEGY.md`](../ux/V4_1-PRESENTATION-STRATEGY.md) §0 is binding here.
 >
@@ -278,7 +278,7 @@
 | 8. Drone / mission ops | 5 | 3 | no — all `candidate_mapped`; none `ship_ready` yet |
 | 9. Support / sales ops | 6 | 3 | no — all `candidate_mapped` (incl. PR #75's `customer_support_operator` / `sales_operator`); none `ship_ready` yet |
 
-**None of the 42 v4.1 catalog packs is `ship_ready` yet.** Every bundle above forms an acyclic composition graph rooted on `x.klickd/user`, respects the seven-pack ceiling at the agent (not bundle) level, and is reproducible from the `.klickd` artefacts in [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/) and [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/). No bundle below appears on the live `/klickdskill` catalog until **each** of its packs clears [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md).
+**None of the 42 v4.1 catalog packs is `ship_ready` yet.** Every bundle above forms an acyclic composition graph rooted on `x.klickd/user`, respects the seven-pack ceiling at the agent (not bundle) level, and is reproducible from the `.klickd` artefacts in [`examples/v4.1/x-klickd-skills/`](../../examples/v4.1/x-klickd-skills/) and [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/). No bundle below appears on the live `/klickdskill` catalog until **each** of its packs clears [RFC-009 §8](../rfcs/RFC-009-chimera-v4.1.md).
 
 ---
 
@@ -297,5 +297,5 @@
 - [`docs/community/V4_1-CHALLENGE-CHIMERA-CUP.md`](../community/V4_1-CHALLENGE-CHIMERA-CUP.md)
 - [`docs/chimera/README_V4_1.md`](../chimera/README_V4_1.md)
 - [`docs/rfcs/RFC-009-chimera-v4.1.md`](../rfcs/RFC-009-chimera-v4.1.md)
-- [`examples/v4.1/chimera-skills/`](../../examples/v4.1/chimera-skills/)
+- [`examples/v4.1/x-klickd-skills/`](../../examples/v4.1/x-klickd-skills/)
 - [`examples/v4/starter-skills/`](../../examples/v4/starter-skills/)

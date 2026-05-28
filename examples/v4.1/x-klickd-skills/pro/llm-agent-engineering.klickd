@@ -1,0 +1,331 @@
+{
+  "klickd_version": "4.0",
+  "payload_schema_version": "4.0.0-preview.1",
+  "domain_schema_version": "v4.1-chimera-candidate-1.0",
+  "created_at": "2026-05-27T00:00:00Z",
+  "encrypted": false,
+  "domain": "software_engineering",
+  "profile_kind": "carrier_competency_pack",
+  "_pack_metadata": {
+    "kind": "chimera_candidate_skill_pack",
+    "size_tier": "pro",
+    "non_normative": true,
+    "claims_v41_ga": false,
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "status": "candidate_mapped",
+    "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
+    "see_readme": "examples/v4.1/x-klickd-skills/README.md",
+    "note": "Non-normative Chimera v4.1 candidate skill artefact (B2). Pro tier; compact_index loading strategy declared.",
+    "renamed_from": "ai-agent-builder.klickd"
+  },
+  "x_klickd_pack": {
+    "pack": "x.klickd/llm_agent_engineering",
+    "pack_version": "0.1.0-candidate-pro",
+    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#b2",
+    "publisher": {
+      "name": "klickd",
+      "ref": "https://klickd.app"
+    },
+    "size_tier": "pro",
+    "loading_strategy": {
+      "mode": "compact_index_plus_lazy_body",
+      "compact_index_in_prompt": true,
+      "full_body_on_demand": true,
+      "rationale": "Pro tier per docs/chimera/README_V4_1.md §2; full bodies (mastery scales, evidence rules, framework subsets) lazy-loaded by decision_router (RFC-007)."
+    },
+    "compact_index": {
+      "pack": "x.klickd/llm_agent_engineering",
+      "frameworks": [
+        "esco",
+        "sfia",
+        "onet",
+        "wef"
+      ],
+      "competency_ids": [
+        "esco:S5.6.1",
+        "sfia:PROG",
+        "sfia:ARCH",
+        "sfia:METL",
+        "onet:15-1252.00",
+        "wef:ai-and-big-data",
+        "wef:programming"
+      ],
+      "gate_summaries": [
+        {
+          "id": "agent-deployment",
+          "level": "confirm"
+        },
+        {
+          "id": "eval-gating-disable",
+          "level": "block"
+        },
+        {
+          "id": "cost-budget-override",
+          "level": "confirm"
+        }
+      ],
+      "human_authority": {
+        "final_decision_owner": "human_carrier",
+        "agent_role": "advisory"
+      },
+      "router_cost": {
+        "tokens_estimate": 1250,
+        "baseline": "base_plus_one"
+      }
+    },
+    "parent_packs": [
+      "x.klickd/user",
+      "x.klickd/coding",
+      "x.klickd/llm_agent_security"
+    ],
+    "target_user": "Developer building production LLM agents. Tool design, eval harness, observability, cost discipline.",
+    "frameworks": [
+      {
+        "scheme": "esco",
+        "version": "v1.1.1",
+        "iri_prefix": "http://data.europa.eu/esco/skill/",
+        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
+      },
+      {
+        "scheme": "sfia",
+        "version": "8",
+        "iri_prefix": "https://sfia-online.org/en/sfia-8/",
+        "canonical_url": "https://sfia-online.org/en/sfia-8"
+      },
+      {
+        "scheme": "onet",
+        "version": "28.0",
+        "iri_prefix": "https://www.onetonline.org/link/summary/",
+        "canonical_url": "https://www.onetonline.org/"
+      },
+      {
+        "scheme": "wef",
+        "version": "2023",
+        "iri_prefix": "https://www.weforum.org/reports/future-of-jobs-2023/skills/",
+        "canonical_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2023/"
+      }
+    ],
+    "base_transversal_core": {
+      "frameworks": [
+        {
+          "scheme": "esco",
+          "version": "v1.1.1"
+        },
+        {
+          "scheme": "sfia",
+          "version": "8"
+        }
+      ],
+      "transversal_refs": [
+        {
+          "competency_ref": "esco:S2",
+          "scheme": "esco",
+          "prefLabel": "information skills"
+        }
+      ]
+    },
+    "competency_mappings": [
+      {
+        "competency_ref": "esco:S5.6.1",
+        "scheme": "esco",
+        "prefLabel": "developing AI and machine learning systems"
+      },
+      {
+        "competency_ref": "sfia:PROG",
+        "scheme": "sfia",
+        "prefLabel": "Programming/software development"
+      },
+      {
+        "competency_ref": "sfia:ARCH",
+        "scheme": "sfia",
+        "prefLabel": "Solution architecture"
+      },
+      {
+        "competency_ref": "sfia:METL",
+        "scheme": "sfia",
+        "prefLabel": "Methods and tools"
+      },
+      {
+        "competency_ref": "onet:15-1252.00",
+        "scheme": "onet",
+        "prefLabel": "Software Developers"
+      },
+      {
+        "competency_ref": "wef:ai-and-big-data",
+        "scheme": "wef",
+        "prefLabel": "AI and big data"
+      },
+      {
+        "competency_ref": "wef:programming",
+        "scheme": "wef",
+        "prefLabel": "Programming"
+      }
+    ],
+    "competencies": [
+      {
+        "competency_ref": "esco:S5.6.1",
+        "scheme": "esco",
+        "prefLabel": "developing AI and machine learning systems"
+      },
+      {
+        "competency_ref": "sfia:PROG",
+        "scheme": "sfia",
+        "prefLabel": "Programming/software development"
+      },
+      {
+        "competency_ref": "sfia:ARCH",
+        "scheme": "sfia",
+        "prefLabel": "Solution architecture"
+      },
+      {
+        "competency_ref": "sfia:METL",
+        "scheme": "sfia",
+        "prefLabel": "Methods and tools"
+      },
+      {
+        "competency_ref": "onet:15-1252.00",
+        "scheme": "onet",
+        "prefLabel": "Software Developers"
+      },
+      {
+        "competency_ref": "wef:ai-and-big-data",
+        "scheme": "wef",
+        "prefLabel": "AI and big data"
+      },
+      {
+        "competency_ref": "wef:programming",
+        "scheme": "wef",
+        "prefLabel": "Programming"
+      }
+    ],
+    "levels": [
+      {
+        "framework_ref": "https://europa.eu/europass/eqf/level/6",
+        "level_label": "EQF level 6",
+        "effective_at": "2026-05-27"
+      }
+    ],
+    "language_proficiency": [],
+    "mastery": [],
+    "memory_scope": "memory.x_klickd.llm_agent_engineering",
+    "memory_segments": [
+      {
+        "id": "operational",
+        "scope": "memory.x_klickd.llm_agent_engineering.operational",
+        "policy": "pointer_only_summary"
+      },
+      {
+        "id": "evidence",
+        "scope": "memory.x_klickd.llm_agent_engineering.evidence",
+        "policy": "pointer_only_chain_of_custody"
+      }
+    ],
+    "structured_memory": {
+      "scope": "memory.x_klickd.llm_agent_engineering",
+      "policy": "pack_scoped_only",
+      "entries": []
+    },
+    "gates": {
+      "verification_gates_default": {
+        "raise_only": true,
+        "claim_grounding_required": true,
+        "reversibility_threshold": "low"
+      },
+      "human_veto_policy": {
+        "owner": "human_carrier",
+        "scope": [
+          "agent_deployment",
+          "disable_eval_gating_on_model_bump",
+          "cost_budget_override"
+        ]
+      }
+    },
+    "human_veto": {
+      "owner": "human_carrier",
+      "raise_only": true,
+      "non_lowerable_floor": [
+        "disable_eval_gating_on_model_bump"
+      ]
+    },
+    "human_authority": {
+      "final_decision_owner": "human_carrier",
+      "agent_role": "advisory",
+      "escalation": "qualified_specialist_per_domain"
+    },
+    "evidence_policy": {
+      "required_for_claims": true,
+      "pointer_only": true,
+      "attestation_shape_ref": "rfc-002#8b",
+      "verification_artifacts_ref": "rfc-003#verification_artifacts"
+    },
+    "source_policy": {
+      "allow_inline_definitions": false,
+      "language_tags": [
+        "en",
+        "fr"
+      ]
+    },
+    "verification_gates": {
+      "version": 1,
+      "user_default": "silent",
+      "gates": [
+        {
+          "id": "agent-deployment",
+          "action_class": "agent_deployment",
+          "level": "confirm",
+          "reason": "Agent deployments are hard to reverse."
+        },
+        {
+          "id": "eval-gating-disable",
+          "action_class": "disable_eval_gating_on_model_bump",
+          "level": "block",
+          "reason": "Eval gating disables blocked on model version bumps; floor not lowerable."
+        },
+        {
+          "id": "cost-budget-override",
+          "action_class": "cost_budget_override",
+          "level": "confirm",
+          "reason": "Cost budget overrides require explicit attestation."
+        }
+      ]
+    },
+    "router_cost": {
+      "tokens_estimate": 1250,
+      "baseline": "base_plus_one"
+    },
+    "acceptance_criteria": [
+      "Every competency_ref resolves into an authoritative framework declared in frameworks[].",
+      "Citation-only references (where present) are NOT registered as frameworks[] schemes.",
+      "All non_lowerable_floor gates are block and stay block under composition.",
+      "compact_index declares the same gates and router_cost as the full body.",
+      "Pointer-only evidence; no inline confidential or PII content.",
+      "Round-trip safe with v4.0-only reader."
+    ],
+    "tests": {
+      "static": [
+        "forbidden_fields literal frozen",
+        "no klickdapp.* or kai.* artefact reference",
+        "size_tier == pro and tokens_estimate <= 1350",
+        "compact_index present with frameworks, competency_ids, gate_summaries, router_cost"
+      ],
+      "review": [
+        "Reviewer verifies parent packs are present without redefinition.",
+        "Reviewer verifies non_lowerable_floor matches the gate definitions.",
+        "Reviewer verifies citation-only references (if any) for x.klickd/llm_agent_engineering are out of frameworks[]."
+      ]
+    },
+    "forbidden_fields": [
+      "pedagogy",
+      "teaching_method",
+      "socratic_steps",
+      "prompt_strategy",
+      "scoring_rubric",
+      "intervention_policy",
+      "tone_rules",
+      "system_prompt_overrides",
+      "knowledge.mastered",
+      "mastered_topics"
+    ]
+  }
+}

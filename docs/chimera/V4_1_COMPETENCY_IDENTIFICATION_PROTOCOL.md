@@ -130,7 +130,7 @@ If a competency would require inline content (notes, transcripts, raw PII), it i
 
 ## 3. Coherence rules
 
-Every shipped artefact under `examples/v4.1/chimera-skills/{lite,pro}/` MUST satisfy:
+Every shipped artefact under `examples/v4.1/x-klickd-skills/{lite,pro}/` MUST satisfy:
 
 ### 3.1 Tier-specific competency-count range
 

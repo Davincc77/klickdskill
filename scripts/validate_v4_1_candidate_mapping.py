@@ -33,7 +33,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DOC = REPO_ROOT / "docs" / "chimera" / "V4_1_SKILL_CANDIDATE_MAPPING.md"
-ARTEFACT_ROOT = REPO_ROOT / "examples" / "v4.1" / "chimera-skills"
+ARTEFACT_ROOT = REPO_ROOT / "examples" / "v4.1" / "x-klickd-skills"
 LITE_DIR = ARTEFACT_ROOT / "lite"
 PRO_DIR = ARTEFACT_ROOT / "pro"
 
@@ -63,11 +63,9 @@ SUB_AREA_NICKNAMES = {
 # new ceilings are an **upper bound (capacity envelope)**, NOT a target —
 # artefacts should stay as compact as their framework-anchored content allows.
 # Apply to public x.klickd v4.1 candidate catalog artefacts under
-# `examples/v4.1/chimera-skills/{lite,pro}/` (the historical directory
-# name is an internal implementation detail) only; Klickd.app student
-# carriers
-# under `examples/v4/klickdapp-skills/` and Kai host-side artefacts are out of
-# scope (different validator).
+# `examples/v4.1/x-klickd-skills/{lite,pro}/` only; Klickd.app student
+# carriers under `examples/v4/klickdapp-skills/` and Kai host-side
+# artefacts are out of scope (different validator).
 TIER_ROUTER_COST_CEILING = {"lite": 900, "pro": 1350}
 TIER_BYTES_CEILING = {"lite": 12_000, "pro": 24_000}
 
