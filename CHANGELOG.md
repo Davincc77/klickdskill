@@ -15,7 +15,7 @@ Versions follow: `envelope_version (skill_revision)`.
 > schemas, payload semantics, and the existing starter `.klickd` files are
 > unchanged.
 
-- **Move:** `examples/v4.1/chimera-skills/` → `examples/v4.1/x-klickd-skills/`.
+- **Move:** `examples/v4.1/<internal-codename>-skills/` → `examples/v4.1/x-klickd-skills/`.
   The internal v4.1 working codename is no longer in the public artefact
   path; the site can now link to 42 distinct raw GitHub URLs without
   exposing it. Per-artefact `see_readme` pointers and both per-tier
@@ -29,7 +29,7 @@ Versions follow: `envelope_version (skill_revision)`.
   pytest wrapper (`tests/test_v4_1_candidate_mapping.py`), README inside
   the moved directory, and every public doc that pointed at the old path
   (`docs/ux/`, `docs/demos/`, `docs/community/`, `docs/public/`, plus the
-  internal `docs/chimera/` planning track whose links would otherwise
+  internal planning track whose links would otherwise
   break).
 - **Frozen counts unchanged.** Still 8 Lite + 34 Pro = 42 `candidate_mapped`
   artefacts. `_pack_metadata.claims_v41_ga: false` everywhere. Promotion
@@ -60,8 +60,8 @@ Versions follow: `envelope_version (skill_revision)`.
   than the prior `PUBLIC_FIELDS`-scoped scan; it covers internal
   metadata fields, manifests, and the README so the public download
   surface cannot regress.
-- **Out of scope of this PR.** Internal planning docs under
-  `docs/chimera/` and `docs/rfcs/chimera/` remain as historical
+- **Out of scope of this PR.** Internal planning docs (under the
+  internal-codename planning tree) remain as historical
   record (rename is an explicit non-goal here per the rename brief).
   The new guard only fires on the public download surface; it does
   NOT touch the internal planning tree.
@@ -101,8 +101,8 @@ Versions follow: `envelope_version (skill_revision)`.
 - No GitHub Release
 - No git tag
 - No Zenodo DOI / `.zenodo.json` change
-- No v4.1 / "Chimera" public claim — wire format, schemas, and spec are
-  unchanged from v4.0.0
+- No v4.1 public claim under any internal codename — wire format,
+  schemas, and spec are unchanged from v4.0.0
 
 ---
 
@@ -144,8 +144,8 @@ Versions follow: `envelope_version (skill_revision)`.
 - No GitHub Release
 - No git tag
 - No Zenodo DOI / `.zenodo.json` change
-- No v4.1 / Chimera public claim — wire format, schemas, and spec are
-  unchanged from v4.0.0
+- No v4.1 public claim under any internal codename — wire format,
+  schemas, and spec are unchanged from v4.0.0
 
 ---
 
