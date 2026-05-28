@@ -1,27 +1,26 @@
 {
   "klickd_version": "4.0",
   "payload_schema_version": "4.0.0-preview.1",
-  "domain_schema_version": "v4.1-chimera-candidate-1.0",
+  "domain_schema_version": "v4.1-x-klickd-candidate-1.0",
   "created_at": "2026-05-27T00:00:00Z",
   "encrypted": false,
   "domain": "trust_and_safety",
   "profile_kind": "carrier_competency_pack",
   "_pack_metadata": {
-    "kind": "chimera_candidate_skill_pack",
+    "kind": "x_klickd_candidate_skill_pack",
     "size_tier": "pro",
     "non_normative": true,
     "claims_v41_ga": false,
     "contains_real_pii": false,
     "contains_secrets": false,
     "status": "candidate_mapped",
-    "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/x-klickd-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact (B5). Pro tier; compact_index loading strategy declared."
+    "note": "Non-normative x.klickd v4.1 candidate skill artefact (B5). Pro tier; compact_index loading strategy declared."
   },
   "x_klickd_pack": {
     "pack": "x.klickd/trust_evidence",
     "pack_version": "0.1.0-candidate-pro",
-    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#b5",
+    "spec_ref": "x.klickd/v4.1#b5",
     "publisher": {
       "name": "klickd",
       "ref": "https://klickd.app"
@@ -31,7 +30,7 @@
       "mode": "compact_index_plus_lazy_body",
       "compact_index_in_prompt": true,
       "full_body_on_demand": true,
-      "rationale": "Pro tier per docs/chimera/README_V4_1.md §2; full bodies (mastery scales, evidence rules, framework subsets) lazy-loaded by decision_router (RFC-007)."
+      "rationale": "Pro tier per x.klickd/v4.1 (Pro tier); full bodies (mastery scales, evidence rules, framework subsets) lazy-loaded by decision_router (RFC-007)."
     },
     "compact_index": {
       "pack": "x.klickd/trust_evidence",

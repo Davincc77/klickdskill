@@ -125,6 +125,21 @@ def test_manifests_match_directory_contents():
     assert not failures, "\n".join(failures)
 
 
+def test_public_download_surface_is_codename_clean():
+    """Raw-byte scan of every file under examples/v4.1/x-klickd-skills/.
+
+    A downloader who opens any `.klickd`, the per-tier `manifest.json`,
+    the root `manifest.json`, or the in-directory `README.md` must NOT
+    see the internal v4.1 working codename in any byte. The PUBLIC_FIELDS
+    allow-list (which gates `validate_no_forbidden_public_wording()`) is
+    not sufficient because it explicitly excludes `_pack_metadata`,
+    `domain_schema_version`, and `spec_ref` — fields that are visible at
+    the top of every `.klickd` file."""
+    mod = _load_validator()
+    failures = mod.validate_public_surface_codename_clean()
+    assert not failures, "\n".join(failures)
+
+
 def test_no_klickdapp_or_kai_in_any_artefact():
     mod = _load_validator()
     leaks: list[str] = []

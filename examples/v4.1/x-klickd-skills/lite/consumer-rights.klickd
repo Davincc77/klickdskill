@@ -1,68 +1,159 @@
 {
   "klickd_version": "4.0",
   "payload_schema_version": "4.0.0-preview.1",
-  "domain_schema_version": "v4.1-chimera-candidate-1.0",
+  "domain_schema_version": "v4.1-x-klickd-candidate-1.0",
   "created_at": "2026-05-27T00:00:00Z",
   "encrypted": false,
   "domain": "legal",
   "profile_kind": "carrier_competency_pack",
   "_pack_metadata": {
-    "kind": "chimera_candidate_skill_pack",
+    "kind": "x_klickd_candidate_skill_pack",
     "size_tier": "lite",
     "non_normative": true,
     "claims_v41_ga": false,
     "contains_real_pii": false,
     "contains_secrets": false,
     "status": "candidate_mapped",
-    "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/x-klickd-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact. Lot A consumer-rights pack composing x.klickd/user and x.klickd/legal (P0)."
+    "note": "Non-normative x.klickd v4.1 candidate skill artefact. Lot A consumer-rights pack composing x.klickd/user and x.klickd/legal (P0)."
   },
   "x_klickd_pack": {
     "pack": "x.klickd/consumer_rights",
     "pack_version": "0.1.0-candidate-lite",
-    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a7",
-    "publisher": {"name": "klickd", "ref": "https://klickd.app"},
+    "spec_ref": "x.klickd/v4.1#a7",
+    "publisher": {
+      "name": "klickd",
+      "ref": "https://klickd.app"
+    },
     "size_tier": "lite",
-    "parent_packs": ["x.klickd/user", "x.klickd/legal"],
+    "parent_packs": [
+      "x.klickd/user",
+      "x.klickd/legal"
+    ],
     "target_user": "Consumer carrier dealing with returns, warranty, distance-selling, GDPR data-subject rights. Not litigation.",
     "frameworks": [
-      {"scheme": "esco", "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/", "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"},
-      {"scheme": "digcomp", "version": "2.2", "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/", "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"}
+      {
+        "scheme": "esco",
+        "version": "v1.1.1",
+        "iri_prefix": "http://data.europa.eu/esco/skill/",
+        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
+      },
+      {
+        "scheme": "digcomp",
+        "version": "2.2",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"
+      }
     ],
     "citation_only_references": [
-      {"id": "eu-consumer-rights-directive", "ref": "Directive 2011/83/EU", "url": "https://eur-lex.europa.eu/eli/dir/2011/83/oj"},
-      {"id": "gdpr-art-12-22", "ref": "Regulation (EU) 2016/679 Art. 12-22", "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj"}
+      {
+        "id": "eu-consumer-rights-directive",
+        "ref": "Directive 2011/83/EU",
+        "url": "https://eur-lex.europa.eu/eli/dir/2011/83/oj"
+      },
+      {
+        "id": "gdpr-art-12-22",
+        "ref": "Regulation (EU) 2016/679 Art. 12-22",
+        "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj"
+      }
     ],
     "base_transversal_core": {
-      "frameworks": [{"scheme": "esco", "version": "v1.1.1"}, {"scheme": "digcomp", "version": "2.2"}],
+      "frameworks": [
+        {
+          "scheme": "esco",
+          "version": "v1.1.1"
+        },
+        {
+          "scheme": "digcomp",
+          "version": "2.2"
+        }
+      ],
       "transversal_refs": [
-        {"competency_ref": "esco:S2", "scheme": "esco", "prefLabel": "information skills"},
-        {"competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content"}
+        {
+          "competency_ref": "esco:S2",
+          "scheme": "esco",
+          "prefLabel": "information skills"
+        },
+        {
+          "competency_ref": "digcomp:1.2",
+          "scheme": "digcomp",
+          "prefLabel": "Evaluating data, information and digital content"
+        }
       ]
     },
     "competency_mappings": [
-      {"competency_ref": "esco:S4.7", "scheme": "esco", "prefLabel": "administration"},
-      {"competency_ref": "esco:S2.0", "scheme": "esco", "prefLabel": "information skills"},
-      {"competency_ref": "digcomp:4.2", "scheme": "digcomp", "prefLabel": "Protecting personal data and privacy"}
+      {
+        "competency_ref": "esco:S4.7",
+        "scheme": "esco",
+        "prefLabel": "administration"
+      },
+      {
+        "competency_ref": "esco:S2.0",
+        "scheme": "esco",
+        "prefLabel": "information skills"
+      },
+      {
+        "competency_ref": "digcomp:4.2",
+        "scheme": "digcomp",
+        "prefLabel": "Protecting personal data and privacy"
+      }
     ],
     "competencies": [
-      {"competency_ref": "esco:S2.0", "scheme": "esco", "prefLabel": "information skills"},
-      {"competency_ref": "digcomp:4.2", "scheme": "digcomp", "prefLabel": "Protecting personal data and privacy"}
+      {
+        "competency_ref": "esco:S2.0",
+        "scheme": "esco",
+        "prefLabel": "information skills"
+      },
+      {
+        "competency_ref": "digcomp:4.2",
+        "scheme": "digcomp",
+        "prefLabel": "Protecting personal data and privacy"
+      }
     ],
-    "levels": [{"framework_ref": "https://europa.eu/europass/eqf/level/4", "level_label": "EQF level 4", "effective_at": "2026-05-27"}],
+    "levels": [
+      {
+        "framework_ref": "https://europa.eu/europass/eqf/level/4",
+        "level_label": "EQF level 4",
+        "effective_at": "2026-05-27"
+      }
+    ],
     "language_proficiency": [],
     "mastery": [],
     "memory_scope": "memory.x_klickd.consumer_rights",
     "memory_segments": [
-      {"id": "disputes", "scope": "memory.x_klickd.consumer_rights.disputes", "policy": "pointer_only_no_third_party_text"}
+      {
+        "id": "disputes",
+        "scope": "memory.x_klickd.consumer_rights.disputes",
+        "policy": "pointer_only_no_third_party_text"
+      }
     ],
-    "structured_memory": {"scope": "memory.x_klickd.consumer_rights", "policy": "pack_scoped_only", "entries": []},
-    "gates": {
-      "verification_gates_default": {"raise_only": true, "claim_grounding_required": true, "reversibility_threshold": "medium"},
-      "human_veto_policy": {"owner": "human_carrier", "scope": ["legal_dispute_escalation", "contract_assertion", "third_party_communication"]}
+    "structured_memory": {
+      "scope": "memory.x_klickd.consumer_rights",
+      "policy": "pack_scoped_only",
+      "entries": []
     },
-    "human_veto": {"owner": "human_carrier", "raise_only": true, "non_lowerable_floor": ["litigation_action"]},
+    "gates": {
+      "verification_gates_default": {
+        "raise_only": true,
+        "claim_grounding_required": true,
+        "reversibility_threshold": "medium"
+      },
+      "human_veto_policy": {
+        "owner": "human_carrier",
+        "scope": [
+          "legal_dispute_escalation",
+          "contract_assertion",
+          "third_party_communication"
+        ]
+      }
+    },
+    "human_veto": {
+      "owner": "human_carrier",
+      "raise_only": true,
+      "non_lowerable_floor": [
+        "litigation_action"
+      ]
+    },
     "human_authority": {
       "final_decision_owner": "human_carrier",
       "agent_role": "advisory",
@@ -74,17 +165,41 @@
       "attestation_shape_ref": "rfc-002#8b",
       "verification_artifacts_ref": "rfc-003#verification_artifacts"
     },
-    "source_policy": {"allow_inline_definitions": false, "language_tags": ["en", "fr"]},
+    "source_policy": {
+      "allow_inline_definitions": false,
+      "language_tags": [
+        "en",
+        "fr"
+      ]
+    },
     "verification_gates": {
       "version": 1,
       "user_default": "silent",
       "gates": [
-        {"id": "third-party-comms", "action_class": "third_party_communication", "level": "confirm", "reason": "Outgoing communication to a vendor / counterparty requires explicit confirmation."},
-        {"id": "legal-assertion", "action_class": "contract_assertion", "level": "confirm", "reason": "Asserting a legal right requires grounding to the specific clause / directive."},
-        {"id": "litigation-action", "action_class": "litigation_action", "level": "block", "reason": "Litigation steps require licensed counsel; this pack cannot authorise them."}
+        {
+          "id": "third-party-comms",
+          "action_class": "third_party_communication",
+          "level": "confirm",
+          "reason": "Outgoing communication to a vendor / counterparty requires explicit confirmation."
+        },
+        {
+          "id": "legal-assertion",
+          "action_class": "contract_assertion",
+          "level": "confirm",
+          "reason": "Asserting a legal right requires grounding to the specific clause / directive."
+        },
+        {
+          "id": "litigation-action",
+          "action_class": "litigation_action",
+          "level": "block",
+          "reason": "Litigation steps require licensed counsel; this pack cannot authorise them."
+        }
       ]
     },
-    "router_cost": {"tokens_estimate": 700, "baseline": "base_plus_one"},
+    "router_cost": {
+      "tokens_estimate": 700,
+      "baseline": "base_plus_one"
+    },
     "acceptance_criteria": [
       "Every competency_ref resolves into ESCO or DigComp.",
       "EU directives are cited (citation_only_references), not registered as frameworks[] schemes.",
@@ -93,9 +208,27 @@
       "Round-trip safe with v4.0-only reader."
     ],
     "tests": {
-      "static": ["forbidden_fields literal frozen", "no klickdapp.* or kai.* artefact reference", "size_tier == lite and tokens_estimate <= 900"],
-      "review": ["Reviewer verifies EU AI Act / GDPR are citation-only, not in frameworks[].", "Reviewer verifies litigation_action gate stays block."]
+      "static": [
+        "forbidden_fields literal frozen",
+        "no klickdapp.* or kai.* artefact reference",
+        "size_tier == lite and tokens_estimate <= 900"
+      ],
+      "review": [
+        "Reviewer verifies EU AI Act / GDPR are citation-only, not in frameworks[].",
+        "Reviewer verifies litigation_action gate stays block."
+      ]
     },
-    "forbidden_fields": ["pedagogy", "teaching_method", "socratic_steps", "prompt_strategy", "scoring_rubric", "intervention_policy", "tone_rules", "system_prompt_overrides", "knowledge.mastered", "mastered_topics"]
+    "forbidden_fields": [
+      "pedagogy",
+      "teaching_method",
+      "socratic_steps",
+      "prompt_strategy",
+      "scoring_rubric",
+      "intervention_policy",
+      "tone_rules",
+      "system_prompt_overrides",
+      "knowledge.mastered",
+      "mastered_topics"
+    ]
   }
 }

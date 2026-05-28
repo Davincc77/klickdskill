@@ -1,34 +1,36 @@
 {
   "klickd_version": "4.0",
   "payload_schema_version": "4.0.0-preview.1",
-  "domain_schema_version": "v4.1-chimera-candidate-1.0",
+  "domain_schema_version": "v4.1-x-klickd-candidate-1.0",
   "created_at": "2026-05-27T00:00:00Z",
   "encrypted": false,
   "domain": "professional",
   "profile_kind": "carrier_competency_pack",
   "_pack_metadata": {
-    "kind": "chimera_candidate_skill_pack",
+    "kind": "x_klickd_candidate_skill_pack",
     "size_tier": "lite",
     "non_normative": true,
     "claims_v41_ga": false,
     "contains_real_pii": false,
     "contains_secrets": false,
     "status": "candidate_mapped",
-    "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/x-klickd-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact. Composes with x.klickd/work (P1); narrower day-to-day assistant scope.",
+    "note": "Non-normative x.klickd v4.1 candidate skill artefact. Composes with x.klickd/work (P1); narrower day-to-day assistant scope.",
     "renamed_from": "work-lite.klickd"
   },
   "x_klickd_pack": {
     "pack": "x.klickd/work_assistant",
     "pack_version": "0.1.0-candidate-lite",
-    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a1",
+    "spec_ref": "x.klickd/v4.1#a1",
     "publisher": {
       "name": "klickd",
       "ref": "https://klickd.app"
     },
     "size_tier": "lite",
-    "parent_packs": ["x.klickd/user", "x.klickd/work"],
+    "parent_packs": [
+      "x.klickd/user",
+      "x.klickd/work"
+    ],
     "target_user": "Employed person or freelancer covering day-to-day deliverables, communication, and planning. Not a senior PM (that stays in full x.klickd/work).",
     "frameworks": [
       {
@@ -52,28 +54,86 @@
     ],
     "base_transversal_core": {
       "frameworks": [
-        {"scheme": "esco", "version": "v1.1.1"},
-        {"scheme": "lifecomp", "version": "2020"}
+        {
+          "scheme": "esco",
+          "version": "v1.1.1"
+        },
+        {
+          "scheme": "lifecomp",
+          "version": "2020"
+        }
       ],
       "transversal_refs": [
-        {"competency_ref": "esco:S1", "scheme": "esco", "prefLabel": "communication, collaboration and creativity"},
-        {"competency_ref": "lifecomp:P1", "scheme": "lifecomp", "prefLabel": "Self-regulation"},
-        {"competency_ref": "lifecomp:S2", "scheme": "lifecomp", "prefLabel": "Collaboration"}
+        {
+          "competency_ref": "esco:S1",
+          "scheme": "esco",
+          "prefLabel": "communication, collaboration and creativity"
+        },
+        {
+          "competency_ref": "lifecomp:P1",
+          "scheme": "lifecomp",
+          "prefLabel": "Self-regulation"
+        },
+        {
+          "competency_ref": "lifecomp:S2",
+          "scheme": "lifecomp",
+          "prefLabel": "Collaboration"
+        }
       ]
     },
     "competency_mappings": [
-      {"competency_ref": "esco:S1.3", "scheme": "esco", "prefLabel": "managing oneself and personal development"},
-      {"competency_ref": "esco:S1.4", "scheme": "esco", "prefLabel": "working with others"},
-      {"competency_ref": "esco:S4", "scheme": "esco", "prefLabel": "management skills"},
-      {"competency_ref": "lifecomp:S2", "scheme": "lifecomp", "prefLabel": "Collaboration"},
-      {"competency_ref": "wef:active-learning", "scheme": "wef", "prefLabel": "Active learning and learning strategies"},
-      {"competency_ref": "wef:leadership-social-influence", "scheme": "wef", "prefLabel": "Leadership and social influence"}
+      {
+        "competency_ref": "esco:S1.3",
+        "scheme": "esco",
+        "prefLabel": "managing oneself and personal development"
+      },
+      {
+        "competency_ref": "esco:S1.4",
+        "scheme": "esco",
+        "prefLabel": "working with others"
+      },
+      {
+        "competency_ref": "esco:S4",
+        "scheme": "esco",
+        "prefLabel": "management skills"
+      },
+      {
+        "competency_ref": "lifecomp:S2",
+        "scheme": "lifecomp",
+        "prefLabel": "Collaboration"
+      },
+      {
+        "competency_ref": "wef:active-learning",
+        "scheme": "wef",
+        "prefLabel": "Active learning and learning strategies"
+      },
+      {
+        "competency_ref": "wef:leadership-social-influence",
+        "scheme": "wef",
+        "prefLabel": "Leadership and social influence"
+      }
     ],
     "competencies": [
-      {"competency_ref": "esco:S1.3", "scheme": "esco", "prefLabel": "managing oneself and personal development"},
-      {"competency_ref": "esco:S1.4", "scheme": "esco", "prefLabel": "working with others"},
-      {"competency_ref": "esco:S4", "scheme": "esco", "prefLabel": "management skills"},
-      {"competency_ref": "wef:active-learning", "scheme": "wef", "prefLabel": "Active learning and learning strategies"}
+      {
+        "competency_ref": "esco:S1.3",
+        "scheme": "esco",
+        "prefLabel": "managing oneself and personal development"
+      },
+      {
+        "competency_ref": "esco:S1.4",
+        "scheme": "esco",
+        "prefLabel": "working with others"
+      },
+      {
+        "competency_ref": "esco:S4",
+        "scheme": "esco",
+        "prefLabel": "management skills"
+      },
+      {
+        "competency_ref": "wef:active-learning",
+        "scheme": "wef",
+        "prefLabel": "Active learning and learning strategies"
+      }
     ],
     "levels": [
       {
@@ -86,8 +146,16 @@
     "mastery": [],
     "memory_scope": "memory.x_klickd.work_assistant",
     "memory_segments": [
-      {"id": "deliverables", "scope": "memory.x_klickd.work_assistant.deliverables", "policy": "pointer_only_summary"},
-      {"id": "stakeholders", "scope": "memory.x_klickd.work_assistant.stakeholders", "policy": "pointer_only_no_pii_of_others"}
+      {
+        "id": "deliverables",
+        "scope": "memory.x_klickd.work_assistant.deliverables",
+        "policy": "pointer_only_summary"
+      },
+      {
+        "id": "stakeholders",
+        "scope": "memory.x_klickd.work_assistant.stakeholders",
+        "policy": "pointer_only_no_pii_of_others"
+      }
     ],
     "structured_memory": {
       "scope": "memory.x_klickd.work_assistant",
@@ -102,13 +170,20 @@
       },
       "human_veto_policy": {
         "owner": "human_carrier",
-        "scope": ["stakeholder_message", "deliverable_release", "team_attribution"]
+        "scope": [
+          "stakeholder_message",
+          "deliverable_release",
+          "team_attribution"
+        ]
       }
     },
     "human_veto": {
       "owner": "human_carrier",
       "raise_only": true,
-      "non_lowerable_floor": ["irreversible_action", "third_party_attribution"]
+      "non_lowerable_floor": [
+        "irreversible_action",
+        "third_party_attribution"
+      ]
     },
     "human_authority": {
       "final_decision_owner": "human_carrier",
@@ -123,15 +198,33 @@
     },
     "source_policy": {
       "allow_inline_definitions": false,
-      "language_tags": ["en", "fr"]
+      "language_tags": [
+        "en",
+        "fr"
+      ]
     },
     "verification_gates": {
       "version": 1,
       "user_default": "silent",
       "gates": [
-        {"id": "stakeholder-message", "action_class": "stakeholder_message", "level": "confirm", "reason": "Outgoing stakeholder communication requires explicit human authorisation."},
-        {"id": "deliverable-release", "action_class": "deliverable_release", "level": "confirm", "reason": "Deliverable release is hard to reverse once shared."},
-        {"id": "team-attribution", "action_class": "team_attribution", "level": "confirm", "reason": "Attribution to a named teammate requires consent."}
+        {
+          "id": "stakeholder-message",
+          "action_class": "stakeholder_message",
+          "level": "confirm",
+          "reason": "Outgoing stakeholder communication requires explicit human authorisation."
+        },
+        {
+          "id": "deliverable-release",
+          "action_class": "deliverable_release",
+          "level": "confirm",
+          "reason": "Deliverable release is hard to reverse once shared."
+        },
+        {
+          "id": "team-attribution",
+          "action_class": "team_attribution",
+          "level": "confirm",
+          "reason": "Attribution to a named teammate requires consent."
+        }
       ]
     },
     "router_cost": {

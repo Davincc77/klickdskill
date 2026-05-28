@@ -1,83 +1,202 @@
 {
   "klickd_version": "4.0",
   "payload_schema_version": "4.0.0-preview.1",
-  "domain_schema_version": "v4.1-chimera-candidate-1.0",
+  "domain_schema_version": "v4.1-x-klickd-candidate-1.0",
   "created_at": "2026-05-27T00:00:00Z",
   "encrypted": false,
   "domain": "media_literacy",
   "profile_kind": "carrier_competency_pack",
   "_pack_metadata": {
-    "kind": "chimera_candidate_skill_pack",
+    "kind": "x_klickd_candidate_skill_pack",
     "size_tier": "lite",
     "non_normative": true,
     "claims_v41_ga": false,
     "contains_real_pii": false,
     "contains_secrets": false,
     "status": "candidate_mapped",
-    "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/x-klickd-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact. Lot A game-literacy pack, distinct from x.klickd/gaming (P1) and x.klickd/game_design (B17)."
+    "note": "Non-normative x.klickd v4.1 candidate skill artefact. Lot A game-literacy pack, distinct from x.klickd/gaming (P1) and x.klickd/game_design (B17)."
   },
   "x_klickd_pack": {
     "pack": "x.klickd/game_literacy",
     "pack_version": "0.1.0-candidate-lite",
-    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a12",
-    "publisher": {"name": "klickd", "ref": "https://klickd.app"},
+    "spec_ref": "x.klickd/v4.1#a12",
+    "publisher": {
+      "name": "klickd",
+      "ref": "https://klickd.app"
+    },
     "size_tier": "lite",
-    "parent_packs": ["x.klickd/user", "x.klickd/gaming"],
+    "parent_packs": [
+      "x.klickd/user",
+      "x.klickd/gaming"
+    ],
     "target_user": "General-public carrier learning to read games as media: genres, rules, mechanics, time-budget hygiene. Not competitive play; not game development.",
     "frameworks": [
-      {"scheme": "esco", "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/", "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"},
-      {"scheme": "wef", "version": "2023", "iri_prefix": "https://www.weforum.org/reports/future-of-jobs-2023/skills/", "canonical_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2023/"},
-      {"scheme": "digcomp", "version": "2.2", "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/", "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"}
+      {
+        "scheme": "esco",
+        "version": "v1.1.1",
+        "iri_prefix": "http://data.europa.eu/esco/skill/",
+        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
+      },
+      {
+        "scheme": "wef",
+        "version": "2023",
+        "iri_prefix": "https://www.weforum.org/reports/future-of-jobs-2023/skills/",
+        "canonical_url": "https://www.weforum.org/publications/the-future-of-jobs-report-2023/"
+      },
+      {
+        "scheme": "digcomp",
+        "version": "2.2",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"
+      }
     ],
     "base_transversal_core": {
-      "frameworks": [{"scheme": "esco", "version": "v1.1.1"}, {"scheme": "digcomp", "version": "2.2"}],
+      "frameworks": [
+        {
+          "scheme": "esco",
+          "version": "v1.1.1"
+        },
+        {
+          "scheme": "digcomp",
+          "version": "2.2"
+        }
+      ],
       "transversal_refs": [
-        {"competency_ref": "wef:complex-problem-solving", "scheme": "wef", "prefLabel": "Complex problem solving"},
-        {"competency_ref": "digcomp:4.3", "scheme": "digcomp", "prefLabel": "Protecting health and well-being"}
+        {
+          "competency_ref": "wef:complex-problem-solving",
+          "scheme": "wef",
+          "prefLabel": "Complex problem solving"
+        },
+        {
+          "competency_ref": "digcomp:4.3",
+          "scheme": "digcomp",
+          "prefLabel": "Protecting health and well-being"
+        }
       ]
     },
     "competency_mappings": [
-      {"competency_ref": "esco:S1.0", "scheme": "esco", "prefLabel": "creativity and innovation"},
-      {"competency_ref": "wef:complex-problem-solving", "scheme": "wef", "prefLabel": "Complex problem solving"},
-      {"competency_ref": "digcomp:4.3", "scheme": "digcomp", "prefLabel": "Protecting health and well-being"},
-      {"competency_ref": "digcomp:1.2", "scheme": "digcomp", "prefLabel": "Evaluating data, information and digital content"}
+      {
+        "competency_ref": "esco:S1.0",
+        "scheme": "esco",
+        "prefLabel": "creativity and innovation"
+      },
+      {
+        "competency_ref": "wef:complex-problem-solving",
+        "scheme": "wef",
+        "prefLabel": "Complex problem solving"
+      },
+      {
+        "competency_ref": "digcomp:4.3",
+        "scheme": "digcomp",
+        "prefLabel": "Protecting health and well-being"
+      },
+      {
+        "competency_ref": "digcomp:1.2",
+        "scheme": "digcomp",
+        "prefLabel": "Evaluating data, information and digital content"
+      }
     ],
     "competencies": [
-      {"competency_ref": "wef:complex-problem-solving", "scheme": "wef", "prefLabel": "Complex problem solving"},
-      {"competency_ref": "digcomp:4.3", "scheme": "digcomp", "prefLabel": "Protecting health and well-being"}
+      {
+        "competency_ref": "wef:complex-problem-solving",
+        "scheme": "wef",
+        "prefLabel": "Complex problem solving"
+      },
+      {
+        "competency_ref": "digcomp:4.3",
+        "scheme": "digcomp",
+        "prefLabel": "Protecting health and well-being"
+      }
     ],
-    "levels": [{"framework_ref": "https://europa.eu/europass/eqf/level/3", "level_label": "EQF level 3", "effective_at": "2026-05-27"}],
+    "levels": [
+      {
+        "framework_ref": "https://europa.eu/europass/eqf/level/3",
+        "level_label": "EQF level 3",
+        "effective_at": "2026-05-27"
+      }
+    ],
     "language_proficiency": [],
     "mastery": [],
     "memory_scope": "memory.x_klickd.game_literacy",
     "memory_segments": [
-      {"id": "play-log", "scope": "memory.x_klickd.game_literacy.play_log", "policy": "pointer_only_summary"},
-      {"id": "time-budget", "scope": "memory.x_klickd.game_literacy.time_budget", "policy": "self_declared"}
+      {
+        "id": "play-log",
+        "scope": "memory.x_klickd.game_literacy.play_log",
+        "policy": "pointer_only_summary"
+      },
+      {
+        "id": "time-budget",
+        "scope": "memory.x_klickd.game_literacy.time_budget",
+        "policy": "self_declared"
+      }
     ],
-    "structured_memory": {"scope": "memory.x_klickd.game_literacy", "policy": "pack_scoped_only", "entries": []},
-    "gates": {
-      "verification_gates_default": {"raise_only": true, "claim_grounding_required": true, "reversibility_threshold": "medium"},
-      "human_veto_policy": {"owner": "human_carrier_with_guardian_if_minor", "scope": ["in_game_purchase", "time_budget_override"]}
+    "structured_memory": {
+      "scope": "memory.x_klickd.game_literacy",
+      "policy": "pack_scoped_only",
+      "entries": []
     },
-    "human_veto": {"owner": "human_carrier_with_guardian_if_minor", "raise_only": true, "non_lowerable_floor": ["in_game_purchase_minor"]},
+    "gates": {
+      "verification_gates_default": {
+        "raise_only": true,
+        "claim_grounding_required": true,
+        "reversibility_threshold": "medium"
+      },
+      "human_veto_policy": {
+        "owner": "human_carrier_with_guardian_if_minor",
+        "scope": [
+          "in_game_purchase",
+          "time_budget_override"
+        ]
+      }
+    },
+    "human_veto": {
+      "owner": "human_carrier_with_guardian_if_minor",
+      "raise_only": true,
+      "non_lowerable_floor": [
+        "in_game_purchase_minor"
+      ]
+    },
     "human_authority": {
       "final_decision_owner": "human_carrier_with_guardian_if_minor",
       "agent_role": "advisory",
       "escalation": "guardian_if_minor"
     },
-    "evidence_policy": {"required_for_claims": true, "pointer_only": true, "attestation_shape_ref": "rfc-002#8b", "verification_artifacts_ref": "rfc-003#verification_artifacts"},
-    "source_policy": {"allow_inline_definitions": false, "language_tags": ["en", "fr"]},
+    "evidence_policy": {
+      "required_for_claims": true,
+      "pointer_only": true,
+      "attestation_shape_ref": "rfc-002#8b",
+      "verification_artifacts_ref": "rfc-003#verification_artifacts"
+    },
+    "source_policy": {
+      "allow_inline_definitions": false,
+      "language_tags": [
+        "en",
+        "fr"
+      ]
+    },
     "verification_gates": {
       "version": 1,
       "user_default": "silent",
       "gates": [
-        {"id": "in-game-purchase", "action_class": "in_game_purchase", "level": "confirm", "reason": "In-game purchases require explicit confirmation."},
-        {"id": "time-budget", "action_class": "time_budget_override", "level": "confirm", "reason": "Time-budget overrides require confirmation; carrier MAY set the limit, pack does not lower it."}
+        {
+          "id": "in-game-purchase",
+          "action_class": "in_game_purchase",
+          "level": "confirm",
+          "reason": "In-game purchases require explicit confirmation."
+        },
+        {
+          "id": "time-budget",
+          "action_class": "time_budget_override",
+          "level": "confirm",
+          "reason": "Time-budget overrides require confirmation; carrier MAY set the limit, pack does not lower it."
+        }
       ]
     },
-    "router_cost": {"tokens_estimate": 720, "baseline": "base_plus_one"},
+    "router_cost": {
+      "tokens_estimate": 720,
+      "baseline": "base_plus_one"
+    },
     "acceptance_criteria": [
       "Every competency_ref resolves into ESCO, WEF, or DigComp.",
       "Minor carriers default to human_carrier_with_guardian.",
@@ -86,9 +205,27 @@
       "Round-trip safe with v4.0-only reader."
     ],
     "tests": {
-      "static": ["forbidden_fields literal frozen", "no klickdapp.* or kai.* artefact reference", "size_tier == lite and tokens_estimate <= 900"],
-      "review": ["Reviewer verifies in-game-purchase gate stays confirm or stricter for minors.", "Reviewer verifies time_budget is self-declared, not pack-imposed."]
+      "static": [
+        "forbidden_fields literal frozen",
+        "no klickdapp.* or kai.* artefact reference",
+        "size_tier == lite and tokens_estimate <= 900"
+      ],
+      "review": [
+        "Reviewer verifies in-game-purchase gate stays confirm or stricter for minors.",
+        "Reviewer verifies time_budget is self-declared, not pack-imposed."
+      ]
     },
-    "forbidden_fields": ["pedagogy", "teaching_method", "socratic_steps", "prompt_strategy", "scoring_rubric", "intervention_policy", "tone_rules", "system_prompt_overrides", "knowledge.mastered", "mastered_topics"]
+    "forbidden_fields": [
+      "pedagogy",
+      "teaching_method",
+      "socratic_steps",
+      "prompt_strategy",
+      "scoring_rubric",
+      "intervention_policy",
+      "tone_rules",
+      "system_prompt_overrides",
+      "knowledge.mastered",
+      "mastered_topics"
+    ]
   }
 }

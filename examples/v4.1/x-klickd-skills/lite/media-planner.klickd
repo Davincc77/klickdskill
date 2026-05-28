@@ -1,81 +1,169 @@
 {
   "klickd_version": "4.0",
   "payload_schema_version": "4.0.0-preview.1",
-  "domain_schema_version": "v4.1-chimera-candidate-1.0",
+  "domain_schema_version": "v4.1-x-klickd-candidate-1.0",
   "created_at": "2026-05-27T00:00:00Z",
   "encrypted": false,
   "domain": "creative",
   "profile_kind": "carrier_competency_pack",
   "_pack_metadata": {
-    "kind": "chimera_candidate_skill_pack",
+    "kind": "x_klickd_candidate_skill_pack",
     "size_tier": "lite",
     "non_normative": true,
     "claims_v41_ga": false,
     "contains_real_pii": false,
     "contains_secrets": false,
     "status": "candidate_mapped",
-    "see_planning_doc": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md",
     "see_readme": "examples/v4.1/x-klickd-skills/README.md",
-    "note": "Non-normative Chimera v4.1 candidate skill artefact. Composes with x.klickd/creator (P1); narrower planning / publishing scope for end-user creators.",
+    "note": "Non-normative x.klickd v4.1 candidate skill artefact. Composes with x.klickd/creator (P1); narrower planning / publishing scope for end-user creators.",
     "renamed_from": "media-lite.klickd"
   },
   "x_klickd_pack": {
     "pack": "x.klickd/media_planner",
     "pack_version": "0.1.0-candidate-lite",
-    "spec_ref": "docs/chimera/V4_1_SKILL_CANDIDATE_MAPPING.md#a4",
+    "spec_ref": "x.klickd/v4.1#a4",
     "publisher": {
       "name": "klickd",
       "ref": "https://klickd.app"
     },
     "size_tier": "lite",
-    "parent_packs": ["x.klickd/user", "x.klickd/creator"],
+    "parent_packs": [
+      "x.klickd/user",
+      "x.klickd/creator"
+    ],
     "target_user": "End-user creator: hobbyist editor, occasional newsletter author, light social-media poster. Not a journalist; not a full editorial role.",
     "frameworks": [
-      {"scheme": "esco", "version": "v1.1.1", "iri_prefix": "http://data.europa.eu/esco/skill/", "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"},
-      {"scheme": "digcomp", "version": "2.2", "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/", "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"}
+      {
+        "scheme": "esco",
+        "version": "v1.1.1",
+        "iri_prefix": "http://data.europa.eu/esco/skill/",
+        "canonical_url": "https://esco.ec.europa.eu/en/classification/skill_main"
+      },
+      {
+        "scheme": "digcomp",
+        "version": "2.2",
+        "iri_prefix": "https://joint-research-centre.ec.europa.eu/digcomp/2.2/",
+        "canonical_url": "https://joint-research-centre.ec.europa.eu/digcomp_en"
+      }
     ],
     "base_transversal_core": {
       "frameworks": [
-        {"scheme": "esco", "version": "v1.1.1"},
-        {"scheme": "digcomp", "version": "2.2"}
+        {
+          "scheme": "esco",
+          "version": "v1.1.1"
+        },
+        {
+          "scheme": "digcomp",
+          "version": "2.2"
+        }
       ],
       "transversal_refs": [
-        {"competency_ref": "esco:S1", "scheme": "esco", "prefLabel": "communication, collaboration and creativity"},
-        {"competency_ref": "digcomp:3.1", "scheme": "digcomp", "prefLabel": "Developing digital content"}
+        {
+          "competency_ref": "esco:S1",
+          "scheme": "esco",
+          "prefLabel": "communication, collaboration and creativity"
+        },
+        {
+          "competency_ref": "digcomp:3.1",
+          "scheme": "digcomp",
+          "prefLabel": "Developing digital content"
+        }
       ]
     },
     "competency_mappings": [
-      {"competency_ref": "esco:S1.0", "scheme": "esco", "prefLabel": "creativity and innovation"},
-      {"competency_ref": "digcomp:3.1", "scheme": "digcomp", "prefLabel": "Developing digital content"},
-      {"competency_ref": "digcomp:3.2", "scheme": "digcomp", "prefLabel": "Integrating and re-elaborating digital content"},
-      {"competency_ref": "digcomp:3.3", "scheme": "digcomp", "prefLabel": "Copyright and licences"},
-      {"competency_ref": "digcomp:2.2", "scheme": "digcomp", "prefLabel": "Sharing through digital technologies"}
+      {
+        "competency_ref": "esco:S1.0",
+        "scheme": "esco",
+        "prefLabel": "creativity and innovation"
+      },
+      {
+        "competency_ref": "digcomp:3.1",
+        "scheme": "digcomp",
+        "prefLabel": "Developing digital content"
+      },
+      {
+        "competency_ref": "digcomp:3.2",
+        "scheme": "digcomp",
+        "prefLabel": "Integrating and re-elaborating digital content"
+      },
+      {
+        "competency_ref": "digcomp:3.3",
+        "scheme": "digcomp",
+        "prefLabel": "Copyright and licences"
+      },
+      {
+        "competency_ref": "digcomp:2.2",
+        "scheme": "digcomp",
+        "prefLabel": "Sharing through digital technologies"
+      }
     ],
     "competencies": [
-      {"competency_ref": "esco:S1.0", "scheme": "esco", "prefLabel": "creativity and innovation"},
-      {"competency_ref": "digcomp:3.1", "scheme": "digcomp", "prefLabel": "Developing digital content"},
-      {"competency_ref": "digcomp:3.3", "scheme": "digcomp", "prefLabel": "Copyright and licences"}
+      {
+        "competency_ref": "esco:S1.0",
+        "scheme": "esco",
+        "prefLabel": "creativity and innovation"
+      },
+      {
+        "competency_ref": "digcomp:3.1",
+        "scheme": "digcomp",
+        "prefLabel": "Developing digital content"
+      },
+      {
+        "competency_ref": "digcomp:3.3",
+        "scheme": "digcomp",
+        "prefLabel": "Copyright and licences"
+      }
     ],
     "levels": [
-      {"framework_ref": "https://europa.eu/europass/eqf/level/4", "level_label": "EQF level 4", "effective_at": "2026-05-27"}
+      {
+        "framework_ref": "https://europa.eu/europass/eqf/level/4",
+        "level_label": "EQF level 4",
+        "effective_at": "2026-05-27"
+      }
     ],
     "language_proficiency": [],
     "mastery": [],
     "memory_scope": "memory.x_klickd.media_planner",
     "memory_segments": [
-      {"id": "drafts", "scope": "memory.x_klickd.media_planner.drafts", "policy": "pointer_only_summary"},
-      {"id": "rights", "scope": "memory.x_klickd.media_planner.rights", "policy": "pointer_only_attribution"}
+      {
+        "id": "drafts",
+        "scope": "memory.x_klickd.media_planner.drafts",
+        "policy": "pointer_only_summary"
+      },
+      {
+        "id": "rights",
+        "scope": "memory.x_klickd.media_planner.rights",
+        "policy": "pointer_only_attribution"
+      }
     ],
-    "structured_memory": {"scope": "memory.x_klickd.media_planner", "policy": "pack_scoped_only", "entries": []},
+    "structured_memory": {
+      "scope": "memory.x_klickd.media_planner",
+      "policy": "pack_scoped_only",
+      "entries": []
+    },
     "media_profile_compose_ref": "rfc-001#media_profile",
     "gates": {
-      "verification_gates_default": {"raise_only": true, "claim_grounding_required": true, "reversibility_threshold": "low"},
-      "human_veto_policy": {"owner": "human_carrier", "scope": ["public_post", "third_party_identifiable_content", "minor_in_frame"]}
+      "verification_gates_default": {
+        "raise_only": true,
+        "claim_grounding_required": true,
+        "reversibility_threshold": "low"
+      },
+      "human_veto_policy": {
+        "owner": "human_carrier",
+        "scope": [
+          "public_post",
+          "third_party_identifiable_content",
+          "minor_in_frame"
+        ]
+      }
     },
     "human_veto": {
       "owner": "human_carrier",
       "raise_only": true,
-      "non_lowerable_floor": ["minor_in_frame", "third_party_identifiable_content"]
+      "non_lowerable_floor": [
+        "minor_in_frame",
+        "third_party_identifiable_content"
+      ]
     },
     "human_authority": {
       "final_decision_owner": "human_carrier",
@@ -88,17 +176,41 @@
       "attestation_shape_ref": "rfc-002#8b",
       "verification_artifacts_ref": "rfc-003#verification_artifacts"
     },
-    "source_policy": {"allow_inline_definitions": false, "language_tags": ["en", "fr"]},
+    "source_policy": {
+      "allow_inline_definitions": false,
+      "language_tags": [
+        "en",
+        "fr"
+      ]
+    },
     "verification_gates": {
       "version": 1,
       "user_default": "silent",
       "gates": [
-        {"id": "third-party-identifiable", "action_class": "third_party_identifiable_content", "level": "confirm", "reason": "Content identifying a third party requires explicit consent and confirmation."},
-        {"id": "minor-in-frame", "action_class": "minor_in_frame", "level": "block", "reason": "Minors-in-frame require guardian consent; floor cannot be lowered by this pack."},
-        {"id": "copyright-claim", "action_class": "copyright_claim", "level": "confirm", "reason": "Copyright / licence claims must be grounded against the actual licence text (RFC-002 §8b)."}
+        {
+          "id": "third-party-identifiable",
+          "action_class": "third_party_identifiable_content",
+          "level": "confirm",
+          "reason": "Content identifying a third party requires explicit consent and confirmation."
+        },
+        {
+          "id": "minor-in-frame",
+          "action_class": "minor_in_frame",
+          "level": "block",
+          "reason": "Minors-in-frame require guardian consent; floor cannot be lowered by this pack."
+        },
+        {
+          "id": "copyright-claim",
+          "action_class": "copyright_claim",
+          "level": "confirm",
+          "reason": "Copyright / licence claims must be grounded against the actual licence text (RFC-002 §8b)."
+        }
       ]
     },
-    "router_cost": {"tokens_estimate": 750, "baseline": "base_plus_one"},
+    "router_cost": {
+      "tokens_estimate": 750,
+      "baseline": "base_plus_one"
+    },
     "acceptance_criteria": [
       "Every competency_ref resolves into ESCO or DigComp.",
       "RFC-001 media_profile is composed by reference, not redefined inline.",
@@ -119,8 +231,16 @@
       ]
     },
     "forbidden_fields": [
-      "pedagogy", "teaching_method", "socratic_steps", "prompt_strategy", "scoring_rubric",
-      "intervention_policy", "tone_rules", "system_prompt_overrides", "knowledge.mastered", "mastered_topics"
+      "pedagogy",
+      "teaching_method",
+      "socratic_steps",
+      "prompt_strategy",
+      "scoring_rubric",
+      "intervention_policy",
+      "tone_rules",
+      "system_prompt_overrides",
+      "knowledge.mastered",
+      "mastered_topics"
     ]
   }
 }

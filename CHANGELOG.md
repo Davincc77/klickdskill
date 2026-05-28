@@ -35,12 +35,36 @@ Versions follow: `envelope_version (skill_revision)`.
   artefacts. `_pack_metadata.claims_v41_ga: false` everywhere. Promotion
   past `candidate_mapped` still requires the per-pack RFC + scaffold +
   schema + round-trip vector chain of RFC-009 §8.
-- **Out of scope of this PR.** No artefact content was edited beyond the
-  `see_readme` path string. The `kind` field of each per-tier manifest
-  retains its historical value (internal JSON tag, not a public surface).
-  Internal planning docs under `docs/chimera/` and `docs/rfcs/chimera/`
-  remain as historical record (rename is an explicit non-goal here per
-  the rename brief).
+- **Public download surface scrubbed (BLOCKER fix, 2026-05-28).** PR
+  review found that every `.klickd` in the renamed directory still
+  carried the internal v4.1 working codename in
+  `domain_schema_version`, `_pack_metadata.kind`,
+  `_pack_metadata.see_planning_doc`, `_pack_metadata.note`, and
+  `x_klickd_pack.spec_ref` — fields visible at the top of every file.
+  The per-tier `manifest.json` `kind` / `note` / `see_planning_doc`
+  and the in-directory `README.md` carried the same leak. Scrub:
+  `domain_schema_version` → `v4.1-x-klickd-candidate-1.0`;
+  `_pack_metadata.kind` → `x_klickd_candidate_skill_pack`;
+  `_pack_metadata.note` rewritten with "x.klickd v4.1";
+  `_pack_metadata.see_planning_doc` and any `loading_strategy.rationale`
+  / `spec_ref` pointer into the internal planning tree dropped or
+  rewritten to the public-safe `x.klickd/v4.1#<anchor>` shape;
+  per-tier `manifest.json` `kind` →
+  `klickd_x_klickd_candidate_skill_manifest`, `see_planning_doc`
+  dropped, note rewritten; the in-directory `README.md` rewritten to
+  drop every hyperlink into the internal planning tree.
+- **New raw-byte guard.** Validator gains
+  `validate_public_surface_codename_clean()` (and a pytest wrapper)
+  that scans every file under `examples/v4.1/x-klickd-skills/**` for
+  any `FORBIDDEN_PUBLIC_TERMS` byte. This is deliberately stricter
+  than the prior `PUBLIC_FIELDS`-scoped scan; it covers internal
+  metadata fields, manifests, and the README so the public download
+  surface cannot regress.
+- **Out of scope of this PR.** Internal planning docs under
+  `docs/chimera/` and `docs/rfcs/chimera/` remain as historical
+  record (rename is an explicit non-goal here per the rename brief).
+  The new guard only fires on the public download surface; it does
+  NOT touch the internal planning tree.
 
 ---
 

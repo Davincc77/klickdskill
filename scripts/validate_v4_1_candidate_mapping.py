@@ -873,6 +873,54 @@ def validate_no_deferred_artefacts() -> list[str]:
     return fails
 
 
+def validate_public_surface_codename_clean() -> list[str]:
+    """Raw-byte scan over every file under ARTEFACT_ROOT.
+
+    The public download surface (every `.klickd`, every `manifest.json`,
+    the in-directory `README.md`, and any other file shipped alongside
+    them) must not contain any FORBIDDEN_PUBLIC_TERMS byte. This is
+    deliberately *stricter* than `_scan_public_strings_for_forbidden_terms()`
+    — that function only scans the PUBLIC_FIELDS allow-list inside the
+    artefact JSON object, which is fine for catching public-facing prose
+    leaks but does NOT catch internal-metadata fields (`_pack_metadata`,
+    `domain_schema_version`, `spec_ref`, etc.) that a downloader sees as
+    soon as they `cat` the file.
+
+    A path is on the public download surface iff it lives under
+    `examples/v4.1/x-klickd-skills/`. Internal planning docs under
+    `docs/chimera/` or RFC files such as `docs/rfcs/RFC-009-chimera-v4.1.md`
+    are NOT on this surface and are explicitly out of scope here.
+    """
+    fails: list[str] = []
+    if not ARTEFACT_ROOT.exists():
+        return fails
+    for path in sorted(ARTEFACT_ROOT.rglob("*")):
+        if not path.is_file():
+            continue
+        try:
+            raw = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        lower = raw.lower()
+        for term in FORBIDDEN_PUBLIC_TERMS:
+            if term in lower:
+                rel = path.relative_to(REPO_ROOT)
+                line_no = next(
+                    (i + 1 for i, line in enumerate(raw.splitlines())
+                     if term in line.lower()),
+                    None,
+                )
+                fails.append(
+                    f"{rel}: contains forbidden public term '{term}'"
+                    + (f" (first hit at line {line_no})" if line_no else "")
+                    + " — the public download surface under "
+                      "examples/v4.1/x-klickd-skills/ MUST NOT mention the "
+                      "internal v4.1 working codename in any byte (artefact "
+                      "JSON, manifest, README, or any other shipped file)."
+                )
+    return fails
+
+
 def validate_manifests() -> list[str]:
     fails: list[str] = []
     for tier_dir in (LITE_DIR, PRO_DIR):
@@ -944,6 +992,7 @@ def main(argv: list[str]) -> int:
         all_failures.extend(validate_no_deferred_artefacts())
         all_failures.extend(validate_no_competency_clones())
         all_failures.extend(validate_no_forbidden_public_wording())
+        all_failures.extend(validate_public_surface_codename_clean())
         all_failures.extend(validate_manifests())
         # Near-duplicate heuristic is advisory (QA protocol §5.1).
         # Reported to stderr but does NOT affect exit code.
