@@ -92,9 +92,35 @@ if [ -d "packages/pypi/klickd" ]; then
 fi
 
 echo "==> Copying tests & verifiers"
+# Codename-bearing test files and the candidate-mapping validator are
+# intentionally EXCLUDED from the deposit bundle. Rationale:
+#   - The validator's job is to scan the source tree for the literal
+#     internal-codename byte. Its source therefore must contain that
+#     literal (FORBIDDEN_PUBLIC_TERMS) and a string of
+#     internal planning-tree paths used as scan targets. Shipping the
+#     validator inside the deposit ZIP would surface those bytes on
+#     Zenodo's public file browser, defeating the leak guard the
+#     validator exists to enforce. The validator stays in the repo and
+#     CI; it is documented in the deposit's Zenodo notes but not
+#     shipped.
+#   - The codename-bearing tests (test_rfc009_scaffold.py,
+#     test_v4_1_candidate_mapping.py, test_klickdapp_student_carriers.py,
+#     test_starter_pack_validator.py) reference the historical in-repo
+#     planning tree and the validator itself; they would surface the
+#     codename in the deposit. Cross-implementation verification of the
+#     deposited artefacts is covered by verify_vectors.{py,mjs} and the
+#     vector JSON files, which are codename-free and DO ship.
 if [ -d "tests" ]; then
   mkdir -p "${STAGE}/tests"
-  rsync -a --exclude '__pycache__' --exclude '.pytest_cache' "tests/" "${STAGE}/tests/"
+  rsync -a \
+    --exclude '__pycache__' \
+    --exclude '.pytest_cache' \
+    --exclude 'test_rfc009_scaffold.py' \
+    --exclude 'test_rfc009_chimera_scaffold.py' \
+    --exclude 'test_v4_1_candidate_mapping.py' \
+    --exclude 'test_klickdapp_student_carriers.py' \
+    --exclude 'test_starter_pack_validator.py' \
+    "tests/" "${STAGE}/tests/"
 fi
 for f in verify_vectors.py verify_vectors.mjs save_klickd.py load_klickd.py; do
   copy_if_exists "${f}"
@@ -104,8 +130,8 @@ echo "==> Copying x.klickd v4.1 catalog (post-rename path)"
 mkdir -p "${STAGE}/examples/v4.1"
 rsync -a "${SKILLS_DIR_REL}/" "${STAGE}/${SKILLS_DIR_REL}/"
 
-echo "==> Copying validator"
-copy_if_exists "scripts/validate_v4_1_candidate_mapping.py"
+# Validator is intentionally NOT copied into the bundle. See comment
+# above under "Copying tests & verifiers" for the rationale.
 
 echo "==> Copying public copy and Zenodo draft"
 mkdir -p "${STAGE}/docs/public"
@@ -176,7 +202,12 @@ echo "    [audit 5/5] candidate skill count = 42"
 COUNT="$(find "${STAGE}/${SKILLS_DIR_REL}" -maxdepth 2 -name '*.klickd' | wc -l | tr -d ' ')"
 echo "      counted: ${COUNT}"
 if [ "${COUNT}" -ne 42 ]; then
-  echo "      WARN: expected 42, found ${COUNT}. Verify before deposit."
+  echo "      FAIL: expected 42, found ${COUNT}. The v4.1 candidate catalog"
+  echo "            is frozen at 42 (8 Lite + 34 Pro); any drift is a"
+  echo "            release-blocker and must be reconciled before deposit."
+  fail=1
+else
+  echo "      OK"
 fi
 
 if [ "${fail}" -ne 0 ]; then
