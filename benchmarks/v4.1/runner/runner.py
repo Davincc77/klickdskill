@@ -453,6 +453,7 @@ def cmd_pilot(args: argparse.Namespace) -> int:
         model=args.model,
         temperature=args.temperature,
         max_output_tokens=args.max_output_tokens,
+        timeout_s=getattr(args, "request_timeout_s", 60.0),
     )
     if args._provider_instance is not None:
         provider = args._provider_instance
@@ -598,6 +599,7 @@ def cmd_pilot_test_b(args: argparse.Namespace) -> int:
         model=args.model,
         temperature=args.temperature,
         max_output_tokens=args.max_output_tokens,
+        timeout_s=getattr(args, "request_timeout_s", 60.0),
     )
     if args._provider_instance is not None:
         provider = args._provider_instance
@@ -802,6 +804,7 @@ def cmd_pilot_test_b_bundles(args: argparse.Namespace) -> int:
         model=args.model,
         temperature=args.temperature,
         max_output_tokens=args.max_output_tokens,
+        timeout_s=getattr(args, "request_timeout_s", 60.0),
     )
     if args._provider_instance is not None:
         provider = args._provider_instance
@@ -996,6 +999,14 @@ def _parse() -> argparse.Namespace:
                        default=PILOT_DEFAULT_RETRY_JITTER)
     p_pbb.add_argument("--run-id", default=None,
                        help="Reuse a prior run-id to resume.")
+    p_pbb.add_argument(
+        "--request-timeout-s", type=float, default=60.0,
+        help=(
+            "Per-request timeout passed to the provider adapter (default "
+            "60s). Bounded by the executor's per-future wall-clock cap "
+            "derived from this value and the retry budget."
+        ),
+    )
     p_pbb.add_argument(
         "--full-design", action="store_true",
         help=(
