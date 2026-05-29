@@ -46,6 +46,17 @@ PILOT_DEFAULT_RETRY_MAX = 5
 PILOT_DEFAULT_RETRY_BACKOFF_S = 2.0
 PILOT_DEFAULT_RETRY_BACKOFF_MAX_S = 30.0
 PILOT_DEFAULT_RETRY_JITTER = 0.25
+
+# Bundle-based Test B (the "real project" design):
+#   1 bundle  x 150 sessions x 12 conditions = 1800 outputs  (long pilot)
+#   5 bundles x 150 sessions x 12 conditions = 9000 outputs  (full design)
+# The runner refuses to run the full design directly; full waves must be
+# launched bundle-by-bundle.
+BUNDLE_PILOT_MAX_BUNDLES = 1
+BUNDLE_PILOT_MAX_CONCURRENCY = 2
+BUNDLE_SESSIONS_PER_BUNDLE_DEFAULT = 150
+BUNDLE_N_CONDITIONS = 12
+BUNDLE_FIXTURES_DIRNAME = "generated_bundles"
 ENV_FULL_APPROVAL = "XKLICKD_BENCHMARK_FULL_APPROVED"
 ENV_LLM_KEYS = (
     "LLM_API_KEY",
@@ -234,6 +245,80 @@ def _load_executor_b_module() -> Any:
         sys.modules[full] = mod
         spec.loader.exec_module(mod)
     return sys.modules[full]
+
+
+def _load_executor_b_bundles_module() -> Any:
+    """Load the bundle Test B executor and its prompt module.
+
+    Mirrors :func:`_load_executor_b_module` but loads the 12-condition
+    bundle modules added for the 'real project' Test B design.
+    """
+    _load_executor_module()
+    base = ROOT
+    pkg_name = "_v4_1_pkg"
+    rfc_mod_name = f"{pkg_name}.reference_runtime.rfc010_reference"
+    if rfc_mod_name not in sys.modules:
+        spec = importlib.util.spec_from_file_location(
+            rfc_mod_name, base / "reference_runtime" / "rfc010_reference.py",
+        )
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[rfc_mod_name] = mod
+        spec.loader.exec_module(mod)
+    prompts_test_b_bundles = f"{pkg_name}.prompts.test_b_bundles"
+    if prompts_test_b_bundles not in sys.modules:
+        spec = importlib.util.spec_from_file_location(
+            prompts_test_b_bundles, base / "prompts" / "test_b_bundles.py",
+        )
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[prompts_test_b_bundles] = mod
+        spec.loader.exec_module(mod)
+    full = f"{pkg_name}.runner.executor_b_bundles"
+    if full not in sys.modules:
+        spec = importlib.util.spec_from_file_location(
+            full, base / "runner" / "executor_b_bundles.py",
+        )
+        assert spec and spec.loader
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[full] = mod
+        spec.loader.exec_module(mod)
+    return sys.modules[full]
+
+
+def _load_bundles_generator() -> Any:
+    base = ROOT
+    pkg_name = "_v4_1_pkg"
+    if pkg_name not in sys.modules:
+        _load_executor_module()
+    mod_name = f"{pkg_name}.fixtures.bundles"
+    if mod_name in sys.modules:
+        return sys.modules[mod_name]
+    # Ensure the synthetic fixtures package exists.
+    fxt_pkg = f"{pkg_name}.fixtures"
+    if fxt_pkg not in sys.modules:
+        import types as _types
+        pkg = _types.ModuleType(fxt_pkg)
+        pkg.__path__ = [str(base / "fixtures")]
+        sys.modules[fxt_pkg] = pkg
+    spec = importlib.util.spec_from_file_location(
+        mod_name, base / "fixtures" / "bundles.py",
+    )
+    assert spec and spec.loader
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[mod_name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def load_bundle_manifest(fixtures_dir: Path) -> dict[str, Any]:
+    mpath = fixtures_dir / "bundle_manifest.json"
+    if not mpath.exists():
+        raise RunnerError(
+            f"Missing bundle fixture manifest at {mpath}. "
+            f"Run: python benchmarks/v4.1/fixtures/bundles.py"
+        )
+    return json.loads(mpath.read_text())
 
 
 def _resolve_provider(name: str) -> Any:
@@ -551,6 +636,211 @@ def cmd_pilot_test_b(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_pilot_test_b_bundles(args: argparse.Namespace) -> int:
+    """Bundle-based Test B pilot (the 'real project' long pilot).
+
+    Hard caps for this command:
+      - ``--bundles`` is capped at :data:`BUNDLE_PILOT_MAX_BUNDLES` (1).
+        The full design (5 bundles) is *not* a single run; future waves
+        each launch this command again with a different ``--bundle-index``.
+      - ``--concurrency`` is capped at
+        :data:`BUNDLE_PILOT_MAX_CONCURRENCY` (2).
+      - ``--sessions-per-bundle`` is fixed at 150 by default but may be
+        lowered for unit tests; it cannot exceed 150.
+      - Conditions are always the 12-condition bundle tuple.
+
+    With ``--execute``, the executor will call the provider; without it,
+    only a planned manifest is written.
+    """
+    if args.bundles > BUNDLE_PILOT_MAX_BUNDLES:
+        raise RunnerError(
+            f"--pilot-test-b-bundles is capped at {BUNDLE_PILOT_MAX_BUNDLES} "
+            f"bundle per run (got {args.bundles}). Launch one bundle per "
+            f"wave; the full design is 5 separate runs."
+        )
+    if args.bundles < 1:
+        raise RunnerError("--bundles must be >= 1.")
+    if args.bundle_index < 0 or args.bundle_index > 4:
+        raise RunnerError(
+            "--bundle-index must be in [0, 4] (we have 5 bundles defined)."
+        )
+    if args.concurrency < 1 or args.concurrency > BUNDLE_PILOT_MAX_CONCURRENCY:
+        raise RunnerError(
+            f"--concurrency must be in [1, {BUNDLE_PILOT_MAX_CONCURRENCY}] "
+            f"for bundle pilots (got {args.concurrency})."
+        )
+    if args.sessions_per_bundle < 1 or args.sessions_per_bundle > 150:
+        raise RunnerError(
+            "--sessions-per-bundle must be in [1, 150] "
+            f"(got {args.sessions_per_bundle})."
+        )
+    if args.batch_size < 1:
+        raise RunnerError("--batch-size must be >= 1.")
+    if args.retry_max < 0 or args.retry_max > PILOT_RETRY_MAX_CAP:
+        raise RunnerError(
+            f"--retry-max must be in [0, {PILOT_RETRY_MAX_CAP}] "
+            f"(got {args.retry_max})."
+        )
+    if args.retry_backoff < 0 or args.retry_backoff > PILOT_RETRY_BACKOFF_BASE_CAP:
+        raise RunnerError(
+            f"--retry-backoff must be in [0, {PILOT_RETRY_BACKOFF_BASE_CAP}] "
+            f"(got {args.retry_backoff})."
+        )
+    if args.retry_backoff_max < 0 or args.retry_backoff_max > PILOT_RETRY_BACKOFF_MAX_CAP:
+        raise RunnerError(
+            f"--retry-backoff-max must be in [0, "
+            f"{PILOT_RETRY_BACKOFF_MAX_CAP}] (got {args.retry_backoff_max})."
+        )
+    if args.retry_jitter < 0 or args.retry_jitter > 1:
+        raise RunnerError("--retry-jitter must be in [0, 1].")
+    if args.sleep_between_batches < 0:
+        raise RunnerError("--sleep-between-batches must be >= 0.")
+    if args.full_design:
+        raise RunnerError(
+            "--full-design is intentionally not wired. The full 5-bundle "
+            "design must be launched as 5 separate waves of "
+            "--pilot-test-b-bundles, one per bundle, with explicit human "
+            "review between waves."
+        )
+
+    fixtures_dir = args.fixtures
+    manifest = load_bundle_manifest(fixtures_dir)
+    sessions = load_jsonl(
+        fixtures_dir / manifest["files"]["sessions"]["path"]
+    )
+    bundles_meta = load_jsonl(
+        fixtures_dir / manifest["files"]["bundles"]["path"]
+    )
+
+    # Restrict to the selected bundle index. The manifest may have more
+    # than one bundle (the full generator emits 5); the pilot only runs
+    # one bundle at a time, deterministically chosen by --bundle-index.
+    bundle_ordered = sorted(bundles_meta, key=lambda b: b["bundle_id"])
+    if args.bundle_index >= len(bundle_ordered):
+        raise RunnerError(
+            f"--bundle-index {args.bundle_index} not present in fixtures "
+            f"(only {len(bundle_ordered)} bundle(s) generated)."
+        )
+    selected = bundle_ordered[args.bundle_index]
+    selected_id = selected["bundle_id"]
+    bundle_sessions = [s for s in sessions if s["bundle_id"] == selected_id]
+    if not bundle_sessions:
+        raise RunnerError(
+            f"No sessions found for bundle {selected_id} in fixtures."
+        )
+    if args.sessions_per_bundle < len(bundle_sessions):
+        bundle_sessions = [
+            s for s in bundle_sessions
+            if s.get("session_index", 0) <= args.sessions_per_bundle
+        ]
+
+    executor_bb = _load_executor_b_bundles_module()
+    prompts_bb = sys.modules["_v4_1_pkg.prompts.test_b_bundles"]
+    conditions = prompts_bb.TEST_B_BUNDLE_CONDITIONS
+
+    expected_outputs = (
+        args.bundles * len(bundle_sessions) * len(conditions)
+    )
+
+    out_dir = RESULTS_ROOT / _utcnow_date() / "pilot_test_b_bundles"
+
+    needs_provider = args.execute
+    has_key = args.provider == "mock" or llm_configured()
+    if not needs_provider or not has_key:
+        reason = (
+            "No LLM API key set and provider != mock; emitting planned-run "
+            "manifest only."
+            if not has_key
+            else "Provider available but --execute not supplied; "
+                 "emitting plan only."
+        )
+        payload = {
+            "kind": "planned_run_manifest",
+            "mode": "pilot_test_b_bundles",
+            "reason_no_execution": reason,
+            "timestamp_utc": _utcnow_iso(),
+            "fixtures": manifest,
+            "bundles_selected": [selected_id],
+            "n_sessions_planned": len(bundle_sessions),
+            "n_conditions_planned": len(conditions),
+            "test_b_bundle_conditions_planned": list(conditions),
+            "expected_outputs": expected_outputs,
+            "provider_requested": args.provider,
+            "mem0": {
+                "present": mem0_present(),
+                "compatibility_claim": False,
+                "_note": "This harness makes NO Mem0 compatibility claim.",
+            },
+            "llm_configured": llm_configured(),
+            "repo_commit": _git_sha(),
+            "execution_plan": {
+                "concurrency": args.concurrency,
+                "batch_size": args.batch_size,
+                "sleep_between_batches_s": args.sleep_between_batches,
+                "retry_max": args.retry_max,
+                "retry_backoff_s": args.retry_backoff,
+                "retry_backoff_max_s": args.retry_backoff_max,
+                "retry_jitter": args.retry_jitter,
+                "model": args.model,
+                "temperature": args.temperature,
+                "max_output_tokens": args.max_output_tokens,
+            },
+        }
+        out_path = write_results(out_dir, "planned_run.json", payload)
+        print(
+            f"[pilot-test-b-bundles] {reason}\n"
+            f"[pilot-test-b-bundles] Plan: {out_path}"
+        )
+        return 0
+
+    rid = args.run_id or _run_id().replace("pilot_", "pilot_bb_")
+    run_dir = out_dir / rid
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    providers_pkg = sys.modules["_v4_1_pkg.providers"]
+    config = providers_pkg.ProviderConfig(
+        model=args.model,
+        temperature=args.temperature,
+        max_output_tokens=args.max_output_tokens,
+    )
+    if args._provider_instance is not None:
+        provider = args._provider_instance
+    else:
+        provider = _resolve_provider(args.provider)
+
+    executor_module = _load_executor_module()
+    plan = executor_module.ExecutionPlan(
+        provider_name=args.provider,
+        config=config,
+        concurrency=args.concurrency,
+        batch_size=args.batch_size,
+        sleep_between_batches_s=args.sleep_between_batches,
+        retry_max=args.retry_max,
+        retry_backoff_s=args.retry_backoff,
+        retry_backoff_max_s=args.retry_backoff_max,
+        retry_jitter=args.retry_jitter,
+    )
+    result = executor_bb.execute_bundle_pilot(
+        sessions=bundle_sessions,
+        conditions=conditions,
+        provider=provider,
+        plan=plan,
+        out_dir=run_dir,
+        fixtures_manifest=manifest,
+        repo_commit=_git_sha(),
+        run_id=rid,
+        bundle_ids=[selected_id],
+        sessions_per_bundle=len(bundle_sessions),
+    )
+    print(
+        f"[pilot-test-b-bundles] Executed "
+        f"{result['summary']['counts']['ok']} ok / "
+        f"{result['summary']['counts']['error']} errors. "
+        f"Outputs in {run_dir}"
+    )
+    return 0
+
+
 def cmd_full(args: argparse.Namespace) -> int:
     if not args.confirm_full_run:
         raise RunnerError("Full run requires --confirm-full-run.")
@@ -658,6 +948,62 @@ def _parse() -> argparse.Namespace:
     p_pb.add_argument("--run-id", default=None,
                       help="Reuse a prior run-id to resume.")
     p_pb.set_defaults(func=cmd_pilot_test_b, _provider_instance=None)
+
+    p_pbb = sub.add_parser(
+        "pilot-test-b-bundles",
+        help=(
+            "Bundle-based Test B long pilot (1 bundle x 150 sessions x 12 "
+            "conditions = 1800 outputs)."
+        ),
+    )
+    p_pbb.add_argument(
+        "--fixtures", type=Path,
+        default=ROOT / "fixtures" / BUNDLE_FIXTURES_DIRNAME,
+    )
+    p_pbb.add_argument("--bundles", type=int, default=1,
+                       help="Bundles per run (capped at 1).")
+    p_pbb.add_argument(
+        "--bundle-index", type=int, default=0,
+        help="Which bundle to run (0-4). One wave per bundle.",
+    )
+    p_pbb.add_argument(
+        "--sessions-per-bundle", type=int,
+        default=BUNDLE_SESSIONS_PER_BUNDLE_DEFAULT,
+        help="Sessions per bundle (max 150).",
+    )
+    p_pbb.add_argument("--execute", action="store_true",
+                       help="Actually call the provider (requires adapter).")
+    p_pbb.add_argument("--provider", default="gemini",
+                       choices=["gemini", "mock"],
+                       help="Provider name (default: gemini).")
+    p_pbb.add_argument("--model", default="gemini-2.5-flash")
+    p_pbb.add_argument("--temperature", type=float, default=0.2)
+    p_pbb.add_argument("--max-output-tokens", type=int, default=512)
+    p_pbb.add_argument(
+        "--concurrency", type=int, default=1,
+        help=f"Parallel calls (default 1, max "
+             f"{BUNDLE_PILOT_MAX_CONCURRENCY}).",
+    )
+    p_pbb.add_argument("--batch-size", type=int, default=10)
+    p_pbb.add_argument("--sleep-between-batches", type=float, default=1.0)
+    p_pbb.add_argument("--retry-max", type=int,
+                       default=PILOT_DEFAULT_RETRY_MAX)
+    p_pbb.add_argument("--retry-backoff", type=float,
+                       default=PILOT_DEFAULT_RETRY_BACKOFF_S)
+    p_pbb.add_argument("--retry-backoff-max", type=float,
+                       default=PILOT_DEFAULT_RETRY_BACKOFF_MAX_S)
+    p_pbb.add_argument("--retry-jitter", type=float,
+                       default=PILOT_DEFAULT_RETRY_JITTER)
+    p_pbb.add_argument("--run-id", default=None,
+                       help="Reuse a prior run-id to resume.")
+    p_pbb.add_argument(
+        "--full-design", action="store_true",
+        help=(
+            "Intentionally refused. The full 5-bundle design must be run "
+            "as 5 separate --pilot-test-b-bundles waves."
+        ),
+    )
+    p_pbb.set_defaults(func=cmd_pilot_test_b_bundles, _provider_instance=None)
 
     p_full = sub.add_parser("full", help="Full run; heavily gated.")
     p_full.add_argument("--fixtures", type=Path, default=FIXTURES_DIR)

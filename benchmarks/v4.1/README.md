@@ -180,6 +180,162 @@ artifacts, deterministic logs, concurrency validation, retry behaviour,
 resumability, and audit detection of secret/model-mismatch issues. **No
 network call is made by any test**, even if API keys are set.
 
+## Bundle-based Test B — the "real project" design
+
+The bundle Test B design evaluates **project continuity over time**
+across multiple project types instead of testing every skill in
+isolation. It is the design we recommend for any future Test B
+publication.
+
+| Item                  | Value                                                  |
+| --------------------- | ------------------------------------------------------ |
+| Project bundles       | 5 (AI App Launch, Video/Media, Security/Compliance, Research/Policy, Drone/Mission) |
+| Sessions per bundle   | 150 (10 phases of 15 sessions)                         |
+| Conditions            | 12 (see list below)                                    |
+| Long pilot (1 bundle) | 1 × 150 × 12 = **1,800 outputs**                       |
+| Full design           | 5 × 150 × 12 = **9,000 outputs**                       |
+
+The 12 conditions all run the **same session scenario** for a given
+(bundle, session). The user probe and generation config are
+byte-identical across conditions; only the memory-architecture context
+block changes. Conditions, in audit order:
+
+1. `no_memory`
+2. `prompt_history`
+3. `manual_context_repetition`
+4. `project_docs_only`
+5. `xklickd_static_bundle`
+6. `xklickd_compressed_bundle`
+7. `xklickd_cross_session_resume`
+8. `xklickd_cross_language`
+9. `xklickd_cross_agent`
+10. `xklickd_human_veto`
+11. `xklickd_contradiction_handling`
+12. `xklickd_ci_weakening_resistance`
+
+Phases (1..150):
+
+| Phase                       | Sessions |
+| --------------------------- | -------- |
+| scoping                     | 1–15     |
+| requirements                | 16–30    |
+| research/sources            | 31–45    |
+| architecture/planning       | 46–60    |
+| production/build            | 61–75    |
+| language switch             | 76–90    |
+| cross-agent/role handoff    | 91–105   |
+| controlled contradictions   | 106–120  |
+| security / human veto / CI  | 121–135  |
+| final audit / delivery      | 136–150  |
+
+### Scientific rationale
+
+Memory architectures differ most where projects do: under contradictions,
+role/agent handoffs, language switches, and security-driven veto
+constraints. The 10-phase script is designed so each phase exercises a
+different stressor; the 12 conditions probe a different memory
+architecture against that same stressor sequence. Because the probe is
+byte-identical across conditions and the only thing that differs is the
+prepended context block, an LLM-as-judge or rubric evaluator can compare
+conditions directly without confounding by prompt drift.
+
+### Cost / throughput caution
+
+A single long pilot (1 bundle × 150 sessions × 12 conditions = **1,800
+outputs**) at frontier-model rates can already run into double-digit
+US dollars depending on output length. The full 5-bundle design is
+**9,000 outputs**. The runner therefore refuses to launch the full
+design in a single command: full runs must be dispatched as **five
+separate waves** (`--bundle-index 0..4`), each with explicit human
+review of the prior wave's audit report before the next is launched.
+
+### Generate the bundle fixtures (no LLM)
+
+```bash
+python3 benchmarks/v4.1/fixtures/bundles.py \
+    --seed 4242 \
+    --bundles 5 \
+    --sessions-per-bundle 150 \
+    --out benchmarks/v4.1/fixtures/generated_bundles
+```
+
+Identical seed produces byte-identical output (`test_b_bundle_sessions.jsonl`,
+`test_b_bundle_facts.jsonl`, `test_b_bundles.jsonl`, `bundle_manifest.json`).
+
+### Long pilot (one bundle, 1,800 outputs) — plan only
+
+```bash
+python3 benchmarks/v4.1/runner/runner.py pilot-test-b-bundles \
+    --fixtures benchmarks/v4.1/fixtures/generated_bundles \
+    --bundle-index 0 \
+    --sessions-per-bundle 150 \
+    --provider gemini \
+    --concurrency 2
+```
+
+Without `--execute`, the runner emits a `planned_run.json` only — even
+if `GEMINI_API_KEY` is set.
+
+### Long pilot — execute with Gemini (after explicit human review)
+
+```bash
+export GEMINI_API_KEY=...
+python3 benchmarks/v4.1/runner/runner.py pilot-test-b-bundles \
+    --fixtures benchmarks/v4.1/fixtures/generated_bundles \
+    --bundle-index 0 \
+    --sessions-per-bundle 150 \
+    --provider gemini \
+    --model gemini-2.5-flash \
+    --temperature 0.2 \
+    --max-output-tokens 512 \
+    --concurrency 2 \
+    --batch-size 10 \
+    --sleep-between-batches 2.0 \
+    --retry-max 5 \
+    --retry-backoff 2 \
+    --retry-backoff-max 30 \
+    --retry-jitter 0.25 \
+    --execute
+```
+
+Caps enforced by the runner: `--bundles ≤ 1`, `--concurrency ∈ [1, 2]`,
+`--sessions-per-bundle ≤ 150`, `--retry-max ≤ 8`. The full design flag
+`--full-design` is intentionally refused.
+
+The executor is **resumable**: re-invoking with the same `--run-id`
+makes zero new calls for any `run_id` already present in
+`raw_outputs.jsonl`.
+
+### Audit the long pilot
+
+```bash
+python3 benchmarks/v4.1/runner/audit_b_bundles.py \
+    benchmarks/v4.1/results/<date>/pilot_test_b_bundles/<run_id>
+```
+
+Hard checks: condition balance across all 12 conditions, bundle / phase
+/ session / role coverage, hash completeness, secret scan, forbidden
+claims, missing timestamps. Soft checks: per-condition cost curves and
+session-depth token growth.
+
+### CI dispatch (GitHub Actions)
+
+The `Benchmark v4.1 — Gemini Test B Bundle Long Pilot (controlled)`
+workflow (`.github/workflows/benchmark-v41-pilot-testb-bundles.yml`) is
+**manual-only** (`workflow_dispatch`). It hard-caps `bundle_index` to
+`[0, 4]`, `concurrency` to `[1, 2]`, and `sessions_per_bundle` to
+`[1, 150]`. Default `execute` is `false` so the first dispatch only
+emits a planned manifest. Five waves total are required for the full
+design.
+
+### Future full benchmark (5 waves)
+
+The full 9,000-output design is intentionally **not** launchable from a
+single command. To produce it, dispatch the workflow five times with
+`bundle_index = 0, 1, 2, 3, 4` between manual audit reviews. Each
+dispatch produces 1,800 outputs and a per-wave audit report. The
+results from all five waves can then be aggregated offline.
+
 ## RFC-010 reference runtime (Test B)
 
 `reference_runtime/rfc010_reference.py` implements minimum primitives needed
