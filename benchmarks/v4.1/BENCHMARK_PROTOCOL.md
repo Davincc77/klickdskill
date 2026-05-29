@@ -170,7 +170,127 @@ be promoted.
 - Modifying the 42 v4.1 skills or the public x.klickd site.
 - Production memory runtime (the RFC-010 implementation here is a *reference*).
 
-## 9. Provider fairness rules
+## 9. Bundle-based Test B ("real project" final design)
+
+This section supersedes the earlier per-user Test B description for any
+future Test B publication. The earlier per-user variant remains in the
+harness for backwards compatibility with existing tests, but the
+**bundle design is the recommended Test B**.
+
+### 9.1. Goal
+
+Evaluate **real project continuity over time** across multiple project
+types. The goal is not to test 42 skills individually but to stress
+memory architecture under a realistic 150-session, 10-phase project
+lifecycle, repeated across 5 project bundles.
+
+### 9.2. Bundles
+
+| Bundle ID                       | Title                       | Roles |
+| ------------------------------- | --------------------------- | ----- |
+| `b01_ai_app_launch`             | AI App Launch               | product-manager, project-operator, llm-agent-engineering, privacy-product, trust-evidence, security-incident-response, technical-writer |
+| `b02_video_media_campaign`      | Video/Media Campaign        | media-planner, video-production-pipeline, rights-guard, social-literacy, evidence-desk, project-operator, technical-writer |
+| `b03_security_compliance`       | Security/Compliance         | llm-agent-security, identity-access-management, gdpr-readiness, eu-ai-act, privacy-product, trust-evidence, security-incident-response |
+| `b04_research_policy_publication` | Research/Policy Publication | literature-review, evidence-desk, policy-analyst, technical-writer, privacy-product, trust-evidence, social-literacy |
+| `b05_drone_mission_ops`         | Drone/Mission Ops           | drone-operator, mission-control, edge-ai-operator, security-incident-response, rights-guard, trust-evidence, technical-writer |
+
+### 9.3. Phases (per bundle, 150 sessions)
+
+| Phase | Label                          | Sessions |
+| ----- | ------------------------------ | -------- |
+| p01   | scoping                        | 1–15     |
+| p02   | requirements                   | 16–30    |
+| p03   | research/sources               | 31–45    |
+| p04   | architecture/planning          | 46–60    |
+| p05   | production/build               | 61–75    |
+| p06   | language switch                | 76–90    |
+| p07   | cross-agent/role handoff       | 91–105   |
+| p08   | controlled contradictions      | 106–120  |
+| p09   | security/human veto/CI         | 121–135  |
+| p10   | final audit/delivery/postmortem | 136–150 |
+
+### 9.4. Conditions (12, applied identically to every session)
+
+1. `no_memory` — no prior context.
+2. `prompt_history` — full prior session turns concatenated.
+3. `manual_context_repetition` — user-style restatement of recent decisions.
+4. `project_docs_only` — structured project doc snapshot, no transcripts.
+5. `xklickd_static_bundle` — full bundle definition embedded.
+6. `xklickd_compressed_bundle` — RFC-010 compressed facts + bundle anchors.
+7. `xklickd_cross_session_resume` — resume marker + last-phase snapshot.
+8. `xklickd_cross_language` — compressed facts + language-switch policy.
+9. `xklickd_cross_agent` — compressed facts + role-handoff policy.
+10. `xklickd_human_veto` — compressed facts + human-veto policy.
+11. `xklickd_contradiction_handling` — compressed facts + contradiction rule.
+12. `xklickd_ci_weakening_resistance` — compressed facts + CI policy.
+
+For a given (bundle, session), the **user probe is byte-identical
+across the 12 conditions**, and the generation config is identical.
+The only thing that varies is the system-prompt context block.
+
+### 9.5. Output counts
+
+| Run mode         | Outputs                          |
+| ---------------- | -------------------------------- |
+| Long pilot       | 1 bundle × 150 sessions × 12 conditions = **1,800** |
+| Full design      | 5 bundles × 150 sessions × 12 conditions = **9,000** |
+
+The full design is **not** a single launch. It is **five waves** of the
+long pilot, one per bundle, each separated by manual review of the
+prior wave's audit report.
+
+### 9.6. Cost and throughput caution
+
+At Gemini 2.5 Flash rates the long pilot is feasible as a paid run, but
+the full design at frontier-model output rates can be substantial. The
+runner enforces concurrency ≤ 2, a default 2 s inter-batch sleep, and
+exponential backoff with jitter (defaults: `--retry-max 5`,
+`--retry-backoff 2`, `--retry-backoff-max 30`, `--retry-jitter 0.25`,
+hard caps `[8, 10, 30, 1]`). Resumability is per-run-id.
+
+### 9.7. Audit
+
+`runner/audit_b_bundles.py` runs the following **hard checks** (each
+must pass for the audit to PASS):
+
+- Condition balance across all 12 bundle conditions.
+- Bundle / phase / session coverage matches manifest expectations.
+- Role coverage — every role from the manifest appears.
+- Hash completeness (`prompt_hash`, `output_hash`).
+- Secret scan (no API key, PEM, or token strings in outputs/manifest).
+- Forbidden claims — outputs and manifest must not assert
+  memory-vendor compatibility, "full benchmark result", or
+  similarly-overreaching claims.
+- Missing timestamps — every row has `timestamp_utc`.
+
+Soft checks (warnings, not failures): per-condition cost curves
+(tokens, latency), session-depth token growth per condition, empty
+output text, missing provider tokens.
+
+### 9.8. Exact dispatch command for the long pilot
+
+```bash
+gh workflow run benchmark-v41-pilot-testb-bundles.yml \
+    -f bundle_index=0 \
+    -f sessions_per_bundle=150 \
+    -f concurrency=2 \
+    -f seed=4242 \
+    -f provider=gemini \
+    -f execute=true \
+    -f retry_max=5 \
+    -f retry_backoff=2 \
+    -f retry_backoff_max=30 \
+    -f sleep_between_batches=2
+```
+
+To launch a plan-only dry run, set `execute=false`. To launch the full
+design (5 bundles), dispatch the workflow **five times** with
+`bundle_index = 0, 1, 2, 3, 4`, reviewing each wave's audit report
+before launching the next.
+
+---
+
+## 11. Provider fairness rules
 
 Across the three Test A conditions for a given (user, prompt_family):
 

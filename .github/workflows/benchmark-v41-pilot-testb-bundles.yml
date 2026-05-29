@@ -1,0 +1,283 @@
+name: Benchmark v4.1 — Gemini Test B Bundle Long Pilot (controlled)
+
+# Safe, manual-only workflow to run the bundle-based "real project"
+# Test B long pilot. Hard limits enforced here:
+#
+#   - workflow_dispatch only (no push / pull_request triggers).
+#   - Exactly 1 bundle per run. The full 5-bundle design must be
+#     dispatched as 5 separate waves (--bundle-index 0..4), with human
+#     review between waves.
+#   - 12 conditions (the bundle Test B set). Total outputs per wave =
+#     1 bundle x 150 sessions x 12 conditions = 1800 outputs.
+#   - Provider must be gemini; the workflow refuses anything else.
+#   - Concurrency capped at 2.
+#   - retry_max <= 8, retry_backoff <= 10s, retry_backoff_max <= 30s.
+#   - No full-run path is wired. The runner refuses --full-design.
+#   - No publish / no tag / no release / no Zenodo / no npm / no PyPI.
+#   - The harness makes NO Mem0 compatibility claim.
+#   - GEMINI_API_KEY is only set on the single execute step; never echoed.
+#
+# Inputs are validated before any step touches the secret.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_index:
+        description: "Bundle index to run (0..4). One bundle per wave."
+        required: false
+        default: "0"
+      sessions_per_bundle:
+        description: "Sessions per bundle (1..150). Default 150."
+        required: false
+        default: "150"
+      concurrency:
+        description: "Parallel calls (1..2). Hard cap = 2."
+        required: false
+        default: "2"
+      seed:
+        description: "Deterministic fixture seed."
+        required: false
+        default: "4242"
+      provider:
+        description: "Provider (only 'gemini' is allowed in this workflow)."
+        required: false
+        default: "gemini"
+      execute:
+        description: "Actually call Gemini (true) or stay plan-only (false)."
+        required: false
+        default: "false"
+      retry_max:
+        description: "Max retries on 429/5xx/UNAVAILABLE/RESOURCE_EXHAUSTED (0..8)."
+        required: false
+        default: "5"
+      retry_backoff:
+        description: "Base exponential backoff in seconds (0..10). Default 2."
+        required: false
+        default: "2"
+      retry_backoff_max:
+        description: "Max single backoff in seconds (0..30). Default 30."
+        required: false
+        default: "30"
+      sleep_between_batches:
+        description: "Seconds between batches (0..10). Default 2."
+        required: false
+        default: "2"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: benchmark-v41-pilot-testb-bundles
+  cancel-in-progress: false
+
+jobs:
+  pilot_test_b_bundles:
+    name: v4.1 Test B bundle long pilot (Gemini, controlled)
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      INPUT_BUNDLE_INDEX: ${{ github.event.inputs.bundle_index }}
+      INPUT_SESSIONS_PER_BUNDLE: ${{ github.event.inputs.sessions_per_bundle }}
+      INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
+      INPUT_SEED: ${{ github.event.inputs.seed }}
+      INPUT_PROVIDER: ${{ github.event.inputs.provider }}
+      INPUT_EXECUTE: ${{ github.event.inputs.execute }}
+      INPUT_RETRY_MAX: ${{ github.event.inputs.retry_max }}
+      INPUT_RETRY_BACKOFF: ${{ github.event.inputs.retry_backoff }}
+      INPUT_RETRY_BACKOFF_MAX: ${{ github.event.inputs.retry_backoff_max }}
+      INPUT_SLEEP_BETWEEN_BATCHES: ${{ github.event.inputs.sleep_between_batches }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate inputs (hard caps; provider must be gemini)
+        run: |
+          set -euo pipefail
+          bidx="${INPUT_BUNDLE_INDEX:-0}"
+          sess="${INPUT_SESSIONS_PER_BUNDLE:-150}"
+          conc="${INPUT_CONCURRENCY:-2}"
+          provider="${INPUT_PROVIDER:-gemini}"
+          execute="${INPUT_EXECUTE:-false}"
+
+          case "$bidx" in ''|*[!0-9]*) echo "bundle_index must be a non-negative integer (got: $bidx)"; exit 2;; esac
+          case "$sess" in ''|*[!0-9]*) echo "sessions_per_bundle must be a positive integer (got: $sess)"; exit 2;; esac
+          case "$conc"  in ''|*[!0-9]*) echo "concurrency must be a positive integer (got: $conc)"; exit 2;; esac
+          case "${INPUT_SEED:-4242}" in ''|*[!0-9]*) echo "seed must be a non-negative integer"; exit 2;; esac
+
+          if [ "$bidx" -lt 0 ] || [ "$bidx" -gt 4 ]; then
+            echo "bundle_index must be in [0, 4] (got: $bidx). The full design has 5 bundles (0..4)."
+            exit 2
+          fi
+          if [ "$sess" -lt 1 ] || [ "$sess" -gt 150 ]; then
+            echo "sessions_per_bundle must be in [1, 150] (got: $sess)."
+            exit 2
+          fi
+          if [ "$conc" -lt 1 ] || [ "$conc" -gt 2 ]; then
+            echo "concurrency must be in [1, 2] (got: $conc). Hard cap enforced."
+            exit 2
+          fi
+          if [ "$provider" != "gemini" ]; then
+            echo "provider must be 'gemini' (got: $provider)."
+            exit 2
+          fi
+          if [ "$execute" != "true" ] && [ "$execute" != "false" ]; then
+            echo "execute must be 'true' or 'false' (got: $execute)."
+            exit 2
+          fi
+
+          retry_max="${INPUT_RETRY_MAX:-5}"
+          retry_backoff="${INPUT_RETRY_BACKOFF:-2}"
+          retry_backoff_max="${INPUT_RETRY_BACKOFF_MAX:-30}"
+          sleep_between="${INPUT_SLEEP_BETWEEN_BATCHES:-2}"
+          case "$retry_max" in ''|*[!0-9]*) echo "retry_max must be a non-negative integer (got: $retry_max)"; exit 2;; esac
+          if ! printf '%s' "$retry_backoff" | grep -Eq '^[0-9]+(\.[0-9]+)?$'; then
+            echo "retry_backoff must be a non-negative number (got: $retry_backoff)"; exit 2
+          fi
+          if ! printf '%s' "$retry_backoff_max" | grep -Eq '^[0-9]+(\.[0-9]+)?$'; then
+            echo "retry_backoff_max must be a non-negative number (got: $retry_backoff_max)"; exit 2
+          fi
+          if ! printf '%s' "$sleep_between" | grep -Eq '^[0-9]+(\.[0-9]+)?$'; then
+            echo "sleep_between_batches must be a non-negative number (got: $sleep_between)"; exit 2
+          fi
+          if [ "$retry_max" -gt 8 ]; then
+            echo "retry_max is capped at 8 (got: $retry_max)."; exit 2
+          fi
+          if [ "${retry_backoff%.*}" -gt 10 ]; then
+            echo "retry_backoff is capped at 10s (got: $retry_backoff)."; exit 2
+          fi
+          if [ "${retry_backoff_max%.*}" -gt 30 ]; then
+            echo "retry_backoff_max is capped at 30s (got: $retry_backoff_max)."; exit 2
+          fi
+          if [ "${sleep_between%.*}" -gt 10 ]; then
+            echo "sleep_between_batches is capped at 10s (got: $sleep_between)."; exit 2
+          fi
+
+          # Reject any attempt to launch >1 bundle in a single dispatch.
+          # The workflow exposes no --bundles knob; this is defence-in-depth
+          # in case someone forks the workflow.
+          echo "Validated: bundle_index=$bidx sessions_per_bundle=$sess concurrency=$conc provider=$provider execute=$execute seed=${INPUT_SEED:-4242} retry_max=$retry_max retry_backoff=$retry_backoff retry_backoff_max=$retry_backoff_max sleep_between_batches=$sleep_between"
+
+      - name: Preflight — GEMINI_API_KEY secret presence
+        if: ${{ github.event.inputs.execute == 'true' }}
+        env:
+          HAS_KEY: ${{ secrets.GEMINI_API_KEY != '' }}
+        run: |
+          set -euo pipefail
+          if [ "${HAS_KEY}" != "true" ]; then
+            echo "secrets.GEMINI_API_KEY is missing or empty. Configure the repository secret before dispatching with execute=true."
+            exit 2
+          fi
+          echo "Preflight OK: GEMINI_API_KEY secret is present (value not echoed)."
+
+      - name: Install minimal Python dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          if [ "${INPUT_EXECUTE:-false}" = "true" ]; then
+            pip install google-genai
+          fi
+
+      - name: Generate bundle fixtures (Test B, no LLM)
+        run: |
+          set -euo pipefail
+          python3 benchmarks/v4.1/fixtures/bundles.py \
+            --seed "${INPUT_SEED:-4242}" \
+            --bundles 5 \
+            --sessions-per-bundle "${INPUT_SESSIONS_PER_BUNDLE:-150}" \
+            --out benchmarks/v4.1/fixtures/generated_bundles
+
+      - name: Pilot Test B bundles — plan only (no provider call)
+        run: |
+          set -euo pipefail
+          python3 benchmarks/v4.1/runner/runner.py pilot-test-b-bundles \
+            --fixtures benchmarks/v4.1/fixtures/generated_bundles \
+            --bundle-index "${INPUT_BUNDLE_INDEX:-0}" \
+            --sessions-per-bundle "${INPUT_SESSIONS_PER_BUNDLE:-150}" \
+            --concurrency "${INPUT_CONCURRENCY:-2}" \
+            --provider gemini
+
+      - name: Pilot Test B bundles — execute against Gemini
+        if: ${{ github.event.inputs.execute == 'true' }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          python3 benchmarks/v4.1/runner/runner.py pilot-test-b-bundles \
+            --fixtures benchmarks/v4.1/fixtures/generated_bundles \
+            --bundle-index "${INPUT_BUNDLE_INDEX:-0}" \
+            --sessions-per-bundle "${INPUT_SESSIONS_PER_BUNDLE:-150}" \
+            --provider gemini \
+            --model gemini-2.5-flash \
+            --temperature 0.2 \
+            --max-output-tokens 512 \
+            --concurrency "${INPUT_CONCURRENCY:-2}" \
+            --batch-size 10 \
+            --sleep-between-batches "${INPUT_SLEEP_BETWEEN_BATCHES:-2}" \
+            --retry-max "${INPUT_RETRY_MAX:-5}" \
+            --retry-backoff "${INPUT_RETRY_BACKOFF:-2}" \
+            --retry-backoff-max "${INPUT_RETRY_BACKOFF_MAX:-30}" \
+            --retry-jitter 0.25 \
+            --execute
+
+      - name: Locate pilot run directory
+        id: locate
+        if: ${{ github.event.inputs.execute == 'true' }}
+        run: |
+          set -euo pipefail
+          run_dir="$(find benchmarks/v4.1/results -type d -path '*/pilot_test_b_bundles/pilot_*' -print 2>/dev/null \
+                      | sort | tail -n 1)"
+          if [ -z "${run_dir}" ]; then
+            echo "No bundle Test B pilot run directory found." >&2
+            exit 1
+          fi
+          echo "run_dir=${run_dir}" >> "$GITHUB_OUTPUT"
+          echo "Run dir: ${run_dir}"
+
+      - name: Audit bundle Test B pilot output
+        if: ${{ github.event.inputs.execute == 'true' }}
+        run: |
+          set -euo pipefail
+          python3 benchmarks/v4.1/runner/audit_b_bundles.py "${{ steps.locate.outputs.run_dir }}"
+
+      - name: Job summary
+        if: always()
+        run: |
+          set -euo pipefail
+          {
+            echo "## v4.1 Test B bundle long pilot — controlled run"
+            echo ""
+            echo "- bundle_index: \`${INPUT_BUNDLE_INDEX:-0}\` (full design = 5 separate waves, 0..4)"
+            echo "- sessions_per_bundle: \`${INPUT_SESSIONS_PER_BUNDLE:-150}\` (cap 150)"
+            echo "- concurrency: \`${INPUT_CONCURRENCY:-2}\` (hard cap 2)"
+            echo "- seed: \`${INPUT_SEED:-4242}\`"
+            echo "- provider: \`${INPUT_PROVIDER:-gemini}\` (only \`gemini\` is allowed)"
+            echo "- execute: \`${INPUT_EXECUTE:-false}\`"
+            echo "- conditions: 12 (no_memory, prompt_history, manual_context_repetition, project_docs_only, xklickd_static_bundle, xklickd_compressed_bundle, xklickd_cross_session_resume, xklickd_cross_language, xklickd_cross_agent, xklickd_human_veto, xklickd_contradiction_handling, xklickd_ci_weakening_resistance)"
+            echo "- expected outputs / wave: 1 x 150 x 12 = 1800"
+            echo ""
+            echo "**No publish / no tag / no release / no Zenodo / no npm / no PyPI.**"
+            echo "This harness makes **no** Mem0 compatibility claim."
+            echo "The full 5-bundle design requires 5 separate dispatches with human review between waves."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload artifacts (fixtures manifest, plan, raw outputs, errors, metrics, audit)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-v41-pilot-testb-bundles-${{ github.run_id }}
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            benchmarks/v4.1/fixtures/generated_bundles/bundle_manifest.json
+            benchmarks/v4.1/results/**/pilot_test_b_bundles/planned_run.json
+            benchmarks/v4.1/results/**/pilot_test_b_bundles/pilot_*/raw_outputs.jsonl
+            benchmarks/v4.1/results/**/pilot_test_b_bundles/pilot_*/errors.jsonl
+            benchmarks/v4.1/results/**/pilot_test_b_bundles/pilot_*/metrics_summary.json
+            benchmarks/v4.1/results/**/pilot_test_b_bundles/pilot_*/run_manifest.json
+            benchmarks/v4.1/results/**/pilot_test_b_bundles/pilot_*/audit_report.md
+            benchmarks/v4.1/results/**/pilot_test_b_bundles/pilot_*/audit_report.json
