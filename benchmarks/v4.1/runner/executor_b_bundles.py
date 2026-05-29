@@ -26,6 +26,7 @@ from .executor import (
     _utcnow_iso,
     ExecutionPlan,
 )
+from ..providers.base import is_terminal_billing_error
 from ..prompts.test_b_bundles import (
     TEST_B_BUNDLE_CONDITIONS,
     build_test_b_bundle_messages,
@@ -118,14 +119,32 @@ def execute_bundle_pilot(
         sys.stderr.write(msg + "\n")
         sys.stderr.flush()
 
-    counts = {"ok": 0, "error": 0, "skipped_resumed": len(already_done)}
+    counts = {
+        "ok": 0,
+        "error": 0,
+        "skipped_resumed": len(already_done),
+        "skipped_terminal_abort": 0,
+    }
     latencies: list[int] = []
     by_condition: dict[str, int] = {}
     by_phase: dict[str, int] = {}
     by_bundle: dict[str, int] = {}
     tokens = {"input": 0, "output": 0}
 
+    # Set once a terminal billing / spend-cap condition is observed. Every
+    # subsequent call to the same provider is guaranteed to fail with the
+    # same error, so we stop dispatching new work and record the rest as
+    # ``skipped_terminal_abort`` instead of burning the full 120-min job.
+    abort_reason: dict[str, Any] = {}
+    abort_lock = threading.Lock()
+
     def _do_call(call: dict[str, Any]) -> None:
+        if abort_reason:
+            # A previous call already tripped the terminal-billing trap.
+            # Skip without contacting the provider; the batch loop will
+            # break out cleanly after the current batch drains.
+            counts["skipped_terminal_abort"] += 1
+            return
         t_start = _utcnow_iso()
         with progress_lock:
             progress["started"] += 1
@@ -187,6 +206,22 @@ def execute_bundle_pilot(
                 f"attempts={retried_attempts} "
                 f"wall_ms={dt_ms}"
             )
+            if final_class == "terminal_billing":
+                with abort_lock:
+                    if not abort_reason:
+                        last_err = attempts[-1] if attempts else {}
+                        abort_reason.update({
+                            "first_run_id": call["run_id"],
+                            "error_type": last_err.get("error_type"),
+                            "error": last_err.get("error"),
+                        })
+                        _log(
+                            "[bb] TERMINAL-BILLING tripped: provider has "
+                            "hit a hard billing/spend cap. Aborting the "
+                            "run; remaining calls will be recorded as "
+                            f"skipped_terminal_abort. run_id={call['run_id']} "
+                            f"err={last_err.get('error')}"
+                        )
             return
         raw_writer.write({
             "run_id": call["run_id"],
@@ -286,6 +321,17 @@ def execute_bundle_pilot(
 
     try:
         for batch_start in range(0, len(pending), plan.batch_size):
+            if abort_reason:
+                # A prior batch tripped the terminal-billing trap. Stop
+                # dispatching new work entirely; the remaining ``pending``
+                # are intentionally not contacted.
+                _log(
+                    f"[bb] abort: skipping remaining "
+                    f"{len(pending) - batch_start} call(s) after "
+                    f"terminal_billing first observed in "
+                    f"run_id={abort_reason.get('first_run_id')}"
+                )
+                break
             batch = pending[batch_start:batch_start + plan.batch_size]
             if plan.concurrency <= 1:
                 for call in batch:
@@ -357,6 +403,8 @@ def execute_bundle_pilot(
         "test": "test_b_bundles",
         "counts": counts,
         "total_attempted": len(pending),
+        "aborted": bool(abort_reason),
+        "abort_reason": dict(abort_reason) if abort_reason else None,
         "by_condition": by_condition,
         "by_phase": by_phase,
         "by_bundle": by_bundle,
@@ -402,6 +450,8 @@ def execute_bundle_pilot(
         "fixtures": fixtures_manifest,
         "repo_commit": repo_commit,
         "counts": counts,
+        "aborted": bool(abort_reason),
+        "abort_reason": dict(abort_reason) if abort_reason else None,
         "n_run_specs_total": len(pending) + counts["skipped_resumed"],
         "n_already_done_on_start": counts["skipped_resumed"],
         "conditions": list(conditions),
