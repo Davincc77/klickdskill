@@ -19,8 +19,10 @@ from .base import (
     ProviderConfig,
     ProviderError,
     ProviderResponse,
+    TerminalProviderError,
     TransientProviderError,
     env_api_key,
+    is_terminal_billing_error,
     is_transient_error,
 )
 
@@ -79,6 +81,16 @@ class GeminiProvider:
                 },
             )
         except Exception as exc:
+            # Terminal billing hard cap (e.g. "monthly spending cap")
+            # comes through Gemini as a 429 RESOURCE_EXHAUSTED, which
+            # would otherwise be misclassified as transient and retried.
+            # Detect it first and surface as TerminalProviderError so the
+            # executor stops the run cleanly instead of burning the whole
+            # 120-min job re-trying every item.
+            if is_terminal_billing_error(exc):
+                raise TerminalProviderError(
+                    f"gemini terminal billing cap: {exc!s}"
+                ) from exc
             # Surface timeouts as transient so the retry loop can recover.
             if _is_timeout_error(exc) or is_transient_error(exc):
                 raise TransientProviderError(

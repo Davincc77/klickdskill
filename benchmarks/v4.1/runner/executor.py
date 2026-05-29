@@ -37,7 +37,9 @@ from ..providers.base import (
     ProviderConfig,
     ProviderError,
     ProviderResponse,
+    TerminalProviderError,
     TransientProviderError,
+    is_terminal_billing_error,
     is_transient_error,
 )
 
@@ -116,7 +118,20 @@ def _build_call(
 
 
 def _classify(exc: BaseException) -> str:
-    """Stable short string used in retry logs."""
+    """Stable short string used in retry logs.
+
+    Classes:
+    - ``transient``: retryable (429 rate limit cooldown, 5xx, timeout)
+    - ``terminal_billing``: provider-side billing/spend hard cap. NOT
+      retryable; the entire run should stop because every subsequent
+      call will hit the identical cap.
+    - ``permanent``: auth/config/schema errors. NOT retryable for this
+      call but the rest of the run is unaffected.
+    - ``unhandled``: anything we did not recognise — treated as permanent
+      for safety so we never silently retry an unknown failure mode.
+    """
+    if is_terminal_billing_error(exc):
+        return "terminal_billing"
     if isinstance(exc, TransientProviderError):
         return "transient"
     if isinstance(exc, ProviderError):

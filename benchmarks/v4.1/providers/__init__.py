@@ -11,8 +11,10 @@ from .base import (
     ProviderConfig,
     ProviderError,
     ProviderResponse,
+    TerminalProviderError,
     TransientProviderError,
     get_provider,
+    is_terminal_billing_error,
     is_transient_error,
     register_provider,
 )
@@ -23,9 +25,11 @@ __all__ = [
     "ProviderConfig",
     "ProviderError",
     "ProviderResponse",
+    "TerminalProviderError",
     "TransientProviderError",
     "MockProvider",
     "get_provider",
+    "is_terminal_billing_error",
     "is_transient_error",
     "register_provider",
 ]

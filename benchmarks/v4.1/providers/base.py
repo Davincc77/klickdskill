@@ -31,6 +31,44 @@ class TransientProviderError(ProviderError):
     """
 
 
+class TerminalProviderError(ProviderError):
+    """Subclass marking a TERMINAL, run-aborting provider failure.
+
+    Distinct from a plain permanent error: the executor should not only
+    refuse to retry the offending call, it should also stop processing
+    further calls in the current run because every subsequent call to
+    the same provider is guaranteed to fail for the same reason.
+
+    The canonical example is a Gemini ``429 RESOURCE_EXHAUSTED`` whose
+    message says ``Your project has exceeded its monthly spending cap``:
+    until the cap is raised or reset, every other request from the same
+    project will hit the identical billing hard cap, so retrying 6x per
+    item and continuing through 1799 more items just burns wall-clock
+    on a guaranteed-failing run (the symptom observed in workflow run
+    26642239431: 230 errors, 0 raw outputs, 120 min wasted).
+    """
+
+
+# Substrings that identify a *terminal* billing / hard-cap condition.
+# These are matched BEFORE the transient token list so that messages
+# such as ``429 RESOURCE_EXHAUSTED ... monthly spending cap ...`` are
+# not misclassified as a transient rate limit. Match is case-insensitive
+# and substring-based.
+_TERMINAL_BILLING_TOKENS = (
+    "monthly spending cap",
+    "monthly spend cap",
+    "spending cap",
+    "spend cap",
+    "spending limit reached",
+    "billing hard cap",
+    "billing cap exceeded",
+    "exceeded its monthly",
+    "exceeded the monthly",
+    "ai.studio/spend",
+    "ai studio at https://ai.studio/spend",
+)
+
+
 # HTTP status codes and provider error tokens that should be treated as
 # transient by the classifier below.
 _TRANSIENT_HTTP_CODES = (408, 425, 429, 500, 502, 503, 504)
@@ -62,6 +100,25 @@ _TRANSIENT_TOKENS = (
 )
 
 
+def is_terminal_billing_error(exc: BaseException) -> bool:
+    """Return True iff ``exc`` looks like a terminal billing hard cap.
+
+    Specifically, a provider error whose human-readable message contains
+    one of :data:`_TERMINAL_BILLING_TOKENS` (e.g. Gemini's
+    ``monthly spending cap``). These conditions are *not* transient: the
+    provider returns the same response for every subsequent call from
+    the affected project until a human raises or resets the cap, so
+    retrying is wasted budget and continuing the run is wasted wall-clock.
+    """
+    if isinstance(exc, TerminalProviderError):
+        return True
+    text = str(exc).lower()
+    for tok in _TERMINAL_BILLING_TOKENS:
+        if tok in text:
+            return True
+    return False
+
+
 def is_transient_error(exc: BaseException) -> bool:
     """Classify an exception as transient (retryable) or not.
 
@@ -72,7 +129,15 @@ def is_transient_error(exc: BaseException) -> bool:
     This is conservative on purpose: anything that does not match a
     known transient signal is treated as non-transient so we do not
     retry auth/permission/quota-permanent errors.
+
+    Terminal billing hard-caps win over the transient signal: a message
+    such as ``429 RESOURCE_EXHAUSTED ... monthly spending cap ...`` is
+    classified non-transient even though it carries both a 429 code and
+    ``RESOURCE_EXHAUSTED``, because the underlying cause is a permanent
+    cap, not a per-second rate limit.
     """
+    if is_terminal_billing_error(exc):
+        return False
     for attr in ("status_code", "http_status", "status"):
         v = getattr(exc, attr, None)
         if isinstance(v, int) and v in _TRANSIENT_HTTP_CODES:
