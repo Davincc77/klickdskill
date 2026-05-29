@@ -60,21 +60,41 @@ class GeminiProvider:
             "max_output_tokens": config.max_output_tokens,
             "top_p": config.top_p,
         }
+        # Per-request timeout: google-genai accepts HttpOptions(timeout=<ms>)
+        # in the per-call config. Without this the SDK can hang indefinitely
+        # on a stalled TLS read with no client-side deadline (observed on
+        # bundle_index=4 of Test B where the call step ran >80 min before
+        # the workflow was cancelled).
+        timeout_ms = max(1000, int(config.timeout_s * 1000))
+        http_options: dict[str, Any] = {"timeout": timeout_ms}
         t0 = time.monotonic()
         try:  # pragma: no cover - exercised only with real SDK/network
             resp = client.models.generate_content(
                 model=config.model,
                 contents=user,
-                config={"system_instruction": system, **gen_config},
+                config={
+                    "system_instruction": system,
+                    "http_options": http_options,
+                    **gen_config,
+                },
             )
         except Exception as exc:
-            if is_transient_error(exc):
+            # Surface timeouts as transient so the retry loop can recover.
+            if _is_timeout_error(exc) or is_transient_error(exc):
                 raise TransientProviderError(
                     f"gemini transient call failure: {exc!s}"
                 ) from exc
             raise ProviderError(f"gemini call failed: {exc!s}") from exc
         latency_ms = int((time.monotonic() - t0) * 1000)
         return _normalise_response(resp, config.model, latency_ms)
+
+
+def _is_timeout_error(exc: BaseException) -> bool:
+    name = type(exc).__name__.lower()
+    if "timeout" in name:
+        return True
+    msg = str(exc).lower()
+    return "timeout" in msg or "timed out" in msg or "deadline" in msg
 
 
 def _normalise_response(resp: Any, model: str, latency_ms: int) -> ProviderResponse:  # pragma: no cover

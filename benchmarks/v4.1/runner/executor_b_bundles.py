@@ -12,6 +12,9 @@ launch a full path here; see ``runner.py``.
 from __future__ import annotations
 
 import json
+import sys
+import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -103,6 +106,18 @@ def execute_bundle_pilot(
     raw_writer = _Writer(raw_path)
     err_writer = _Writer(err_path)
 
+    # Per-item progress logging. Without this the executor was silent for
+    # the entire 1800-call run, so a single hung Gemini request looked
+    # identical to a healthy run. Lines are emitted on stderr (unbuffered)
+    # so GitHub Actions surfaces them in real time.
+    total_pending = 0  # set below once we know pending
+    progress_lock = threading.Lock()
+    progress = {"done": 0, "errors": 0, "started": 0}
+
+    def _log(msg: str) -> None:
+        sys.stderr.write(msg + "\n")
+        sys.stderr.flush()
+
     counts = {"ok": 0, "error": 0, "skipped_resumed": len(already_done)}
     latencies: list[int] = []
     by_condition: dict[str, int] = {}
@@ -112,12 +127,24 @@ def execute_bundle_pilot(
 
     def _do_call(call: dict[str, Any]) -> None:
         t_start = _utcnow_iso()
+        with progress_lock:
+            progress["started"] += 1
+            started_idx = progress["started"]
+        t_call0 = time.monotonic()
+        _log(
+            f"[bb] start {started_idx}/{total_pending} "
+            f"bundle={call['bundle_id']} "
+            f"s={call['session_index']:03d} "
+            f"cond={call['condition']} "
+            f"run_id={call['run_id']}"
+        )
         resp, attempts, cumulative_delay = _call_with_retry(
             provider, plan.config, call["system"], call["user"],
             plan.retry_max, plan.retry_backoff_s,
             retry_backoff_max_s=plan.retry_backoff_max_s,
             retry_jitter=plan.retry_jitter,
         )
+        dt_ms = int((time.monotonic() - t_call0) * 1000)
         retried_attempts = len(attempts)
         if resp is None:
             final_class = attempts[-1]["error_class"] if attempts else "unknown"
@@ -149,6 +176,17 @@ def execute_bundle_pilot(
                 "status": "error",
             })
             counts["error"] += 1
+            with progress_lock:
+                progress["errors"] += 1
+                progress["done"] += 1
+                done_idx = progress["done"]
+            _log(
+                f"[bb] error {done_idx}/{total_pending} "
+                f"run_id={call['run_id']} "
+                f"final_class={final_class} "
+                f"attempts={retried_attempts} "
+                f"wall_ms={dt_ms}"
+            )
             return
         raw_writer.write({
             "run_id": call["run_id"],
@@ -179,6 +217,15 @@ def execute_bundle_pilot(
             "status": "ok",
         })
         counts["ok"] += 1
+        with progress_lock:
+            progress["done"] += 1
+            done_idx = progress["done"]
+        _log(
+            f"[bb] ok    {done_idx}/{total_pending} "
+            f"run_id={call['run_id']} "
+            f"lat_ms={resp.latency_ms} wall_ms={dt_ms} "
+            f"in_tok={resp.input_tokens} out_tok={resp.output_tokens}"
+        )
         latencies.append(resp.latency_ms)
         by_condition[call["condition"]] = (
             by_condition.get(call["condition"], 0) + 1
@@ -189,8 +236,54 @@ def execute_bundle_pilot(
         tokens["input"] += resp.input_tokens or 0
         tokens["output"] += resp.output_tokens or 0
 
-    import concurrent.futures as _f
+    import queue as _q
     import time as _time
+    total_pending = len(pending)
+    _log(
+        f"[bb] begin total_pending={total_pending} "
+        f"concurrency={plan.concurrency} batch_size={plan.batch_size} "
+        f"provider={plan.provider_name} model={plan.config.model}"
+    )
+    # Defence-in-depth wall-clock cap per call. The provider adapter is
+    # the primary line of defence (HttpOptions timeout); this Future-level
+    # cap ensures a single hung worker can never block the entire batch.
+    per_call_wall_s = max(
+        5.0,
+        plan.config.timeout_s * (plan.retry_max + 1)
+        + plan.retry_backoff_max_s * max(0, plan.retry_max)
+        + 5.0,
+    )
+
+    def _record_wall_timeout(c: dict[str, Any]) -> None:
+        err_writer.write({
+            "run_id": c["run_id"],
+            "bundle_id": c["bundle_id"],
+            "session_id": c["session_id"],
+            "session_index": c["session_index"],
+            "phase_id": c["phase_id"],
+            "phase_label": c["phase_label"],
+            "role": c["role"],
+            "language": c["language"],
+            "condition": c["condition"],
+            "family": c["family"],
+            "prompt_id": c["prompt_id"],
+            "prompt_hash": c["prompt_hash"],
+            "timestamp_utc": _utcnow_iso(),
+            "model": plan.config.model,
+            "provider": plan.provider_name,
+            "errors": [f"wall-clock cap exceeded ({per_call_wall_s:.1f}s)"],
+            "attempts": [],
+            "retried_attempts": 0,
+            "final_error_class": "wall_clock_timeout",
+            "cumulative_retry_delay_s": 0.0,
+            "status": "error",
+        })
+        counts["error"] += 1
+        _log(
+            f"[bb] WALL-TIMEOUT run_id={c['run_id']} "
+            f"cap_s={per_call_wall_s:.1f}"
+        )
+
     try:
         for batch_start in range(0, len(pending), plan.batch_size):
             batch = pending[batch_start:batch_start + plan.batch_size]
@@ -198,8 +291,60 @@ def execute_bundle_pilot(
                 for call in batch:
                     _do_call(call)
             else:
-                with _f.ThreadPoolExecutor(max_workers=plan.concurrency) as pool:
-                    list(pool.map(_do_call, batch))
+                # Hand-rolled worker pool of daemon threads. We deliberately
+                # avoid ThreadPoolExecutor here: its __exit__ joins all
+                # worker threads, which means a single hung HTTPS request
+                # would wedge the entire run (the symptom seen on
+                # bundle_index=4). Daemon threads cannot prevent process
+                # exit, so a wedged worker is harmless once we have
+                # classified its job as wall_clock_timeout.
+                jobs: _q.Queue = _q.Queue()
+                done_q: _q.Queue = _q.Queue()
+                pending_calls: dict[str, dict[str, Any]] = {
+                    c["run_id"]: c for c in batch
+                }
+                for c in batch:
+                    jobs.put(c)
+
+                def _worker() -> None:
+                    while True:
+                        try:
+                            job = jobs.get_nowait()
+                        except _q.Empty:
+                            return
+                        try:
+                            _do_call(job)
+                        except BaseException as exc:  # noqa: BLE001
+                            _log(
+                                f"[bb] worker-raised "
+                                f"run_id={job['run_id']} "
+                                f"type={type(exc).__name__} err={exc}"
+                            )
+                        finally:
+                            done_q.put(job["run_id"])
+
+                workers = []
+                for _ in range(plan.concurrency):
+                    t = threading.Thread(
+                        target=_worker, name="bb_worker", daemon=True,
+                    )
+                    t.start()
+                    workers.append(t)
+
+                deadline = _time.monotonic() + per_call_wall_s
+                while pending_calls:
+                    remaining = deadline - _time.monotonic()
+                    if remaining <= 0:
+                        for rid, c in list(pending_calls.items()):
+                            _record_wall_timeout(c)
+                            pending_calls.pop(rid, None)
+                        break
+                    try:
+                        finished_rid = done_q.get(timeout=max(0.05, remaining))
+                    except _q.Empty:
+                        continue
+                    pending_calls.pop(finished_rid, None)
+                # Don't join wedged workers. They are daemons.
             if plan.sleep_between_batches_s > 0 \
                     and batch_start + plan.batch_size < len(pending):
                 _time.sleep(plan.sleep_between_batches_s)

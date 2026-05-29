@@ -222,6 +222,7 @@ jobs:
             --retry-backoff "${INPUT_RETRY_BACKOFF:-2}" \
             --retry-backoff-max "${INPUT_RETRY_BACKOFF_MAX:-30}" \
             --retry-jitter 0.25 \
+            --request-timeout-s 60 \
             --execute
 
       - name: Locate pilot run directory
