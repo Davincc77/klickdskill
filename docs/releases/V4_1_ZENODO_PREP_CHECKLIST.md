@@ -6,6 +6,7 @@
 | **Audience** | Maintainer (Vince) preparing the v4.1 Zenodo deposit. **No deposit is created by this file.** |
 | **Public wording** | `x.klickd` (canonical public name). The internal planning-track codename MUST NOT appear in any public Zenodo metadata, file path, or bundle filename. |
 | **Created** | 2026-05-28 |
+| **Published evidence-pack DOI** | The v4.1 benchmark evidence pack is deposited under version DOI [`10.5281/zenodo.20459934`](https://doi.org/10.5281/zenodo.20459934) (record [zenodo.org/records/20459934](https://zenodo.org/records/20459934)). This checklist still performs **no** publish action — the row records the already-published record so future deposits reference it correctly. |
 | **Companion** | [`docs/public/X_KLICKD_ZENODO_DRAFT.md`](../public/X_KLICKD_ZENODO_DRAFT.md) (deposit field draft) · [`/.zenodo.json`](../../.zenodo.json) (current v4.0.0 metadata) · [`scripts/generate_v4_1_zenodo_bundle.sh`](../../scripts/generate_v4_1_zenodo_bundle.sh) (prep helper) · [`scripts/generate_x_klickd_sha256sums.sh`](../../scripts/generate_x_klickd_sha256sums.sh) (skills SHA256SUMS helper). |
 
 > **Hard locks.**

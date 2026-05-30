@@ -8,6 +8,7 @@
 | **Created** | 2026-05-28 |
 | **Companion** | [`X_KLICKD_SITE_COPY.md`](./X_KLICKD_SITE_COPY.md) · [`X_KLICKD_MATRIX_VISUAL_BRIEF.md`](./X_KLICKD_MATRIX_VISUAL_BRIEF.md) · [`/.zenodo.json`](../../.zenodo.json) — current GA Zenodo metadata for v4.0.0. |
 | **Not for publication** | This file is a deposit draft. It is **not** a Zenodo deposit. No DOI is minted by this PR. No file in this PR triggers a release. The deposit only happens when Vince explicitly creates it from a tagged release. |
+| **Published record** | The v4.1 benchmark evidence pack has been deposited to Zenodo and minted version DOI [`10.5281/zenodo.20459934`](https://doi.org/10.5281/zenodo.20459934) — record [zenodo.org/records/20459934](https://zenodo.org/records/20459934), title *"x.klickd v4.1.0: Portable, Encrypted and Governed Memory for Long-Running AI Workflows"*. This row documents the already-published evidence-pack record; the field draft below remains the template for any future GA software deposit and is not retroactively normative for the published pack. |
 
 > **Hard locks.** (1) Public wording must use `x.klickd`. The internal codename used in the planning track is forbidden in every Zenodo field — title, description, keywords, notes, related-identifier titles. (2) v4.1 is **in preparation**; until it is tagged, this draft is *staged* metadata, not the metadata of an actual deposit. (3) No GA claim until v4.1 is released. The "non-GA" preview language in §6 below must be retained until the GA release is cut. (4) No copyrighted third-party material is uploaded. Diagrams in the deposit are original; sources are cited by name and canonical URL (mirror of `X_KLICKD_MATRIX_VISUAL_BRIEF.md` §5).
 
@@ -174,6 +175,8 @@ To be confirmed at deposit time. The expected shape (mirroring `/.zenodo.json` f
 - `isVersionOf` — `10.5281/zenodo.20262530` (the concept DOI for the `.klickd` series, `doi`).
 - `isNewVersionOf` — `10.5281/zenodo.20383133` (the v4.0.0 version DOI, `doi`).
 - `isPreviousVersionOf` — *staged for the deposit AFTER v4.1; do not include in the v4.1 deposit itself; add at the v4.2 deposit time.*
+
+> **Published v4.1 evidence-pack record.** The v4.1 benchmark evidence pack is already deposited under version DOI `10.5281/zenodo.20459934` (record `https://zenodo.org/records/20459934`). A future v4.2 deposit should record this as `isPreviousVersionOf`.
 
 If any of the npm / PyPI v4.1 packages is not yet published when the Zenodo deposit is created, omit that `isIdenticalTo` entry until the package is live. Do not point a related-identifier at a non-existent artifact.
 

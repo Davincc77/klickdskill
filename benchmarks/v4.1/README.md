@@ -1,5 +1,12 @@
 # x.klickd v4.1 — Benchmark Harness
 
+**DOI evidence pack:** the v4.1 benchmark evidence is archived on Zenodo under
+version DOI [`10.5281/zenodo.20459934`](https://doi.org/10.5281/zenodo.20459934)
+(record [zenodo.org/records/20459934](https://zenodo.org/records/20459934)).
+This is candidate-track benchmark evidence only — it makes no claim of universal
+native support, no automatic GDPR / EU AI Act compliance, and no superiority over
+external benchmarks or competing systems.
+
 **Status:** scaffolding + controlled pilot executor. No large/expensive LLM
 batches have been run.
 **Default mode:** dry-run. No provider calls happen without explicit human
