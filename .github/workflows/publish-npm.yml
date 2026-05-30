@@ -26,7 +26,7 @@ on:
       expected_version:
         description: 'Exact package.json version required to publish (must match the current package version).'
         required: false
-        default: '4.0.3'
+        default: '4.1.0'
 
 jobs:
   publish:
@@ -59,7 +59,7 @@ jobs:
       - name: Verify package version matches the expected release
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
-          EXPECTED="${{ github.event.inputs.expected_version || '4.0.3' }}"
+          EXPECTED="${{ github.event.inputs.expected_version || '4.1.0' }}"
           echo "Package version: $PKG_VERSION"
           echo "Expected version: $EXPECTED"
           case "$PKG_VERSION" in

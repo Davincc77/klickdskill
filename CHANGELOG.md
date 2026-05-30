@@ -7,6 +7,82 @@ Versions follow: `envelope_version (skill_revision)`.
 
 ---
 
+## packaging 4.1.0 — 2026-05-30 — `@klickd/core` and `klickd` SDK minor release; x.klickd v4.1 candidate track documented
+
+> **Packaging / SDK minor release.** Bumps the two reference SDKs in
+> lock-step: `@klickd/core` 4.0.3 → 4.1.0 (npm) and `klickd` 4.0.3 → 4.1.0
+> (PyPI). The stable, normative `.klickd` wire envelope remains **v4.0.0
+> GA** (DOI, GitHub Release): the JSON schemas
+> (`schemas/klickd-payload-v4.schema.json`,
+> `schemas/klickd-payload-v4-preview.schema.json`,
+> `schema/klickd-v4.schema.json`, `schema/klickd-v4-preview.schema.json`),
+> payload semantics, and the four starter `.klickd` files are unchanged
+> from 4.0.0. This release does **not** create a git tag, a GitHub
+> Release, a Zenodo DOI, or an IANA action.
+
+### npm — `@klickd/core` 4.0.3 → 4.1.0
+
+- **Chore:** bump the package version to 4.1.0 and align the
+  `publish-npm.yml` default `expected_version` input to `4.1.0`. The
+  workflow continues to publish to the `latest` dist-tag over **OIDC
+  Trusted Publishing** (no long-lived `NPM_TOKEN`); the trusted-publisher
+  binding is on the unchanged workflow file path
+  `.github/workflows/publish-npm.yml`.
+- **Unchanged guards:** the publish path still runs install + test + build
+  + packed-tarball CJS/ESM verification (`scripts/verify-tarball.mjs`) and
+  the `npm pack` starter-skills presence check before `npm publish`, and
+  still refuses to publish a pre-release to `latest`.
+
+### PyPI — `klickd` 4.0.3 → 4.1.0
+
+- **Chore:** bump `pyproject.toml` `version` and the in-package
+  `klickd.__version__` constant to `4.1.0` in lock-step so consumers
+  reading `klickd.__version__` see a value that matches the PyPI release.
+- **Unchanged guards:** `publish-pypi.yml` continues to build sdist+wheel
+  and publish via **PyPI Trusted Publishing**; the tag/version consistency
+  check still runs only on `release` / tag dispatch.
+
+### x.klickd v4.1 candidate / benchmark / evidence track (documentation only)
+
+- The `x.klickd` v4.1 candidate skill catalogue
+  (`examples/v4.1/x-klickd-skills/`, 8 Lite + 34 Pro = 42 artefacts),
+  the RFC-010 `compressed_memory` draft/preview shape, and the
+  context-cost benchmark and evidence/DOI pack are referenced here for
+  provenance. They remain **candidate / draft / preview** and are **not
+  GA**: `_pack_metadata.claims_v41_ga: false` everywhere. No artefact
+  bytes, benchmark result data, or DOI evidence pack are modified by this
+  release.
+- The public download surface remains codename-clean
+  (`validate_public_surface_codename_clean()`); this release introduces no
+  internal working-codename string on any public surface.
+
+### Starter `.klickd` files (unchanged)
+
+- `user.klickd`, `student.klickd`, `research.klickd`, `coding.klickd` ship
+  byte-identical to 4.0.3, with the same SHA-256 manifest.
+
+### Claim boundary
+
+- `.klickd` provides portable, client-side-encrypted user state and
+  primitives that *help* a privacy and safety program. It does **not**
+  provide universal native support across AI clients — compatibility
+  depends on the reader. It does **not** confer automatic GDPR or EU AI
+  Act compliance — compliance is the operator's responsibility. It makes
+  **no claim of superiority over external benchmarks or competing
+  systems**. The v4.1 candidate / benchmark track carries no stability or
+  compatibility guarantee.
+
+### Scope guarantees (intentional non-goals)
+
+- No GitHub Release
+- No git tag
+- No Zenodo DOI / `.zenodo.json` change
+- No change to the v4.0.0 GA wire envelope, JSON schemas, payload
+  semantics, or starter `.klickd` bytes
+- No benchmark result-data or DOI evidence-pack change
+
+---
+
 ## docs/repo 2026-05-28 — RFC-010 `compressed_memory` draft/preview added to all 42 x.klickd v4.1 candidate skills
 
 > **Repo-only PR. Triggers no release.** No tag, no `latest` on npm or PyPI,

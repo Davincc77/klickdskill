@@ -261,7 +261,7 @@ The current and recommended production format is **v4.0.0**. The wire envelope s
 
 - Spec: [`SPEC.md`](SPEC.md) — normative v4 surface (additive over v3.5.1).
 - Strict JSON Schemas (Draft 2020-12): [`schemas/klickd-payload-v4.schema.json`](schemas/klickd-payload-v4.schema.json), [`schema/klickd-v4.schema.json`](schema/klickd-v4.schema.json)
-- Reference SDKs (4.0.x packaging track): [`packages/pypi/klickd/`](packages/pypi/klickd/) (Python), [`packages/@klickd/core/`](packages/@klickd/core/) (TypeScript / JavaScript)
+- Reference SDKs (4.1.0 packaging track; wire envelope remains v4.0.0 GA): [`packages/pypi/klickd/`](packages/pypi/klickd/) (Python), [`packages/@klickd/core/`](packages/@klickd/core/) (TypeScript / JavaScript)
 - Migrator (v3.x → v4, non-destructive): see `migrate` API in both SDKs.
 - Migration guide: [`docs/spec/MIGRATION_V3_TO_V4.md`](docs/spec/MIGRATION_V3_TO_V4.md)
 - Cross-implementation strict vectors: [`tests/`](tests/) and the two `verify_vectors.*` runners.
