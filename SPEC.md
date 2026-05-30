@@ -1,9 +1,13 @@
 # .klickd — Technical Specification
 
-**Version:** 3.5.1  
+**Version:** 4.0.0 (GA)  
 **License:** CC0 1.0 Universal (Public Domain)  
 **Maintainer:** .klickd / klickd.app (Luxembourg)  
-**Status:** Production — v3.5.1 (2026-05-22)
+**Status:** General Availability — v4.0.0 (additive over v3.5.1)
+
+> **Track distinction.** This specification is normative for the current **v4.0.0 GA** payload surface. The wire envelope stays at `klickd_version: "3.0"` (unchanged crypto and AAD); v4 is signalled inside the payload via `payload_schema_version: "4.0"`. The previous **v3.5.1** release remains valid and interoperable. A separate **v4.1 candidate / benchmark / DOI track** (e.g. the `x.klickd` candidate skill catalog and RFC-010 preview blocks) is **not GA**, is not tagged or released, and is not normative here.
+
+> **Claim boundary.** `.klickd` provides portable, client-side-encrypted user state and the technical primitives that *help* a privacy and safety program. It does **not** provide universal native support across AI clients (compatibility depends on the reader), it does **not** confer automatic GDPR or EU AI Act compliance (compliance is the operator's responsibility), and it makes **no claim of superiority over external benchmarks or competing systems**. See the [DOI deposit](https://doi.org/10.5281/zenodo.20383133) for the full disclaimer.
 
 ---
 
@@ -11,19 +15,19 @@
 
 `.klickd` is an open file format for portable AI context. It enables a user's conversational history, preferences, expertise state, and project continuity to travel with them across AI models and sessions — without any server involvement.
 
-### Current status — v3.5.1 (2026-05-22)
+### Current status — v4.0.0 GA (additive over v3.5.1)
 
-The current and recommended wire format is **`klickd_version: "3.x"`** with the **envelope-v3** layout:
+The current and recommended payload surface is **v4.0.0 GA**, signalled via `payload_schema_version: "4.0"`. The wire format remains **`klickd_version: "3.x"`** with the **envelope-v3** layout (crypto and AAD are unchanged from v3.5.1):
 
 - **Key derivation:** **Argon2id** (default: m=65536, t=3, p=4)
 - **Symmetric encryption:** **AES-256-GCM** with a 12-byte random IV
 - **AAD:** RFC 8785 JCS-canonicalised envelope fields (`klickd_version`, `kdf`, `cipher`, `domain`, `created_at`, `encrypted`)
 - **Schemas:** Draft 2020-12 — see [`SCHEMA_INDEX.md`](./SCHEMA_INDEX.md) for the envelope vs. payload split
-- **Reference implementations:** Python [`klickd`](https://pypi.org/project/klickd/) and TypeScript [`@klickd/core`](https://www.npmjs.com/package/@klickd/core), both at release `3.5.1`
+- **Reference implementations:** Python [`klickd`](https://pypi.org/project/klickd/) and TypeScript [`@klickd/core`](https://www.npmjs.com/package/@klickd/core), on the `4.0.x` packaging track
 
 The legacy **envelope-v2** layout (`klickd_version: "2.x"`, PBKDF2-SHA256, 4-field AAD) is documented in this specification as **legacy / migration only**. Producers SHOULD emit envelope-v3 going forward; readers MUST continue to accept envelope-v2 files written by older clients (see [§Migration Notes (v2.0 / v2.4 → v2.5)](#migration-notes-v20--v24--v25) and [§Migration Notes (v2.x → v3)](#migration-notes-v2x--v3)).
 
-> **Wire version vs. release version.** `klickd_version` is the **wire / envelope** version of a single `.klickd` file (`"2.5"`, `"3.0"`, …). The reference SDKs (`klickd` on PyPI, `@klickd/core` on npm) and this specification share a *release* version (currently `3.5.1`) that tracks documentation and implementation revisions independently. A v3.5.1 SDK may still produce envelope-v3 files marked `klickd_version: "3.0"`; this is intentional.
+> **Wire version vs. release version.** `klickd_version` is the **wire / envelope** version of a single `.klickd` file (`"2.5"`, `"3.0"`, …). The reference SDKs (`klickd` on PyPI, `@klickd/core` on npm) and this specification track a *release* version (the `4.0.x` packaging track for the SDKs; v4.0.0 for this spec) independently of the wire version. A v4.0.x SDK still produces envelope-v3 files marked `klickd_version: "3.0"` with `payload_schema_version: "4.0"`; this is intentional.
 
 ### Format history (high level)
 
@@ -434,8 +438,9 @@ The `klickd_version` field governs format compatibility. It uses **MAJOR.MINOR**
 | `3.3` | Stable | `injection_resistance_level`, `companion_identity`, JSON Injection Guard, `occupational_competencies`, data_type annotations, extended enums, `interruption_points` array, `key_numerical_results` in `archived_sessions` |
 | `3.4` | Stable | 26 new fields: LaTeX in `numerical_results`, `learning_velocity`, `teaching_mode` array, UX emotional fields (§27: `mood`, `last_session_feeling`, `milestones`, `preferred_session_length`, `preferred_explanation_style`, `language_switching_preference`, `peer_comparison_preference`), advanced memory (§28: `learning_goal`, `error_patterns`, `compression_policy`, `known_disabilities`, `memory_decay`, `shared_context`, `data_integrity`), `topics_covered`, `vocabulary_enrichment`, `interruption_reason`, `response_hint`, `_benchmark`, reserved fields `session_metadata` / `preferred_model`; **§28.8 Soul Handoff Transmission Rules**: guaranteed fields, mandatory semi-structured format, compression_policy interaction, Agent B required behaviour |
 | `3.5` | Stable | `recovery` object (hint + BIP39 phrase_hash), mandatory passphrase warning UI (§31), `session_metadata`, `preferred_model` |
-| `3.5.1` | **Current** | ATLAS conformance fixes: canonical `cipher.name = "AES-256-GCM"` (uppercase), `user_preferences` canonical type `string` (max 32 KiB UTF-8; object form retained for backward compatibility), schema directory disambiguation via `SCHEMA_INDEX.md`. SDK packages: `klickd 3.5.1` (PyPI), `@klickd/core@3.5.1` (npm). |
-| `4.x` | Draft / RFC | `media_profile` and related fields — see [`docs/rfcs/RFC-001-media-profile-v1.md`](./docs/rfcs/RFC-001-media-profile-v1.md). No normative adoption yet. |
+| `3.5.1` | Stable | ATLAS conformance fixes: canonical `cipher.name = "AES-256-GCM"` (uppercase), `user_preferences` canonical type `string` (max 32 KiB UTF-8; object form retained for backward compatibility), schema directory disambiguation via `SCHEMA_INDEX.md`. |
+| `4.0.0` | **Current (GA)** | Normative v4 payload surface, additive over v3.5.1. Wire envelope unchanged (`klickd_version: "3.0"`); v4 signalled via `payload_schema_version: "4.0"`. Strict v4 JSON Schemas (Draft 2020-12). SDKs on the `4.0.x` packaging track (`klickd` PyPI, `@klickd/core` npm). See [`docs/releases/v4.0.0.md`](./docs/releases/v4.0.0.md). |
+| `4.1` | Candidate / benchmark | DOI / benchmark candidate track (e.g. `x.klickd` candidate skill catalog, RFC-010 `compressed_memory` preview). **Not GA, not tagged, not normative.** |
 
 Agents receiving a v1 file should reject it with a clear error unless they implement a v1→v2 migration path.
 
@@ -1829,7 +1834,9 @@ Agent profiles carry the same encryption requirements as learner profiles (§7, 
 
 ## §33 — `.klickd` v4 Preview (Non-Normative)
 
-> **Status: PREVIEW — `v4.0.0-preview.1`. NON-NORMATIVE. NOT GA.**
+> **Historical note (superseded by v4.0.0 GA).** This section documents the original `v4.0.0-preview.1` track as it was designed. The v4 surface is now **GA (v4.0.0)** — see the Current status section above and [`docs/releases/v4.0.0.md`](./docs/releases/v4.0.0.md). The preview commitments below (additive over v3.5.1, preserve unknown fields, wire version stays `"3.0"`) carried into GA. The preview content is retained here for design provenance and migration context; where it conflicts with the GA status above, the GA status governs.
+>
+> **Original status: PREVIEW — `v4.0.0-preview.1`. NON-NORMATIVE. NOT GA.**
 >
 > This section describes the **next preview track** of the `.klickd` standard family. `.klickd v4 preview` is **not a separate standard** from `.klickd` — it is the same standard, on a forward-looking preview track that runs in parallel to the current production `v3.5.1` line. The production wire version remains **`klickd_version: "3.x"`** and the schemas under [`schema/`](./schema/) and [`schemas/`](./schemas/) (split envelope + payload v3) remain the only normative schemas.
 >

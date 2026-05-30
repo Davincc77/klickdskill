@@ -38,6 +38,8 @@ You explain your level. Your goals. Your context. Then the session ends — and 
 
 `.klickd` does not replace provider security, model alignment, or application-level access control; it complements them by giving the user-state layer a portable, verifiable shape.
 
+> **Claim boundary.** `.klickd` gives you portable, client-side-encrypted user state and the technical primitives that *help* a privacy and safety program. It does **not** provide universal native support across AI clients — compatibility depends on the reader. It does **not** confer automatic GDPR or EU AI Act compliance — compliance is the operator's responsibility. It makes **no claim of superiority over external benchmarks or competing systems**. The v4.1 candidate / benchmark track (e.g. the `x.klickd` candidate skills) is **not GA** and carries no stability or compatibility guarantees. See the [DOI deposit](https://doi.org/10.5281/zenodo.20383133) for the full disclaimer.
+
 ---
 
 ## What it looks like
@@ -244,13 +246,27 @@ The current and recommended production format is **v4.0.0**. The wire envelope s
 
 - Spec: [`SPEC.md`](SPEC.md) — normative v4 surface (additive over v3.5.1).
 - Strict JSON Schemas (Draft 2020-12): [`schemas/klickd-payload-v4.schema.json`](schemas/klickd-payload-v4.schema.json), [`schema/klickd-v4.schema.json`](schema/klickd-v4.schema.json)
-- Reference SDKs (4.0.0): [`packages/pypi/klickd/`](packages/pypi/klickd/) (Python), [`packages/@klickd/core/`](packages/@klickd/core/) (TypeScript / JavaScript)
+- Reference SDKs (4.0.x packaging track): [`packages/pypi/klickd/`](packages/pypi/klickd/) (Python), [`packages/@klickd/core/`](packages/@klickd/core/) (TypeScript / JavaScript)
 - Migrator (v3.x → v4, non-destructive): see `migrate` API in both SDKs.
 - Migration guide: [`docs/spec/MIGRATION_V3_TO_V4.md`](docs/spec/MIGRATION_V3_TO_V4.md)
 - Cross-implementation strict vectors: [`tests/`](tests/) and the two `verify_vectors.*` runners.
 - Final release notes: [`docs/releases/v4.0.0.md`](docs/releases/v4.0.0.md)
 
 The previous v3.5.1 release remains valid and interoperable; v4.0.0 readers accept v3.x payloads via the migrator.
+
+---
+
+## Historical files
+
+A few root-level files are retained for provenance and are **not** the current specification. They are kept in place (not moved) because CI and historical audit notes still reference them:
+
+| File | Status |
+|---|---|
+| [`SKILL_v25.md`](SKILL_v25.md), [`SKILL_v30.md`](SKILL_v30.md) | Historical skill revisions — superseded by [`SKILL.md`](SKILL.md). |
+| [`SPEC_v30.md`](SPEC_v30.md) | Historical specification snapshot — superseded by [`SPEC.md`](SPEC.md) (v4.0.0 GA). |
+| [`klickd_v330_spec.pdf`](klickd_v330_spec.pdf) | Historical PDF snapshot of an earlier spec revision. |
+
+For the current normative surface, use [`SPEC.md`](SPEC.md) and [`SKILL.md`](SKILL.md).
 
 ---
 
