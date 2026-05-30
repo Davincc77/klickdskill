@@ -6,6 +6,7 @@
 [![License: CC0](https://img.shields.io/badge/License-CC0%201.0-lightgrey?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![DOI (v4.0.0)](https://zenodo.org/badge/DOI/10.5281/zenodo.20383133.svg)](https://doi.org/10.5281/zenodo.20383133)
 [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20262530.svg)](https://doi.org/10.5281/zenodo.20262530)
+[![DOI (x.klickd v4.1 evidence pack)](https://zenodo.org/badge/DOI/10.5281/zenodo.20459934.svg)](https://doi.org/10.5281/zenodo.20459934)
 
 **Official page for the open `.klickd` format → [klickd.app/klickdskill](https://klickd.app/klickdskill)**
 
@@ -38,7 +39,7 @@ You explain your level. Your goals. Your context. Then the session ends — and 
 
 `.klickd` does not replace provider security, model alignment, or application-level access control; it complements them by giving the user-state layer a portable, verifiable shape.
 
-> **Claim boundary.** `.klickd` gives you portable, client-side-encrypted user state and the technical primitives that *help* a privacy and safety program. It does **not** provide universal native support across AI clients — compatibility depends on the reader. It does **not** confer automatic GDPR or EU AI Act compliance — compliance is the operator's responsibility. It makes **no claim of superiority over external benchmarks or competing systems**. The v4.1 candidate / benchmark track (e.g. the `x.klickd` candidate skills) is **not GA** and carries no stability or compatibility guarantees. See the [DOI deposit](https://doi.org/10.5281/zenodo.20383133) for the full disclaimer.
+> **Claim boundary.** `.klickd` gives you portable, client-side-encrypted user state and the technical primitives that *help* a privacy and safety program. It does **not** provide universal native support across AI clients — compatibility depends on the reader. It does **not** confer automatic GDPR or EU AI Act compliance — compliance is the operator's responsibility. It makes **no claim of superiority over external benchmarks or competing systems**. The v4.1 candidate / benchmark track (e.g. the `x.klickd` candidate skills) is **not GA** and carries no stability or compatibility guarantees. See the [DOI deposit](https://doi.org/10.5281/zenodo.20383133) for the full disclaimer. The v4.1 benchmark evidence pack is archived as a separate Zenodo record — [DOI 10.5281/zenodo.20459934](https://doi.org/10.5281/zenodo.20459934) — and documents the candidate-track benchmark evidence only; it asserts no universal native support, no automatic GDPR / EU AI Act compliance, and no superiority over external benchmarks.
 
 ---
 
@@ -210,6 +211,20 @@ For most real workloads the useful question is not "long context **or** portable
   doi     = {10.5281/zenodo.20383133},
   url     = {https://doi.org/10.5281/zenodo.20383133},
   note    = {Concept DOI (all versions): 10.5281/zenodo.20262530}
+}
+```
+
+To cite the **x.klickd v4.1 benchmark evidence pack** specifically (the candidate-track benchmark evidence, not the v4.0.0 GA release):
+
+```bibtex
+@misc{xklickd_v41_evidence_pack_2026,
+  title   = {x.klickd v4.1.0: Portable, Encrypted and Governed Memory for Long-Running AI Workflows},
+  author  = {Cirilli, Vincenzo},
+  year    = {2026},
+  version = {4.1.0},
+  doi     = {10.5281/zenodo.20459934},
+  url     = {https://doi.org/10.5281/zenodo.20459934},
+  note    = {Benchmark evidence pack for the v4.1 candidate track; concept DOI (all versions): 10.5281/zenodo.20262530}
 }
 ```
 
