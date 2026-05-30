@@ -1,18 +1,39 @@
-name: Publish @klickd/core to npm (preview)
+name: Publish @klickd/core to npm (Trusted Publishing)
+
+# Manual, OIDC-based publish for @klickd/core to the npm `latest` dist-tag
+# using npm Trusted Publishing. No long-lived tokens are used: the npm
+# Trusted Publisher for @klickd/core is configured against this exact
+# workflow file path (.github/workflows/publish-npm.yml), so the filename
+# must not change. This workflow:
+#
+#   - is workflow_dispatch only (no release / tag / push triggers)
+#   - never creates a git tag or GitHub Release
+#   - authenticates to npm via short-lived OIDC credentials (id-token: write)
+#   - never reads secrets.NPM_TOKEN / NODE_AUTH_TOKEN
+#   - hard-guards the published version against the current package.json
+#     and refuses to publish a pre-release to `latest`
+#   - runs install + test + build + tarball/pack verification before publish
+#
+# Run from the Actions UI after the release commit is merged to the build ref.
 
 on:
   workflow_dispatch:
     inputs:
       ref:
-        description: 'Git ref (tag or branch) to build from, e.g. v4.0.0-preview.1 or main'
+        description: 'Git ref to build from (branch or commit SHA). No tag is required.'
         required: false
-        default: 'v4.0.0-preview.1'
+        default: 'main'
+      expected_version:
+        description: 'Exact package.json version required to publish (must match the current package version).'
+        required: false
+        default: '4.0.3'
 
 jobs:
-  publish-preview:
-    name: Build, test, and publish preview to npm
+  publish:
+    name: Build, verify, and publish @klickd/core to npm (latest) via OIDC
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: read
     defaults:
       run:
@@ -21,31 +42,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.ref || 'v4.0.0-preview.1' }}
+          ref: ${{ github.event.inputs.ref || 'main' }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
 
-      - name: Verify package version is a preview release
+      - name: Ensure npm supports Trusted Publishing (OIDC)
+        run: |
+          npm install -g npm@latest
+          npm --version
+
+      - name: Verify package version matches the expected release
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
+          EXPECTED="${{ github.event.inputs.expected_version || '4.0.3' }}"
           echo "Package version: $PKG_VERSION"
+          echo "Expected version: $EXPECTED"
           case "$PKG_VERSION" in
-            *preview*|*alpha*|*beta*|*rc*)
-              echo "Pre-release version detected — OK to publish to preview dist-tag."
-              ;;
-            *)
-              echo "ERROR: package.json version '$PKG_VERSION' is not a pre-release (must contain preview/alpha/beta/rc). Refusing to publish."
+            *preview*|*alpha*|*beta*|*rc*|*-*)
+              echo "ERROR: package.json version '$PKG_VERSION' looks like a pre-release. Refusing to publish to latest."
               exit 1
               ;;
           esac
-          if [ "$PKG_VERSION" != "4.0.0-preview.1" ]; then
-            echo "ERROR: expected version 4.0.0-preview.1, got $PKG_VERSION. Refusing to publish."
+          if [ "$PKG_VERSION" != "$EXPECTED" ]; then
+            echo "ERROR: expected version $EXPECTED, got $PKG_VERSION. Refusing to publish."
             exit 1
           fi
+
+      - name: Verify starter skills are present in package source
+        run: |
+          test -d starter-skills
+          test -f starter-skills/manifest.json
+          test -f starter-skills/user.klickd
+          test -f starter-skills/student.klickd
+          test -f starter-skills/research.klickd
+          test -f starter-skills/coding.klickd
 
       - name: Install dependencies
         run: npm install
@@ -56,7 +91,29 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Publish to npm with preview dist-tag
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --tag preview --access public
+      - name: Verify packed tarball under CJS and ESM
+        run: npm run verify:tarball
+
+      - name: Verify npm pack includes starter skills
+        run: |
+          npm pack --dry-run --json > pack.json
+          node -e "
+            const p = require('./pack.json');
+            const files = p[0].files.map(f => f.path);
+            const required = [
+              'starter-skills/manifest.json',
+              'starter-skills/user.klickd',
+              'starter-skills/student.klickd',
+              'starter-skills/research.klickd',
+              'starter-skills/coding.klickd',
+            ];
+            const missing = required.filter(r => !files.includes(r));
+            if (missing.length) {
+              console.error('Missing from npm tarball:', missing);
+              process.exit(1);
+            }
+            console.log('All starter skills present in npm tarball.');
+          "
+
+      - name: Publish to npm with dist-tag latest (OIDC Trusted Publishing)
+        run: npm publish --tag latest --access public
