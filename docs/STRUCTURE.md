@@ -3,11 +3,15 @@
 This document describes the canonical layout of the `klickdskill` repository, the
 paths that are **load-bearing** (referenced by tests, CI, release tooling, schema
 `$id` URLs, or public documentation), and the paths that are **intentionally
-preserved** even though they might look redundant. It is descriptive of the
-current state on the v4.1 line and is intended to make future cleanup safe rather
-than to prescribe a reorganisation. A compact, reader-facing summary of this layout
-(with the same root-preservation rationale) is surfaced in the
+preserved** even though they might look redundant. A compact, reader-facing summary
+of this layout is surfaced in the
 [Repository structure](../README.md#repository-structure) section of `README.md`.
+
+The root was cleaned in the restructuring PR: the reference scripts now live under
+`scripts/` and the paper/PDF sources moved under `docs/`. Backward compatibility is
+preserved by **thin root wrappers** (for the scripts) so that published v4.1
+reproducibility — the documented CLI entry points and `import` paths — is not
+broken. See [Root compatibility wrappers](#root-compatibility-wrappers).
 
 > **Stability note.** The v4.1 line is published: `@klickd/core@4.1.0` (npm),
 > `klickd==4.1.0` (PyPI), and the x.klickd v4.1 evidence pack
@@ -25,10 +29,10 @@ than to prescribe a reorganisation. A compact, reader-facing summary of this lay
 | `SKILL.md` | Current skill document. |
 | `CHANGELOG.md`, `ROADMAP.md`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `LICENSE` | Standard project governance/docs. |
 | `SCHEMA_INDEX.md` | Index of every JSON Schema and which validator consumes it. Start here for schema questions. |
-| `CITATION.cff`, `.zenodo.json`, `paper.md`, `paper.bib` | Citation / archival / JOSS-paper metadata. |
+| `CITATION.cff`, `.zenodo.json` | Citation / archival metadata. The JOSS paper sources moved to `docs/paper/` (see below). |
 | `schema/` | **Unified** single-file JSON Schemas (see below). |
 | `schemas/` | **Split** envelope + payload JSON Schemas (see below). |
-| `scripts/` | Generators, validators, and release/bundle tooling. |
+| `scripts/` | Reference encoder/decoder (`load_klickd.py`, `save_klickd.py`), cross-impl verifiers (`verify_vectors.py`, `verify_vectors.mjs`), generators, validators, and release/bundle tooling. **Canonical home for the reference scripts.** |
 | `tests/` | Cross-implementation test vectors (`vectors_*.json`, `negative_vectors_*.json`) and `pytest` suites. |
 | `packages/` | Reference SDKs (see [Preserved package paths](#preserved-package-paths)). |
 | `examples/` | Sample `.klickd` files and integration snippets per spec version. |
@@ -39,26 +43,36 @@ than to prescribe a reorganisation. A compact, reader-facing summary of this lay
 | `tools/` | **Reserved** for optional developer/maintainer utilities not part of the release pipeline. Currently a documented placeholder (`tools/README.md` only); load-bearing tooling stays in `scripts/`. |
 | `docs/` | All long-form documentation, RFCs, release notes, audits, specs (see below). |
 
-### Root scripts (public entry points — intentionally at root)
+### Root compatibility wrappers
 
-The following live at the repository root **on purpose** because they are public,
-documented entry points and are invoked by name:
+The reference scripts were moved into `scripts/` (their canonical home). To keep
+the documented public entry points working unchanged, **thin wrappers of the same
+name remain at the repository root**:
 
-| File | Why it stays at root |
-|------|----------------------|
-| `verify_vectors.py`, `verify_vectors.mjs` | Invoked directly by `.github/workflows/test-vectors.yml` and documented in `CONTRIBUTING.md` as `python verify_vectors.py` / `node verify_vectors.mjs`. |
-| `load_klickd.py`, `save_klickd.py` | Reference encoder/decoder referenced from `SKILL.md`. |
+| Root file | Delegates to | Why the wrapper exists |
+|-----------|--------------|------------------------|
+| `verify_vectors.py` | `scripts/verify_vectors.py` (via `runpy`) | `python verify_vectors.py` is invoked by `.github/workflows/test-vectors.yml`, `package.json` (`test:py`, `test:all`), `CONTRIBUTING.md`, and the v4.1 evidence-pack bundle tooling. |
+| `verify_vectors.mjs` | `scripts/verify_vectors.mjs` (via `import`) | `node verify_vectors.mjs` is invoked by `package.json` (`test`, `test:all`), the test-vectors workflow, and `CONTRIBUTING.md`. |
+| `load_klickd.py` | `scripts/load_klickd.py` (re-exports all public names) | Keeps `import load_klickd` working for code that puts the repo root on `PYTHONPATH` (e.g. `demo/demo_soul_handoff.py`). |
+| `save_klickd.py` | `scripts/save_klickd.py` (re-exports all public names) | Keeps `import save_klickd` working from the repo root. |
 
-Moving these would require root compatibility wrappers and would break CI and the
-documented contributor workflow, so they are left in place.
+The wrappers contain **no logic** beyond delegation, so there is a single source of
+truth (the `scripts/` copy). The canonical implementations resolve repository-root
+paths (`tests/`, `schema/`, `schemas/`) as `Path(__file__).parent.parent`, so they
+run correctly both directly (`python scripts/verify_vectors.py`) and through the
+wrapper. New code should import/invoke the `scripts/` paths directly; the root
+wrappers exist for backward compatibility with published references.
 
 ### Root historical snapshots (intentionally retained)
 
-`SPEC_v30.md`, `SKILL_v25.md`, `SKILL_v30.md`, and `klickd_v330_spec.pdf` are
-historical snapshots superseded by `SPEC.md` / `SKILL.md`. They are linked from
-`README.md`, `CONTRIBUTING.md`, the issue templates, the test-vectors workflow,
-and several RFCs (e.g. RFC-004). They are kept at root to preserve those links.
-See [Deferred / future migration](#deferred--future-migration).
+`SPEC_v30.md`, `SKILL_v25.md`, and `SKILL_v30.md` are historical Markdown snapshots
+superseded by `SPEC.md` / `SKILL.md`. They are linked from `README.md`,
+`CONTRIBUTING.md`, the issue templates, the test-vectors workflow, and several RFCs
+(e.g. RFC-004). They are kept at root to preserve those links.
+
+The historical PDF snapshot moved to `docs/specs/klickd_v330_spec.pdf` (see
+[Paper / specs note](#paper--specs-note)); its `README.md` link was updated in the
+same change.
 
 ## The two schema directories are deliberately distinct
 
@@ -126,27 +140,41 @@ introduce the codename.
 
 ### Paper / specs note
 
-The JOSS paper sources (`paper.md`, `paper.bib`) live at the repository root,
-which is the location JOSS tooling expects; they are intentionally not moved
-under `docs/`. Long-form specification material lives under `docs/spec/`, with the
-normative specification itself at the root as `SPEC.md`.
+The JOSS paper sources moved to `docs/paper/` (`docs/paper/paper.md`,
+`docs/paper/paper.bib`). There is no live JOSS submission yet (it is an open item
+on `ROADMAP.md`), so no JOSS tooling is broken by the move. **When the paper is
+submitted to JOSS,** note that JOSS resolves the paper at the repository root or in
+a top-level `paper/` directory — if its tooling cannot be pointed at
+`docs/paper/paper.md` (e.g. via the `paper-path` input on the JOSS GitHub Action),
+move or symlink the sources to a top-level `paper/` at submission time.
+
+The historical spec PDF lives at `docs/specs/klickd_v330_spec.pdf`. Long-form
+specification material lives under `docs/spec/`, with the normative specification
+itself at the root as `SPEC.md`.
+
+## Completed in the restructuring PR
+
+- **Reference scripts moved under `scripts/`** with root compatibility wrappers
+  (see [Root compatibility wrappers](#root-compatibility-wrappers)). All CI,
+  `package.json`, and `import` entry points were preserved.
+- **Paper sources moved to `docs/paper/`** and the **historical PDF moved to
+  `docs/specs/`**, with dependent links (`README.md`, `ROADMAP.md`) updated.
 
 ## Deferred / future migration
 
-The following are recognised as candidates for a future, coordinated change but
-are **deliberately not performed** on the v4.1 line because they would touch
+The following remain **deliberately not performed** because they would touch
 load-bearing paths or public links:
 
-- Relocating root historical snapshots (`SPEC_v30.md`, `SKILL_v25.md`,
-  `SKILL_v30.md`, `klickd_v330_spec.pdf`) under an `archive/` or `docs/history/`
-  tree. This was raised in `docs/audits/V4_PRE_RELEASE_AUDIT.md` and remains
-  deferred until the dependent links (README, CONTRIBUTING, issue templates, CI,
-  RFCs) can be updated in the same change.
-- Moving root reference scripts under `scripts/` with root compatibility
-  wrappers. Deferred because it would change the documented CI and contributor
-  entry points.
+- Relocating the root historical Markdown snapshots (`SPEC_v30.md`,
+  `SKILL_v25.md`, `SKILL_v30.md`) under an `archive/` or `docs/history/` tree.
+  Raised in `docs/audits/V4_PRE_RELEASE_AUDIT.md`; deferred until the dependent
+  links (README, CONTRIBUTING, issue templates, CI, RFCs) can be updated in the
+  same change.
 - Any consolidation of `schema/` and `schemas/`. Out of scope by design — the two
-  directories serve different validation models (see above).
+  directories serve different validation models, and their `$id` URLs plus test
+  vectors (`tests/vectors_v40_ga.json` → `schema/klickd-v4.schema.json`) resolve
+  against these exact paths (see
+  [the two schema directories](#the-two-schema-directories-are-deliberately-distinct)).
 
 Each of these should be done as its own reviewed change that updates every
 reference atomically, not as opportunistic cleanup.

@@ -122,7 +122,14 @@ if [ -d "tests" ]; then
     --exclude 'test_starter_pack_validator.py' \
     "tests/" "${STAGE}/tests/"
 fi
-for f in verify_vectors.py verify_vectors.mjs save_klickd.py load_klickd.py; do
+# Reference scripts now live under scripts/ (canonical), with thin root
+# compatibility wrappers kept at the repo root. Bundle BOTH: the canonical
+# implementations (so the deposit is self-contained) and the root wrappers
+# (so `python verify_vectors.py` / `node verify_vectors.mjs` still work from
+# the bundle root exactly as documented).
+for f in scripts/verify_vectors.py scripts/verify_vectors.mjs \
+         scripts/save_klickd.py scripts/load_klickd.py \
+         verify_vectors.py verify_vectors.mjs save_klickd.py load_klickd.py; do
   copy_if_exists "${f}"
 done
 

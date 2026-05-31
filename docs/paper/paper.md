@@ -42,7 +42,7 @@ From v3.0, key derivation uses Argon2id [@argon2015] with parameters m=65536, t=
 
 The repository includes:
 
-- Python reference implementation (`load_klickd.py`, `save_klickd.py`) with 52 tests
+- Python reference implementation (`scripts/load_klickd.py`, `scripts/save_klickd.py`) with 52 tests
 - TypeScript/ESM package (`@klickd/core`) with 6 tests and CI via GitHub Actions
 - JSON Schema (Draft 2020-12) for envelope and payload validation
 - 5 canonical example `.klickd` files covering education, professional, and family domains
