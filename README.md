@@ -198,6 +198,48 @@ Schemas:
 - v4.0.0 GA (strict): [`schema/klickd-v4.schema.json`](schema/klickd-v4.schema.json), [`schemas/klickd-payload-v4.schema.json`](schemas/klickd-payload-v4.schema.json)
 - v3.x (legacy, still valid): [`schema/klickd-v3.4.schema.json`](schema/klickd-v3.4.schema.json)
 
+### Why there are two schema directories
+
+The repo ships **two** schema directories on purpose — they are not duplicates and are not merged:
+
+| Directory | Model | Use when |
+|---|---|---|
+| [`schema/`](schema/) | **Unified** — one file validates a complete document (envelope + inline-or-encrypted payload) per version. | Single-pass validation is enough: CI tooling, third-party integrations, registries. |
+| [`schemas/`](schemas/) | **Split** — envelope and payload validated as two independent steps. | Secure decoders that validate the envelope *before* decryption and the payload *after*. |
+
+Both carry a `README.md` that cross-references the other. The full mapping of every schema to the validator that consumes it is in [`SCHEMA_INDEX.md`](SCHEMA_INDEX.md); the load-bearing rationale (test vectors, release tooling, and schema `$id` URLs resolve against these exact paths) is in [`docs/STRUCTURE.md`](docs/STRUCTURE.md#the-two-schema-directories-are-deliberately-distinct).
+
+---
+
+## Repository structure
+
+A compact map of the canonical layout. The authoritative, load-bearing version — including which paths are referenced by CI, test vectors, release tooling, and schema `$id` URLs — is in **[`docs/STRUCTURE.md`](docs/STRUCTURE.md)**.
+
+```
+.
+├── SPEC.md                     # Normative specification (v4.0.0 GA surface)
+├── SKILL.md                    # Current skill document
+├── SCHEMA_INDEX.md             # Index: every schema → its validator (start here)
+├── schema/                     # Unified single-file JSON Schemas (v1, v2, v3.4, v4)
+├── schemas/                    # Split envelope + payload JSON Schemas (v3, v4)
+├── verify_vectors.py           # Python cross-impl vector verifier (CI entry point)
+├── verify_vectors.mjs          # Node cross-impl vector verifier (CI entry point)
+├── load_klickd.py              # Reference decoder
+├── save_klickd.py              # Reference encoder
+├── scripts/                    # Generators, validators, release/bundle tooling
+├── tests/                      # Cross-implementation test vectors + pytest suites
+├── packages/                   # Reference SDKs — @klickd/core (npm), klickd (PyPI)
+├── examples/                   # Sample .klickd files and integration snippets
+├── registry/                   # Competency / domain / personality registries
+├── benchmarks/                 # Benchmark inputs, raw runs, reports
+├── curriculum/                 # Per-jurisdiction curriculum material
+├── integrations/               # Third-party integration adapters
+├── tools/                      # Reserved for developer tooling (see tools/README.md)
+└── docs/                       # Long-form docs, RFCs, release notes, audits, specs
+```
+
+**Intentionally at root (public, load-bearing entry points):** `verify_vectors.py`, `verify_vectors.mjs`, `load_klickd.py`, and `save_klickd.py` are invoked by name from CI ([`.github/workflows/test-vectors.yml`](.github/workflows/test-vectors.yml)), [`package.json`](package.json) scripts, and the v4.1 evidence-pack bundle tooling. The JOSS paper sources ([`paper.md`](paper.md), [`paper.bib`](paper.bib)) live at root because that is where JOSS tooling expects them. Historical snapshots ([`SPEC_v30.md`](SPEC_v30.md), [`SKILL_v25.md`](SKILL_v25.md), [`SKILL_v30.md`](SKILL_v30.md), [`klickd_v330_spec.pdf`](klickd_v330_spec.pdf)) are retained for provenance and existing links. Moving any of these would break published v4.1 reproducibility, so it is deliberately deferred — see [`docs/STRUCTURE.md`](docs/STRUCTURE.md#deferred--future-migration).
+
 ---
 
 ## Prior art

@@ -5,7 +5,9 @@ paths that are **load-bearing** (referenced by tests, CI, release tooling, schem
 `$id` URLs, or public documentation), and the paths that are **intentionally
 preserved** even though they might look redundant. It is descriptive of the
 current state on the v4.1 line and is intended to make future cleanup safe rather
-than to prescribe a reorganisation.
+than to prescribe a reorganisation. A compact, reader-facing summary of this layout
+(with the same root-preservation rationale) is surfaced in the
+[Repository structure](../README.md#repository-structure) section of `README.md`.
 
 > **Stability note.** The v4.1 line is published: `@klickd/core@4.1.0` (npm),
 > `klickd==4.1.0` (PyPI), and the x.klickd v4.1 evidence pack
@@ -34,6 +36,7 @@ than to prescribe a reorganisation.
 | `benchmarks/` | Benchmark inputs, raw runs, and consolidated reports. |
 | `curriculum/` | Per-jurisdiction curriculum material. |
 | `integrations/` | Third-party integration adapters. |
+| `tools/` | **Reserved** for optional developer/maintainer utilities not part of the release pipeline. Currently a documented placeholder (`tools/README.md` only); load-bearing tooling stays in `scripts/`. |
 | `docs/` | All long-form documentation, RFCs, release notes, audits, specs (see below). |
 
 ### Root scripts (public entry points — intentionally at root)
