@@ -7,6 +7,8 @@
 [![DOI (v4.0.0)](https://zenodo.org/badge/DOI/10.5281/zenodo.20383133.svg)](https://doi.org/10.5281/zenodo.20383133)
 [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20262530.svg)](https://doi.org/10.5281/zenodo.20262530)
 [![DOI (x.klickd v4.1 evidence pack)](https://zenodo.org/badge/DOI/10.5281/zenodo.20459934.svg)](https://doi.org/10.5281/zenodo.20459934)
+[![npm @klickd/core](https://img.shields.io/npm/v/@klickd/core?style=flat-square&logo=npm&label=%40klickd%2Fcore)](https://www.npmjs.com/package/@klickd/core)
+[![PyPI klickd](https://img.shields.io/pypi/v/klickd?style=flat-square&logo=pypi&label=klickd)](https://pypi.org/project/klickd/)
 
 **Official page for the open `.klickd` format → [klickd.app/klickdskill](https://klickd.app/klickdskill)**
 
@@ -40,6 +42,25 @@ You explain your level. Your goals. Your context. Then the session ends — and 
 `.klickd` does not replace provider security, model alignment, or application-level access control; it complements them by giving the user-state layer a portable, verifiable shape.
 
 > **Claim boundary.** `.klickd` gives you portable, client-side-encrypted user state and the technical primitives that *help* a privacy and safety program. It does **not** provide universal native support across AI clients — compatibility depends on the reader. It does **not** confer automatic GDPR or EU AI Act compliance — compliance is the operator's responsibility. It makes **no claim of superiority over external benchmarks or competing systems**. The v4.1 candidate / benchmark track (e.g. the `x.klickd` candidate skills) is **not GA** and carries no stability or compatibility guarantees. See the [DOI deposit](https://doi.org/10.5281/zenodo.20383133) for the full disclaimer. The v4.1 benchmark evidence pack is archived as a separate Zenodo record — [DOI 10.5281/zenodo.20459934](https://doi.org/10.5281/zenodo.20459934) — and documents the candidate-track benchmark evidence only; it asserts no universal native support, no automatic GDPR / EU AI Act compliance, and no superiority over external benchmarks.
+
+---
+
+## x.klickd v4.1 evidence pack
+
+The current published benchmark evidence is the **x.klickd v4.1 evidence pack**, archived on Zenodo at **[DOI 10.5281/zenodo.20459934](https://doi.org/10.5281/zenodo.20459934)**. Reference SDKs are published as [`@klickd/core@4.1.0`](https://www.npmjs.com/package/@klickd/core) (npm) and [`klickd==4.1.0`](https://pypi.org/project/klickd/) (PyPI).
+
+Headline figures from the evidence pack:
+
+| Metric | Result |
+|---|---|
+| Valid outputs collected | **7,189** valid / 7,200 expected |
+| Completion across four completed bundles | **99.85%** |
+| Lower repeated input-token overhead (static `x.klickd`) | **76.49%** |
+| Lower repeated input-token overhead (with optional `compressed_memory`) | **93.34%** |
+| Automatic quality score — `x.klickd` conditions | **86.24 / 100** |
+| Automatic quality score — standard AI usage without `x.klickd` | **58.51 / 100** |
+
+> **Scope of these figures.** These are the candidate-track benchmark results documented in the [v4.1 evidence pack DOI](https://doi.org/10.5281/zenodo.20459934). They describe this benchmark only. They do **not** establish universal native support across AI clients, automatic GDPR / EU AI Act compliance, or superiority over external benchmarks or competing systems, and they are not an industry-standard or adoption claim. The v4.1 candidate track carries no stability or compatibility guarantees; the current production format remains v4.0.0 GA.
 
 ---
 
@@ -80,7 +101,9 @@ They all require a running server, a Docker container, or an API key. Your memor
 
 ---
 
-## The numbers
+## The numbers (historical v3.5 / v4.0 benchmark)
+
+> **Historical, not the current v4.1 evidence pack.** This section reports the earlier **v3.5 / v4.0** pedagogy benchmark. For the current published figures, see the [x.klickd v4.1 evidence pack](#xklickd-v41-evidence-pack) above ([DOI 10.5281/zenodo.20459934](https://doi.org/10.5281/zenodo.20459934)). The two benchmarks use different methodologies and are not directly comparable.
 
 Benchmarked across 23 subjects, 115 profiles. Scorer: `qwen/qwen3-32b` via Groq.  
 Full methodology (v3.5.1 deposit, still applicable to v4.0.0 payload semantics): [DOI 10.5281/zenodo.20320480](https://doi.org/10.5281/zenodo.20320480)
