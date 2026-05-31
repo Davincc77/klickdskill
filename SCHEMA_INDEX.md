@@ -1,6 +1,6 @@
 # Schema Index
 
-`.klickd` ships **two** JSON-Schema directories. They are intentionally distinct, not duplicates.
+`.klickd` ships **two** JSON-Schema directories. They are intentionally distinct, not duplicates. For the full repository layout and the rationale behind preserved paths, see [`docs/STRUCTURE.md`](./docs/STRUCTURE.md).
 
 | Directory | Form | When to use |
 |-----------|------|-------------|
