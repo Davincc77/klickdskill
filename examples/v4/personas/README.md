@@ -82,7 +82,7 @@ Cette passphrase est :
 
 ### Re-chiffrer localement (optionnel)
 
-Le dépôt fournit déjà [`save_klickd.py`](../../../save_klickd.py) (v3.0
+Le dépôt fournit déjà [`scripts/save_klickd.py`](../../../scripts/save_klickd.py) (v3.0
 envelope, AES-256-GCM + Argon2id). Exemple non-normatif :
 
 ```bash

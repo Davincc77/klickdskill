@@ -45,7 +45,7 @@ This is a living document. Items are aspirational, not committed.
 
 ## v3.5 (near-term)
 
-- [ ] JOSS submission — paper.md + peer review
+- [ ] JOSS submission — docs/paper/paper.md + peer review
 - [x] PyPI publish `klickd 3.0.0` — https://pypi.org/project/klickd/3.0.0/
 - [x] npm publish `@klickd/core@3.0.1` — https://www.npmjs.com/package/@klickd/core
 - [ ] DOI update to v3.4.2 Zenodo record

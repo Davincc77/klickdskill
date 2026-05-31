@@ -222,11 +222,15 @@ A compact map of the canonical layout. The authoritative, load-bearing version �
 ├── SCHEMA_INDEX.md             # Index: every schema → its validator (start here)
 ├── schema/                     # Unified single-file JSON Schemas (v1, v2, v3.4, v4)
 ├── schemas/                    # Split envelope + payload JSON Schemas (v3, v4)
-├── verify_vectors.py           # Python cross-impl vector verifier (CI entry point)
-├── verify_vectors.mjs          # Node cross-impl vector verifier (CI entry point)
-├── load_klickd.py              # Reference decoder
-├── save_klickd.py              # Reference encoder
-├── scripts/                    # Generators, validators, release/bundle tooling
+├── verify_vectors.py           # Root wrapper → scripts/verify_vectors.py (CI entry point)
+├── verify_vectors.mjs          # Root wrapper → scripts/verify_vectors.mjs (CI entry point)
+├── load_klickd.py              # Root shim → scripts/load_klickd.py (import compatibility)
+├── save_klickd.py              # Root shim → scripts/save_klickd.py (import compatibility)
+├── scripts/                    # Reference encoder/decoder, verifiers, generators, release tooling
+│   ├── load_klickd.py          #   Reference decoder (canonical)
+│   ├── save_klickd.py          #   Reference encoder (canonical)
+│   ├── verify_vectors.py       #   Python cross-impl vector verifier (canonical)
+│   └── verify_vectors.mjs      #   Node cross-impl vector verifier (canonical)
 ├── tests/                      # Cross-implementation test vectors + pytest suites
 ├── packages/                   # Reference SDKs — @klickd/core (npm), klickd (PyPI)
 ├── examples/                   # Sample .klickd files and integration snippets
@@ -236,9 +240,11 @@ A compact map of the canonical layout. The authoritative, load-bearing version �
 ├── integrations/               # Third-party integration adapters
 ├── tools/                      # Reserved for developer tooling (see tools/README.md)
 └── docs/                       # Long-form docs, RFCs, release notes, audits, specs
+    ├── paper/                  #   JOSS paper sources (paper.md, paper.bib)
+    └── specs/                  #   Historical spec PDF snapshot
 ```
 
-**Intentionally at root (public, load-bearing entry points):** `verify_vectors.py`, `verify_vectors.mjs`, `load_klickd.py`, and `save_klickd.py` are invoked by name from CI ([`.github/workflows/test-vectors.yml`](.github/workflows/test-vectors.yml)), [`package.json`](package.json) scripts, and the v4.1 evidence-pack bundle tooling. The JOSS paper sources ([`paper.md`](paper.md), [`paper.bib`](paper.bib)) live at root because that is where JOSS tooling expects them. Historical snapshots ([`SPEC_v30.md`](SPEC_v30.md), [`SKILL_v25.md`](SKILL_v25.md), [`SKILL_v30.md`](SKILL_v30.md), [`klickd_v330_spec.pdf`](klickd_v330_spec.pdf)) are retained for provenance and existing links. Moving any of these would break published v4.1 reproducibility, so it is deliberately deferred — see [`docs/STRUCTURE.md`](docs/STRUCTURE.md#deferred--future-migration).
+**Canonical scripts live under `scripts/`.** The reference encoder/decoder (`scripts/load_klickd.py`, `scripts/save_klickd.py`) and the cross-implementation verifiers (`scripts/verify_vectors.py`, `scripts/verify_vectors.mjs`) are the canonical implementations. Thin **root compatibility wrappers** of the same name are kept so the documented public entry points keep working unchanged — `python verify_vectors.py` / `node verify_vectors.mjs` (invoked by [`.github/workflows/test-vectors.yml`](.github/workflows/test-vectors.yml), [`package.json`](package.json), and the v4.1 evidence-pack bundle tooling) and `import load_klickd` / `import save_klickd` from the repo root. This preserves published v4.1 reproducibility while cleaning the root. The JOSS paper sources moved to [`docs/paper/`](docs/paper/) and the historical PDF to [`docs/specs/`](docs/specs/). Historical Markdown snapshots ([`SPEC_v30.md`](SPEC_v30.md), [`SKILL_v25.md`](SKILL_v25.md), [`SKILL_v30.md`](SKILL_v30.md)) remain at root to preserve existing links. See [`docs/STRUCTURE.md`](docs/STRUCTURE.md) for the full rationale.
 
 ---
 
@@ -347,7 +353,7 @@ A few root-level files are retained for provenance and are **not** the current s
 |---|---|
 | [`SKILL_v25.md`](SKILL_v25.md), [`SKILL_v30.md`](SKILL_v30.md) | Historical skill revisions — superseded by [`SKILL.md`](SKILL.md). |
 | [`SPEC_v30.md`](SPEC_v30.md) | Historical specification snapshot — superseded by [`SPEC.md`](SPEC.md) (v4.0.0 GA). |
-| [`klickd_v330_spec.pdf`](klickd_v330_spec.pdf) | Historical PDF snapshot of an earlier spec revision. |
+| [`docs/specs/klickd_v330_spec.pdf`](docs/specs/klickd_v330_spec.pdf) | Historical PDF snapshot of an earlier spec revision. |
 
 For the current normative surface, use [`SPEC.md`](SPEC.md) and [`SKILL.md`](SKILL.md).
 
