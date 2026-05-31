@@ -2,7 +2,8 @@
 
 > *When it all .klickd*
 
-[![.klickd version](https://img.shields.io/badge/.klickd-v4.0.0-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
+[![.klickd format](https://img.shields.io/badge/.klickd%20format-v4.0.0%20GA-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
+[![SDKs](https://img.shields.io/badge/SDKs-v4.1.0%20stable-0066CC?style=flat-square&logo=json)](https://github.com/Davincc77/klickdskill)
 [![License: CC0](https://img.shields.io/badge/License-CC0%201.0-lightgrey?style=flat-square)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![DOI (v4.0.0)](https://zenodo.org/badge/DOI/10.5281/zenodo.20383133.svg)](https://doi.org/10.5281/zenodo.20383133)
 [![Concept DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20262530.svg)](https://doi.org/10.5281/zenodo.20262530)
@@ -278,13 +279,15 @@ No newsletter, no signup, no community claims we cannot back up — just a place
 
 [`SPEC.md`](SPEC.md) — encryption (AES-256-GCM), all field references, teaching modes, Soul Handoff, JSON Injection Guard, benchmark namespace, memory decay, shared context, versioning policy.
 
-### Current GA — `.klickd v4.0.0`
+### Current GA format — `.klickd v4.0.0` · current stable SDKs — `v4.1.0`
 
-The current and recommended production format is **v4.0.0**. The wire envelope stays at `klickd_version: "3.0"` (unchanged crypto and AAD); v4 is signalled inside the payload via `payload_schema_version: "4.0"` (the canonical v4 GA value; the release label is `v4.0.0`). v3.x readers MUST ignore unknown fields; v4 readers MUST preserve them verbatim.
+The current and recommended production **format** is **v4.0.0 GA**. The wire envelope stays at `klickd_version: "3.0"` (unchanged crypto and AAD); v4 is signalled inside the payload via `payload_schema_version: "4.0"` (the canonical v4 GA value; the release label is `v4.0.0`). v3.x readers MUST ignore unknown fields; v4 readers MUST preserve them verbatim.
+
+The current stable **reference SDKs** are **v4.1.0** ([`@klickd/core@4.1.0`](https://www.npmjs.com/package/@klickd/core) on npm and [`klickd==4.1.0`](https://pypi.org/project/klickd/) on PyPI); **v4.0.0** was the prior stable SDK release. The 4.1.0 SDKs read and write the same v4.0.0 GA wire envelope — the bump is a packaging/SDK minor release and changes no payload semantics, schema, or crypto. The separately archived [x.klickd v4.1 evidence pack](#xklickd-v41-evidence-pack) ([DOI 10.5281/zenodo.20459934](https://doi.org/10.5281/zenodo.20459934)) documents candidate-track benchmark evidence only and carries no stability or compatibility guarantees.
 
 - Spec: [`SPEC.md`](SPEC.md) — normative v4 surface (additive over v3.5.1).
 - Strict JSON Schemas (Draft 2020-12): [`schemas/klickd-payload-v4.schema.json`](schemas/klickd-payload-v4.schema.json), [`schema/klickd-v4.schema.json`](schema/klickd-v4.schema.json)
-- Reference SDKs (4.1.0 packaging track; wire envelope remains v4.0.0 GA): [`packages/pypi/klickd/`](packages/pypi/klickd/) (Python), [`packages/@klickd/core/`](packages/@klickd/core/) (TypeScript / JavaScript)
+- Reference SDKs (v4.1.0 stable; wire envelope remains v4.0.0 GA): [`packages/pypi/klickd/`](packages/pypi/klickd/) (Python), [`packages/@klickd/core/`](packages/@klickd/core/) (TypeScript / JavaScript)
 - Migrator (v3.x → v4, non-destructive): see `migrate` API in both SDKs.
 - Migration guide: [`docs/spec/MIGRATION_V3_TO_V4.md`](docs/spec/MIGRATION_V3_TO_V4.md)
 - Cross-implementation strict vectors: [`tests/`](tests/) and the two `verify_vectors.*` runners.
