@@ -30,6 +30,7 @@
   "files": [
     "dist",
     "starter-skills",
+    "x-klickd-skills",
     "README.md",
     "LICENSE"
   ],

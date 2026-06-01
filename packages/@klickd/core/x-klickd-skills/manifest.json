@@ -1,0 +1,402 @@
+{
+  "manifest_version": "1.0",
+  "kind": "x_klickd_v4_1_download_index",
+  "non_normative": true,
+  "claims_v41_ga": false,
+  "see_readme": "examples/v4.1/x-klickd-skills/README.md",
+  "generated_at": "2026-05-28T01:00:00Z",
+  "hash_algo": "sha256",
+  "raw_url_template": "https://raw.githubusercontent.com/Davincc77/klickdskill/main/{relative_path}",
+  "note": "Aggregated download index for the public x.klickd v4.1 candidate skill catalog. NON-NORMATIVE. NOT GA. Each entry's `relative_path` substituted into `raw_url_template` yields a raw GitHub URL serving the byte-identical .klickd JSON whose SHA-256 is `sha256_file`. The per-tier manifests under `lite/` and `pro/` remain authoritative; this index is a convenience surface for the public site so it can link to 42 distinct raw URLs from a single hard-coded entry point.",
+  "tiers": {
+    "lite": {
+      "expected_count": 8,
+      "actual_count": 8
+    },
+    "pro": {
+      "expected_count": 34,
+      "actual_count": 34
+    }
+  },
+  "total_count": 42,
+  "packs": [
+    {
+      "tier": "lite",
+      "pack": "x.klickd/artist",
+      "file": "artist.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/artist.klickd",
+      "bytes": 9308,
+      "sha256_file": "56dbd966942475354e4f2daac48c3aeabfedbf3ff48f6248c443cdf8fe82b5c8",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "lite",
+      "pack": "x.klickd/consumer_rights",
+      "file": "consumer-rights.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/consumer-rights.klickd",
+      "bytes": 9353,
+      "sha256_file": "16f77c9b7cb0801f198407f063c1b8395b98f6f729a14597ede8a15ae766ebbc",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "lite",
+      "pack": "x.klickd/game_literacy",
+      "file": "game-literacy.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/game-literacy.klickd",
+      "bytes": 9325,
+      "sha256_file": "6e3158a2bde1024f54db53d149e525b820c4c167a71124416c8f4e8df38a3632",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "lite",
+      "pack": "x.klickd/media_planner",
+      "file": "media-planner.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/media-planner.klickd",
+      "bytes": 9719,
+      "sha256_file": "a399ef56eb140d5adf272ffe3578448085f082154647811853e3d52e58b3a33e",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "lite",
+      "pack": "x.klickd/parent_gaming",
+      "file": "parent-gaming.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/parent-gaming.klickd",
+      "bytes": 10149,
+      "sha256_file": "f2016892ac731f284d37d207a9464dcb93551b6934ff86f09d05fcd9d1a0ce52",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "lite",
+      "pack": "x.klickd/social_literacy",
+      "file": "social-literacy.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/social-literacy.klickd",
+      "bytes": 9745,
+      "sha256_file": "5da46abae45a40adf562d1119bd4240c60d14b7c2b798e8e47aed4122834d9dc",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "lite",
+      "pack": "x.klickd/streaming_creator",
+      "file": "streaming-creator.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/streaming-creator.klickd",
+      "bytes": 9332,
+      "sha256_file": "83a47a7370650c9870d28566344a11e52298a9e0a581003dc0ea8009558ac8ce",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "lite",
+      "pack": "x.klickd/work_assistant",
+      "file": "work-assistant.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/work-assistant.klickd",
+      "bytes": 10312,
+      "sha256_file": "7918922d04e406c406f1d8a1a6aeaa3f82fb2a9c5697a547f001cfac85063bcb",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/accounting_operator",
+      "file": "accounting-operator.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/accounting-operator.klickd",
+      "bytes": 11371,
+      "sha256_file": "0464b9d8bd284e7c498a60064f8f923e148f2ac3e0e39fd7c0f479174c8ad243",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/api_integrator",
+      "file": "api-integrator.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/api-integrator.klickd",
+      "bytes": 11707,
+      "sha256_file": "875536c647ff1905f2e54a7997977b7d4087b7153b8b9a7c3270aef301af6dab",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/contract_review",
+      "file": "contract-review.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/contract-review.klickd",
+      "bytes": 10615,
+      "sha256_file": "4be316d9bbb758e9d98dcf81ac25ef1fc9a8e24d9cb6462055d66660f104ba41",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/customer_support_operator",
+      "file": "customer-support-operator.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/customer-support-operator.klickd",
+      "bytes": 12349,
+      "sha256_file": "9e6c755f8d975110bd8fd5bfdb1d87773f1a571968bf27933357b7bcc13516e9",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/data_analyst",
+      "file": "data-analyst.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/data-analyst.klickd",
+      "bytes": 12175,
+      "sha256_file": "8ae8fe5e3b55d4402e0da93738e97d23c41d3daeb93c6bdc41301486a2f6cd4f",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/devops_operator",
+      "file": "devops-operator.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/devops-operator.klickd",
+      "bytes": 12201,
+      "sha256_file": "bfad80b1110461f683c7000b9af1104ccdcd33a10c3059e3898dabea3f1d6fb4",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/drone_operator",
+      "file": "drone-operator.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/drone-operator.klickd",
+      "bytes": 10450,
+      "sha256_file": "d4017d93c8b8ac765e59914b61116bd90bd68944c4a2b47e031dafc7d562ec23",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/edge_ai_operator",
+      "file": "edge-ai-operator.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/edge-ai-operator.klickd",
+      "bytes": 12705,
+      "sha256_file": "295cd879168320e5af7d19a0c82a1bd0f8be52fbf9f16ec80c9db7f33b3cef6e",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/eu_ai_act",
+      "file": "eu-ai-act.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/eu-ai-act.klickd",
+      "bytes": 10507,
+      "sha256_file": "4df66de2930e3f4d726c08a1e0d15e64c6929f4cbbd6a593d69b9f88c5a9de93",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/evidence_desk",
+      "file": "evidence-desk.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/evidence-desk.klickd",
+      "bytes": 11765,
+      "sha256_file": "a1cc35277960a95ebbe12ca12c00d9d70ce71dc58cae99b642653835b90d14dd",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/finance_analyst",
+      "file": "finance-analyst.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/finance-analyst.klickd",
+      "bytes": 11950,
+      "sha256_file": "dbf02eac4910f73b35f818bd20545cd41f6a391ca06adf59f9470aa421afb326",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/game_design",
+      "file": "game-design.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/game-design.klickd",
+      "bytes": 12342,
+      "sha256_file": "0894cec1f3f54b770a16fd3f07e16817ee57e574bdb2ca0837b8653362f3abb3",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/gdpr_readiness",
+      "file": "gdpr-readiness.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/gdpr-readiness.klickd",
+      "bytes": 10671,
+      "sha256_file": "d5c4cb7b707fc3f028424f34149cb95300fae583f9a261dfc161914da43bbc40",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/healthcare_ai_safety_reviewer",
+      "file": "healthcare-ai-safety-reviewer.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/healthcare-ai-safety-reviewer.klickd",
+      "bytes": 12293,
+      "sha256_file": "183965179ebcdb7ef0f67866aa9c7364aaad1bd02996b4d0c696580ee2c6f789",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/identity_access_management",
+      "file": "identity-access-management.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/identity-access-management.klickd",
+      "bytes": 12310,
+      "sha256_file": "d9112c7f82733e77bc382c4ca314c2bf3112c63ca03455a7efd037b6c33cd74d",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/learning_designer",
+      "file": "learning-designer.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/learning-designer.klickd",
+      "bytes": 12206,
+      "sha256_file": "f7b1f5d39ee4f05261b4735a32475dee2583556681124c59b0250335729188f9",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/literature_review",
+      "file": "literature-review.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/literature-review.klickd",
+      "bytes": 10906,
+      "sha256_file": "104865d2750605d9261fd27208b0e19e2908861e9e5672ed453d383701a770f1",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/llm_agent_engineering",
+      "file": "llm-agent-engineering.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/llm-agent-engineering.klickd",
+      "bytes": 12164,
+      "sha256_file": "1649234c2859b8309c404f71f5c0db714805655cdbb714b7bdb9394644fb49f8",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/llm_agent_security",
+      "file": "llm-agent-security.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/llm-agent-security.klickd",
+      "bytes": 13319,
+      "sha256_file": "baed596a642f68086cabc1a76d09ba6d987231a057c8fb66f1aabb84dd137098",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/mission_control",
+      "file": "mission-control.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/mission-control.klickd",
+      "bytes": 11861,
+      "sha256_file": "2c2d02b4ecec40f022c4c7da0cdb3f082e588dfe11d3f14d1692dbbdba7e8ba2",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/policy_analyst",
+      "file": "policy-analyst.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/policy-analyst.klickd",
+      "bytes": 11275,
+      "sha256_file": "f348f1d1a73797979a51005586dcd9f1069a17fab173dab7df742290127c73a7",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/privacy_product",
+      "file": "privacy-product.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/privacy-product.klickd",
+      "bytes": 10728,
+      "sha256_file": "5a35d4a214a98f945f048c6647528df5ce2188aaa3d0913b7c6a1af2305eff00",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/product_manager",
+      "file": "product-manager.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/product-manager.klickd",
+      "bytes": 12231,
+      "sha256_file": "dbf2365508df3ae9acbbb6e002e3c44fb2a81e9166d0003cacb94a3714fdaeda",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/project_operator",
+      "file": "project-operator.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/project-operator.klickd",
+      "bytes": 11164,
+      "sha256_file": "5d019adfc08bcf518780bbe3e18a428682374397475a8bf6282d1e474ae6d5ce",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/release_engineer",
+      "file": "release-engineer.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/release-engineer.klickd",
+      "bytes": 12865,
+      "sha256_file": "c96329cff482f39d52a13b628bd027cd5854f15d40ce58c945fb58aec52aef9e",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/rights_guard",
+      "file": "rights-guard.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/rights-guard.klickd",
+      "bytes": 10347,
+      "sha256_file": "3efa2982479b6ba3544092d848fb52b91dc7687031c4a481181547d9728703b3",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/sales_operator",
+      "file": "sales-operator.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/sales-operator.klickd",
+      "bytes": 12186,
+      "sha256_file": "1bdc2c5895e07b909dda9bd04040917004727bed00198962c006a43a0be13060",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/second_brain",
+      "file": "second-brain.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/second-brain.klickd",
+      "bytes": 11153,
+      "sha256_file": "06504aa5dddc1b53634310210fff4374e68e0a2b959ae9dfa191b29995153bdb",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/security_incident_response",
+      "file": "security-incident-response.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/security-incident-response.klickd",
+      "bytes": 12682,
+      "sha256_file": "1315833cf73b3d04e00fe73006e985b0a7af7d266c457e18f61204cca09dcc7a",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/sustainability_analyst",
+      "file": "sustainability-analyst.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/sustainability-analyst.klickd",
+      "bytes": 12667,
+      "sha256_file": "445a7f1111e6474ca87bc717d0f50d6af5016863fe3fd87083502d77eeffcf1f",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/technical_writer",
+      "file": "technical-writer.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/technical-writer.klickd",
+      "bytes": 12150,
+      "sha256_file": "473c44c67a889c783872494f262feb16bdb1377a74dd5b4d605fe340ecebecc9",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/trust_evidence",
+      "file": "trust-evidence.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/trust-evidence.klickd",
+      "bytes": 11317,
+      "sha256_file": "57f4ac349438d3c3305e03ecf9a09a44d20e289550f8afa292267666bcc150ad",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/ux_researcher",
+      "file": "ux-researcher.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/ux-researcher.klickd",
+      "bytes": 12109,
+      "sha256_file": "d91afbf120c6175c4d23d175265697b7a0a7bd4f11dd60fc08bb053c8113e13e",
+      "status": "candidate_mapped"
+    },
+    {
+      "tier": "pro",
+      "pack": "x.klickd/video_production_pipeline",
+      "file": "video-production-pipeline.klickd",
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/video-production-pipeline.klickd",
+      "bytes": 16908,
+      "sha256_file": "d6da8f7569953f7c6fb4f0ce02cb2649187bcbf52ae3f4d32a35c8fe885498a8",
+      "status": "candidate_mapped"
+    }
+  ]
+}

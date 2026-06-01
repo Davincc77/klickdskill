@@ -65,6 +65,12 @@ if (!(bytes instanceof Uint8Array) || bytes.byteLength <= 0) {
   throw new Error('CJS: empty user.klickd');
 }
 if (k.listBundledSchemas().length !== 4) throw new Error('CJS: expected 4 schemas');
+const xm = k.getXKlickdSkillsManifest();
+if (xm.total_count !== 42 || xm.packs.length !== 42) throw new Error('CJS: expected 42 x.klickd packs');
+const xs = k.loadXKlickdSkillPack('work-assistant');
+if (xs.artifact_loaded !== true || xs.sha256_matches_manifest !== true) {
+  throw new Error('CJS: work-assistant did not load/verify');
+}
 console.log('CJS smoke OK');
 `;
 
@@ -82,6 +88,12 @@ if (!(bytes instanceof Uint8Array) || bytes.byteLength <= 0) {
   throw new Error('ESM: empty coding.klickd');
 }
 if (k.listBundledSchemas().length !== 4) throw new Error('ESM: expected 4 schemas');
+const xm = k.getXKlickdSkillsManifest();
+if (xm.total_count !== 42 || xm.packs.length !== 42) throw new Error('ESM: expected 42 x.klickd packs');
+const xs = k.loadXKlickdSkillPack('x.klickd/llm_agent_engineering');
+if (xs.artifact_loaded !== true || xs.sha256_matches_manifest !== true) {
+  throw new Error('ESM: llm_agent_engineering did not load/verify');
+}
 console.log('ESM smoke OK');
 `;
 

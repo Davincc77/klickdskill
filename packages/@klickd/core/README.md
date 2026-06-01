@@ -146,6 +146,34 @@ const manifest = getStarterSkillsManifest();
 const dir = getStarterSkillsDir(); // absolute path to bundled starter-skills/
 ```
 
+### x.klickd v4.1 skill packs (42 candidate packs — non-normative)
+
+The 42 x.klickd v4.1 candidate skill packs (8 Lite + 34 Pro) ship inside the
+npm tarball under `x-klickd-skills/` alongside the aggregated download index
+`manifest.json`. They are **NON-NORMATIVE** and **NOT a v4.1 GA release**, and
+they are JSON artifacts — **not** native skills in any assistant. A pack is only
+"used" once `artifact_loaded` **and** `sha256_matches_manifest` are both true.
+
+```typescript
+import {
+  listXKlickdSkillPacks,
+  loadXKlickdSkillPack,
+  getXKlickdSkillPackBytes,
+  getXKlickdSkillsManifest,
+} from '@klickd/core';
+
+listXKlickdSkillPacks().length; // → 42
+
+const skill = loadXKlickdSkillPack('x.klickd/llm_agent_engineering');
+// skill.artifact_loaded === true, skill.sha256_matches_manifest === true
+// skill.tier, skill.competency_ids, skill.gates, skill.evidence_policy, ...
+
+const bytes = getXKlickdSkillPackBytes('work-assistant.klickd'); // by file, pack id, or bare id
+```
+
+Full protocol and truth boundary:
+[`docs/integrations/skill-loader-protocol.md`](https://github.com/Davincc77/klickdskill/blob/main/docs/integrations/skill-loader-protocol.md).
+
 ---
 
 ## Cryptographic specification (v3.0)

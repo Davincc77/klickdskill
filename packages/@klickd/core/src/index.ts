@@ -28,3 +28,16 @@ export type {
   StarterSkillEntry,
   StarterSkillManifest,
 } from './starter-skills.js';
+export {
+  getXKlickdSkillsDir,
+  getXKlickdSkillsManifest,
+  listXKlickdSkillPacks,
+  getXKlickdSkillPackBytes,
+  loadXKlickdSkillPack,
+} from './x-klickd-skills.js';
+export type {
+  XKlickdSkillPackEntry,
+  XKlickdSkillManifest,
+  XKlickdSkillGateSummary,
+  XKlickdSkillPackSummary,
+} from './x-klickd-skills.js';

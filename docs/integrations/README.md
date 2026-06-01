@@ -22,6 +22,7 @@ Each guide here specialises the same core pattern: **parse → validate → stri
 | [universal-bridge.md](universal-bridge.md) | design + reference | runtime-injection layer | **Bridge-mediated, not native** | One injection layer fronting any compatible surface |
 | [generic.md](generic.md) | any | `system` (recommended) | Pattern (you implement it) | Any provider or agent framework not listed above |
 | [starter-skills.md](starter-skills.md) | — | — | — (payload pack) | Ready-made plain starter payloads to load and inject |
+| [skill-loader-protocol.md](skill-loader-protocol.md) | Python + Node + CLI | loader / hash-verify | — (artifact, not native) | Loading, listing, and hash-verifying the 42 x.klickd v4.1 skill packs (`artifact_loaded`) |
 
 **Reading the Compatibility column.** *Direct* means the provider's own API accepts a system prompt and these guides inject `.klickd` content into it — no third party decrypts or auto-loads the file. *Complementary / Bridge-mediated* means there is no native `.klickd` support on that surface; compatibility is provided by a loader or injection layer you run. No third-party AI service decrypts or auto-loads a `.klickd` file today.
 
