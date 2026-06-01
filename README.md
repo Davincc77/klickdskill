@@ -184,7 +184,7 @@ npm install @klickd/core
 | OpenRouter (multi-provider Soul Handoff) | [`docs/integrations/openrouter.md`](docs/integrations/openrouter.md) |
 | xAI Grok (OpenAI-compatible) | [`docs/integrations/xai_grok.md`](docs/integrations/xai_grok.md) |
 | LangChain / LangGraph (provider-agnostic chains + cross-session memory bridge) | [`docs/integrations/langchain.md`](docs/integrations/langchain.md) |
-| LlamaIndex (system prompt + vector index) | [`docs/integrations/llamaindex.md`](docs/integrations/llamaindex.md) |
+| LlamaIndex (system prompt + vector index + session resume) | [`docs/integrations/llamaindex.md`](docs/integrations/llamaindex.md) |
 | GitHub Copilot / M365 Copilot (hybrid pattern) | [`docs/integrations/copilot.md`](docs/integrations/copilot.md) |
 | Any provider (generic pattern) | [`docs/integrations/generic.md`](docs/integrations/generic.md) |
 
