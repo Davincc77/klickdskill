@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from klickd import load_klickd
+from klickd import get_starter_skill_bytes, load_klickd
 
 
 def _load_any(file_bytes: bytes, passphrase: str | None = None) -> dict[str, Any]:
@@ -29,6 +29,16 @@ def _load_any(file_bytes: bytes, passphrase: str | None = None) -> dict[str, Any
     if not isinstance(obj, dict):
         raise ValueError("top-level JSON must be an object")
     return obj
+
+
+def load_starter_skill(name: str) -> dict[str, Any]:
+    """Load a bundled .klickd starter skill pack by file name (e.g. ``coding.klickd``).
+
+    Uses only the public SDK accessor ``get_starter_skill_bytes``; the
+    starter packs ship as plain (unencrypted) payloads, so plain JSON
+    parsing is sufficient and no passphrase is involved.
+    """
+    return _load_any(get_starter_skill_bytes(name))
 
 
 def klickd_to_system_prompt(payload: dict[str, Any]) -> str:
@@ -48,7 +58,60 @@ def klickd_to_system_prompt(payload: dict[str, Any]) -> str:
         parts.append("Resume context:\n" + "\n".join(ctx_lines))
     if payload.get("agent_instructions"):
         parts.append(payload["agent_instructions"].strip())
-    return "\n\n".join(parts).strip()
+
+    pack = payload.get("x_klickd_pack")
+    if isinstance(pack, dict):
+        parts.append(_pack_system_lines(pack))
+
+    return "\n\n".join(p for p in parts if p).strip()
+
+
+def _pack_system_lines(pack: dict[str, Any]) -> str:
+    """Surface the safety-relevant fields of an x.klickd starter pack.
+
+    Starter skills are capability *packs* (no persona ``context`` /
+    ``memory``); they declare gates, human authority and a memory scope.
+    Gate semantics must be enforced by the host application, not the LLM
+    (see the host-enforces-gates note in the integration guide).
+    """
+    lines: list[str] = []
+    if pack.get("pack"):
+        lines.append(f"Active x.klickd skill pack: {pack['pack']} ({pack.get('pack_version', '?')})")
+    auth = pack.get("human_authority") or {}
+    if auth.get("final_decision_owner"):
+        lines.append(
+            f"Human authority: final decisions belong to {auth['final_decision_owner']}; "
+            f"agent role is {auth.get('agent_role', 'advisory')}."
+        )
+    gates = pack.get("verification_gates") or {}
+    gate_list = gates.get("gates") or []
+    if gate_list:
+        blocked = [g.get("action_class") for g in gate_list if g.get("level") == "block"]
+        if blocked:
+            lines.append(
+                "Verification gates declared in the pack; never override 'block'. "
+                "Blocked action classes: " + ", ".join(filter(None, blocked)) + "."
+            )
+    if pack.get("memory_scope"):
+        lines.append(f"Memory scope: {pack['memory_scope']} (pack-scoped only).")
+    return "\n".join(lines)
+
+
+def klickd_to_chat_messages(payload: dict[str, Any], user_turn: str | None = None) -> list[Any]:
+    """Bridge a decoded .klickd payload into LlamaIndex ``ChatMessage`` objects.
+
+    Returns a system message built from the payload, optionally followed by
+    a user turn. This is the memory/context entry point for LlamaIndex
+    chat engines (``SimpleChatEngine``, ``ChatMemoryBuffer.put`` seeding,
+    agent workflows). LlamaIndex is imported lazily so the rest of this
+    module stays importable without it installed.
+    """
+    from llama_index.core.llms import ChatMessage, MessageRole  # type: ignore[import-not-found]
+
+    messages = [ChatMessage(role=MessageRole.SYSTEM, content=klickd_to_system_prompt(payload))]
+    if user_turn:
+        messages.append(ChatMessage(role=MessageRole.USER, content=user_turn))
+    return messages
 
 
 def _doc_records(payload: dict[str, Any]) -> list[dict[str, Any]]:
