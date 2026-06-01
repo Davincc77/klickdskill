@@ -25,6 +25,27 @@ You explain your level. Your goals. Your context. Then the session ends — and 
 
 ---
 
+## Quickstart (< 3 min)
+
+```bash
+pip install klickd          # Python
+# or: npm install @klickd/core   (Node / TypeScript)
+```
+
+```python
+import json
+from klickd import get_starter_skill_bytes
+
+payload = json.loads(get_starter_skill_bytes("coding.klickd"))
+print(payload["x_klickd_pack"]["pack"])   # -> "x.klickd/coding"
+```
+
+The bundled starter skills are plain (unencrypted) payloads — parse them with plain JSON. For an encrypted envelope use `load_klickd(bytes, passphrase=...)`. Drop the result into any model's `system` prompt.
+
+→ Full walkthrough: [`docs/getting-started.md`](docs/getting-started.md) · Provider guides: [`docs/integrations/`](docs/integrations/README.md)
+
+---
+
 ## Positioning (v4)
 
 `.klickd` is an **open-source security and continuity layer for every actor in AI**.
@@ -152,6 +173,8 @@ npm install @klickd/core
 ---
 
 ## Integrations
+
+> Side-by-side comparison (language, injection point, compatibility) and a guide for adding new integrations: [`docs/integrations/README.md`](docs/integrations/README.md).
 
 | Provider | Guide |
 |---|---|
