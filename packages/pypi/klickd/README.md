@@ -160,6 +160,30 @@ manifest = get_starter_skills_manifest()
 path = get_starter_skills_dir()  # importlib.resources Traversable as str
 ```
 
+### x.klickd v4.1 skill packs (42 candidate packs — non-normative)
+
+The 42 x.klickd v4.1 candidate skill packs (8 Lite + 34 Pro) ship inside the
+wheel and sdist as `klickd/x_klickd_skills/*.klickd` alongside the aggregated
+download index `manifest.json`. They are **NON-NORMATIVE** and **NOT a v4.1 GA
+release**, and they are JSON artifacts — **not** native skills in any assistant.
+A pack is only "used" once `artifact_loaded` **and** `sha256_matches_manifest`
+are both true.
+
+```python
+import klickd
+
+len(klickd.list_xklickd_skill_packs())  # → 42
+
+skill = klickd.load_xklickd_skill_pack("llm-agent-engineering")
+# skill["artifact_loaded"] is True, skill["sha256_matches_manifest"] is True
+# skill["tier"], skill["competency_ids"], skill["gates"], skill["evidence_policy"], ...
+
+raw = klickd.get_xklickd_skill_pack_bytes("x.klickd/work_assistant")  # by file, pack id, or bare id
+```
+
+Full protocol and truth boundary:
+[`docs/integrations/skill-loader-protocol.md`](https://github.com/Davincc77/klickdskill/blob/main/docs/integrations/skill-loader-protocol.md).
+
 ---
 
 ## Cryptographic specification (v3.0)

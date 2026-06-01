@@ -188,6 +188,9 @@ npm install @klickd/core
 | LlamaIndex (system prompt + vector index + session resume) | [`docs/integrations/llamaindex.md`](docs/integrations/llamaindex.md) |
 | GitHub Copilot / M365 Copilot (hybrid pattern) | [`docs/integrations/copilot.md`](docs/integrations/copilot.md) |
 | Any provider (generic pattern) | [`docs/integrations/generic.md`](docs/integrations/generic.md) |
+| 42 x.klickd v4.1 skill packs (load / list / hash-verify) | [`docs/integrations/skill-loader-protocol.md`](docs/integrations/skill-loader-protocol.md) |
+
+> **Developer path for the 42 v4.1 skill packs:** list, load, and **hash-verify** the 8 Lite + 34 Pro packs (`artifact_loaded` + `sha256_matches_manifest`) via `@klickd/core` (Node), `klickd` (PyPI), or the no-install `scripts/verify_xklickd_skill_packs.py` CLI. They are real JSON artifacts, **not** native skills in any assistant — see [`docs/integrations/skill-loader-protocol.md`](docs/integrations/skill-loader-protocol.md).
 
 > **Experimental POC:** [`integrations/hermes/`](integrations/hermes/README.md) — Hermes Agent as workflow runner, `.klickd` as portable state layer. Local dry-run only; not a production integration.
 

@@ -21,6 +21,13 @@ from .starter_skills_resources import (
     get_starter_skill_bytes,
     get_starter_skills_manifest,
 )
+from .x_klickd_skills_resources import (
+    get_xklickd_skills_dir,
+    get_xklickd_skills_manifest,
+    list_xklickd_skill_packs,
+    get_xklickd_skill_pack_bytes,
+    load_xklickd_skill_pack,
+)
 from ._types import (
     KlickdPayload,
     KlickdEnvelope,
@@ -50,6 +57,11 @@ __all__ = [
     "list_starter_skills",
     "get_starter_skill_bytes",
     "get_starter_skills_manifest",
+    "get_xklickd_skills_dir",
+    "get_xklickd_skills_manifest",
+    "list_xklickd_skill_packs",
+    "get_xklickd_skill_pack_bytes",
+    "load_xklickd_skill_pack",
     "KlickdError",
     "KlickdErrorCode",
     "HTTP_STATUS",

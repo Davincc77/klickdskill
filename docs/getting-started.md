@@ -57,6 +57,39 @@ That's a real x.klickd skill loaded as model context. You're done with the smoke
 
 ---
 
+## 2b. Load the 42 x.klickd v4.1 skill packs (optional)
+
+Beyond the four starter skills, the repo ships **42 x.klickd v4.1 candidate
+skill packs** (8 Lite + 34 Pro). The SDK can list them and load any one with a
+SHA-256 check against the published manifest:
+
+**Python**
+
+```python
+import klickd
+
+skill = klickd.load_xklickd_skill_pack("llm-agent-engineering")
+assert skill["artifact_loaded"] and skill["sha256_matches_manifest"]
+print(skill["tier"], skill["pack"])   # -> pro x.klickd/llm_agent_engineering
+```
+
+**TypeScript / Node**
+
+```ts
+import { loadXKlickdSkillPack } from "@klickd/core";
+
+const skill = loadXKlickdSkillPack("x.klickd/llm_agent_engineering");
+if (!skill.artifact_loaded || !skill.sha256_matches_manifest) throw new Error("verify failed");
+console.log(skill.tier, skill.pack);  // -> pro x.klickd/llm_agent_engineering
+```
+
+A pack is only "used" once `artifact_loaded` **and** `sha256_matches_manifest`
+are both true — these are JSON artifacts, not native skills in any assistant.
+Full details, the no-install CLI, and the truth boundary:
+[`integrations/skill-loader-protocol.md`](integrations/skill-loader-protocol.md).
+
+---
+
 ## 3. Plug it into a model (~1 min)
 
 A starter skill is built to drop into a **system prompt**. Pick the provider you already have a key for — each guide is a copy-paste minimal example:

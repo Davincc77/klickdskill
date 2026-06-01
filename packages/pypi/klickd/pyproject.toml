@@ -42,7 +42,8 @@ Documentation = "https://github.com/Davincc77/klickdskill/blob/main/SPEC.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/klickd"]
-# Schema files under src/klickd/schemas/ and starter .klickd files under
-# src/klickd/starter_skills/ are part of the package tree and are
+# Schema files under src/klickd/schemas/, starter .klickd files under
+# src/klickd/starter_skills/, and the 42 x.klickd v4.1 skill packs under
+# src/klickd/x_klickd_skills/ are part of the package tree and are
 # auto-included by hatchling when packages = ["src/klickd"] selects the
 # parent directory. No explicit include rule is required.
