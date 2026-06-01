@@ -1,0 +1,47 @@
+{
+  "klickd_version": "4.0.0",
+  "payload_schema_version": "4.0.0",
+  "encrypted": false,
+  "domain": "software_engineering",
+  "profile_kind": "developer",
+  "created_at": "2026-05-26T00:00:00Z",
+  "identity": {
+    "display_name": "Sam",
+    "language": "en",
+    "timezone": "Europe/Luxembourg"
+  },
+  "user_preferences": "Keep answers concise. Prefer small, reviewable diffs.",
+  "context": {
+    "current_project": "klickd-langchain bridge",
+    "current_state": "drafted the loader; tests still pending",
+    "resume_trigger": "user says 'continue'"
+  },
+  "agent_instructions": "Pick up where the last session left off. Confirm before destructive actions.",
+  "verification_gates": {
+    "destructive_command": "confirm",
+    "public_post": "block",
+    "casual_edit": "silent"
+  },
+  "human_veto_policy": "The human carrier can override any agent action by saying 'veto'. Stop immediately and ask.",
+  "human_authority": {
+    "final_decision_owner": "human_carrier",
+    "agent_role": "advisory"
+  },
+  "memory": [
+    {
+      "id": "00000000-0000-4000-a000-000000000001",
+      "ts": "2026-05-26T09:00:00Z",
+      "role": "user",
+      "content": "We are building a LangChain bridge for .klickd memory.",
+      "modality": "text"
+    },
+    {
+      "id": "00000000-0000-4000-a000-000000000002",
+      "ts": "2026-05-26T09:02:00Z",
+      "role": "assistant",
+      "content": "Got it. Loader drafted; next session we add the message/state conversion and tests.",
+      "modality": "text"
+    }
+  ],
+  "_bench": {"tokens_in": 0, "tokens_out": 0}
+}
