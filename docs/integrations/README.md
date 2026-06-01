@@ -10,11 +10,12 @@ Each guide here specialises the same core pattern: **parse → validate → stri
 
 | Guide | Language | Injection point | Compatibility | Best for |
 |---|---|---|---|---|
-| [openai.md](openai.md) | Python | `system` message | Direct (native API) | GPT-4o / o-series via the OpenAI SDK |
+| [openai.md](openai.md) | Python | `system` / `developer` message | Direct (native API) + bridge | GPT-4o / o-series via the OpenAI SDK, plus a cross-session context bridge |
 | [anthropic.md](anthropic.md) | Python | top-level `system` param | Direct (native API) | Claude Opus / Sonnet via the Messages API |
 | [groq.md](groq.md) | Python | `system` message | Direct (OpenAI-compatible) | Fast Llama / Qwen inference |
 | [xai_grok.md](xai_grok.md) | Python | `system` message | Direct (OpenAI-compatible) | Grok via the OpenAI client + xAI `base_url` |
 | [openrouter.md](openrouter.md) | Python | `system` message | Direct (OpenAI-compatible) | Multi-provider Soul Handoff across 200+ models |
+| [mistral.md](mistral.md) | Python | `system` message | **Bridge-mediated, not native** | Mistral chat via the `mistralai` SDK; dry-run + live |
 | [langchain.md](langchain.md) | Python | `system` in a chain | Direct (framework adapter) | Provider-agnostic chains; swap the chat model |
 | [llamaindex.md](llamaindex.md) | Python | system prompt + index | Direct (framework adapter) | RAG / query engines that also need user state |
 | [copilot.md](copilot.md) | hybrid | user-mediated / loader | **Complementary, not direct** | Pairing SKILL.md behaviour with `.klickd` memory |

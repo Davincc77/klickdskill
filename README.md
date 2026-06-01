@@ -178,11 +178,12 @@ npm install @klickd/core
 
 | Provider | Guide |
 |---|---|
-| OpenAI (GPT-4o, o1, …) | [`docs/integrations/openai.md`](docs/integrations/openai.md) |
+| OpenAI (GPT-4o, o-series, … + cross-session context bridge) | [`docs/integrations/openai.md`](docs/integrations/openai.md) |
 | Anthropic (Claude Opus, Sonnet, …) | [`docs/integrations/anthropic.md`](docs/integrations/anthropic.md) |
 | Groq (Llama, Qwen, …) | [`docs/integrations/groq.md`](docs/integrations/groq.md) |
 | OpenRouter (multi-provider Soul Handoff) | [`docs/integrations/openrouter.md`](docs/integrations/openrouter.md) |
 | xAI Grok (OpenAI-compatible) | [`docs/integrations/xai_grok.md`](docs/integrations/xai_grok.md) |
+| Mistral AI (compatibility bridge) | [`docs/integrations/mistral.md`](docs/integrations/mistral.md) |
 | LangChain / LangGraph (provider-agnostic chains + cross-session memory bridge) | [`docs/integrations/langchain.md`](docs/integrations/langchain.md) |
 | LlamaIndex (system prompt + vector index + session resume) | [`docs/integrations/llamaindex.md`](docs/integrations/llamaindex.md) |
 | GitHub Copilot / M365 Copilot (hybrid pattern) | [`docs/integrations/copilot.md`](docs/integrations/copilot.md) |
