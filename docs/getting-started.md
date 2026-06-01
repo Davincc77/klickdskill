@@ -1,61 +1,65 @@
-# Getting started — test `.klickd` in < 3 minutes
+# 5 minutes to Hello World
 
-The shortest honest path from zero to "I loaded a `.klickd` file in code". No account, no server, no API key (this page does not call an LLM — it just installs the SDK and parses a file).
+**Load one x.klickd starter skill, turn it into model context, and see the output — no account, no server, no API key.**
 
-> Want the slightly longer guided version with verification and a model call? See the [5-minute developer path](community/TRY_IT.md).
+The quick path below does not call an LLM: it installs the SDK and parses a bundled starter skill so you get a real result on the first run.
 
 ---
 
 ## 1. Install (~30s)
 
-Pick **one**. You do not need both.
+Pick **one**.
 
-**Python**
 ```bash
-pip install klickd
+pip install klickd            # Python
+```
+```bash
+npm install @klickd/core      # Node / TypeScript
 ```
 
-**Node.js / TypeScript**
-```bash
-npm install @klickd/core
-```
-
-The packages have no network side-effects on import.
+No network side-effects on import.
 
 ---
 
-## 2. Load a starter skill (~1 min)
+## 2. Hello World (~1 min, dry-run)
 
-The bundled starter skills are **plain (unencrypted) payloads** on purpose, so the smoke test needs no passphrase. For an unencrypted payload the honest path is a plain JSON parse — *not* `load_klickd` / `loadKlickd`, which decode **encrypted** envelopes only and will reject a plain file.
+The bundled starter skills are **plain (unencrypted) payloads** on purpose, so this needs no passphrase. Parse one with plain JSON — *not* `load_klickd` / `loadKlickd`, which decode **encrypted** envelopes only.
 
 **Python**
+
 ```python
 import json
 from klickd import get_starter_skill_bytes
 
 payload = json.loads(get_starter_skill_bytes("coding.klickd"))
-print(payload["x_klickd_pack"]["pack"])   # -> "x.klickd/coding"
+print(payload["x_klickd_pack"]["pack"])   # -> x.klickd/coding
 print(payload["encrypted"])               # -> False
 ```
 
 **TypeScript / Node**
+
 ```ts
 import { getStarterSkillBytes } from "@klickd/core";
 
 const payload = JSON.parse(new TextDecoder().decode(getStarterSkillBytes("coding.klickd")));
-console.log(payload.x_klickd_pack.pack);   // -> "x.klickd/coding"
+console.log(payload.x_klickd_pack.pack);   // -> x.klickd/coding
 console.log(payload.encrypted);            // -> false
 ```
 
-> The starter skills are non-normative and ship on the v4.0 envelope; they are **not** a v4.1 GA release. See [`examples/v4/starter-skills/README.md`](../examples/v4/starter-skills/README.md).
+Expected output:
 
-For an **encrypted** envelope (your own file with a passphrase), use the full decoder — `load_klickd(bytes, passphrase=...)` in Python, `await loadKlickd(buf, { passphrase })` in Node. A dual loader that handles both forms is in [`examples/v4/cli/klickd_cli.py`](../examples/v4/cli/klickd_cli.py).
+```text
+x.klickd/coding
+False
+```
+
+That's a real x.klickd skill loaded as model context. You're done with the smoke test.
 
 ---
 
 ## 3. Plug it into a model (~1 min)
 
-A starter skill is designed to be dropped into a **system prompt**. Pick the provider you already have a key for — each guide is a copy-paste minimal example:
+A starter skill is built to drop into a **system prompt**. Pick the provider you already have a key for — each guide is a copy-paste minimal example:
 
 | Provider | Guide |
 |---|---|
@@ -76,8 +80,10 @@ Full comparison of what each integration covers: [`integrations/README.md`](inte
 ## Next
 
 - [5-minute developer path](community/TRY_IT.md) — adds hash verification and an end-to-end model call.
+- Encrypted envelopes — use `load_klickd(bytes, passphrase=...)` (Python) or `await loadKlickd(buf, { passphrase })` (Node). A dual loader is in [`examples/v4/cli/klickd_cli.py`](../examples/v4/cli/klickd_cli.py). Compressed memory is optional.
 - [`SPEC.md`](../SPEC.md) — full normative specification (encryption, fields, Soul Handoff).
 - [`SECURITY.md`](../SECURITY.md) — threat model and crypto choices.
-- [Add a new integration](integrations/README.md#contributing-a-new-integration) — short contribution guide.
+
+> The starter skills are non-normative and ship on the v4.0 envelope; they are **not** a v4.1 GA release. See [`examples/v4/starter-skills/README.md`](../examples/v4/starter-skills/README.md).
 
 > **Claim boundary.** `.klickd` gives you portable, client-side-encrypted user state. It does **not** provide universal native support across AI clients (compatibility depends on the reader), and it does **not** confer automatic GDPR or EU AI Act compliance — that remains the operator's responsibility.
