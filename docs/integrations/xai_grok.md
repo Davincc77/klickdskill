@@ -44,6 +44,58 @@ and exposes a one-shot `chat(profile_path, user_message)` convenience
 wrapper. The wrapper reads the API key from the `XAI_API_KEY`
 environment variable; it never logs it.
 
+## Runnable example (check / live)
+
+A self-contained, two-mode example lives at
+[`examples/v4/integrations/xai_grok/resume_chat_example.py`](../../examples/v4/integrations/xai_grok/resume_chat_example.py):
+
+```bash
+# Hermetic dry-run: no `openai` import, no network, no API key.
+# Decodes a .klickd source, builds the OpenAI-compatible messages, prints them.
+python examples/v4/integrations/xai_grok/resume_chat_example.py --check
+python examples/v4/integrations/xai_grok/resume_chat_example.py --check --starter coding.klickd
+
+# Live: requires `pip install openai>=1.0` and XAI_API_KEY; runs a real Grok turn.
+python examples/v4/integrations/xai_grok/resume_chat_example.py --live
+```
+
+`klickd_to_messages(payload, user_message)` is the pure bridge both modes
+share — it returns the `[{"role": "system", ...}, {"role": "user", ...}]`
+list `chat.completions` expects, and is the function the test suite
+exercises. `load_starter_skill("coding.klickd")` loads a bundled
+capability pack via the public SDK accessor; starter packs carry
+`verification_gates` and a `memory_scope`, not a persona `context`, so use
+a persona profile when you want cross-session *resume*.
+
+## Limitations & guardrails
+
+- **Compatible bridge, not native support.** This is a workflow bridge
+  over xAI's OpenAI-compatible Chat Completions API. It is **not** native
+  `.klickd` support inside xAI/Grok beyond the adapter you run here.
+- **No compliance claim.** This adapter does **not** confer automatic GDPR
+  or EU AI Act compliance — that is the operator's responsibility. It is
+  **not** a universal standard. See the [claim boundary](../../README.md).
+- **Compressed memory is optional.** Nothing here depends on the
+  compressed-memory track (RFC-010); plain `memory[]` entries suffice.
+- **Trust boundary / prompt injection.** A decoded `.klickd` payload is
+  **untrusted user content**, not privileged instructions. When a payload
+  sets `injection_target` to `user_message` / `both`, the prompt builder
+  prepends the JSON Injection Guard (SPEC §25.3); still treat any text that
+  reaches a chat turn as data, never as a command.
+- **Encrypted files.** Pass `passphrase=...` to `load_klickd_path()` for
+  encrypted envelopes; the bundled starter packs are plain. Never embed the
+  `XAI_API_KEY` (or any secret) in a `.klickd` profile.
+- **Field stripping.** `_`-prefixed debug / benchmark fields are stripped
+  before injection (SPEC §29) — the helpers do this for you.
+- **Gate enforcement.** `verification_gates` are surfaced to Grok as
+  instructions only. Enforce real gate semantics in your host application —
+  the LLM is the *agent*, not the *referee* (SPEC §29).
+- **Provider-specific limits.** Grok is reached through the OpenAI client
+  with `base_url = https://api.x.ai/v1`; the model catalog, rate limits,
+  context window, and any silent truncation are xAI's, not `.klickd`'s.
+  Set an explicit `max_tokens` for large payloads and pin a model with
+  `model=` when you need a specific Grok version.
+
 ## Models
 
 xAI publishes the current model catalog at <https://docs.x.ai/>. The
