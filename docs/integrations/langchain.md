@@ -58,3 +58,51 @@ print(chain.invoke({"input": "Let's pick up where we left off."}).content)
 Swap `ChatOpenAI` for `ChatAnthropic`, `ChatGroq`, or any
 LangChain-supported chat model. The `.klickd` payload is the portable
 state layer; the chain stays untouched.
+
+## Memory bridge & cross-session resume
+
+For agent / chat workflows that **resume context across sessions**, use the
+`KlickdMemory` bridge at
+[`examples/v4/integrations/langchain/klickd_memory.py`](../../examples/v4/integrations/langchain/klickd_memory.py).
+It loads a profile or starter skill **through the `klickd` SDK only**
+(`load_klickd`, `get_starter_skill_bytes`, `validate_iter_errors`) and
+converts the validated context into LangChain messages and LangGraph state.
+This is *bridge-mediated compatibility, not native framework support*.
+
+```python
+from klickd_memory import KlickdMemory
+
+mem = KlickdMemory.from_starter_skill("coding.klickd")   # SDK-loaded, plain
+# or: KlickdMemory.from_path("profile.klickd", passphrase="…")  # encrypted
+
+messages = mem.to_messages()              # [(role, content), ...] system + prior turns
+state    = mem.to_langgraph_state()       # {"messages": [...], "klickd": {...}}
+# lc_msgs = mem.to_lc_messages()          # langchain-core message objects (optional)
+```
+
+A runnable cross-session example (save in session 1, resume in session 2) lives
+at
+[`example_resume_session.py`](../../examples/v4/integrations/langchain/example_resume_session.py).
+It runs from a clean checkout with no network and no LangChain install; if
+`langchain-core` / `langgraph` are present it additionally builds real message
+objects and a tiny graph.
+
+### Boundaries (read these)
+
+- **Compressed memory is opt-in.** `to_messages(compressed=True)` collapses
+  prior turns into a single system summary line; the default replays them.
+- **System vs. user injection.** Content is injected in the *system* role. If a
+  payload sets `injection_target` to `user_message` / `both`, the system prompt
+  prepends a JSON Injection Guard (SPEC §25.3).
+- **Trust boundary.** The AI model does not decrypt the `.klickd` file — the
+  trusted local runtime does. Encrypted profiles decrypt in-process via
+  `load_klickd` with a passphrase you supply.
+- **Gates are advisory in the prompt; enforce them in the host.**
+  `verification_gates` are surfaced as text and preserved in
+  `state["klickd"]`; `human_authority` / `human_veto_policy` pass through
+  unchanged, keeping the human carrier as final decision owner.
+- **No compliance claims.** This bridge makes no GDPR, EU AI Act, or
+  universal-standard claim — it is a format converter. See the
+  [adapter README](../../examples/v4/integrations/langchain/README.md), the
+  evidence pack at <https://doi.org/10.5281/zenodo.20262530>, and
+  [`SPEC.md`](../../SPEC.md) (§25.3, §29) for boundaries.
