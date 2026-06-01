@@ -178,7 +178,7 @@ npm install @klickd/core
 
 | Provider | Guide |
 |---|---|
-| OpenAI (GPT-4o, o1, …) | [`docs/integrations/openai.md`](docs/integrations/openai.md) |
+| OpenAI (GPT-4o, o-series, … + cross-session context bridge) | [`docs/integrations/openai.md`](docs/integrations/openai.md) |
 | Anthropic (Claude Opus, Sonnet, …) | [`docs/integrations/anthropic.md`](docs/integrations/anthropic.md) |
 | Groq (Llama, Qwen, …) | [`docs/integrations/groq.md`](docs/integrations/groq.md) |
 | OpenRouter (multi-provider Soul Handoff) | [`docs/integrations/openrouter.md`](docs/integrations/openrouter.md) |
