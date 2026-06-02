@@ -1,0 +1,16 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "source-hash-ok",
+      "title": "Local source with verified hash",
+      "url": "https://example.org/local",
+      "retrieved_at": "2026-06-02",
+      "published_at": "2026-04-01",
+      "license": "MIT",
+      "usage": "reference",
+      "local_path": "data/local_source.txt",
+      "hash": "sha256:b79b18b57eb7e3e6806294eb07e6a06116c324bdd95d35ba212c4ff1a3e3ef66"
+    }
+  ]
+}
