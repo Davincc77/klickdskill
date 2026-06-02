@@ -1,0 +1,97 @@
+{
+  "klickd_version": "4.0",
+  "payload_schema_version": "4.0.0-preview.1",
+  "encrypted": false,
+  "domain": "compliance",
+  "profile_kind": "carrier_competency_pack",
+  "_pack_metadata": {
+    "kind": "x_klickd_candidate_skill_pack",
+    "non_normative": true,
+    "claims_v41_ga": false,
+    "contains_real_pii": false,
+    "contains_secrets": false,
+    "status": "candidate_mapped"
+  },
+  "x_klickd_pack": {
+    "pack": "x.klickd/example",
+    "pack_version": "0.1.0-candidate",
+    "competencies": [
+      {
+        "competency_ref": "esco:S1.0",
+        "scheme": "esco",
+        "prefLabel": "alpha"
+      },
+      {
+        "competency_ref": "esco:S1.5",
+        "scheme": "esco",
+        "prefLabel": "beta"
+      }
+    ],
+    "memory_scope": "memory.x_klickd.example",
+    "memory_segments": [
+      {
+        "id": "works",
+        "scope": "memory.x_klickd.example.works",
+        "policy": "pointer_only_attribution"
+      }
+    ],
+    "structured_memory": {
+      "scope": "memory.x_klickd.example",
+      "policy": "pack_scoped_only",
+      "entries": []
+    },
+    "gates": {
+      "verification_gates_default": {
+        "raise_only": true,
+        "claim_grounding_required": true,
+        "reversibility_threshold": "low"
+      }
+    },
+    "human_veto": {
+      "owner": "human_carrier",
+      "raise_only": false,
+      "non_lowerable_floor": [
+        "risk_class_below_evidence"
+      ]
+    },
+    "human_authority": {
+      "final_decision_owner": "human_carrier",
+      "agent_role": "advisory",
+      "escalation": "qualified_specialist_per_domain"
+    },
+    "evidence_policy": {
+      "required_for_claims": true,
+      "pointer_only": true,
+      "attestation_shape_ref": "rfc-002#8b"
+    },
+    "verification_gates": {
+      "version": 1,
+      "user_default": "silent",
+      "gates": [
+        {
+          "id": "compliance-attestation",
+          "action_class": "compliance_attestation",
+          "level": "confirm",
+          "reason": "confirm required"
+        },
+        {
+          "id": "risk-class-downgrade",
+          "action_class": "risk_class_below_evidence",
+          "level": "block",
+          "reason": "blocked"
+        },
+        {
+          "id": "counsel-escalation-skip",
+          "action_class": "skip_counsel_for_definitive_decision",
+          "level": "block",
+          "reason": "blocked"
+        }
+      ]
+    },
+    "forbidden_fields": [
+      "system_prompt_overrides",
+      "scoring_rubric",
+      "tone_rules"
+    ]
+  }
+}
