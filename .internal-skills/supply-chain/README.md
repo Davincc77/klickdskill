@@ -21,17 +21,25 @@ This README is the integration index that brings the supply-chain components tog
 | **Logical diff** | `scripts/generate_supply_chain_diff.py` | `diff/` (report output) | `tests/test_supply_chain_diff.py` (+ `tests/fixtures/supply_chain_diff/`) |
 | **Source freshness + license** | `scripts/check_supply_chain_sources.py` | `source-check/example_source_manifest.json` | `tests/test_supply_chain_sources.py` (+ `tests/fixtures/supply_chain_sources/`) |
 | **Threat model** | `scripts/generate_supply_chain_threat_model.py` | (report output) · doc: `docs/supply-chain/THREAT_MODEL_GENERATOR.md` | `tests/test_supply_chain_threat_model.py` (+ `tests/fixtures/threat-model/`) |
+| **Candidate generation** | `scripts/generate_supply_chain_candidate.py` | `candidates/` (example: `candidates/xklickd-research-reader.json`) | `tests/test_supply_chain_candidate.py` (+ `tests/fixtures/supply_chain_candidate/`) |
+| **Promotion gate** | `scripts/run_supply_chain_promotion_gate.py` | `promotion-gate/` (example: `promotion-gate/xklickd-research-reader.gate.json` + `.md`) | `tests/test_supply_chain_promotion_gate.py` |
 
-Each of these is `tool`: a runnable script with a passing test module and deterministic output. "Tool-backed" means the bytes and behaviour exist and are tested — it does **not** imply the end-to-end build runner exists.
+Each of these is `tool`: a runnable script with a passing test module and deterministic output. "Tool-backed" means the bytes and behaviour exist and are tested — it does **not** imply the supply chain is complete, that any candidate is a loaded skill, or that a public release exists.
+
+### Candidate generator scope (read literally)
+
+`generate_supply_chain_candidate.py` emits the **internal v4.2 target shape** from a config-only `build_request`. Emitting the shape is **not** a claim that every lifecycle stage is implemented or verified — and a generated candidate is **not** a loaded executable skill (it fails the loaded-skill gate below). When domain information is missing, the runner marks `requires_human_premium_pass` rather than inventing competencies, risk, or sources. Sources come **only** from the `build_request` / referenced `source_manifest`.
+
+### Promotion gate scope (read literally)
+
+`run_supply_chain_promotion_gate.py` orchestrates the tool-backed checks (threat model always; source/license when a manifest is given; logical diff when a `--before` is given) plus candidate shape checks and forbidden-claim / public-private boundary tripwires. It classifies **ACCEPT / ACCEPT_WITH_REVIEW / BLOCK** and **reports** whether a human premium pass is required — it does **not** run that pass, and makes no compliance/security/benchmark claim. A check that could not run is recorded `not_run` with a reason, never as `pass`.
 
 ## Planned stages (specified, not built)
 
 | Stage | What it will do | Why it is not claimed yet |
 |---|---|---|
-| **Candidate generation** | Produce a candidate `carrier_pack` from a config-only build request (the build *runner*). | No runner is shipped; the *process* is specified, the executor is not. |
-| **Promotion gate** | Pass/fail enforcement that blocks a candidate from being promoted unless all checks pass. | No gate enforces promotion today; checks run, but nothing blocks on them. |
-| **Full PII / secrets scanner** | Scan candidate inputs/outputs for PII and secrets beyond the engineering source/license checks. | Current `source-check` is an engineering license/freshness check, **not** a compliance attestation or a PII scanner. |
-| **Runtime enforcement** | Enforce guardrails in-loop at execution time, not just at build/audit time. | Build-time checks exist; runtime enforcement does not. |
+| **Full PII / secrets scanner** | Scan candidate inputs/outputs for PII and secrets beyond the engineering source/license checks. | Current `source-check` is an engineering license/freshness check, **not** a compliance attestation or a PII scanner. The gate's boundary tripwire is a coarse guard, not a full scanner. |
+| **Runtime enforcement** | Enforce guardrails in-loop at execution time, not just at build/audit time. | Build-time checks + the promotion gate exist; runtime enforcement does not. |
 
 ---
 

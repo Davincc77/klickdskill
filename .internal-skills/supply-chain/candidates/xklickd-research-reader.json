@@ -1,0 +1,315 @@
+{
+  "audit": {
+    "audit_trail_stage": "audit_trail_index",
+    "build_request_hash": "sha256:1f439bb471fc5bc90b95aa685b340becf75a1a578069f9193aad1f62e2315174",
+    "emits_audit_event_per_output": true
+  },
+  "build_request_hash": "sha256:1f439bb471fc5bc90b95aa685b340becf75a1a578069f9193aad1f62e2315174",
+  "candidate_hash": "sha256:e6369e8b9b1f91b65d17f68db2fe4df7efa5c9fcbd545db0b8c3bb72e9835ad3",
+  "candidate_id": "sha256:2dc00bf2ebb3251025b8de1b8bbfcd426f5edc5bb7f245d20d305857ab376bff",
+  "competency_architecture": {
+    "competency_core": {
+      "base_transversal_core": {
+        "transversal_refs": [
+          "ESCO:S1.transversal_thinking",
+          "ESCO:S2.transversal_collaboration",
+          "ESCO:S3.transversal_communication",
+          "LifeComp:Personal.self_regulation",
+          "LifeComp:Social.cooperation",
+          "LifeComp:Learning.learning_to_learn",
+          "DigComp:transversal.responsible_use"
+        ]
+      },
+      "foundation_competencies": [
+        "ESCO:S1.transversal_thinking",
+        "ESCO:S2.transversal_collaboration",
+        "ESCO:S3.transversal_communication",
+        "LifeComp:Personal.self_regulation",
+        "LifeComp:Social.cooperation",
+        "LifeComp:Learning.learning_to_learn",
+        "DigComp:transversal.responsible_use"
+      ],
+      "note": "Foundation/transversal anchors are framework-referenced structural names, not fabricated domain knowledge.",
+      "transversal_competencies": [
+        "WEF:critical_thinking",
+        "WEF:problem_solving",
+        "WEF:creativity",
+        "WEF:adaptability",
+        "WEF:ethical_reasoning",
+        "ESCO:information_literacy",
+        "ESCO:digital_literacy",
+        "LifeComp:growth_mindset",
+        "LifeComp:empathy",
+        "DigComp:information_evaluation",
+        "DigComp:data_protection_awareness",
+        "DigComp:safety"
+      ]
+    },
+    "domain": "research",
+    "domain_output_requirements": {
+      "format": "cited_summary"
+    },
+    "domain_risk_profile": {
+      "default_risk": "low",
+      "sensitive_actions": []
+    },
+    "harmonized_layers": [
+      "competency_core",
+      "primary_domain_competencies",
+      "secondary_domain_competencies",
+      "domain_risk_profile",
+      "domain_output_requirements"
+    ],
+    "primary_domain_competencies": [
+      "ESCO:research_methods",
+      "ESCO:academic_writing"
+    ],
+    "secondary_domain_competencies": [
+      "ESCO:citation_management"
+    ]
+  },
+  "context_graph": {
+    "edge_types": [
+      "scopes",
+      "requires",
+      "creates",
+      "vetoes",
+      "audits"
+    ],
+    "node_types": [
+      "competency",
+      "memory",
+      "evidence",
+      "policy",
+      "action",
+      "audit"
+    ],
+    "traversed_by_runtime": true
+  },
+  "domain": "research",
+  "evidence": {
+    "requires_citations": true,
+    "source_count": 1,
+    "sources": [
+      {
+        "category": "academic",
+        "freshness": "current",
+        "id": "skos",
+        "license": "CC-BY-4.0",
+        "name": "skos-framework",
+        "published_at": "2025-01-01",
+        "title": "SKOS Reference",
+        "url": "https://example.org/skos",
+        "usage": "reference"
+      }
+    ]
+  },
+  "governance": {
+    "final_decision_owner": "human_operator",
+    "human_veto_required": true,
+    "no_auto_external_action": true,
+    "non_lowerable_rules": [
+      "no_stub_as_loaded_skill",
+      "no_unsourced_claim"
+    ]
+  },
+  "governance_system": {
+    "_declared_sensitive_actions": [],
+    "action_gates": [],
+    "approval_lifecycle": [
+      "requested",
+      "granted",
+      "denied",
+      "expired"
+    ],
+    "authority_hierarchy": [
+      "human_operator",
+      "human_reviewer",
+      "agent"
+    ],
+    "consent_rules": [],
+    "escalation_rules": [],
+    "final_decision_owner": "human_operator",
+    "governance_audit": {
+      "emits_to": "audit"
+    },
+    "human_veto": {
+      "lowerable": false,
+      "note": "raise-only; not lowerable by an agent",
+      "required": true
+    },
+    "human_veto_required": true,
+    "no_auto_external_action": true,
+    "non_lowerable_rules": [
+      "no_stub_as_loaded_skill",
+      "no_unsourced_claim"
+    ],
+    "policy_conflict_resolution": "strictest_rule_wins",
+    "revocation_rules": [],
+    "risk_levels": [
+      "low",
+      "medium",
+      "high",
+      "critical"
+    ]
+  },
+  "interactions": {
+    "canonical_flow": [
+      "user_task",
+      "intent_detection",
+      "competency_activation",
+      "memory_retrieval",
+      "context_graph_traversal",
+      "evidence_resolution",
+      "policy_evaluation",
+      "output_contract_check",
+      "human_veto_if_required",
+      "response_or_action",
+      "audit_event",
+      "memory_update_candidate"
+    ],
+    "flows": [
+      "task_to_competency_flow",
+      "competency_to_memory_flow",
+      "memory_to_context_graph_flow",
+      "context_graph_to_policy_flow",
+      "policy_to_output_contract_flow",
+      "output_to_audit_flow",
+      "lifecycle_to_runtime_flow"
+    ],
+    "human_veto_if_required_lowerable": false,
+    "memory_update_is_candidate_only": true
+  },
+  "internal_target": {
+    "note": "Internal v4.2 target shape. NOT a public v4.2 release; public x.klickd artefacts remain v4.1 candidates.",
+    "public_version": "v4.1",
+    "track": "xklickd_internal_skill_v4_2"
+  },
+  "kind": "xklickd_internal_candidate_skill",
+  "memory": {
+    "promotion_rules": [],
+    "reads_private_context": false,
+    "writes_long_term": false
+  },
+  "memory_governance": {
+    "every_action_influencing_write_is_governed": true,
+    "every_governance_decision_consulting_memory_is_audited": true,
+    "role": "bridge_between_memory_and_governance"
+  },
+  "memory_system": {
+    "promotion_rules": [],
+    "reads_private_context": false,
+    "retention": "session_default",
+    "retrieval": "scoped_by_active_competency",
+    "write_candidates": "subject_to_memory_governance",
+    "writes_long_term": false
+  },
+  "metadata": {
+    "domain": "research",
+    "publisher": "internal",
+    "size_tier": "lite",
+    "skill_id": "xklickd-research-reader",
+    "status": "candidate",
+    "title": "Research Reader"
+  },
+  "non_normative": true,
+  "output_contract": {
+    "allowed_outputs": [
+      "text_response"
+    ],
+    "emits_public_output": true,
+    "forbidden_outputs": [
+      "private_to_public",
+      "unsourced_public_claim"
+    ],
+    "graph_bindings": {
+      "creates_action_node": false,
+      "may_trigger_veto_edge": true,
+      "requires_evidence_node": true,
+      "requires_policy_node": true,
+      "writes_audit_edge": true
+    },
+    "required_audit_event": true,
+    "required_citations": true,
+    "required_handoff_summary": true,
+    "required_uncertainty_markers": true,
+    "requires_citations": true
+  },
+  "premium_pass_status": {
+    "gaps": [],
+    "note": "Missing domain information is surfaced as a gap, never hallucinated. A clean candidate has an empty gaps list.",
+    "requires_human_premium_pass": false
+  },
+  "risk_profile": {
+    "default_risk": "low",
+    "sensitive_actions": []
+  },
+  "run_id": "sha256:2dc00bf2ebb3251025b8de1b8bbfcd426f5edc5bb7f245d20d305857ab376bff",
+  "runtime": {
+    "lifecycle_gates_availability": true,
+    "loadable_only_if_promoted": true,
+    "tools": {
+      "allowed": [
+        "read_file"
+      ],
+      "forbidden": [
+        "publish",
+        "send_email"
+      ]
+    }
+  },
+  "schema_version": "xklickd.candidate.v0.1",
+  "security": {
+    "declared_classification": "internal",
+    "no_real_pii_in_candidate": true,
+    "no_secrets_in_candidate": true,
+    "private_public_boundary_guarded": true
+  },
+  "skill_id": "xklickd-research-reader",
+  "skill_lifecycle": {
+    "completeness_claimed": false,
+    "note": "Target lifecycle layout only; not an assertion that every stage is implemented or verified. release_record is an INTERNAL record, never a public tag/DOI/package/release.",
+    "renamed_from": "supply_chain",
+    "stages": [
+      "build_request",
+      "source_manifest",
+      "generated_candidate",
+      "validation_pipeline",
+      "audit_trail_index",
+      "determinism_record",
+      "logical_diff_report",
+      "source_license_report",
+      "threat_model_report",
+      "benchmark_report",
+      "premium_pass_report",
+      "promotion_gate",
+      "rollback_protocol",
+      "deprecation_protocol",
+      "release_record"
+    ]
+  },
+  "source_manifest": null,
+  "source_manifest_hash": null,
+  "sources": [
+    {
+      "category": "academic",
+      "freshness": "current",
+      "id": "skos",
+      "license": "CC-BY-4.0",
+      "name": "skos-framework",
+      "published_at": "2025-01-01",
+      "title": "SKOS Reference",
+      "url": "https://example.org/skos",
+      "usage": "reference"
+    }
+  ],
+  "tools": {
+    "allowed": [
+      "read_file"
+    ],
+    "forbidden": [
+      "publish",
+      "send_email"
+    ]
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "blocking_findings": [],
+  "candidate_hash": "sha256:e6369e8b9b1f91b65d17f68db2fe4df7efa5c9fcbd545db0b8c3bb72e9835ad3",
+  "candidate_id": "sha256:2dc00bf2ebb3251025b8de1b8bbfcd426f5edc5bb7f245d20d305857ab376bff",
+  "candidate_path": ".internal-skills/supply-chain/candidates/xklickd-research-reader.json",
+  "checks": [
+    {
+      "blocking_findings": [],
+      "check": "candidate_shape",
+      "detail": {
+        "required_layers": [
+          "metadata",
+          "competency_architecture",
+          "memory_system",
+          "governance_system",
+          "memory_governance",
+          "runtime",
+          "context_graph",
+          "interactions",
+          "evidence",
+          "security",
+          "audit",
+          "skill_lifecycle",
+          "output_contract"
+        ]
+      },
+      "review_findings": [],
+      "verdict": "pass"
+    },
+    {
+      "blocking_findings": [],
+      "check": "boundary_tripwires",
+      "detail": {},
+      "review_findings": [],
+      "verdict": "pass"
+    },
+    {
+      "blocking_findings": [],
+      "check": "threat_model",
+      "detail": {
+        "deterministic_threat_model_id": "tmid:4465464eef334cd591f8703405c67744",
+        "summary": {
+          "blocked": 0,
+          "by_category": {},
+          "by_severity": {
+            "critical": 0,
+            "high": 0,
+            "low": 0,
+            "medium": 0
+          },
+          "total": 0
+        }
+      },
+      "review_findings": [],
+      "verdict": "pass"
+    },
+    {
+      "blocking_findings": [],
+      "check": "source_license",
+      "detail": {
+        "deterministic_report_id": "sha256:10dde9d9942f1d13938bf046be3ac6470a10aad763979315334a7ef1f0a13126",
+        "summary": {
+          "allowed": 1,
+          "blocked": 0,
+          "review": 0,
+          "total_sources": 1
+        }
+      },
+      "review_findings": [],
+      "verdict": "pass"
+    },
+    {
+      "blocking_findings": [],
+      "check": "logical_diff",
+      "detail": {
+        "reason": "no --before candidate provided"
+      },
+      "review_findings": [],
+      "verdict": "not_run"
+    },
+    {
+      "blocking_findings": [],
+      "check": "premium_pass_required",
+      "detail": {
+        "gaps": [],
+        "requires_human_premium_pass": false
+      },
+      "review_findings": [],
+      "verdict": "pass"
+    }
+  ],
+  "claim_boundaries": {
+    "establishes_legal_compliance": false,
+    "is_full_automation": false,
+    "is_security_certification": false,
+    "note": "The gate orchestrates offline, stdlib-only checks and reports whether a human premium pass is required; it does not run that pass and makes no compliance claim.",
+    "proves_loaded_executable_skill": false,
+    "runs_premium_pass": false
+  },
+  "classification": "ACCEPT",
+  "deterministic_gate_id": "sha256:a45b0325986dc2880411c570254765360037856dce1df783740ac8ec2f1ff9d4",
+  "kind": "xklickd_supply_chain_promotion_gate_report",
+  "non_deterministic_zone": {
+    "evaluated_at": "2026-06-02",
+    "note": "evaluated_at is excluded from deterministic_gate_id."
+  },
+  "non_normative": true,
+  "premium_pass_required": false,
+  "review_findings": [],
+  "schema_version": "xklickd.promotion_gate.v0.1",
+  "summary": {
+    "blocking": 0,
+    "checks_not_run": 1,
+    "checks_run": 5,
+    "review": 0
+  }
+}
