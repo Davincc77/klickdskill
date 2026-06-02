@@ -25,6 +25,10 @@ jobs:
           pip install -e ".[validate]"
           pip install pytest
           python -m pytest tests/ -q
+      - name: Run dev-preview quickstart tests (examples/dev-preview)
+        run: |
+          pip install -e .
+          python -m pytest tests/test_dev_preview.py -q
 
   javascript:
     name: JavaScript — v2.5 + v3.0 + v4.0-preview via hash-wasm Argon2id
