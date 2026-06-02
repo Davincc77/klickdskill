@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# Root install shim.
+#
+# The canonical, published Python package lives at
+# packages/pypi/klickd/ (name: "klickd", version 4.1.0). This root
+# pyproject exists ONLY so that the dev-preview quickstart command
+#
+#     pip install -e .
+#
+# works from a fresh clone of the repository root, installing the exact
+# same `klickd` source tree (packages/pypi/klickd/src/klickd) with no
+# code duplication. It is not a second package and is never published.
+#
+# For the authoritative packaging metadata (dependencies, classifiers,
+# PyPI URLs) see packages/pypi/klickd/pyproject.toml.
+[project]
+name = "klickd"
+version = "4.1.0"
+description = "Official Python library for reading and writing .klickd portable AI context files (root dev install)"
+readme = "packages/pypi/klickd/README.md"
+license = {text = "CC0-1.0"}
+requires-python = ">=3.9"
+dependencies = [
+  "cryptography>=41.0",
+  "argon2-cffi>=23.1",
+  "jcs>=0.2",
+  "typing-extensions>=4.8",
+]
+
+[project.optional-dependencies]
+validate = ["jsonschema>=4.18"]
+
+[project.urls]
+Homepage = "https://klickd.app/klickdskill"
+Repository = "https://github.com/Davincc77/klickdskill"
+
+[tool.hatch.build.targets.wheel]
+packages = ["packages/pypi/klickd/src/klickd"]
