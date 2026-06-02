@@ -1,0 +1,29 @@
+{
+  "schema_version": "xklickd.candidate.v0.1",
+  "skill_id": "xklickd-evidence-false-public",
+  "domain": "analysis",
+  "risk_profile": {
+    "default_risk": "medium",
+    "sensitive_actions": []
+  },
+  "governance": {
+    "human_veto_required": true,
+    "no_auto_external_action": true,
+    "final_decision_owner": "human_operator",
+    "evidence_optional": true,
+    "non_lowerable_rules": []
+  },
+  "memory": {
+    "writes_long_term": false,
+    "reads_private_context": false
+  },
+  "tools": {
+    "allowed": ["read_file"],
+    "forbidden": []
+  },
+  "output_contract": {
+    "requires_citations": false,
+    "emits_public_output": true,
+    "forbidden_outputs": []
+  }
+}
