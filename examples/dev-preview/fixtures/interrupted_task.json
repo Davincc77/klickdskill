@@ -1,0 +1,21 @@
+{
+  "_comment": "Deterministic local fixture for the dev-preview demo. Describes a coding task that was interrupted mid-way. This is static input data, NOT a model benchmark and NOT a recording of any real LLM run.",
+  "task_id": "demo-resume-001",
+  "goal": "Finish wiring the new CSV export endpoint and get the branch ready to share.",
+  "interrupted_after_steps": [
+    "Created branch add-csv-export",
+    "Implemented /export/csv handler",
+    "Wrote unit test test_export_csv (currently FAILING: header row missing)"
+  ],
+  "remaining_intent": [
+    "Fix the failing header-row assertion",
+    "Run the test suite",
+    "Share the branch for review"
+  ],
+  "carrier_state": {
+    "test_suite_command": "pytest -q",
+    "branch": "add-csv-export",
+    "review_channel": "open a pull request (do not push to main)"
+  },
+  "ambiguous_resume_prompt": "continue where we left off and ship it"
+}

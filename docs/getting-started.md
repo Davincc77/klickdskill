@@ -90,6 +90,30 @@ Full details, the no-install CLI, and the truth boundary:
 
 ---
 
+## 2c. Dev-preview: resume an interrupted task, with vs without x.klickd (~5 min)
+
+Want to *see* what carried structure buys you, still with no API key? The
+dev-preview runs a deterministic, offline simulation of an agent **resuming a
+complex task after an interruption** — once on the bare prompt, once with
+x.klickd memory + skill gates — and prints a scorecard.
+
+```bash
+git clone https://github.com/Davincc77/klickdskill
+cd klickdskill
+python -m venv .venv && source .venv/bin/activate
+pip install -e .
+python examples/dev-preview/hello_skill.py
+python examples/dev-preview/run_demo.py
+```
+
+`pip install -e .` from the repo root installs the same published `klickd`
+package (source under `packages/pypi/klickd/`). The demo calls **no LLM** — it
+is a *deterministic local demo, not a model benchmark*. Full writeup, the
+generated scorecard, and the truth boundary:
+[`examples/dev-preview/README.md`](../examples/dev-preview/README.md).
+
+---
+
 ## 3. Plug it into a model (~1 min)
 
 A starter skill is built to drop into a **system prompt**. Pick the provider you already have a key for — each guide is a copy-paste minimal example:
