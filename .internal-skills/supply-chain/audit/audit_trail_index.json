@@ -1,0 +1,52 @@
+{
+  "build_or_audit_events": [
+    {
+      "automation": "tool",
+      "event": "audit_trail_index_generated",
+      "inputs_hash_summary": "10fa77ec74ebfa2b7daa51a5787607b1dc9eb654608477f478c7850ab5a09b85",
+      "source_commit_sha": "b73858cb2d9c6915195361e9ed34ed1b02a39ea4",
+      "stage": "audit_trail_index"
+    }
+  ],
+  "checked_artifacts_count": 43,
+  "checked_artifacts_hash_summary": "10fa77ec74ebfa2b7daa51a5787607b1dc9eb654608477f478c7850ab5a09b85",
+  "deterministic_run_id": "sha256:10fa77ec74ebfa2b7daa51a5787607b1dc9eb654608477f478c7850ab5a09b85",
+  "kind": "x_klickd_supply_chain_audit_trail_index",
+  "non_deterministic_zone": {
+    "comment": "Fields here are excluded from deterministic_run_id and checked_artifacts_hash_summary.",
+    "generated_at": "2026-06-02T11:20:28Z"
+  },
+  "non_normative": true,
+  "notes": [
+    "NON-NORMATIVE. Not a v4.1 GA release artefact.",
+    "Only the stages marked 'tool' are backed by shipped automation; 'planned' stages are spec-only; 'partial' is a tripwire, not a full scanner; 'manual' is human/agent premium work.",
+    "An artifact is counted only when its bytes exist on disk and hash-match the manifest (loaded + sha256_matches_manifest).",
+    "validation_results is empty by design: this generator does not run the validation commands, so it does not assert their outcomes.",
+    "Timestamps are excluded from deterministic_run_id; see determinism_record.json non_deterministic_zone."
+  ],
+  "repo": "Davincc77/klickdskill",
+  "schema_version": "0.1.0",
+  "source_commit_sha": "b73858cb2d9c6915195361e9ed34ed1b02a39ea4",
+  "stage_automation": {
+    "audit_trail_index": "tool",
+    "candidate_mapping_validation": "tool",
+    "candidate_skill_generation": "planned",
+    "context_graph_generation": "planned",
+    "determinism_record": "tool",
+    "diff_report": "planned",
+    "license_check": "planned",
+    "pack_hash_verification": "tool",
+    "pii_secrets_scan": "partial",
+    "premium_pass": "manual",
+    "private_public_boundary_check": "planned",
+    "reproducibility_check": "tool",
+    "source_freshness_check": "planned",
+    "threat_model": "planned"
+  },
+  "validation_commands": [
+    "python scripts/verify_xklickd_skill_packs.py verify",
+    "python scripts/validate_v4_1_candidate_mapping.py",
+    "pytest tests/test_supply_chain_audit.py"
+  ],
+  "validation_results": []
+}
