@@ -1,0 +1,15 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "source-stale-ref",
+      "title": "Old reference document",
+      "url": "https://example.org/old",
+      "retrieved_at": "2026-06-02",
+      "published_at": "2022-01-01",
+      "license": "MIT",
+      "usage": "reference",
+      "category": "default"
+    }
+  ]
+}

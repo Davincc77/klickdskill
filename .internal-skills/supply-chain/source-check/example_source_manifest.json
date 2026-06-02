@@ -1,0 +1,15 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "source-001",
+      "title": "Open specification (reference)",
+      "url": "https://example.org/spec",
+      "retrieved_at": "2026-06-02",
+      "published_at": "2026-01-01",
+      "license": "CC-BY-4.0",
+      "usage": "reference",
+      "category": "default"
+    }
+  ]
+}

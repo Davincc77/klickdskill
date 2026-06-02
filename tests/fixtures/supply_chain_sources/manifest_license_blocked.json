@@ -1,0 +1,14 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "source-blocked-lic",
+      "title": "Proprietary source, no permission",
+      "url": "https://example.org/proprietary",
+      "retrieved_at": "2026-06-02",
+      "published_at": "2026-02-01",
+      "license": "all-rights-reserved",
+      "usage": "reference"
+    }
+  ]
+}
