@@ -1,0 +1,28 @@
+{
+  "schema_version": "xklickd.candidate.v0.1",
+  "skill_id": "xklickd-longterm-memory",
+  "domain": "knowledge",
+  "risk_profile": {
+    "default_risk": "medium",
+    "sensitive_actions": []
+  },
+  "governance": {
+    "human_veto_required": true,
+    "no_auto_external_action": true,
+    "final_decision_owner": "human_operator",
+    "non_lowerable_rules": ["no_unsourced_claim"]
+  },
+  "memory": {
+    "writes_long_term": true,
+    "reads_private_context": false
+  },
+  "tools": {
+    "allowed": ["read_file"],
+    "forbidden": ["publish"]
+  },
+  "output_contract": {
+    "requires_citations": true,
+    "emits_public_output": false,
+    "forbidden_outputs": []
+  }
+}

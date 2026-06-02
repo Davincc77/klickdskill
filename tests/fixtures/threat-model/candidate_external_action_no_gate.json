@@ -1,0 +1,28 @@
+{
+  "schema_version": "xklickd.candidate.v0.1",
+  "skill_id": "xklickd-external-no-gate",
+  "domain": "comms",
+  "risk_profile": {
+    "default_risk": "high",
+    "sensitive_actions": ["external_communication"]
+  },
+  "governance": {
+    "human_veto_required": true,
+    "no_auto_external_action": false,
+    "final_decision_owner": "human_operator",
+    "non_lowerable_rules": ["no_unsourced_claim"]
+  },
+  "memory": {
+    "writes_long_term": false,
+    "reads_private_context": false
+  },
+  "tools": {
+    "allowed": ["read_file", "send_email"],
+    "forbidden": []
+  },
+  "output_contract": {
+    "requires_citations": true,
+    "emits_public_output": false,
+    "forbidden_outputs": []
+  }
+}
