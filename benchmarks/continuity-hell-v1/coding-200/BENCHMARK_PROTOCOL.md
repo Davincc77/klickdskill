@@ -84,6 +84,10 @@ These are fixed now so a future real run is comparable and reproducible:
 - **Concurrency:** low; retries with backoff; every provider `usage` field
   recorded when returned (token accounting is heuristic otherwise and labelled
   as such).
+- **Provenance, not secrets:** the results envelope records **provider, model,
+  and run_id only**. Request/response **headers, authorization tokens, and API
+  keys are never recorded** — the runner redacts and asserts secret-clean
+  before any write (see §10).
 
 ---
 
@@ -170,10 +174,16 @@ so a human must consciously implement it:
 4. `_call_provider` implemented with a **frozen output→contract mapping**
    (the free-text→structured labelling step, itself audited — see
    `scoring_rubric.md §"Mapping real LLM output"`).
+5. **Secret-safety preflight green:** `run_benchmark.py preflight` confirms a
+   provider key exists (by name only, never printing its value) and that
+   `results/` is secret-clean; `scripts/check_benchmark_secret_leakage.py`
+   reports no findings. See §10.
 
 If 1–3 are not all satisfied, the runner prints the **exact blocker** and exits
 non-zero **without calling any provider**. If 1–3 hold but 4 does not, the
-runner raises `NotImplementedError` rather than fabricate output.
+runner raises `NotImplementedError` rather than fabricate output. Item 5 is a
+standing invariant: even a refused or dry run is redacted + asserted clean
+before any artifact is written.
 
 **No mirage rule:** the runner never emits `is_real_llm: true` output from a
 deterministic path. Dry-run output is always `is_real_llm: false` and carries a
@@ -201,3 +211,29 @@ Any change to §1–§7 after a real run = new protocol version. The dataset see
 and `coding.klickd` `pack_version` under test are recorded in `tasks.json` and
 in every results envelope so a run is always traceable to the exact artifact
 and protocol it tested.
+
+---
+
+## 10. Secret safety (mandatory invariant)
+
+Provider API keys live **only** in the private environment or a secret manager.
+A key must **never** be committed, logged, written to an artifact, or printed.
+This is enforced in code, not by discipline:
+
+1. **Redact-then-assert at the write boundary.** Every output envelope passes
+   through `secret_guard.redact` then `secret_guard.assert_clean` before it is
+   written. Provider-key shapes, auth headers, high-entropy tokens, and any
+   *live* provider env var value are replaced with `[REDACTED:<kind>]`; if any
+   secret-like content survives, the runner refuses to write.
+2. **Value-blind preflight.** `run_benchmark.py preflight` checks that a
+   provider key **exists** — reporting only the env var **name**, never its
+   value — and that `results/` is secret-clean. Required green before a real
+   run (§7 item 5).
+3. **Artifact scanner.** `scripts/check_benchmark_secret_leakage.py` scans
+   results (or any path), prints only redacted previews, and exits non-zero on
+   any finding. Intended as a CI / pre-real-run gate.
+4. **Provenance only.** Results record `provider/model/run_id`; never headers,
+   tokens, or env var values.
+
+A real secret seen in any log or artifact means the key is compromised: rotate
+it immediately, do not merely delete the file.

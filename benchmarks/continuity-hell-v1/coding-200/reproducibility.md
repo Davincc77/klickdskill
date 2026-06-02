@@ -41,6 +41,20 @@ Expected, reproducibly:
 
 These are floor/ceiling references, **not** model measurements.
 
+## Secret-safety checks (offline)
+
+API keys stay in the private environment only; nothing secret is ever written.
+Verify, value-blind:
+
+```bash
+python run_benchmark.py preflight                          # key present (name only) + results/ clean
+python ../../../scripts/check_benchmark_secret_leakage.py  # scan artifacts; non-zero on any finding
+```
+
+`preflight` reports only the **names** of present provider env vars, never
+their values. The runner additionally redacts and asserts secret-clean on every
+write, so even a dry-run artifact cannot contain a key or token.
+
 ## Validation tests
 
 Run from the repo root (CI runs `pytest tests/ -q`):
@@ -51,8 +65,9 @@ python -m pytest tests/test_continuity_coding200.py -q
 
 These assert: exactly 200 tasks, unique ids, ≥ 3 vectors each, no easy tasks,
 schema validity, dataset byte-stability, deterministic scorer behaviour on
-fixtures, both dry-run lanes diverge, and no forbidden public/claim language
-leaks into the benchmark files.
+fixtures, both dry-run lanes diverge, secret detection/redaction works on fake
+keys and never serializes a live env var value, and no forbidden public/claim
+language leaks into the benchmark files.
 
 ## Real-LLM lane (gated — currently BLOCKED)
 

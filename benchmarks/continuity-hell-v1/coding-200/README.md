@@ -32,7 +32,8 @@ the artifact under test.
 | `scoring_rubric.md` | **Frozen** deterministic scoring rules + response contract. |
 | `tasks.json` | Exactly 200 tasks (byte-stable for the recorded seed). |
 | `generate_tasks.py` | Regenerates / `--check`s `tasks.json` from the real skill. |
-| `run_benchmark.py` | Runner: deterministic dry-run lanes + a **gated** real-LLM lane. |
+| `run_benchmark.py` | Runner: deterministic dry-run lanes + a **gated** real-LLM lane. Redacts + asserts secret-clean before any write. |
+| `secret_guard.py` | Single source of truth for secret detection + redaction (used by the runner and the artifact scanner). |
 | `score_outputs.py` | Deterministic scorer (no LLM in the loop). |
 | `results/` | Dry-run outputs + scored summaries. Real-LLM results only if genuinely run. |
 | `failure_analysis.md` | Template to fill from scorer output after a real run. |
@@ -79,3 +80,31 @@ reports the real-LLM lane as **BLOCKED**, never as a fabricated number.
 - The real provider call ships **unwired** (`NotImplementedError`) so no
   accidental spend or fake "real" results can occur.
 - Scoring is deterministic and LLM-free.
+
+## Secret safety (mandatory before any real run)
+
+Provider API keys live **only** in the private environment or a secret manager.
+A key must **never** be committed, logged, written to an artifact, or printed.
+The harness enforces this rather than relying on discipline:
+
+- **Redaction at the boundary.** Every output envelope is passed through
+  `secret_guard.redact` and then `secret_guard.assert_clean` *before* it is
+  written. Any provider-key shape, auth header, high-entropy token, or live
+  provider env var value is replaced with `[REDACTED:<kind>]`; if anything
+  secret-like survives, the runner refuses to write.
+- **Preflight, value-blind.** `run_benchmark.py preflight` verifies a provider
+  key **exists** (reporting only the env var **name**, never its value) and
+  that `results/` is secret-clean — run it before a dry-run or a real run.
+- **Artifact scanner.** `scripts/check_benchmark_secret_leakage.py` scans the
+  results dir (or any path) and exits non-zero on any finding, printing only
+  redacted previews. Wire it into CI / a pre-real-run gate.
+- **Results record provenance, not secrets.** Envelopes record
+  `provider/model/run_id` only — never headers, tokens, or env var values.
+
+```bash
+python run_benchmark.py preflight                       # key present? results/ clean?
+python ../../../scripts/check_benchmark_secret_leakage.py   # scan artifacts (from this dir)
+```
+
+If you ever see a real secret in a log or artifact, treat the key as
+compromised and rotate it immediately — do not just delete the file.

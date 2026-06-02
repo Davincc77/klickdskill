@@ -20,14 +20,25 @@ This runner has two kinds of lanes, and it never blurs them:
     satisfied, the runner prints the exact blocker and exits without calling
     any provider.
 
+SECRET SAFETY
+-------------
+Provider API keys live ONLY in the private environment / a secret manager. The
+runner never reads a key value into any output: every envelope is passed
+through ``secret_guard.redact`` and then ``secret_guard.assert_clean`` before it
+is written, so no env var value, token, or auth header can be serialized to an
+artifact. The ``preflight`` mode verifies a provider key EXISTS (by name only,
+never printing its value) and that ``results/`` is secret-clean.
+
 Modes:
     baseline   dry-run, prompt-only resumer (no carried state, no skill gates)
     xklickd    dry-run, resumer that reads carried state + real skill gates
     llm        REAL provider lane (gated; refused without explicit approval)
+    preflight  secret-safety check: provider key present (name only) + clean results/
 
 Usage:
     python run_benchmark.py baseline
     python run_benchmark.py xklickd
+    python run_benchmark.py preflight           # key present? results/ clean?
     python run_benchmark.py llm                 # prints blocker, refuses
     python run_benchmark.py llm --execute       # still refused w/o env approval
 """
@@ -42,6 +53,10 @@ from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import secret_guard  # noqa: E402  (after sys.path setup so it imports as a sibling)
+
 TASKS_PATH = HERE / "tasks.json"
 RESULTS_DIR = HERE / "results"
 
@@ -154,12 +169,6 @@ def respond_xklickd(task: dict[str, Any], gov: dict[str, Any]) -> dict[str, Any]
 # --------------------------------------------------------------------------
 # Real provider lane — GATED and UNWIRED on purpose.
 # --------------------------------------------------------------------------
-def _llm_keys_present() -> list[str]:
-    candidates = ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY",
-                  "GOOGLE_API_KEY", "GROQ_API_KEY", "LLM_API_KEY")
-    return [k for k in candidates if os.environ.get(k)]
-
-
 def _call_provider(task: dict[str, Any], gov: dict[str, Any],
                    model: str, temperature: float) -> dict[str, Any]:
     """Real provider call for one task. INTENTIONALLY NOT IMPLEMENTED.
@@ -192,11 +201,14 @@ def run_real_llm(tasks: list[dict[str, Any]], gov: dict[str, Any],
               file=sys.stderr)
         print(f"Blocker: {ENV_FULL_APPROVAL} not set to 1.", file=sys.stderr)
         return None
-    keys = _llm_keys_present()
-    if not keys:
+    pf = secret_guard.preflight_env()
+    if not pf["has_provider_key"]:
         print("REFUSED: no provider API key found in environment.", file=sys.stderr)
         print("Blocker: no LLM_API_KEY/ANTHROPIC_API_KEY/etc. present.", file=sys.stderr)
         return None
+    # Report only the NAMES of present keys, never their values.
+    print(f"Preflight: provider key present in {pf['present_env_vars']} "
+          f"(values never read/printed).", file=sys.stderr)
     # Even with all gates satisfied, the provider call is unwired by design.
     responses = []
     for t in tasks:
@@ -237,15 +249,57 @@ def run_dry(mode: str, tasks: list[dict[str, Any]], gov: dict[str, Any]) -> dict
     }
 
 
+def run_preflight() -> int:
+    """Verify a provider key exists (NAMES only, never values) and that the
+    results directory is secret-clean. Exit 0 if a key is present and clean.
+    """
+    pf = secret_guard.preflight_env()
+    print(f"Preflight: checked {pf['checked']}")
+    print(f"Preflight: provider key present in {pf['present_env_vars']} "
+          f"(values never read/printed).")
+    findings = scan_results_dir()
+    if findings:
+        print(f"Preflight: REFUSED — {len(findings)} secret finding(s) in "
+              f"results/ (redacted): {findings}", file=sys.stderr)
+        return 2
+    print("Preflight: results/ is secret-clean.")
+    if not pf["has_provider_key"]:
+        print("Preflight: no provider key present — real lane stays blocked.",
+              file=sys.stderr)
+        return 1
+    return 0
+
+
+def scan_results_dir() -> list[dict[str, Any]]:
+    """Scan every JSON artifact in results/ for secrets. Returns redacted
+    findings only — never the secret itself.
+    """
+    findings: list[dict[str, Any]] = []
+    if not RESULTS_DIR.is_dir():
+        return findings
+    for path in sorted(RESULTS_DIR.rglob("*")):
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for f in secret_guard.scan_text(text):
+            f = dict(f)
+            f["file"] = path.name
+            findings.append(f)
+    return findings
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("mode", choices=["baseline", "xklickd", "llm"])
+    ap.add_argument("mode", choices=["baseline", "xklickd", "llm", "preflight"])
     ap.add_argument("--execute", action="store_true",
                     help="(llm only) opt in to a real provider run; still gated")
     ap.add_argument("--model", default=os.environ.get("XKLICKD_BENCH_MODEL", "unset"))
     ap.add_argument("--temperature", type=float, default=0.0)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
+
+    if args.mode == "preflight":
+        return run_preflight()
 
     tasks, _env = load_tasks()
     gov = load_skill_governance()
@@ -259,10 +313,20 @@ def main() -> int:
     else:
         outputs = run_dry(args.mode, tasks, gov)
 
+    # SECRET-SAFETY: redact any provider key / secret that could have entered
+    # the envelope, then refuse to write if anything secret-like remains. This
+    # guarantees no env var value or token is ever serialized to an artifact.
+    outputs = secret_guard.redact(outputs)
+    secret_guard.assert_clean(outputs, label=f"{outputs['condition']} output envelope")
+
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     out_path = Path(args.out) if args.out else RESULTS_DIR / f"{outputs['condition']}.json"
     out_path.write_text(json.dumps(outputs, indent=2) + "\n", encoding="utf-8")
-    print(f"Wrote {out_path.relative_to(HERE)}: condition={outputs['condition']} "
+    try:
+        shown = out_path.relative_to(HERE)
+    except ValueError:
+        shown = out_path
+    print(f"Wrote {shown}: condition={outputs['condition']} "
           f"is_real_llm={outputs['is_real_llm']} n={len(outputs['responses'])}")
     return 0
 
