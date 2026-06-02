@@ -107,6 +107,8 @@ Anchor ≠ pack. A pack is built **from authoritative frameworks**, not from a r
 
 ## 7. See also
 
+- [`../SUPPLY_CHAIN.md`](../SUPPLY_CHAIN.md) — supply-chain build-process spec (NON-NORMATIVE): 18-stage pipeline, lineage, rollback/deprecation, determinism, anti-mirage protocol, audit index.
+- [`./QUICKSTART.md`](./QUICKSTART.md) — operator quickstart (human or agent) for the build-and-audit loop + shipped verification commands.
 - [`../../RFC-009-chimera-v4.1.md`](../../RFC-009-chimera-v4.1.md) — Chimera RFC (carrier-vs-skill in §5.1.1, validation in §8, no-catalog in §7).
 - [`../README.md`](../README.md) — Chimera companion summary.
 - [`./student.md`](./student.md) — first concrete pack scaffold.

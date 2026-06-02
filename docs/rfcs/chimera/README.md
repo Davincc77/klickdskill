@@ -124,6 +124,8 @@ See [`packs/README.md`](./packs/README.md) for the full pack index, no-fake-cata
 
 ## 6. Pointers
 
+- Supply-chain build-process spec (NON-NORMATIVE): [`SUPPLY_CHAIN.md`](./SUPPLY_CHAIN.md) — 18-stage pipeline, lineage, rollback/deprecation, determinism, anti-mirage protocol, audit index.
+- Operator quickstart (human or agent, NON-NORMATIVE): [`packs/QUICKSTART.md`](./packs/QUICKSTART.md)
 - Full RFC: [`docs/rfcs/RFC-009-chimera-v4.1.md`](../RFC-009-chimera-v4.1.md)
 - Concrete pack scaffolds: [`packs/`](./packs/) (index: [`packs/README.md`](./packs/README.md))
 - First concrete pack: [`packs/student.md`](./packs/student.md) — `x.klickd/student`
