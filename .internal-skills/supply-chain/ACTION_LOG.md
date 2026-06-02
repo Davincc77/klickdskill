@@ -79,3 +79,52 @@
 - No external communication.
 - No change to `Davincc77/klickd-ai`.
 - No public artefact promoted to v4.2 (public stays v4.1 candidates).
+
+---
+
+## 2026-06-02 — integration merge to `main` (internal core + dev-preview)
+
+- **Authorization:** explicit user GO to create, validate, and merge the
+  necessary PRs up to delivery of the internal core and dev-preview. A final
+  market-proof product still requires a separate explicit go. This is the one
+  point where a merge to `main` was authorized; it supersedes the
+  "No merge to `main`" line of the prior (draft-PR) entry for these two PRs only.
+
+### Merges
+- **PR #122** `feat/supply-chain-runner-gate` → `integration/supply-chain-cumulative`.
+  Merge commit `c6ac907c7c42239c924beed193373064b15b0d43`.
+- **PR #121** `integration/supply-chain-cumulative` → `main` (cumulative of
+  #115–#120 + MASTER_BRIEF + integration index + runner/gate). Marked ready
+  (was draft) then merged. Merge commit
+  `47d244c54cb14a7eba5e646ee3190e386c39e551` (current `main` HEAD).
+- **PRs #115–#120** auto-closed as MERGED by GitHub when #121 landed (their
+  commits are now in `main` history). No manual close, no comment, no
+  redundant re-merge needed.
+
+### Validations re-run on `integration/supply-chain-cumulative` (at #122 merge)
+- `pytest tests/test_supply_chain_*.py` → 102 passed.
+- `python scripts/verify_xklickd_skill_packs.py verify` → rc 0 (42 packs: 8 Lite, 34 Pro).
+- `python scripts/validate_v4_1_candidate_mapping.py` → rc 0 (49 rows, 42 artefacts).
+- `python scripts/validate_v4_schemas.py` → rc 0.
+- Candidate + gate demo (clean fixture): candidate_id
+  `sha256:2dc00bf2…`, candidate_hash `sha256:e6369e8b…`, gate
+  classification ACCEPT, deterministic_gate_id `sha256:a45b0325…` — byte-stable
+  vs committed example. Missing-domain fixture → ACCEPT_WITH_REVIEW,
+  premium_pass_required=true. Hashes reproduced across hosts/clocks.
+- Public codename / forbidden-claim grep over README.md, docs/public/,
+  package metadata, and committed `candidates/`+`promotion-gate/` artefacts →
+  CLEAN. Internal codename `xklickd_internal_skill_v4_2` confined to internal
+  surfaces only (`docs/internal/`, `scripts/`, `.internal-skills/`, MASTER_BRIEF).
+- `pytest tests/` → 283 passed, 1 unrelated `jsonschema.__version__`
+  DeprecationWarning, 0 failures (documented baseline).
+
+### Validations re-run on `main` (post-merge, HEAD `47d244c5`)
+- All of the above re-run on `main`: identical results — 102 / 283 passed,
+  verifier/mapping/schemas rc 0, gate ACCEPT with the same deterministic ids,
+  public greps CLEAN.
+
+### Still NOT done (boundary held)
+- No release, tag, DOI, npm/PyPI publish, GitHub Release, or deploy.
+- No external communication beyond normal GitHub PR-merge metadata.
+- No change to `Davincc77/klickd-ai`.
+- No public artefact promoted to v4.2 (public stays v4.1 candidates).
