@@ -1,0 +1,252 @@
+{
+  "deterministic_run_id": "sha256:10fa77ec74ebfa2b7daa51a5787607b1dc9eb654608477f478c7850ab5a09b85",
+  "hash_algo": "sha256",
+  "input_files": [
+    {
+      "bytes": 9308,
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/artist.klickd",
+      "sha256": "56dbd966942475354e4f2daac48c3aeabfedbf3ff48f6248c443cdf8fe82b5c8"
+    },
+    {
+      "bytes": 9353,
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/consumer-rights.klickd",
+      "sha256": "16f77c9b7cb0801f198407f063c1b8395b98f6f729a14597ede8a15ae766ebbc"
+    },
+    {
+      "bytes": 9325,
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/game-literacy.klickd",
+      "sha256": "6e3158a2bde1024f54db53d149e525b820c4c167a71124416c8f4e8df38a3632"
+    },
+    {
+      "bytes": 9719,
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/media-planner.klickd",
+      "sha256": "a399ef56eb140d5adf272ffe3578448085f082154647811853e3d52e58b3a33e"
+    },
+    {
+      "bytes": 10149,
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/parent-gaming.klickd",
+      "sha256": "f2016892ac731f284d37d207a9464dcb93551b6934ff86f09d05fcd9d1a0ce52"
+    },
+    {
+      "bytes": 9745,
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/social-literacy.klickd",
+      "sha256": "5da46abae45a40adf562d1119bd4240c60d14b7c2b798e8e47aed4122834d9dc"
+    },
+    {
+      "bytes": 9332,
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/streaming-creator.klickd",
+      "sha256": "83a47a7370650c9870d28566344a11e52298a9e0a581003dc0ea8009558ac8ce"
+    },
+    {
+      "bytes": 10312,
+      "relative_path": "examples/v4.1/x-klickd-skills/lite/work-assistant.klickd",
+      "sha256": "7918922d04e406c406f1d8a1a6aeaa3f82fb2a9c5697a547f001cfac85063bcb"
+    },
+    {
+      "bytes": 15656,
+      "relative_path": "examples/v4.1/x-klickd-skills/manifest.json",
+      "sha256": "4f54e35ae1469dc0519f7ff97de0b69395f360e167220bc204525cfcb9c7c55f"
+    },
+    {
+      "bytes": 11371,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/accounting-operator.klickd",
+      "sha256": "0464b9d8bd284e7c498a60064f8f923e148f2ac3e0e39fd7c0f479174c8ad243"
+    },
+    {
+      "bytes": 11707,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/api-integrator.klickd",
+      "sha256": "875536c647ff1905f2e54a7997977b7d4087b7153b8b9a7c3270aef301af6dab"
+    },
+    {
+      "bytes": 10615,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/contract-review.klickd",
+      "sha256": "4be316d9bbb758e9d98dcf81ac25ef1fc9a8e24d9cb6462055d66660f104ba41"
+    },
+    {
+      "bytes": 12349,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/customer-support-operator.klickd",
+      "sha256": "9e6c755f8d975110bd8fd5bfdb1d87773f1a571968bf27933357b7bcc13516e9"
+    },
+    {
+      "bytes": 12175,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/data-analyst.klickd",
+      "sha256": "8ae8fe5e3b55d4402e0da93738e97d23c41d3daeb93c6bdc41301486a2f6cd4f"
+    },
+    {
+      "bytes": 12201,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/devops-operator.klickd",
+      "sha256": "bfad80b1110461f683c7000b9af1104ccdcd33a10c3059e3898dabea3f1d6fb4"
+    },
+    {
+      "bytes": 10450,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/drone-operator.klickd",
+      "sha256": "d4017d93c8b8ac765e59914b61116bd90bd68944c4a2b47e031dafc7d562ec23"
+    },
+    {
+      "bytes": 12705,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/edge-ai-operator.klickd",
+      "sha256": "295cd879168320e5af7d19a0c82a1bd0f8be52fbf9f16ec80c9db7f33b3cef6e"
+    },
+    {
+      "bytes": 10507,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/eu-ai-act.klickd",
+      "sha256": "4df66de2930e3f4d726c08a1e0d15e64c6929f4cbbd6a593d69b9f88c5a9de93"
+    },
+    {
+      "bytes": 11765,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/evidence-desk.klickd",
+      "sha256": "a1cc35277960a95ebbe12ca12c00d9d70ce71dc58cae99b642653835b90d14dd"
+    },
+    {
+      "bytes": 11950,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/finance-analyst.klickd",
+      "sha256": "dbf02eac4910f73b35f818bd20545cd41f6a391ca06adf59f9470aa421afb326"
+    },
+    {
+      "bytes": 12342,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/game-design.klickd",
+      "sha256": "0894cec1f3f54b770a16fd3f07e16817ee57e574bdb2ca0837b8653362f3abb3"
+    },
+    {
+      "bytes": 10671,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/gdpr-readiness.klickd",
+      "sha256": "d5c4cb7b707fc3f028424f34149cb95300fae583f9a261dfc161914da43bbc40"
+    },
+    {
+      "bytes": 12293,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/healthcare-ai-safety-reviewer.klickd",
+      "sha256": "183965179ebcdb7ef0f67866aa9c7364aaad1bd02996b4d0c696580ee2c6f789"
+    },
+    {
+      "bytes": 12310,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/identity-access-management.klickd",
+      "sha256": "d9112c7f82733e77bc382c4ca314c2bf3112c63ca03455a7efd037b6c33cd74d"
+    },
+    {
+      "bytes": 12206,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/learning-designer.klickd",
+      "sha256": "f7b1f5d39ee4f05261b4735a32475dee2583556681124c59b0250335729188f9"
+    },
+    {
+      "bytes": 10906,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/literature-review.klickd",
+      "sha256": "104865d2750605d9261fd27208b0e19e2908861e9e5672ed453d383701a770f1"
+    },
+    {
+      "bytes": 12164,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/llm-agent-engineering.klickd",
+      "sha256": "1649234c2859b8309c404f71f5c0db714805655cdbb714b7bdb9394644fb49f8"
+    },
+    {
+      "bytes": 13319,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/llm-agent-security.klickd",
+      "sha256": "baed596a642f68086cabc1a76d09ba6d987231a057c8fb66f1aabb84dd137098"
+    },
+    {
+      "bytes": 11861,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/mission-control.klickd",
+      "sha256": "2c2d02b4ecec40f022c4c7da0cdb3f082e588dfe11d3f14d1692dbbdba7e8ba2"
+    },
+    {
+      "bytes": 11275,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/policy-analyst.klickd",
+      "sha256": "f348f1d1a73797979a51005586dcd9f1069a17fab173dab7df742290127c73a7"
+    },
+    {
+      "bytes": 10728,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/privacy-product.klickd",
+      "sha256": "5a35d4a214a98f945f048c6647528df5ce2188aaa3d0913b7c6a1af2305eff00"
+    },
+    {
+      "bytes": 12231,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/product-manager.klickd",
+      "sha256": "dbf2365508df3ae9acbbb6e002e3c44fb2a81e9166d0003cacb94a3714fdaeda"
+    },
+    {
+      "bytes": 11164,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/project-operator.klickd",
+      "sha256": "5d019adfc08bcf518780bbe3e18a428682374397475a8bf6282d1e474ae6d5ce"
+    },
+    {
+      "bytes": 12865,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/release-engineer.klickd",
+      "sha256": "c96329cff482f39d52a13b628bd027cd5854f15d40ce58c945fb58aec52aef9e"
+    },
+    {
+      "bytes": 10347,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/rights-guard.klickd",
+      "sha256": "3efa2982479b6ba3544092d848fb52b91dc7687031c4a481181547d9728703b3"
+    },
+    {
+      "bytes": 12186,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/sales-operator.klickd",
+      "sha256": "1bdc2c5895e07b909dda9bd04040917004727bed00198962c006a43a0be13060"
+    },
+    {
+      "bytes": 11153,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/second-brain.klickd",
+      "sha256": "06504aa5dddc1b53634310210fff4374e68e0a2b959ae9dfa191b29995153bdb"
+    },
+    {
+      "bytes": 12682,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/security-incident-response.klickd",
+      "sha256": "1315833cf73b3d04e00fe73006e985b0a7af7d266c457e18f61204cca09dcc7a"
+    },
+    {
+      "bytes": 12667,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/sustainability-analyst.klickd",
+      "sha256": "445a7f1111e6474ca87bc717d0f50d6af5016863fe3fd87083502d77eeffcf1f"
+    },
+    {
+      "bytes": 12150,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/technical-writer.klickd",
+      "sha256": "473c44c67a889c783872494f262feb16bdb1377a74dd5b4d605fe340ecebecc9"
+    },
+    {
+      "bytes": 11317,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/trust-evidence.klickd",
+      "sha256": "57f4ac349438d3c3305e03ecf9a09a44d20e289550f8afa292267666bcc150ad"
+    },
+    {
+      "bytes": 12109,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/ux-researcher.klickd",
+      "sha256": "d91afbf120c6175c4d23d175265697b7a0a7bd4f11dd60fc08bb053c8113e13e"
+    },
+    {
+      "bytes": 16908,
+      "relative_path": "examples/v4.1/x-klickd-skills/pro/video-production-pipeline.klickd",
+      "sha256": "d6da8f7569953f7c6fb4f0ce02cb2649187bcbf52ae3f4d32a35c8fe885498a8"
+    }
+  ],
+  "inputs_hash_summary": "10fa77ec74ebfa2b7daa51a5787607b1dc9eb654608477f478c7850ab5a09b85",
+  "kind": "x_klickd_supply_chain_determinism_record",
+  "non_deterministic_zone": {
+    "comment": "Excluded from deterministic_run_id and from the output determinism hashes.",
+    "generated_at": "2026-06-02T11:20:28Z"
+  },
+  "non_normative": true,
+  "output_files": [
+    {
+      "deterministic_core_sha256": "8443e75756ffbbf1e138efec221cf117c70d76b15ea7d198822c5a46975a1ab6",
+      "relative_path": ".internal-skills/supply-chain/audit/audit_trail_index.json"
+    },
+    {
+      "deterministic_core_sha256": "37a5891642a59ff26078e70bccea5e387eb8465ff0ca212b564ea63e728e3bee",
+      "relative_path": ".internal-skills/supply-chain/audit/determinism_record.json"
+    }
+  ],
+  "repeatability": {
+    "deterministic_fields": [
+      "deterministic_run_id",
+      "inputs_hash_summary",
+      "input_files[*].sha256"
+    ],
+    "instructions": "Re-run `python scripts/generate_supply_chain_audit.py`. If inputs are unchanged, deterministic_run_id and inputs_hash_summary are identical across runs and hosts.",
+    "non_deterministic_fields_excluded": [
+      "non_deterministic_zone.generated_at",
+      "source_commit_sha (provenance, not part of the hash)"
+    ]
+  },
+  "repo": "Davincc77/klickdskill",
+  "schema_version": "0.1.0"
+}
