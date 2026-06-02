@@ -1,0 +1,14 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "skos",
+      "title": "SKOS Reference",
+      "license": "CC-BY-4.0",
+      "usage": "reference",
+      "url": "https://example.org/skos",
+      "published_at": "2025-01-01",
+      "category": "academic"
+    }
+  ]
+}

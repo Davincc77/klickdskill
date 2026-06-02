@@ -1,0 +1,26 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "source-academic-old-ok",
+      "title": "Foundational academic paper, still current",
+      "url": "https://example.org/paper",
+      "retrieved_at": "2026-06-02",
+      "published_at": "2024-06-01",
+      "license": "CC-BY-4.0",
+      "usage": "reference",
+      "category": "academic"
+    },
+    {
+      "id": "source-academic-superseded",
+      "title": "Older academic paper marked superseded",
+      "url": "https://example.org/paper-old",
+      "retrieved_at": "2026-06-02",
+      "published_at": "2025-01-01",
+      "license": "CC-BY-4.0",
+      "usage": "reference",
+      "category": "academic",
+      "superseded": true
+    }
+  ]
+}

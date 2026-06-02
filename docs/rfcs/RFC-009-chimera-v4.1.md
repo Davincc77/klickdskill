@@ -363,6 +363,8 @@ Promotion to `Accepted` requires (at minimum) one P0 pack to demonstrate §8 is 
 
 **Companion docs:**
 
+- [`docs/rfcs/chimera/SUPPLY_CHAIN.md`](./chimera/SUPPLY_CHAIN.md) — **NON-NORMATIVE** supply-chain build-process spec: the 18-stage pipeline (each stage labelled `tool` / `manual` / `planned`), version lineage, rollback / deprecation / approval-revocation, determinism + reproducibility, anti-mirage protocol, and audit-trail index. Specifies the *process* that produces and gates the §8 artefact.
+- [`docs/rfcs/chimera/packs/QUICKSTART.md`](./chimera/packs/QUICKSTART.md) — **NON-NORMATIVE** operator quickstart (human or agent) for the build-and-audit loop, multi-agent role split, and shipped verification commands.
 - [`docs/rfcs/chimera/README.md`](./chimera/README.md) — pack scope table and validation criteria summary.
 - [`docs/rfcs/chimera/packs/README.md`](./chimera/packs/README.md) — concrete pack index, `/klickdskill` later-notes, no-fake-catalog reminder.
 - [`docs/rfcs/chimera/frameworks/README.md`](./chimera/frameworks/README.md) — canonical framework registry (ESCO v1.1.1, DigComp 2.2, LifeComp 2020, EQF 2017, CEFR 2020, WEF, O\*NET, NICE, ENISA, CIS, SFIA) with stable URLs / IRI prefixes / distribution URLs / SHA-256 placeholders, plus the offline SKOS/JSON-LD bundle shape.

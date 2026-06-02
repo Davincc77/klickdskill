@@ -1,0 +1,31 @@
+{
+  "schema_version": "xklickd.candidate.v0.1",
+  "skill_id": "xklickd-low-risk-reader",
+  "domain": "research",
+  "risk_profile": {
+    "default_risk": "low",
+    "sensitive_actions": []
+  },
+  "governance": {
+    "human_veto_required": true,
+    "no_auto_external_action": true,
+    "final_decision_owner": "human_operator",
+    "non_lowerable_rules": ["no_stub_as_loaded_skill", "no_unsourced_claim"]
+  },
+  "memory": {
+    "writes_long_term": false,
+    "reads_private_context": false
+  },
+  "tools": {
+    "allowed": ["read_file"],
+    "forbidden": ["send_email", "publish"]
+  },
+  "output_contract": {
+    "requires_citations": true,
+    "emits_public_output": true,
+    "forbidden_outputs": ["unsourced_public_claim", "private_to_public"]
+  },
+  "sources": [
+    {"name": "skos-framework", "license": "CC-BY-4.0", "freshness": "current"}
+  ]
+}

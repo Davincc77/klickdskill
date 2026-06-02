@@ -1,0 +1,15 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "source-stale-security",
+      "title": "Outdated regulatory guidance",
+      "url": "https://example.org/regulatory-old",
+      "retrieved_at": "2026-06-02",
+      "published_at": "2024-01-01",
+      "license": "CC-BY-4.0",
+      "usage": "reference",
+      "category": "security"
+    }
+  ]
+}

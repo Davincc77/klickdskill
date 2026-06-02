@@ -1,0 +1,14 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "source-sec-no-date",
+      "title": "Security guidance with no publication date",
+      "url": "https://example.org/sec-guidance",
+      "retrieved_at": "2026-06-02",
+      "license": "CC-BY-4.0",
+      "usage": "reference",
+      "category": "security"
+    }
+  ]
+}

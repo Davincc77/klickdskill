@@ -1,0 +1,31 @@
+{
+  "schema_version": "xklickd.candidate.v0.1",
+  "skill_id": "xklickd-private-public-leak",
+  "domain": "data",
+  "risk_profile": {
+    "default_risk": "high",
+    "sensitive_actions": []
+  },
+  "governance": {
+    "human_veto_required": true,
+    "no_auto_external_action": true,
+    "final_decision_owner": "human_operator",
+    "non_lowerable_rules": ["no_unsourced_claim"]
+  },
+  "memory": {
+    "writes_long_term": false,
+    "reads_private_context": true
+  },
+  "tools": {
+    "allowed": ["read_file"],
+    "forbidden": []
+  },
+  "output_contract": {
+    "requires_citations": true,
+    "emits_public_output": true,
+    "forbidden_outputs": []
+  },
+  "boundaries": {
+    "private_to_public_leak": true
+  }
+}

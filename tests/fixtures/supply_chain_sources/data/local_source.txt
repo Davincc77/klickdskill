@@ -1,0 +1,2 @@
+x.klickd source freshness + license check — local hash fixture.
+This file's sha256 is referenced by manifest_hash_match.json.

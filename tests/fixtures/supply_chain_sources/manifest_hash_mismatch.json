@@ -1,0 +1,16 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "source-hash-bad",
+      "title": "Local source with wrong declared hash",
+      "url": "https://example.org/local",
+      "retrieved_at": "2026-06-02",
+      "published_at": "2026-04-01",
+      "license": "MIT",
+      "usage": "reference",
+      "local_path": "data/local_source.txt",
+      "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

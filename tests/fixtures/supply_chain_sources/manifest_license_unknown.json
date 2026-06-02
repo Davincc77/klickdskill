@@ -1,0 +1,14 @@
+{
+  "schema_version": "xklickd.source_manifest.v0.1",
+  "sources": [
+    {
+      "id": "source-unknown-lic",
+      "title": "Source with unrecognized license",
+      "url": "https://example.org/thing",
+      "retrieved_at": "2026-06-02",
+      "published_at": "2026-02-01",
+      "license": "SomeNovelLicense-9.9",
+      "usage": "reference"
+    }
+  ]
+}
