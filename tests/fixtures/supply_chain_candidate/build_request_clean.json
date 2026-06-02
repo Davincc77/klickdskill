@@ -1,0 +1,50 @@
+{
+  "skill_id": "xklickd-research-reader",
+  "domain": "research",
+  "title": "Research Reader",
+  "size_tier": "lite",
+  "publisher": "internal",
+  "primary_domain_competencies": [
+    "ESCO:research_methods",
+    "ESCO:academic_writing"
+  ],
+  "secondary_domain_competencies": [
+    "ESCO:citation_management"
+  ],
+  "domain_risk_profile": {
+    "default_risk": "low",
+    "sensitive_actions": []
+  },
+  "domain_output_requirements": {
+    "format": "cited_summary"
+  },
+  "risk_profile": {
+    "default_risk": "low",
+    "sensitive_actions": []
+  },
+  "tools": {
+    "allowed": ["read_file"],
+    "forbidden": []
+  },
+  "memory": {
+    "writes_long_term": false,
+    "reads_private_context": false
+  },
+  "output_contract": {
+    "emits_public_output": true,
+    "allowed_outputs": ["text_response"]
+  },
+  "sources": [
+    {
+      "id": "skos",
+      "name": "skos-framework",
+      "title": "SKOS Reference",
+      "license": "CC-BY-4.0",
+      "freshness": "current",
+      "url": "https://example.org/skos",
+      "published_at": "2025-01-01",
+      "usage": "reference",
+      "category": "academic"
+    }
+  ]
+}

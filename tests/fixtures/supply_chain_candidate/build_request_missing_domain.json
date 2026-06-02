@@ -1,0 +1,10 @@
+{
+  "skill_id": "xklickd-medicine-advisor",
+  "domain": "medicine",
+  "title": "Medicine Advisor",
+  "size_tier": "lite",
+  "risk_profile": {
+    "default_risk": "low",
+    "sensitive_actions": []
+  }
+}
