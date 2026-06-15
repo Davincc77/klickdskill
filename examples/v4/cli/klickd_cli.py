@@ -4,7 +4,7 @@
 This is a non-normative demo (R4-PV-1) showing the smallest useful
 program built on top of the official package:
 
-    pip install klickd==4.0.0
+    pip install klickd==4.1.0
     python klickd_cli.py path/to/profile.klickd
 
 For encrypted envelopes:
@@ -30,7 +30,7 @@ try:
 except ImportError:  # pragma: no cover - import-time message only
     print(
         "ERROR: the 'klickd' package is not installed.\n"
-        "Install with:  pip install klickd==4.0.0",
+        "Install with:  pip install klickd==4.1.0",
         file=sys.stderr,
     )
     raise SystemExit(2)

@@ -12,7 +12,7 @@ the official Python package.
 ## 1. Install
 
 ```bash
-pip install klickd==4.0.0
+pip install klickd==4.1.0
 ```
 
 (`load_klickd` itself has no network or filesystem side-effects; it parses
@@ -52,7 +52,7 @@ The default human-readable summary surfaces only the fields an integrator
 typically needs to confirm a successful load:
 
 ```
-# klickd-cli — package klickd==4.0.0
+# klickd-cli — package klickd==4.1.0
 # source: examples/v4/personas/01-eleve-terminale-fr.klickd
 
 klickd_version        : 4.0
